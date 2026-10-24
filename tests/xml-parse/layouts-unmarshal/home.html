@@ -1,0 +1,6 @@
+{{- /* Dump the parsed tree of every assets/corpus/**.xml file to trees.json, keyed by path. */ -}}
+{{- $out := newScratch -}}
+{{- range resources.Match "corpus/**.xml" -}}
+  {{- $out.SetInMap "m" .Name (transform.Unmarshal (dict "format" "xml" "targetType" "document") .) -}}
+{{- end -}}
+{{- (resources.FromString "trees.json" (jsonify ($out.Get "m"))).RelPermalink -}}
