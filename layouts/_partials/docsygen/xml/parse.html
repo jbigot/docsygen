@@ -1,0 +1,55 @@
+{{- /* Parse an XML string into an order-preserving tree.
+       A node's content is a list; text is a string, an element is a map
+       {<tag>: [content...], "#<attr>": "value", ...}. "#" cannot start an XML name,
+       so attribute keys never clash with the tag key. Returns the document's content.
+       Usage: partial "docsygen/xml/parse.html" $xmlString */ -}}
+{{- $tokens := findRE `<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<!DOCTYPE(?:[^>\[]|\[[^\]]*\])*>|<(?:[^>"']|"[^"]*"|'[^']*')*>|[^<]+` . -}}
+{{- if ne (len (delimit $tokens "")) (len .) -}}
+  {{- errorf "xml/parse: malformed XML (unmatched markup near %q)" (substr (replaceRE `^(?:<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<!DOCTYPE(?:[^>\[]|\[[^\]]*\])*>|<(?:[^>"']|"[^"]*"|'[^']*')*>|[^<]+)*` "" . 1) 0 40) -}}
+{{- end -}}
+{{- $stack := slice (dict "c" slice) -}}
+{{- range $tokens -}}
+  {{- $item := false -}}
+  {{- if hasPrefix . "</" -}}
+    {{- $n := len $stack -}}
+    {{- $top := index $stack (sub $n 1) -}}
+    {{- $close := trim (substr . 2 -1) " \t\r\n" -}}
+    {{- if eq $n 1 -}}
+      {{- errorf "xml/parse: unexpected </%s>, no element is open" $close -}}
+    {{- else if ne $close $top.n -}}
+      {{- errorf "xml/parse: unexpected </%s>, expected </%s>" $close $top.n -}}
+    {{- end -}}
+    {{- $stack = first (sub $n 1) $stack -}}
+    {{- $top.a.SetInMap "m" $top.n $top.c -}}
+    {{- $item = $top.a.Get "m" -}}
+  {{- else if or (hasPrefix . "<?") (hasPrefix . "<!--") (hasPrefix . "<!DOCTYPE") -}}
+  {{- else if hasPrefix . "<![CDATA[" -}}
+    {{- $item = substr . 9 -3 -}}
+  {{- else if hasPrefix . "<" -}}
+    {{- $match := findRESubmatch `^<([A-Za-z_:][^\s/>]*)` . 1 -}}
+    {{- if not $match -}}{{- errorf "xml/parse: invalid markup %q" . -}}{{- end -}}
+    {{- $name := index (index $match 0) 1 -}}
+    {{- /* Scratch maps keep key case; merge would fold it (XML names are case-sensitive). */ -}}
+    {{- $attrs := newScratch -}}
+    {{- range findRESubmatch `\s([^\s=/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)')` . -}}
+      {{- $attrs.SetInMap "m" (printf "#%s" (index . 1)) (htmlUnescape (add (index . 2) (index . 3))) -}}
+    {{- end -}}
+    {{- if hasSuffix . "/>" -}}
+      {{- $attrs.SetInMap "m" $name slice -}}
+      {{- $item = $attrs.Get "m" -}}
+    {{- else -}}
+      {{- $stack = $stack | append (dict "n" $name "a" $attrs "c" slice) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $item = htmlUnescape . -}}
+  {{- end -}}
+  {{- if not (eq $item false) -}}
+    {{- $n := len $stack -}}
+    {{- $top := index $stack (sub $n 1) -}}
+    {{- $stack = (first (sub $n 1) $stack) | append (dict "n" $top.n "a" $top.a "c" ($top.c | append $item)) -}}
+  {{- end -}}
+{{- end -}}
+{{- if ne (len $stack) 1 -}}
+  {{- errorf "xml/parse: unclosed element <%s>" (index $stack (sub (len $stack) 1)).n -}}
+{{- end -}}
+{{- return (index $stack 0).c -}}

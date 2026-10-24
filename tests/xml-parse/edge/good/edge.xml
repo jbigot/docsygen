@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE r [ <!ENTITY unused "x"> ]>
+<!-- a comment with <fake attr="1"> tags -->
+<r a="x &gt; y" b='single "quoted" > here' c="&#233;&#x263A;&amp;&lt;">
+  <p>Text <![CDATA[raw <b>not a tag</b> & ok]]> after <i
+      multi = "line">attr</i> &#169; tail<?pi ignored?><!-- c --></p>
+  <e/><e x="1" /><Mixed Case="yes">é ☺</Mixed>
+</r>

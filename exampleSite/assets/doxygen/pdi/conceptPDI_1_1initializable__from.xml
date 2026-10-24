@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+  <compounddef id="conceptPDI_1_1initializable__from" kind="concept">
+    <compoundname>PDI::initializable_from</compoundname>
+    <includes refid="testing_8h" local="no">testing.h</includes>
+    <templateparamlist>
+      <param>
+        <type>class T</type>
+      </param>
+      <param>
+        <type>class G</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;class T, class G&gt;
+concept <ref refid="conceptPDI_1_1initializable__from" kindref="compound">PDI::initializable_from</ref> =  requires(T t, G&amp; gen) {
+	{
+		t.init_from(gen)
+	};
+}    </initializer>
+    <briefdescription>
+<para>An object is initializable_from&lt;G&gt; if it can be initalized using the init_from member function from a reference of G. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="pdi/include/pdi/testing.h" line="84" column="1"/>
+  </compounddef>
+</doxygen>

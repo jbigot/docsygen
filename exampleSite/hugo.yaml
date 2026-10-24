@@ -1,0 +1,22 @@
+baseURL: https://example.org/
+title: docsygen example
+locale: en
+
+module:
+  proxy: direct
+  hugoVersion:
+    extended: true
+    min: 0.160.1
+  imports:
+    - path: github.com/jbigot/docsygen
+    - path: github.com/docsy/docsy/theme
+
+menu:
+  main:
+    - name: Documentation
+      pageRef: /docs/
+      weight: 10
+
+params:
+  ui:
+    sidebar_menu_compact: true
