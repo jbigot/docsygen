@@ -44,11 +44,18 @@ site_config() {
 set -- "sample=$work/sample/xml" "edge=$here/edge/good" "pdi=$root/exampleSite/assets/doxygen/pdi" "$@"
 mkdir -p "$work/good"
 site_config "$work/good/hugo.yaml" "$@"
-start=$(date +%s.%N)
-"$hugo" --quiet --source "$work/good" --destination "$work/good/public"
-end=$(date +%s.%N)
-kb=$(for corpus in "$@"; do printf '%s\n' "${corpus#*=}"; done | xargs -d '\n' du -ck | tail -n 1 | cut -f 1)
-LC_ALL=C awk -v s="$start" -v e="$end" -v kb="$kb" 'BEGIN { printf "build: %.2f s for %.1f MB of XML\n", e - s, kb / 1024 }'
+now() { python3 -c 'import time; print(time.time())'; }
+start=$(now)
+# Not --quiet: it would hide the ERROR line of a rejected file.
+if ! message=$("$hugo" --source "$work/good" --destination "$work/good/public" 2>&1); then
+  printf '%s\n' "$message" >&2; exit 1
+fi
+end=$(now)
+bytes=0
+for corpus in "$@"; do
+  bytes=$((bytes + $(find "${corpus#*=}" -type f -name '*.xml' -exec cat {} + | wc -c)))
+done
+LC_ALL=C awk -v s="$start" -v e="$end" -v b="$bytes" 'BEGIN { printf "build: %.2f s for %.1f MB of XML\n", e - s, b / 1e6 }'
 python3 -I "$here/compare.py" $layout_opt "$work/good/public/trees.json" "$@"
 
 status=0
@@ -64,7 +71,7 @@ for bad in "$here"/edge/bad/*.xml; do
       printf 'NOT REJECTED %s\n' "$name"; status=1
     fi
   else
-    printf 'rejected %-22s %s\n' "$name" "$(printf '%s' "$message" | grep -o 'xml/parse: .*\|unmarshal failed: .*' | head -n 1)"
+    printf 'rejected %-22s %s\n' "$name" "$(printf '%s' "$message" | grep -oE 'xml/parse: .*|unmarshal failed: .*' | head -n 1)"
   fi
   rm -rf "$work/bad"
 done
@@ -73,6 +80,7 @@ if [ "$reader" = unmarshal ]; then
   for lenient in "$here"/edge/lenient/*.xml; do
     name=$(basename "$lenient")
     case $name in
+      duplicate-attr.xml) issue=go#68295 ;;
       no-space-between-attrs.xml) issue=go#68385 ;;
       *) issue=unreported ;;
     esac
