@@ -1,0 +1,95 @@
+{{- /* The body of docsygen/paths/index-entries.html. */ -}}
+{{- $m := . -}}
+{{- $page := partial "docsygen/paths/has-page.html" $m -}}
+{{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $filters := dict "function" "functions" "slot" "functions" "signal" "functions" "variable" "variables"
+    "typedef" "typedefs" "enum" "enums" "enumvalue" "enumvalues" "property" "properties" "event" "events"
+    "friend" "related" "define" "macros" -}}
+{{- define "_partials/docsygen/paths/index-entries/entry.html" -}}
+  {{- /* The entry of member .id named .name, listed by .home in index .index, with filters
+         .filters, or false without a letter. */ -}}
+  {{- $key := partial "docsygen/text/ignore-prefix.html" (dict "name" .name "prefixes" .prefixes) -}}
+  {{- $letter := lower (substr $key 0 1) -}}
+  {{- $out := false -}}
+  {{- if $letter -}}
+    {{- $h := index .model.ids .home -}}
+    {{- $qualified := cond (eq $h.kind "file") .name (printf "%s::%s" $h.name .name) -}}
+    {{- /* Hugo's sort collates strings; hex digits collate as bytes, and "00" ends a key before
+           any byte. */ -}}
+    {{- $sort := printf "%x00%x00%x00%x00" (lower .name) .name (lower $qualified) $qualified -}}
+    {{- $out = dict "id" .id "home" .home "name" .name "key" $key "letter" $letter "filters" .filters "sort" $sort -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $s := newScratch -}}
+{{- $seen := newScratch -}}
+{{- with resources.Get (printf "%s/index.xml" $m.dir) -}}
+  {{- range (partial "docsygen/xml/unmarshal.html" .).children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "compound") -}}
+      {{- $kind := .attributes.kind -}}
+      {{- $cid := .attributes.refid -}}
+      {{- $index := "" -}}
+      {{- if and (in $classLike $kind) (not (strings.Contains (index $m.ids $cid).name "@")) -}}
+        {{- $index = "class-members" -}}
+      {{- else if and (eq $kind "namespace") (index $page $cid) -}}
+        {{- $index = "namespace-members" -}}
+      {{- else if and (eq $kind "file") (index $page $cid) -}}
+        {{- $index = "file-members" -}}
+      {{- end -}}
+      {{- if $index -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "member") -}}
+            {{- $mid := .attributes.refid -}}
+            {{- $mkind := .attributes.kind -}}
+            {{- $name := "" -}}
+            {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $name = delimit .children "" -}}{{- end -}}{{- end -}}
+            {{- $strong := false -}}
+            {{- if eq $mkind "enumvalue" -}}
+              {{- with index $m.ids $mid -}}{{- $strong = eq (index $m.ids .enum).node.attributes.strong "yes" -}}{{- end -}}
+            {{- end -}}
+            {{- $filter := index $filters $mkind -}}
+            {{- if and (eq $filter "macros") (ne $index "file-members") -}}{{- $filter = "" -}}{{- end -}}
+            {{- $linkable := partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid) -}}
+            {{- /* A related function is listed by its namespace or file too, but Doxygen gives it no
+                   namespace or file (getNamespaceDef, getFileDef): its home is its class. */ -}}
+            {{- $related := and (ne $index "class-members") (in $classLike (index $m.ids (index $m.ids $mid).home).kind) -}}
+            {{- if and (not $strong) $linkable (not $related) (not ($seen.Get (printf "%s|%s" $index $mid))) -}}
+              {{- $entry := partial "docsygen/paths/index-entries/entry.html" (dict "model" $m "prefixes" $prefixes "id" $mid "home" $cid "name" $name
+                  "filters" (cond (ne $filter "") (slice "all" $filter) (slice "all"))) -}}
+              {{- with $entry -}}
+                {{- $seen.Set (printf "%s|%s" $index $mid) true -}}
+                {{- $s.Set $index (($s.Get $index | default slice) | append .) -}}
+              {{- end -}}
+            {{- end -}}
+            {{- /* index.xml lists enum values under namespaces, not under files: take them from
+                   the enum. */ -}}
+            {{- if and (eq $mkind "enum") $linkable (ne (index $m.ids $mid).node.attributes.strong "yes") -}}
+              {{- range (index $m.ids $mid).node.children -}}
+                {{- if and (reflect.IsMap .) (eq .tag "enumvalue") (not ($seen.Get (printf "%s|%s" $index .attributes.id))) -}}
+                  {{- $vid := .attributes.id -}}
+                  {{- $vname := "" -}}
+                  {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = delimit .children "" -}}{{- end -}}{{- end -}}
+                  {{- $entry := partial "docsygen/paths/index-entries/entry.html" (dict "model" $m "prefixes" $prefixes "id" $vid "home" $cid "name" $vname
+                      "filters" (slice "all" "enumvalues")) -}}
+                  {{- with $entry -}}
+                    {{- $seen.Set (printf "%s|%s" $index $vid) true -}}
+                    {{- $s.Set $index (($s.Get $index | default slice) | append .) -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $out := dict -}}
+{{- range slice "class-members" "namespace-members" "file-members" -}}
+  {{- $list := $s.Get . | default slice -}}
+  {{- $ranked := slice -}}
+  {{- range $i, $e := $list -}}{{- $ranked = $ranked | append (merge $e (dict "sort" (printf "%s%06d" $e.sort $i))) -}}{{- end -}}
+  {{- $out = merge $out (dict . (sort $ranked "sort")) -}}
+{{- end -}}
+{{- return $out -}}

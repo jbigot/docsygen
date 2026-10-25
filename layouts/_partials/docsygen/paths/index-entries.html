@@ -1,0 +1,12 @@
+{{- /* The entries of the member indexes, from the member lists of index.xml: each class, namespace
+       or file that has a page lists its own members (index.cpp, add*MemberNameToIndex). Returns
+       {class-members|namespace-members|file-members: [{id, home, name, key, letter, filters}]},
+       each list sorted as Doxygen sorts it (qstricmp_sort on the name, then on the qualified
+       name): id the member or enum value, home the compound that lists it, key its name without
+       its IGNORE_PREFIX prefix (docsygen/text/ignore-prefix.html), letter the key's first character in lower case, filters the
+       index pages that show it (all, functions, variables, typedefs, enums, enumvalues,
+       properties, events, related, macros). Enum values of strong enums are left out, and so
+       are members docsygen/model/linkable.html rejects, and related functions outside the
+       class index. Cached per model.
+       Usage: partial "docsygen/paths/index-entries.html" $model */ -}}
+{{- return partialCached "docsygen/paths/index-entries/build.html" . .dir -}}

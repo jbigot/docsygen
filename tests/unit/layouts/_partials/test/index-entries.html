@@ -1,0 +1,12 @@
+{{- /* The {key, letter} of the entries named .name in the member index .index of .model, with
+       IGNORE_PREFIX set to .prefixes. */ -}}
+{{- $s := newScratch -}}
+{{- range $k, $v := .model -}}{{- $s.SetInMap "m" $k $v -}}{{- end -}}
+{{- range $k, $v := .model.options -}}{{- $s.SetInMap "options" $k $v -}}{{- end -}}
+{{- $s.SetInMap "options" "IGNORE_PREFIX" .prefixes -}}
+{{- $s.SetInMap "m" "options" ($s.Get "options") -}}
+{{- $out := slice -}}
+{{- range index (partial "docsygen/paths/index-entries/build.html" ($s.Get "m")) .index -}}
+  {{- if eq .name $.name -}}{{- $out = $out | append (dict "key" .key "letter" .letter) -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

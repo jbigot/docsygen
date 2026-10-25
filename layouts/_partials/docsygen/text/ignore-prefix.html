@@ -1,0 +1,12 @@
+{{- /* .name without the first of .prefixes (IGNORE_PREFIX) that starts it and is shorter than it,
+       as the indexes sort and group names (util.cpp, getPrefixIndex): one prefix at most.
+       Usage: partial "docsygen/text/ignore-prefix.html" (dict "name" "PDI_share" "prefixes" (slice "PDI_")) → share */ -}}
+{{- $out := .name -}}
+{{- $done := false -}}
+{{- range .prefixes -}}
+  {{- if and (not $done) . (hasPrefix $.name .) (gt (len $.name) (len .)) -}}
+    {{- $out = strings.TrimPrefix . $.name -}}
+    {{- $done = true -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

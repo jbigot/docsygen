@@ -1,0 +1,81 @@
+{{- /* The body of docsygen/paths/has-page.html. */ -}}
+{{- $m := . -}}
+{{- $yes := newScratch -}}
+{{- range $k, $v := dict "SHOW_FILES" "YES" "INLINE_SIMPLE_STRUCTS" "NO" "EXTRACT_ANON_NSPACES" "NO" -}}
+  {{- $yes.Set $k (eq (index ((index $m.options $k) | default (slice $v)) 0) "YES") -}}
+{{- end -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $known := $classLike | append (slice "file" "namespace" "group" "page" "example" "dir" "type" "concept"
+    "module" "requirement" "requirements") -}}
+
+{{- /* The scope of each class and namespace, and the classes in groups. */ -}}
+{{- $scopes := partial "docsygen/model/scopes.html" $m -}}
+{{- $grouped := newScratch -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- if eq $e.kind "group" -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "innerclass") -}}{{- $grouped.Set .attributes.refid true -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Which compounds have a page. Classes come last, outer ones first: whether a simple struct
+       is embedded in its scope depends on the scope's page. */ -}}
+{{- $page := newScratch -}}
+{{- $classes := slice -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- $has := true -}}
+  {{- if eq $e.kind "namespace" -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "location") (eq .attributes.file "[generated]") -}}{{- $has = false -}}{{- end -}}
+    {{- end -}}
+    {{- if and (not $e.name) (not ($yes.Get "EXTRACT_ANON_NSPACES")) -}}{{- $has = false -}}{{- end -}}
+  {{- else if eq $e.kind "file" -}}
+    {{- $has = $yes.Get "SHOW_FILES" -}}
+  {{- else if in $classLike $e.kind -}}
+    {{- $classes = $classes | append (dict "id" . "depth" (len (split $e.name "::"))) -}}
+  {{- else if not (in $known $e.kind) -}}
+    {{- warnidf (printf "docsygen-unknown-%s" $e.kind) "docsygen: unknown compound kind %q" $e.kind -}}
+  {{- end -}}
+  {{- $page.Set . $has -}}
+{{- end -}}
+{{- range sort $classes "depth" -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $has := true -}}
+  {{- if $yes.Get "INLINE_SIMPLE_STRUCTS" -}}
+    {{- /* classdef.cpp: no base or derived class, and only public data members and typedefs that
+           are not function pointers. */ -}}
+    {{- $simple := true -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if in (slice "basecompoundref" "derivedcompoundref") .tag -}}
+        {{- $simple = false -}}
+      {{- else if eq .tag "sectiondef" -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "memberdef") -}}
+            {{- $type := "" -}}
+            {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "type") -}}{{- $type = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+            {{- $field := and (eq .attributes.kind "variable") (ne .attributes.static "yes") -}}
+            {{- $alias := and (eq .attributes.kind "typedef") (not (strings.Contains $type ")(")) -}}
+            {{- if not (and (eq .attributes.prot "public") (or $field $alias)) -}}{{- $simple = false -}}{{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $simple -}}
+      {{- $linkable := false -}}
+      {{- with index $scopes .id -}}
+        {{- $linkable = $page.Get . -}}
+      {{- else -}}
+        {{- range $e.node.children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "location") (index $m.files .attributes.file) -}}{{- $linkable = $yes.Get "SHOW_FILES" -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if or $linkable ($grouped.Get .id) -}}{{- $has = false -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $page.Set .id $has -}}
+{{- end -}}
+{{- return $page.Values -}}

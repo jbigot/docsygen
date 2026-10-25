@@ -1,0 +1,6 @@
+{{- /* {refid: true|false}: whether each compound of a model has a page in Doxygen 1.15's HTML,
+       honouring SHOW_FILES, INLINE_SIMPLE_STRUCTS and EXTRACT_ANON_NSPACES (classdef.cpp,
+       namespacedef.cpp, filedef.cpp), cached per model. An unknown compound kind warns once and
+       has a page.
+       Usage: partial "docsygen/paths/has-page.html" $model */ -}}
+{{- return partialCached "docsygen/paths/has-page/build.html" . .dir -}}

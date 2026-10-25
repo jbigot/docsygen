@@ -73,3 +73,11 @@
     match: {role: index, name: class-members, filter: all, letter: "~"}
   len: true
   expect: 1
+- name: index entries of the sample, only the first IGNORE_PREFIX that matches is ignored
+  partial: test/index-entries.html
+  context:
+    model: sample
+    prefixes: [make_, wid]
+    index: class-members
+    name: make_widget
+  expect: [{key: widget, letter: w}]
