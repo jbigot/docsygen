@@ -1,0 +1,2 @@
+# The scopes that tests/oracle/run.sh compares, one per line: see exact.py. A task adds its
+# scope here before it implements what the scope checks.
