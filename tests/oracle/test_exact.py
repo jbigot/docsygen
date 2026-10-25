@@ -77,6 +77,9 @@ class Links(unittest.TestCase):
         self.assertEqual(doxygen('<a href="#a1">r</a>', key='classX'), site('<a href="#a1">r</a>', key='classX'))
         self.assertNotEqual(doxygen('<a href="#a1">r</a>', key='classX'), site('<a href="#a1">r</a>', key='other'))
 
+    def test_relative_html_links_on_the_site_point_at_page_keys(self):
+        self.assertEqual(doxygen('<a href="doxygen_crawl.html"></a>'), site('<a href="doxygen_crawl.html"></a>', urls=self.urls))
+
     def test_local_files_compare_by_basename(self):
         self.assertEqual(doxygen('<img src="classX.png">'), site('<img src="/ref/classx/classX.png">', urls=self.urls))
         self.assertNotEqual(doxygen('<img src="a.png">'), site('<img src="/ref/b.png">', urls=self.urls))
@@ -128,6 +131,20 @@ class Gaps(unittest.TestCase):
         self.assertEqual(errors, [])
         (a,) = exact.find(pages['classX'], 'a.el')
         self.assertEqual(a.attrs, {'class': 'el', 'href': 'h'})
+
+    def test_unwrap_keeps_the_children(self):
+        pages = self.pages()
+        errors, _ = exact.apply_gaps(pages, [gap(select='a.el', unwrap=True, count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual(exact.find(pages['classX'], 'a'), [])
+        self.assertIn('l', [c for c in exact.find(pages['classX'], 'div.contents')[0].children if isinstance(c, str)])
+
+    def test_a_removed_line_takes_its_newline(self):
+        pages = {'p': exact.parse('<div class="fragment"><div class="line">a</div>\n<div class="ttc">t</div>\n</div>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='div.ttc', count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual(exact.normalize(pages['p'], exact.doxygen_links('p')),
+                         exact.normalize(exact.parse('<div class="fragment"><div class="line">a</div>\n</div>'), exact.doxygen_links('p')))
 
     def test_a_wrong_count_fails(self):
         errors, _ = exact.apply_gaps(self.pages(), [gap(select='div.memdoc', count=2)])
@@ -202,9 +219,9 @@ class Run(unittest.TestCase):
         self.assertEqual(self.run_exact('memitem')[0], 1)
         self.assertEqual(self.run_exact('memberdecls')[0], 0)
 
-    def test_a_glob_without_pages_fails(self):
+    def test_a_glob_without_pages_is_reported(self):
         status, out = self.run_exact('contents:other*')
-        self.assertEqual(status, 1)
+        self.assertEqual(status, 0)
         self.assertIn('no page matches', out)
 
     def test_the_script_runs_isolated(self):

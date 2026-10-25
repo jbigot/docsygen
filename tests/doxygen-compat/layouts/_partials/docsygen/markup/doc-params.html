@@ -1,0 +1,36 @@
+{{- /* A parameter list: a table of names and descriptions, with directions when any is given
+       (htmldocvisitor.cpp, operator()(DocParamSect)). */ -}}
+{{- $n := .node -}}
+{{- $sub := dict "ctx" .ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $kind := $n.attributes.kind -}}
+{{- $class := index (dict "param" "params" "retval" "retval" "exception" "exception" "templateparam" "tparams") $kind -}}
+{{- $title := index (dict "param" "Parameters" "retval" "Return values" "exception" "Exceptions" "templateparam" "Template Parameters") $kind -}}
+{{- $dirs := false -}}
+{{- range $n.children -}}{{- if reflect.IsMap . -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "parameternamelist") -}}
+  {{- range .children -}}{{- if and (reflect.IsMap .) .attributes.direction -}}{{- $dirs = true -}}{{- end -}}{{- end -}}
+{{- end -}}{{- end -}}{{- end -}}{{- end -}}
+<dl class="{{ $class }}"><dt>{{ $title }}</dt><dd><table class="{{ $class }}">
+{{- range $n.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "parameteritem") -}}
+    <tr>
+    {{- range .children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if eq .tag "parameternamelist" -}}
+        {{- $names := slice -}}
+        {{- $dir := "" -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "parametername") -}}
+            {{- $names = $names | append (partial "docsygen/markup/doc.html" (merge $sub (dict "node" .))) -}}
+            {{- with .attributes.direction -}}{{- $dir = index (dict "in" "[in]" "out" "[out]" "inout" "[in,out]") . -}}{{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $dirs -}}<td class="paramdir">{{ $dir }}</td>{{- end -}}
+        <td class="paramname">{{ delimit $names "," | safeHTML }}</td>
+      {{- else if eq .tag "parameterdescription" -}}
+        <td>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</td>
+      {{- end -}}
+    {{- end -}}
+    </tr>
+  {{- end -}}
+{{- end -}}
+</table></dd></dl>

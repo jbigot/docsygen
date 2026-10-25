@@ -1,0 +1,10 @@
+{{- /* The character of a Doxygen entity element, by name, or "" when there is no such entity:
+       docsygen/render/entity.html, without its warning. */ -}}
+{{- $name := . -}}
+{{- if hasSuffix $name "umlaut" -}}{{- $name = printf "%suml" (strings.TrimSuffix "umlaut" $name) -}}{{- end -}}
+{{- with index (dict "registered" "reg" "trademark" "trade" "tm" "trade" "imaginary" "image" "nonbreakablespace" "nbsp") $name -}}
+  {{- $name = . -}}
+{{- end -}}
+{{- $ref := printf "&%s;" $name -}}
+{{- $char := htmlUnescape $ref -}}
+{{- return cond (eq $char $ref) "" $char -}}

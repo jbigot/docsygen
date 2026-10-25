@@ -179,7 +179,6 @@ int parameters(T in, T* out, T& both);
  * @latexonly \textbf{LaTeX only} @endlatexonly
  * @manonly man only @endmanonly
  * @rtfonly rtf only @endrtfonly
- * @xmlonly <xmlonly-content/> @endxmlonly
  * @docbookonly docbook only @enddocbookonly
  *
  * @dot

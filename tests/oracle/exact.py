@@ -5,8 +5,9 @@ Usage: python3 -I exact.py --doxygen HTMLDIR --site PUBLIC --paths PATHS.json --
   HTMLDIR    Doxygen's html/ directory
   PUBLIC     the built site; PATHS.json is its dump, {pages: {key: {url, roles}}, ...}
   GAPS.yaml  what Doxygen's HTML shows and the XML cannot give, removed from the Doxygen side:
-             [{pages: GLOB, select: TAG.CLASS|TAG#ID, text?: REGEX, attr?: NAME, count: N,
-               reason, evidence, oracle?: NAME}]. count is the exact number of matches over all
+             [{pages: GLOB, select: TAG.CLASS|TAG#ID, text?: REGEX, attr?: NAME, unwrap?: true,
+               count: N, reason, evidence, oracle?: NAME}]. attr removes that attribute only,
+             unwrap the element but not its children. count is the exact number of matches over all
              pages: any other number fails, and so does an entry without matches (stale). An
              entry with an oracle applies only when --oracle names it.
 Doxygen's X.html pairs with the site page whose key is X. The div.header and div.contents of
@@ -16,13 +17,14 @@ both are compared after these normalizations, and no others:
   2. character references are decoded, attribute order is ignored, void elements compare
      without /, and comments are removed;
   3. an href or src to a page compares as (page key, fragment), to another local file as its
-     basename, and an external one as is;
+     basename, and an external one as is; on the site, a relative X.html is the page of key X;
   4. the coords of an area are ignored;
   5. the nodes of GAPS.yaml are removed from the Doxygen side.
 Scopes: pages (the sets of keys are equal), header, textblock (each div.textblock, by page and
 position), memberdecls (each table.memberdecls, by the anchor of its heading), memitem (each
 h2.memtitle with its div.memitem, by anchor), contents, and contents:GLOB (contents, for the
-pages whose key matches GLOB, which must match one). Exit 1 on any difference.
+pages whose key matches GLOB; a glob that matches nothing is reported). Exit 1 on any
+difference.
 """
 import argparse, fnmatch, html.parser, json, os, re, sys
 # python3 -I keeps this script's directory off sys.path.
@@ -145,7 +147,10 @@ def site_links(urls, key):
         for candidate in (path, path + '/', path.removesuffix('index.html')):
             if candidate in urls:
                 return f'page:{urls[candidate]}{hash_}{fragment}'
-        return f'file:{path.rsplit("/", 1)[-1]}'
+        base = path.rsplit('/', 1)[-1]
+        if not path.startswith('/') and base.endswith('.html'):
+            return f'page:{base[:-5]}{hash_}{fragment}'
+        return f'file:{base}'
     return link
 
 
@@ -236,8 +241,20 @@ def apply_gaps(pages, gaps, oracle=None):
         for _, node in found:
             if 'attr' in gap:
                 del node.attrs[gap['attr']]
+            elif gap.get('unwrap'):
+                siblings = node.parent.children
+                i = siblings.index(node)
+                for c in node.children:
+                    if isinstance(c, Node):
+                        c.parent = node.parent
+                siblings[i:i + 1] = node.children
             else:
-                node.parent.children.remove(node)
+                # A removed line takes its newline: Doxygen ends lines, tooltips and blocks with one.
+                siblings = node.parent.children
+                i = siblings.index(node)
+                if i + 1 < len(siblings) and isinstance(siblings[i + 1], str) and siblings[i + 1].startswith('\n'):
+                    siblings[i + 1] = siblings[i + 1][1:]
+                del siblings[i]
     return errors, report
 
 
@@ -307,7 +324,8 @@ def main(argv):
         else:
             glob = scope.split(':', 1)[1] if scope.startswith('contents:') else '*'
             if not any(fnmatch.fnmatchcase(key, glob) for key in keys):
-                print(f'{scope}: no page matches {glob}'); failed += 1
+                # Not a failure: the scopes are shared by projects that have different pages.
+                print(f'{scope}: no page matches {glob}')
             for key in keys:
                 if not fnmatch.fnmatchcase(key, glob):
                     continue

@@ -1,0 +1,36 @@
+{{- /* A program listing as a Doxygen code fragment: one div.line per codeline, highlights as
+       spans, links to documented symbols with their kind, then their tooltips (htmlgen.cpp,
+       HtmlCodeGenerator). */ -}}
+{{- $ctx := .ctx -}}
+{{- $kinds := dict "function" "function" "variable" "variable" "typedef" "typedef" "enum" "enumeration"
+    "enumvalue" "enumvalue" "define" "define" "class" "class" "struct" "struct" "union" "union" "namespace" "namespace"
+    "file" "file" "concept" "concept" "friend" "friend" -}}
+<div class="fragment">
+{{- range .node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
+    <div class="line">
+    {{- $empty := true -}}
+    {{- range .children -}}{{- if and (reflect.IsMap .) .children -}}{{- $empty = false -}}{{- end -}}{{- end -}}
+    {{- if $empty -}}{{ " " }}{{- end -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "highlight") -}}
+        {{- if ne .attributes.class "normal" -}}<span class="{{ .attributes.class }}">{{- end -}}
+        {{- range .children -}}
+          {{- if not (reflect.IsMap .) -}}{{ . }}
+          {{- else if eq .tag "sp" -}}{{ " " }}
+          {{- else if eq .tag "ref" -}}
+            {{- $kind := index $kinds (index $ctx.model.ids .attributes.refid).kind -}}
+            {{- with index $ctx.links .attributes.refid -}}<a class="code hl_{{ $kind }}" href="{{ . }}">{{- end -}}
+            {{- delimit .children "" -}}
+            {{- with index $ctx.links .attributes.refid -}}</a>{{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if ne .attributes.class "normal" -}}</span>{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    </div>{{ "\n" }}
+  {{- end -}}
+{{- end -}}
+{{- /* Doxygen's tooltips are an XML gap (tests/oracle/xml-gaps.yaml): docsygen/markup/tooltips.html
+       writes them, but which fragments get them depends on Doxygen's code parser. */ -}}
+</div>

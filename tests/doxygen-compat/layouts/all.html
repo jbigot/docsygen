@@ -21,5 +21,7 @@
       {{- if templates.Exists (printf "_partials/%s" $markup) -}}{{- partial $markup (dict "block" . "ctx" $ctx) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
+  {{- /* Doxygen links its crawler page from the main page. */ -}}
+  {{- if and .root (not (index $ctx.model.ids "indexpage")) -}}<a href="doxygen_crawl.html"></a>{{- end -}}
   </div>
 {{- end -}}

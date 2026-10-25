@@ -2,15 +2,8 @@
        entities as HTML does, and renames a few (*umlaut, registered, trademark and tm,
        imaginary, nonbreakablespace). An unknown name warns once and gives "".
        Usage: partial "docsygen/render/entity.html" "ndash" */ -}}
-{{- $name := . -}}
-{{- if hasSuffix $name "umlaut" -}}{{- $name = printf "%suml" (strings.TrimSuffix "umlaut" $name) -}}{{- end -}}
-{{- with index (dict "registered" "reg" "trademark" "trade" "tm" "trade" "imaginary" "image" "nonbreakablespace" "nbsp") $name -}}
-  {{- $name = . -}}
-{{- end -}}
-{{- $ref := printf "&%s;" $name -}}
-{{- $char := htmlUnescape $ref -}}
-{{- if eq $char $ref -}}
+{{- $char := partial "docsygen/render/entity-lookup.html" . -}}
+{{- if not $char -}}
   {{- warnidf (printf "docsygen-unknown-%s" .) "docsygen: unknown Doxygen entity %q" . -}}
-  {{- $char = "" -}}
 {{- end -}}
 {{- return $char -}}

@@ -1,0 +1,33 @@
+{{- /* A table: an HTML one as doxtable, a Markdown one as markdownTable with its alignments.
+       The XML doesn't say which; Doxygen's Markdown conversion ends cells with two spaces, or
+       gives them an alignment, which HTML tables don't have. */ -}}
+{{- $n := .node -}}
+{{- $sub := dict "ctx" .ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $markdown := false -}}
+{{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "row") -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "entry") -}}
+  {{- $text := "" -}}
+  {{- range .children -}}{{- if reflect.IsMap . -}}{{- range .children -}}{{- if not (reflect.IsMap .) -}}{{- $text = . -}}{{- end -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- if or .attributes.align (hasSuffix $text "  ") -}}{{- $markdown = true -}}{{- end -}}
+{{- end -}}{{- end -}}{{- end -}}{{- end -}}
+{{- $aligns := dict "left" "Left" "right" "Right" "center" "Center" -}}
+<table class="{{ cond $markdown "markdownTable" "doxtable" }}">
+{{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "caption") -}}<caption>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</caption>{{- end -}}{{- end -}}
+{{- $r := 0 -}}
+{{- range $n.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "row") -}}
+    {{- if $markdown -}}<tr class="{{ cond (eq $r 0) "markdownTableHead" (cond (eq (mod $r 2) 1) "markdownTableRowOdd" "markdownTableRowEven") }}">{{- else -}}<tr>{{- end -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "entry") -}}
+        {{- $cell := cond (eq .attributes.thead "yes") "th" "td" -}}
+        {{- $attrs := "" -}}
+        {{- if $markdown -}}{{- $attrs = printf " class=\"markdownTable%s%s\"" (cond (eq $cell "th") "Head" "Body") (index $aligns (.attributes.align | default "") | default "None") -}}{{- end -}}
+        {{- with .attributes.colspan -}}{{- $attrs = printf "%s colspan=\"%s\"" $attrs . -}}{{- end -}}
+        {{- with .attributes.rowspan -}}{{- $attrs = printf "%s rowspan=\"%s\"" $attrs . -}}{{- end -}}
+        {{- printf "<%s%s>" $cell $attrs | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}{{ printf "</%s>" $cell | safeHTML -}}
+      {{- end -}}
+    {{- end -}}
+    </tr>
+    {{- $r = add $r 1 -}}
+  {{- end -}}
+{{- end -}}
+</table>

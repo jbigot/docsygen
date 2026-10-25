@@ -10,8 +10,6 @@ namespace demo {
 /** @brief A widget.
  *
  * Use make_widget() to build one: it is **fast** and `cheap`.
- *
- * @example example.cpp
  */
 class Widget {
 public:
@@ -103,5 +101,9 @@ public:
   /// A member of a class with a difficult brief.
   int value;
 };
+
+/** @example example.cpp
+ *  Builds a widget and resizes it.
+ */
 
 } // namespace demo

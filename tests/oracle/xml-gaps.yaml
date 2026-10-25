@@ -1,3 +1,36 @@
 # What Doxygen's HTML shows and its XML doesn't give, removed from the Doxygen side before the
 # comparison: see exact.py. The user approves each entry.
-[]
+- oracle: sample
+  pages: "*"
+  select: a.el
+  attr: title
+  count: 27
+  reason: "Doxygen gives a word it links by itself the target's brief as a tooltip, but not an explicit \\ref; the XML writes both as <ref>"
+  evidence: "namespacedemo_1_1markup.xml, inline_elements: <ref refid=\"classdemo_1_1Widget\" kindref=\"compound\">demo::Widget</ref> (title in the HTML) and <ref refid=\"classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd\" kindref=\"member\">resize</ref> (none)"
+- oracle: pdi
+  pages: "*"
+  select: a.el
+  attr: title
+  count: 168
+  reason: "Doxygen gives a word it links by itself the target's brief as a tooltip, but not an explicit \\ref; the XML writes both as <ref>"
+  evidence: "see the sample entry"
+- oracle: pdi
+  pages: how_to_create_plugin
+  select: a.code
+  text: "^PDI::Context$"
+  unwrap: true
+  count: 8
+  reason: "Doxygen's HTML links PDI::Context in the code of this page, the XML of the same run never does"
+  evidence: "how_to_create_plugin.xml: <highlight class=\"normal\"><sp/><sp/><sp/><sp/>example_plugin(PDI::Context&amp;<sp/>ctx,<sp/>PC_tree_t<sp/>spec_tree):</highlight> and 7 more lines have no <ref>"
+- oracle: sample
+  pages: "*"
+  select: div.ttc
+  count: 106
+  reason: "PROVISIONAL, to be approved: the tooltips that follow a code fragment repeat a symbol's name, declaration, brief and definition, but which fragments get them depends on the state of Doxygen's code parser (once per output file, yet missing on some pages that link the symbol), and an enum value's line isn't in the XML"
+  evidence: "First_steps.xml links PDI_expose (group__annotation_1gae809befdb9bde9abad07a9e0eab894d7) in code, and First_steps.html links it without its tooltip, which how_to_create_plugin.html has; <enumvalue> has no <location>"
+- oracle: pdi
+  pages: "*"
+  select: div.ttc
+  count: 548
+  reason: "PROVISIONAL, to be approved: the tooltips that follow a code fragment repeat a symbol's name, declaration, brief and definition, but which fragments get them depends on the state of Doxygen's code parser (once per output file, yet missing on some pages that link the symbol), and an enum value's line isn't in the XML"
+  evidence: "First_steps.xml links PDI_expose (group__annotation_1gae809befdb9bde9abad07a9e0eab894d7) in code, and First_steps.html links it without its tooltip, which how_to_create_plugin.html has; <enumvalue> has no <location>"

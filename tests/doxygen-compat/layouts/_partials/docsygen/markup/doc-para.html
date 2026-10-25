@@ -1,0 +1,61 @@
+{{- /* A paragraph, as htmldocvisitor.cpp writes it (operator()(DocPara), determineIfNeedsTag,
+       getParagraphContext, forceEndParagraph, forceStartParagraph): <p> only where the parent
+       needs one, not before a leading block nor after a trailing one, none at all for the only
+       paragraph of a list item or a cell, and closed and reopened around each inner block. */ -}}
+{{- $n := .node -}}
+{{- $parent := .parent -}}
+{{- $sub := dict "ctx" .ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $needsTag := or (in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" "internal" "listitem" "entry" "simplesect"
+    "xrefdescription" "blockquote" "parblock" "details" "summary") $parent.tag) (and .root (not .single)) -}}
+{{- /* The position among the parent's paragraphs, and the context class it gives. */ -}}
+{{- $k := 0 -}}
+{{- $count := 0 -}}
+{{- range $j, $c := $parent.children -}}
+  {{- if and (reflect.IsMap $c) (ne $c.tag "title") -}}
+    {{- if lt $j $.index -}}{{- $k = add $k 1 -}}{{- end -}}
+    {{- $count = add $count 1 -}}
+  {{- end -}}
+{{- end -}}
+{{- $isFirst := false -}}
+{{- $isLast := false -}}
+{{- $class := "" -}}
+{{- $contexts := dict "listitem" "li" "simplesect" "dd" "xrefdescription" "dd" "entry" "td" -}}
+{{- if eq $parent.tag "parameterdescription" -}}
+  {{- $isFirst = true -}}{{- $isLast = true -}}
+{{- else if index $contexts $parent.tag -}}
+  {{- $isFirst = eq $k 0 -}}
+  {{- $isLast = eq $k (sub $count 1) -}}
+  {{- $c := cond (eq .grand "variablelist") "dd" (index $contexts $parent.tag) -}}
+  {{- $class = cond $isLast (printf "end%s" $c) (cond $isFirst (printf "start%s" $c) (printf "inter%s" $c)) -}}
+  {{- /* An item of an auto list (Markdown, or -#) marks all its paragraphs startli. The XML
+         doesn't tell auto lists from HTML ones: an itemized list, or an ordered one without
+         type or start, is taken for an auto list. */ -}}
+  {{- if eq .grand "auto" -}}{{- $class = "startli" -}}{{- end -}}
+{{- end -}}
+{{- $alone := and $isFirst $isLast -}}
+{{- /* The visible children, and which of them are blocks. */ -}}
+{{- $visible := slice -}}
+{{- range $i, $c := $n.children -}}
+  {{- if not (partial "docsygen/markup/doc-invisible.html" $c) -}}
+    {{- $visible = $visible | append (dict "i" $i "block" (partial "docsygen/markup/doc-block.html" $c)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $before := and $needsTag (not $alone) (not (and $visible (index $visible 0).block)) -}}
+{{- $after := and $needsTag (not $alone) (not (and $visible (index $visible (sub (len $visible) 1)).block)) -}}
+{{- if $before -}}{{- with $class -}}<p class="{{ . }}">{{- else -}}<p>{{- end -}}{{- end -}}
+{{- range $i, $c := $n.children -}}
+  {{- $v := -1 -}}
+  {{- range $j, $e := $visible -}}{{- if eq $e.i $i -}}{{- $v = $j -}}{{- end -}}{{- end -}}
+  {{- $block := and (ge $v 0) (index $visible $v).block -}}
+  {{- if and $block (not $alone) (gt $v 0) (not (index $visible (sub $v 1)).block) -}}</p>{{- end -}}
+  {{- /* Consecutive simplesects of one kind are one in Doxygen's HTML, with a dd each. */ -}}
+  {{- $continued := false -}}
+  {{- $continues := false -}}
+  {{- if and (reflect.IsMap $c) (eq $c.tag "simplesect") -}}
+    {{- with and (gt $v 0) (index $n.children (index $visible (sub $v 1)).i) -}}{{- $continued = and (reflect.IsMap .) (eq .tag "simplesect") (eq .attributes.kind $c.attributes.kind) -}}{{- end -}}
+    {{- with and (lt (add $v 1) (len $visible)) (index $n.children (index $visible (add $v 1)).i) -}}{{- $continues = and (reflect.IsMap .) (eq .tag "simplesect") (eq .attributes.kind $c.attributes.kind) -}}{{- end -}}
+  {{- end -}}
+  {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false "grand" "" "continued" $continued "continues" $continues)) -}}
+  {{- if and $block (not $alone) (lt (add $v 1) (len $visible)) (not (index $visible (add $v 1)).block) -}}<p>{{- end -}}
+{{- end -}}
+{{- if $after -}}</p>{{- end -}}

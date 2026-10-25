@@ -1,0 +1,19 @@
+{{- /* Where a compound or member is defined, as {file, line} (the file's refid), from its
+       location's body; false without one.
+       Usage: partial "docsygen/plan/definition.html" (dict "model" $model "id" $id) */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $out := false -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "location") -}}
+    {{- if and .attributes.bodyfile (gt (int (.attributes.bodystart | default "0")) 0) -}}
+      {{- $line := int .attributes.bodystart -}}
+      {{- with index $m.files .attributes.bodyfile -}}{{- $out = dict "file" . "line" $line -}}{{- end -}}
+    {{- else if eq $e.kind "concept" -}}
+      {{- /* A concept has no body: its declaration is its definition. */ -}}
+      {{- $line := int (.attributes.line | default "0") -}}
+      {{- with index $m.files .attributes.file -}}{{- $out = dict "file" . "line" $line -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

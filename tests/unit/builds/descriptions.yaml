@@ -1,0 +1,12 @@
+- name: image missing from the XML directory
+  partial: docsygen/render/image.html
+  context:
+    xml: '<image type="html" name="nope.png">The caption</image>'
+    ctx: {model: sample}
+  warning: 'docsygen: image "nope.png" not found in assets/doxygen/sample'
+- name: unknown description element
+  partial: docsygen/markup/doc.html
+  context:
+    xml: '<para><blink/></para>'
+    ctx: {model: sample}
+  warning: 'docsygen: unknown Doxygen element <blink>'

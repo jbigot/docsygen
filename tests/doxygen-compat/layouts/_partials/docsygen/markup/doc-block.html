@@ -1,0 +1,14 @@
+{{- /* Whether a description node must be outside a paragraph (htmldocvisitor.cpp,
+       mustBeOutsideParagraph): lists, sections, tables, code, display formulas, block images. */ -}}
+{{- $n := . -}}
+{{- $block := false -}}
+{{- if reflect.IsMap $n -}}
+  {{- $block = in (slice "itemizedlist" "orderedlist" "simplesect" "parameterlist" "variablelist" "xrefsect" "table"
+      "heading" "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" "internal" "toclist" "hruler" "blockquote" "parblock"
+      "dotfile" "mscfile" "diafile" "plantumlfile" "details" "summary" "programlisting" "verbatim" "preformatted"
+      "center" "dot" "msc" "plantuml") $n.tag -}}
+  {{- if eq $n.tag "htmlonly" -}}{{- $block = eq $n.attributes.block "yes" -}}{{- end -}}
+  {{- if eq $n.tag "formula" -}}{{- $block = not (hasPrefix (delimit $n.children "") "$") -}}{{- end -}}
+  {{- if eq $n.tag "image" -}}{{- $block = ne $n.attributes.inline "yes" -}}{{- end -}}
+{{- end -}}
+{{- return $block -}}

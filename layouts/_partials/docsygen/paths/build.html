@@ -29,7 +29,9 @@
 {{- $targets.Set "m" dict -}}
 {{- range $id, $anchor := $scheme.homes -}}
   {{- $home := (index $m.ids $id).home -}}
-  {{- with $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) -}}
+  {{- /* A file without a page of its own, with SHOW_FILES=NO, is linked to its source listing. */ -}}
+  {{- $source := cond (eq $id $home) ($pageOf.Get (jsonify (dict "role" "source" "id" $home))) "" -}}
+  {{- with $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) | default $source -}}
     {{- $targets.SetInMap "m" $id (dict "page" . "anchor" $anchor) -}}
   {{- end -}}
 {{- end -}}

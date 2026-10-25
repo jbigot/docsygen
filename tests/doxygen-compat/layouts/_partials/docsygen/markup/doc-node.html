@@ -1,0 +1,182 @@
+{{- /* One node of a description, as htmldocvisitor.cpp writes it. Context: node, parent (its
+       element), index (its position in parent.children), ctx, root (whether parent is the
+       description itself), single (a brief), and the depth of ordered lists, olDepth. */ -}}
+{{- $n := .node -}}
+{{- $ctx := .ctx -}}
+{{- $sub := dict "ctx" $ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- if not (reflect.IsMap $n) -}}
+  {{- $n -}}
+{{- else -}}
+{{- $tag := $n.tag -}}
+{{- $styles := dict "bold" "b" "emphasis" "em" "s" "s" "strike" "strike" "underline" "u" "subscript" "sub"
+    "superscript" "sup" "small" "small" "cite" "cite" "del" "del" "ins" "ins" "center" "center" -}}
+{{- $simplesects := dict "see" "See also" "return" "Returns" "author" "Author" "authors" "Authors" "version" "Version"
+    "since" "Since" "date" "Date" "note" "Note" "warning" "Warning" "pre" "Precondition" "post" "Postcondition"
+    "copyright" "Copyright" "invariant" "Invariant" "remark" "Remarks" "attention" "Attention" "important" "Important" -}}
+{{- if eq $tag "para" -}}
+  {{- partial "docsygen/markup/doc-para.html" . -}}
+{{- else if index $styles $tag -}}
+  {{- $t := index $styles $tag -}}
+  {{- printf "<%s>" $t | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}{{ printf "</%s>" $t | safeHTML -}}
+{{- else if eq $tag "computeroutput" -}}
+  <span class="tt">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</span>
+{{- else if eq $tag "ref" -}}
+  {{- with index $ctx.links $n.attributes.refid -}}
+    <a class="el" href="{{ . }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
+  {{- else -}}
+    {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
+  {{- end -}}
+{{- else if eq $tag "ulink" -}}
+  <a href="{{ $n.attributes.url }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
+{{- else if eq $tag "anchor" -}}
+  <a class="anchor" id="{{ index $ctx.anchors $n.attributes.id }}"></a>
+{{- else if eq $tag "linebreak" -}}
+  <br />
+{{- else if eq $tag "hruler" -}}
+  <hr />
+{{- else if eq $tag "emoji" -}}
+  <span class="emoji">{{ $n.attributes.unicode | safeHTML }}</span>
+{{- else if eq $tag "javadocliteral" -}}
+  {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "javadoccode" -}}
+  <code class="JavaDocCode">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</code>
+{{- else if eq $tag "sp" -}}
+  {{- cond (isset $n.attributes "value") (printf "%c" (int $n.attributes.value)) " " -}}
+{{- else if in (slice "itemizedlist" "orderedlist") $tag -}}
+  {{- $check := false -}}
+  {{- range $n.children -}}{{- if and (reflect.IsMap .) .attributes.override -}}{{- $check = true -}}{{- end -}}{{- end -}}
+  {{- $depth := .olDepth | default 0 -}}
+  {{- if eq $tag "orderedlist" -}}
+    {{- if or $n.attributes.type $n.attributes.start -}}
+      <ol{{ with $n.attributes.type }} type="{{ . }}"{{ end }}{{ with $n.attributes.start }} start="{{ . }}"{{ end }}>
+    {{- else -}}
+      {{- /* An auto list (Markdown, -#): the type follows the depth. */ -}}
+      <ol type="{{ index (slice "1" "a" "i" "A") (mod $depth 4) }}">
+    {{- end -}}
+  {{- else if $check -}}<ul class="check">
+  {{- else -}}<ul>
+  {{- end -}}
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
+      {{- with .attributes.override -}}<li class="{{ . }}">{{- else -}}<li>{{- end -}}
+      {{- $auto := or (eq $tag "itemizedlist") (not (or $n.attributes.type $n.attributes.start)) -}}
+      {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" (cond $auto "auto" $tag) "olDepth" (cond (eq $tag "orderedlist") (add $depth 1) $depth))) -}}
+      </li>
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $tag "orderedlist" -}}</ol>{{- else -}}</ul>{{- end -}}
+{{- else if in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6") $tag -}}
+  {{- $level := int (strings.TrimPrefix "sect" $tag) -}}
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "title") -}}
+      {{- printf "<h%d class=\"doxsection\">" $level | safeHTML }}<a class="anchor" id="{{ index $ctx.anchors $n.attributes.id }}"></a>{{ "\n" }}
+      {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}{{ printf "</h%d>" $level | safeHTML -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $i, $c := $n.children -}}
+    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if eq $tag "heading" -}}
+  {{- printf "<h%s>" $n.attributes.level | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}{{ printf "</h%s>" $n.attributes.level | safeHTML -}}
+{{- else if eq $tag "simplesect" -}}
+  {{- $kind := $n.attributes.kind -}}
+  {{- $title := index $simplesects $kind -}}
+  {{- if .continued -}}
+    <dd>
+  {{- else -}}
+  <dl class="section {{ cond (eq $kind "par") "user" $kind }}"><dt>
+  {{- $title -}}
+  {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}{{- end -}}
+  </dt><dd>
+  {{- end -}}
+  {{- range $i, $c := $n.children -}}
+    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+    {{- end -}}
+  {{- end -}}
+  </dd>{{- if not .continues -}}</dl>{{- end -}}
+{{- else if eq $tag "xrefsect" -}}
+  {{- $list := index (split $n.attributes.id "_1") 0 -}}
+  <dl class="{{ $list }}"><dt><b>
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "xreftitle") -}}
+      {{- $title := partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}
+      {{- with index $ctx.links $n.attributes.id -}}<a class="el" href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  </b></dt><dd>
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "xrefdescription") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}
+  {{- end -}}
+  </dd></dl>
+{{- else if eq $tag "parameterlist" -}}
+  {{- partial "docsygen/markup/doc-params.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "variablelist" -}}
+  {{- /* The definition of each entry of an xref list page starts with the entry's anchor. */ -}}
+  {{- $reflist := true -}}
+  {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
+    {{- $para := false -}}
+    {{- range .children -}}{{- if and (not $para) (reflect.IsMap .) -}}{{- $para = . -}}{{- end -}}{{- end -}}
+    {{- $first := false -}}
+    {{- with $para -}}{{- range .children -}}{{- if and (not $first) (reflect.IsMap .) -}}{{- $first = . -}}{{- end -}}{{- end -}}{{- end -}}
+    {{- if not (and $first (eq $first.tag "anchor")) -}}{{- $reflist = false -}}{{- end -}}
+  {{- end -}}{{- end -}}
+  {{- if $reflist -}}<dl class="reflist">{{- else -}}<dl>{{- end -}}
+  {{- range $n.children -}}
+    {{- if not (reflect.IsMap .) -}}
+    {{- else if eq .tag "varlistentry" -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "term") -}}<dt>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</dt>{{- end -}}{{- end -}}
+    {{- else if eq .tag "listitem" -}}
+      <dd>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" "variablelist")) }}</dd>
+    {{- end -}}
+  {{- end -}}
+  </dl>
+{{- else if eq $tag "table" -}}
+  {{- partial "docsygen/markup/doc-table.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "image" -}}
+  {{- if eq $n.attributes.type "html" -}}{{- partial "docsygen/markup/doc-image.html" (merge $sub (dict "node" $n)) -}}{{- end -}}
+{{- else if eq $tag "formula" -}}
+  {{- $text := delimit $n.children "" -}}
+  {{- if hasPrefix $text "$" -}}
+    {{- printf "\\(%s\\)" (strings.TrimSuffix "$" (strings.TrimPrefix "$" $text)) -}}
+  {{- else -}}
+    <p class="formulaDsp">{{ $text }}</p>
+  {{- end -}}
+{{- else if in (slice "programlisting" "verbatim" "preformatted") $tag -}}
+  {{- partial "docsygen/markup/doc-code.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "details" -}}
+  <details>
+  {{- range $i, $c := $n.children -}}
+    {{- if and (reflect.IsMap $c) (eq $c.tag "summary") -}}
+      <summary>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $c)) }}</summary>
+    {{- else -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+    {{- end -}}
+  {{- end -}}
+  </details>
+{{- else if eq $tag "blockquote" -}}
+  <blockquote class="doxtable">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</blockquote>
+{{- else if in (slice "parblock" "internal") $tag -}}
+  {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "htmlonly" -}}
+  {{- delimit $n.children "" | safeHTML -}}
+{{- else if in (slice "latexonly" "manonly" "rtfonly" "xmlonly" "docbookonly" "dot" "msc" "plantuml") $tag -}}
+{{- else if eq $tag "indexentry" -}}
+  {{- partial "docsygen/markup/doc-indexentry.html" (merge $sub (dict "node" $n)) -}}
+{{- else if eq $tag "toclist" -}}
+  <div><ul class="multicol">
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "tocitem") -}}
+      <li><a class="el" href="{{ index $ctx.links .attributes.id }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</a></li>
+    {{- end -}}
+  {{- end -}}
+  </ul></div>
+{{- else if and (not $n.children) (not $n.attributes) (partial "docsygen/render/entity-lookup.html" $tag) -}}
+  {{- partial "docsygen/render/entity-lookup.html" $tag -}}
+{{- else -}}
+  {{- warnidf (printf "docsygen-unknown-%s" $tag) "docsygen: unknown Doxygen element <%s>" $tag -}}
+  {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
+{{- end -}}
+{{- end -}}

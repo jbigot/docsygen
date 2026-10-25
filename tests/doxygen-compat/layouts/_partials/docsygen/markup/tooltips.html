@@ -1,0 +1,56 @@
+{{- /* The tooltips of the symbols a listing links to (tooltip.cpp, writeTooltips; htmlgen.cpp,
+       writeTooltip): sorted by id, each written once per page. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $tips := dict -}}
+{{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
+  {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "highlight") -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "ref") -}}
+        {{- $id := .attributes.refid -}}
+        {{- with index $ctx.paths.targets $id -}}
+          {{- $tips = merge $tips (dict (printf "a%s_html%s" .page (cond (eq .anchor "") "" (printf "_%s" .anchor))) $id) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}{{- end -}}
+{{- end -}}{{- end -}}
+{{- $written := dict -}}
+{{- with $ctx.page -}}{{- $written = .Store.Get "docsygen-tooltips" | default dict -}}{{- end -}}
+{{- range $tid, $id := $tips -}}
+  {{- /* An enum value's tooltip is defined at its own line, which its XML lacks. */ -}}
+  {{- if and (not (index $written $tid)) (ne (index $m.ids $id).what "enumvalue") -}}
+    {{- $e := index $m.ids $id -}}
+    {{- $decl := "" -}}
+    {{- $brief := "" -}}
+    {{- $type := "" -}}
+    {{- $args := "" -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if eq .tag "briefdescription" -}}{{- $brief = trim (replaceRE `\s+` " " (partial "docsygen/text/plain.html" .)) " " -}}
+      {{- else if eq .tag "type" -}}{{- $type = partial "docsygen/text/plain.html" . -}}
+      {{- else if eq .tag "argsstring" -}}{{- $args = delimit .children "" -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if eq $e.what "member" -}}
+      {{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+      {{- $decl = trim (printf "%s %s%s" $type $short $args) " " -}}
+    {{- end -}}
+    {{- $def := partial "docsygen/plan/definition.html" (dict "model" $m "id" $id) -}}
+    <div class="ttc" id="{{ $tid }}"><div class="ttname"><a href="{{ index $ctx.links $id }}">{{ $e.name }}</a></div>
+    {{- with $decl }}<div class="ttdeci">{{ . }}</div>{{ end -}}
+    {{- with $brief }}<div class="ttdoc">{{ . }}</div>{{ end -}}
+    {{- with $def -}}
+      {{- /* Linked to the source listing with SOURCE_BROWSER only. */ -}}
+      {{- $source := "" -}}
+      {{- if eq (index ((index $m.options "SOURCE_BROWSER") | default (slice "NO")) 0) "YES" -}}
+        {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $def.file))) -}}{{- $source = index $ctx.urls . -}}{{- end -}}
+      {{- end -}}
+      {{- $place := printf "%s:%d" (index $m.ids $def.file).name $def.line -}}
+      <div class="ttdef"><b>Definition</b> {{ with $source }}<a href="{{ . }}#{{ printf "l%05d" $def.line }}">{{ $place }}</a>{{ else }}{{ $place }}{{ end }}</div>
+    {{- end -}}
+    </div>{{ "\n" }}
+    {{- $written = merge $written (dict $tid true) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $ctx.page -}}{{- .Store.Set "docsygen-tooltips" $written -}}{{- end -}}

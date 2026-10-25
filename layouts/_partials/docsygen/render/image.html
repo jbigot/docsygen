@@ -1,0 +1,21 @@
+{{- /* The source of an image of a description, as {src, ok}: a URL as is; otherwise the file of
+       that name in the XML directory, published next to the version root. A missing file warns,
+       naming the image and the page, and gives ok false.
+       Usage: partial "docsygen/render/image.html" (dict "node" $image "ctx" $ctx) */ -}}
+{{- $name := .node.attributes.name -}}
+{{- $ctx := .ctx -}}
+{{- $src := $name -}}
+{{- $ok := true -}}
+{{- if not (findRE `^[a-zA-Z][a-zA-Z0-9+.-]*:` $name 1) -}}
+  {{- with resources.Get (path.Join $ctx.model.dir $name) -}}
+    {{- $root := "" -}}
+    {{- range $ctx.paths.pages -}}{{- if eq .path "" -}}{{- $root = index $ctx.urls .key -}}{{- end -}}{{- end -}}
+    {{- $src = (resources.Copy (path.Join $root $name) .).RelPermalink -}}
+  {{- else -}}
+    {{- $page := "" -}}
+    {{- with $ctx.page -}}{{- $page = .Path -}}{{- end -}}
+    {{- warnf "docsygen: image %q not found in assets/%s (page %s)" $name $ctx.model.dir $page -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "src" $src "ok" $ok -}}

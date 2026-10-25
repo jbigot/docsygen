@@ -2,7 +2,7 @@
 
 The Python standard library has no YAML reader, and these files need very little of YAML:
     # a comment
-    - key: plain scalar     # an int if it is all digits, else a string
+    - key: plain scalar     # an int if it is all digits, true or false, else a string
       other: "double-quoted, with JSON escapes"
       third: 'single-quoted, with '' for a quote'
     []                      # the empty list, alone in the file
@@ -33,6 +33,8 @@ def _scalar(text, where):
             raise ValueError(f'{where}: missing value')
         if value[0] in '[]{}&*!|>%@`':
             raise ValueError(f'{where}: unsupported YAML in {value!r}')
+        if value in ('true', 'false'):
+            return value == 'true'
         return int(value) if value.isdigit() else value
     if rest and not rest.startswith('#'):
         raise ValueError(f'{where}: text after the string: {rest!r}')
