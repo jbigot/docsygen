@@ -69,3 +69,19 @@
   partial: docsygen/plan/class-files.html
   context: {model: sample, id: namespacedemo}
   expect: []
+- name: example anchors, one per first reference to a class or member
+  partial: docsygen/plan/examples.html
+  context: {model: sample}
+  select: [anchors, example_8cpp-example]
+  expect: ["", _a0, "", a1]
+- name: the examples that use a member
+  partial: docsygen/plan/examples.html
+  context: {model: sample}
+  select: [uses, classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd]
+  expect: [{example: example_8cpp-example, anchor: a1}]
+- name: SORT_MEMBER_DOCS sorts bytewise, ignoring case, as qstricmp does
+  partial: docsygen/plan/sections.html
+  context: {model: sample, id: classdemo_1_1Widget}
+  select: [9, members]
+  expect: [classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8, classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788,
+    classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9, classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d]

@@ -29,4 +29,5 @@
 {{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" $id) -}}
 {{- if eq $e.kind "file" -}}{{- $definition = dict "file" $id "line" 0 -}}{{- end -}}
 {{- $source := and ($yes.Get "SOURCE_BROWSER") $definition (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $definition.file)))) -}}
-{{- return not (not (or (and ($yes.Get "REPEAT_BRIEF") ($has.Get "briefdescription")) ($has.Get "detaileddescription") $source)) -}}
+{{- $examples := index (partial "docsygen/plan/examples.html" (dict "model" $m)).uses $id -}}
+{{- return not (not (or (and ($yes.Get "REPEAT_BRIEF") ($has.Get "briefdescription")) ($has.Get "detaileddescription") $source $examples)) -}}

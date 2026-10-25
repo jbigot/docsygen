@@ -1,0 +1,16 @@
+{{- /* .list (maps) sorted on their string .key byte by byte, as C++ compares std::string, equal
+       keys in their order. Hugo's sort compares strings with the language's collation, which
+       ignores punctuation such as a destructor's ~; lt compares bytes.
+       Usage: partial "docsygen/text/sort-bytes.html" (dict "list" $maps "key" "name") */ -}}
+{{- $key := .key -}}
+{{- $ranked := slice -}}
+{{- range $i, $a := .list -}}
+  {{- $rank := 0 -}}
+  {{- range $j, $b := $.list -}}
+    {{- if or (lt (index $b $key) (index $a $key)) (and (eq (index $b $key) (index $a $key)) (lt $j $i)) -}}{{- $rank = add $rank 1 -}}{{- end -}}
+  {{- end -}}
+  {{- $ranked = $ranked | append (dict "item" $a "rank" $rank) -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- range sort $ranked "rank" -}}{{- $out = $out | append .item -}}{{- end -}}
+{{- return $out -}}

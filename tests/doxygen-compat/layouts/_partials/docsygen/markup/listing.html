@@ -1,10 +1,20 @@
 {{- /* A program listing as a Doxygen code fragment: one div.line per codeline, highlights as
-       spans, links to documented symbols with their kind, then their tooltips (htmlgen.cpp,
+       spans, links to documented symbols with their kind (none for files, as in #include lines),
+       then their tooltips (htmlgen.cpp,
        HtmlCodeGenerator). */ -}}
 {{- $ctx := .ctx -}}
 {{- $kinds := dict "function" "function" "variable" "variable" "typedef" "typedef" "enum" "enumeration"
     "enumvalue" "enumvalue" "define" "define" "class" "class" "struct" "struct" "union" "union" "namespace" "namespace"
-    "file" "file" "concept" "concept" "friend" "friend" -}}
+    "concept" "concept" "friend" "friend" -}}
+{{- /* An example's own listing carries the anchors of docsygen/plan/examples.html. */ -}}
+{{- $anchors := slice -}}
+{{- with $ctx.page -}}
+  {{- $page := index $ctx.model.ids (.Params.docsygen.key | default "") -}}
+  {{- if and $page (eq $page.kind "example") (eq $.node.attributes.filename $page.name) -}}
+    {{- $anchors = index (partial "docsygen/plan/examples.html" (dict "model" $ctx.model)).anchors $page.id | default slice -}}
+  {{- end -}}
+{{- end -}}
+{{- $r := 0 -}}
 <div class="fragment">
 {{- range .node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
@@ -19,8 +29,10 @@
           {{- if not (reflect.IsMap .) -}}{{ . }}
           {{- else if eq .tag "sp" -}}{{ " " }}
           {{- else if eq .tag "ref" -}}
+            {{- with and (lt $r (len $anchors)) (index $anchors $r) -}}<a id="{{ . }}" name="{{ . }}"></a>{{- end -}}
+            {{- $r = add $r 1 -}}
             {{- $kind := index $kinds (index $ctx.model.ids .attributes.refid).kind -}}
-            {{- with index $ctx.links .attributes.refid -}}<a class="code hl_{{ $kind }}" href="{{ . }}">{{- end -}}
+            {{- with index $ctx.links .attributes.refid -}}<a class="code{{ with $kind }} hl_{{ . }}{{ end }}" href="{{ . }}">{{- end -}}
             {{- delimit .children "" -}}
             {{- with index $ctx.links .attributes.refid -}}</a>{{- end -}}
           {{- end -}}

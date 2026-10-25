@@ -1,6 +1,6 @@
 {{- /* The body of a compound's detailed description (classdef.cpp,
        writeDetailedDocumentationBody): its template parameters, the brief again (REPEAT_BRIEF),
-       the detailed text, and where it is defined (SOURCE_BROWSER).
+       the detailed text, the examples that use it, and where it is defined (SOURCE_BROWSER).
        Usage: partial "docsygen/markup/description-body.html" (dict "ctx" $ctx "id" $refid) */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
@@ -25,4 +25,5 @@
 {{- partial "docsygen/markup/template-params.html" (dict "model" $m "id" $id) -}}
 {{- with and ($yes.Get "REPEAT_BRIEF") $parts.briefdescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
 {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+{{- partial "docsygen/markup/examples-section.html" (dict "ctx" $ctx "id" $id) -}}
 {{- with $definition -}}{{- partial "docsygen/markup/definition.html" (dict "definition" $definition "ctx" $ctx "model" $m "id" $id) -}}{{- end -}}

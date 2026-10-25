@@ -180,7 +180,7 @@
       {{- $keyed = $keyed | append (dict "id" $id "key" $sortKey) -}}
     {{- end -}}
     {{- $sorted := slice -}}
-    {{- range sort $keyed "key" -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
+    {{- range partial "docsygen/text/sort-bytes.html" (dict "list" $keyed "key" "key") -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
     {{- $doc.Set $key $sorted -}}
   {{- end -}}
   {{- with $doc.Get $key -}}

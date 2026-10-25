@@ -46,3 +46,7 @@
   partial: docsygen/text/tooltip.html
   context: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   expect: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+- name: sort-bytes orders by bytes, keeping equal keys in order
+  partial: docsygen/text/sort-bytes.html
+  context: {list: [{k: "~b", n: 1}, {k: "b", n: 2}, {k: "B", n: 3}, {k: "b", n: 4}], key: k}
+  expect: [{k: B, n: 3}, {k: b, n: 2}, {k: b, n: 4}, {k: "~b", n: 1}]

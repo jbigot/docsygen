@@ -1,0 +1,10 @@
+{{- /* What Doxygen's code parser records while it writes example listings (code.l, getLinkInScope,
+       generateClassOrGlobalLink, generateClassMemberLink; ExampleList::inSort), as {anchors, uses}:
+         anchors  {example refid: [one entry per ref of its listing, in order: the anchor Doxygen
+                  writes before it, or ""]}. The first ref to each linkable class gets "_aN", to
+                  each linkable member "aN", one counter per example; a related function gets
+                  none (demo::make_widget in the sample: unexplained, provisional).
+         uses     {class or member refid: [{example, anchor}]}, by example name: the "Examples"
+                  section of its documentation.
+       Usage: partial "docsygen/plan/examples.html" (dict "model" $model) */ -}}
+{{- return partialCached "docsygen/plan/examples/build.html" .model .model.dir -}}

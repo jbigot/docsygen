@@ -1,6 +1,7 @@
 {{- /* The body of a member's documentation: brief and details, an enum's values (fieldtable),
        what it reimplements and what reimplements it (memberdef.cpp, _writeReimplements,
-       _writeReimplementedBy; translator_en.h), and where it is defined (SOURCE_BROWSER). */ -}}
+       _writeReimplementedBy; translator_en.h), the examples that use it, and where it is defined
+       (SOURCE_BROWSER). */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $p := .parts -}}
@@ -76,6 +77,7 @@
 {{- with $by -}}
 <p>{{ cond (eq $e.node.attributes.virt "pure-virtual") "Implemented in" "Reimplemented in" }} {{ partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx) | safeHTML }}.</p>
 {{- end -}}
+{{- partial "docsygen/markup/examples-section.html" (dict "ctx" $ctx "id" .id) -}}
 {{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" .id) -}}
 {{- if and $definition (eq (index ((index $m.options "SOURCE_BROWSER") | default (slice "NO")) 0) "YES") (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $definition.file)))) -}}
   {{- partial "docsygen/markup/definition.html" (dict "definition" $definition "ctx" $ctx) -}}

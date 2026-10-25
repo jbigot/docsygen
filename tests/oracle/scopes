@@ -38,5 +38,10 @@ contents:trace_plugin
 contents:union*!*-members
 contents:user_code_plugin
 contents:YAML
+contents:namespace*!namespaces!namespacemembers*
+contents:*_8*!*_source!*-members!*-example
+contents:dir_*
+contents:group__*
+contents:*-example
 memberdecls
 memitem
