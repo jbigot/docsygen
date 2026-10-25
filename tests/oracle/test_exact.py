@@ -166,6 +166,12 @@ class Gaps(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual([n.attrs for n in exact.find(pages['p'], 'table')], [{}, {'class': 'doxtable'}])
 
+    def test_an_attribute_alone_selects_the_elements_that_have_it(self):
+        pages = {'p': exact.parse('<div data-x="1">a</div><div data-x="">b</div><div>c</div>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='[data-x]', count=2)])
+        self.assertEqual(errors, [])
+        self.assertEqual(exact.text(pages['p']), 'c')
+
     def test_a_space_selects_descendants(self):
         pages = {'p': exact.parse('<table class="memname"><tr><td class="memname"><span><a class="el" href="h">x</a></span>'
                                   '</td></tr></table><p><a class="el" href="h">x</a></p>')}

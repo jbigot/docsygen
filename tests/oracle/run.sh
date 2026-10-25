@@ -4,7 +4,8 @@
 # Usage: sh tests/oracle/run.sh exact|info [NAME ...]
 #   exact  builds tests/doxygen-compat and compares it with exact.py, with every scope listed in
 #          tests/oracle/scopes and the gaps of tests/oracle/xml-gaps.yaml
-#   info   builds tests/site and compares it with info.py
+#   info   builds tests/site and tests/doxygen-compat, and compares the first with info.py through
+#          the paths.json of both, with the gaps and tests/oracle/info-rules.yaml
 #   NAME   sample, sample-c or pdi (default: all three); pdi needs PDI_SRC the first time
 #          (tests/lib.sh, oracle)
 # The site directory holds layouts/, content/ and config.yaml (its configuration, without the
@@ -38,6 +39,21 @@ for name; do
   # Not --quiet: it would hide the ERROR line that errorf logs.
   if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
     cat "$work/log" >&2; status=1; continue
+  fi
+  if [ "$mode" = info ]; then
+    # info.py pairs pages through the roles of the compat site's pages.
+    compat=$work/compat
+    mkdir -p "$compat"
+    site_config "$compat/hugo.yaml" "$root/tests/doxygen-compat/layouts=layouts" \
+      "$root/tests/doxygen-compat/content=content" "$dir/xml=assets/doxygen/oracle"
+    cat "$root/tests/doxygen-compat/config.yaml" >> "$compat/hugo.yaml"
+    if ! "$hugo" --source "$compat" --destination "$compat/public" > "$compat/log" 2>&1; then
+      cat "$compat/log" >&2; status=1; continue
+    fi
+    python3 -I "$here/info.py" --doxygen "$dir/html" --compat "$compat/public/paths.json" --site "$work/public" \
+      --paths "$work/public/paths.json" --gaps "$here/xml-gaps.yaml" --rules "$here/info-rules.yaml" \
+      --oracle "$name" || status=1
+    continue
   fi
   # shellcheck disable=SC2086 # scopes are words
   python3 -I "$here/$mode.py" --doxygen "$dir/html" --site "$work/public" --paths "$work/public/paths.json" \

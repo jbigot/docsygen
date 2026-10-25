@@ -13,8 +13,8 @@ Usage: python3 -I exact.py --doxygen HTMLDIR --site PUBLIC --paths PATHS.json --
              selects only an element that has one. count is the exact number of matches over
              all pages: any other number fails, and so does an entry without matches (stale). An
              entry with an oracle applies only when --oracle names it. A SELECTOR is TAG,
-             TAG.CLASS, TAG#ID, .CLASS or #ID, each optionally followed by [ATTR=VALUE] or
-             [ATTR^=PREFIX] and by :contains(TEXT) (jQuery's), or those alone; a space selects
+             TAG.CLASS, TAG#ID, .CLASS or #ID, each optionally followed by [ATTR], [ATTR=VALUE]
+             or [ATTR^=PREFIX] and by :contains(TEXT) (jQuery's), or those alone; a space selects
              descendants and ~ later siblings, as in CSS.
 Doxygen's X.html pairs with the site page whose key is X. The div.header and div.contents of
 both are compared after these normalizations, and no others:
@@ -101,15 +101,15 @@ def classes(node):
 
 def _simple(node, selector):
     """Whether node matches TAG, TAG.CLASS[.CLASS…], TAG#ID, .CLASS or #ID, each optionally
-    followed by [ATTR=VALUE] or [ATTR^=PREFIX] and by :contains(TEXT), or those alone."""
-    m = re.fullmatch(r'([a-z0-9]*)((?:\.[^.#\[:]+)*)(?:#([^\[:]+))?(?:\[([a-z-]+)(\^?=)([^\]]*)\])?'
+    followed by [ATTR], [ATTR=VALUE] or [ATTR^=PREFIX] and by :contains(TEXT), or those alone."""
+    m = re.fullmatch(r'([a-z0-9]*)((?:\.[^.#\[:]+)*)(?:#([^\[:]+))?(?:\[([a-z-]+)(?:(\^?=)([^\]]*))?\])?'
                      r'(?::contains\((.*)\))?', selector)
     if not m or not selector:
         raise ValueError(f'unsupported selector {selector!r}')
     tag, cls, ident, attr, op, value, contained = m.groups()
     if attr is not None:
         actual = node.attrs.get(attr)
-        if actual is None or not (actual.startswith(value) if op == '^=' else actual == value):
+        if actual is None or (op is not None and not (actual.startswith(value) if op == '^=' else actual == value)):
             return False
     if contained is not None and contained not in text(node):
         return False
