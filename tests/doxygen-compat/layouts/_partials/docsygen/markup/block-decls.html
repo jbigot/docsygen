@@ -1,0 +1,64 @@
+{{- /* One summary table (memberlist.cpp, writeDeclarations; classdef.cpp,
+       writeInheritedMemberDeclarations): its heading, the related symbols' note, the rows of its
+       inner compounds or members, the member groups it shows (docsygen/plan/sections.html, in),
+       and on a class's page the members inherited into this section. A member group shown nowhere
+       else is a table of its own, under the anchor member-group, and the inherited members of
+       sections the class lacks make the table "Additional Inherited Members". */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $b := .block -}}
+{{- $id := $b.id -}}
+{{- $e := index $m.ids $id -}}
+{{- $isClass := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $e.kind -}}
+{{- $scope := cond $isClass $id "" -}}
+{{- $key := $ctx.page.Params.docsygen.key -}}
+{{- $sections := partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
+{{- $own := dict -}}
+{{- $section := dict "key" "inherited" "heading" "Additional Inherited Members" "subtitle" "" "members" slice "inner" slice -}}
+{{- range $sections -}}
+  {{- if eq .group "summary" -}}{{- $own = merge $own (dict .key true) -}}{{- end -}}
+  {{- if eq .key $b.key -}}{{- $section = . -}}{{- end -}}
+{{- end -}}
+{{- $inherited := slice -}}
+{{- if $isClass -}}
+  {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
+    {{- if or (eq .key $b.key) (and (eq $b.key "inherited") (not (index $own .key))) -}}{{- $inherited = $inherited | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (eq $b.key "inherited") $inherited -}}
+  {{- /* In the order of the sections, then of the bases. */ -}}
+  {{- $order := slice "public-type" "public-slot" "signal" "public-func" "public-static-func" "public-attrib" "public-static-attrib"
+      "protected-type" "protected-slot" "protected-func" "protected-static-func" "protected-attrib" "protected-static-attrib"
+      "package-type" "package-func" "package-static-func" "package-attrib" "package-static-attrib" "property" "event"
+      "private-type" "private-slot" "private-func" "private-static-func" "private-attrib" "private-static-attrib" "friend" "related" -}}
+  {{- $sorted := slice -}}
+  {{- range $order -}}{{- $k := . -}}{{- range $inherited -}}{{- if eq .key $k -}}{{- $sorted = $sorted | append . -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- $inherited = $sorted -}}
+{{- end -}}
+{{- $grouped := hasPrefix $b.key "user-defined-" -}}
+{{- if or (ne $b.key "inherited") $inherited -}}
+<table class="memberdecls">
+  {{- $anchor := cond $grouped "member-group" (index (index $ctx.paths.anchors $key) $b.key | default $b.key) -}}
+<tr class="heading"><td colspan="2"><h2 id="header-{{ $anchor }}" class="groupheader"><a id="{{ $anchor }}" name="{{ $anchor }}"></a>{{ "\n" }}{{ $section.heading }}</h2></td></tr>
+  {{- with $section.subtitle -}}<tr><td class="ititle" colspan="2"><p>{{ . }} </p></td></tr>{{- end -}}
+  {{- if and $grouped $section.description -}}<tr><td class="ititle" colspan="2">{{ partial "docsygen/markup/doc.html" (dict "node" $section.description "ctx" $ctx) }}</td></tr>{{- end -}}
+  {{- range $section.inner -}}{{- partial "docsygen/markup/decl-inner.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
+  {{- range $section.members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
+  {{- $n := 0 -}}
+  {{- range $sections -}}
+    {{- if and (hasPrefix .key "user-defined-") (eq .in $b.key) -}}
+<tr id="{{ $anchor }}-{{ $n }}" class="groupHeader"><td colspan="2"><div class="groupHeader">{{ .heading }}</div></td></tr>
+      {{- with .description -}}<tr><td colspan="2" class="ititle"><div class="groupText">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) }}</div></td></tr>{{- end -}}
+      {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
+      {{- $n = add $n 1 -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $inherited -}}
+    {{- $class := printf "%s_%s" (replace (partial "docsygen/markup/section-label.html" .key) "-" "_") .base -}}
+    {{- $heading := partial "docsygen/plan/section-heading.html" (dict "model" $m "key" .key "kind" $e.kind) -}}
+<tr class="inherit_header {{ $class }}"><td colspan="2" onclick="javascript:dynsection.toggleInherit('{{ $class }}')"><span class="dynarrow"><span class="arrowhead closed"></span></span>{{ $heading }} inherited from <a class="el" href="{{ index $ctx.links .base }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}</a></td></tr>
+    {{- $base := .base -}}
+    {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id "inherit" $class) -}}{{- end -}}
+  {{- end -}}
+</table>
+{{- end -}}

@@ -1,0 +1,55 @@
+{{- /* The body of docsygen/plan/inherited.html. */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- /* Scratch maps: merge would fold the case of refids. */ -}}
+{{- $visible := newScratch -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") -}}
+    {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "member") -}}{{- $visible.Set .attributes.refid true -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $rank := dict "public" 0 "protected" 1 "private" 2 -}}
+{{- /* Depth first over the bases, with the protection each path gives. */ -}}
+{{- define "_partials/docsygen/plan/inherited/bases.html" -}}
+  {{- $out := slice -}}
+  {{- $m := .model -}}
+  {{- if lt .depth 20 -}}
+    {{- range (index $m.ids .id).node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "basecompoundref") .attributes.refid (index $m.ids .attributes.refid) -}}
+        {{- $prot := .attributes.prot -}}
+        {{- if gt (index (dict "public" 0 "protected" 1 "private" 2) $prot) (index (dict "public" 0 "protected" 1 "private" 2) $.prot) -}}{{- else -}}{{- $prot = $.prot -}}{{- end -}}
+        {{- $out = $out | append (dict "id" .attributes.refid "prot" $prot) -}}
+        {{- range partial "docsygen/plan/inherited/bases.html" (dict "model" $m "id" .attributes.refid "prot" $prot "depth" (add $.depth 1)) -}}{{- $out = $out | append . -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $seen := newScratch -}}
+{{- $out := slice -}}
+{{- range partial "docsygen/plan/inherited/bases.html" (dict "model" $m "id" .id "prot" "public" "depth" 0) -}}
+  {{- $base := . -}}
+  {{- $b := index $m.ids $base.id -}}
+  {{- $short := replaceRE `<.*$` "" (index (split $b.name "::") (sub (len (split $b.name "::")) 1)) -}}
+  {{- $byKey := newScratch -}}
+  {{- $order := slice -}}
+  {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $base.id) -}}
+    {{- $section := .key -}}
+    {{- if eq .group "summary" -}}
+      {{- range .members -}}
+        {{- $member := index $m.ids . -}}
+        {{- $name := index (split $member.name "::") (sub (len (split $member.name "::")) 1) -}}
+        {{- if and ($visible.Get .) (not ($seen.Get .)) (eq $member.home $base.id) (ne $section "friend") (not (hasPrefix $section "private-")) -}}
+          {{- $p := $member.node.attributes.prot -}}
+          {{- if gt (index $rank $base.prot) (index $rank $p) -}}{{- $p = $base.prot -}}{{- end -}}
+          {{- $key := cond (eq $section "related") "related" (partial "docsygen/plan/member-section.html" (dict "member" $member "kind" "class" "prot" $p)) -}}
+          {{- if not ($byKey.Get $key) -}}{{- $order = $order | append $key -}}{{- end -}}
+          {{- $byKey.Set $key (($byKey.Get $key | default slice) | append .) -}}
+          {{- $seen.Set . true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $order -}}{{- $out = $out | append (dict "key" . "base" $base.id "members" ($byKey.Get .)) -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

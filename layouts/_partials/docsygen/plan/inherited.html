@@ -1,0 +1,8 @@
+{{- /* The members a class inherits, as Doxygen lists them in its summary tables
+       (classdef.cpp, writeInheritedMemberDeclarations): [{key, base, members}], bases depth first,
+       each base's members in its own section order, in the section their protection gives them
+       once inherited (public, protected or private inheritance), constructors and related symbols
+       included, friends and private members excluded, without the members the class overrides or hides (not in its listofallmembers), and members seen through
+       an earlier base. Cached per class.
+       Usage: partial "docsygen/plan/inherited.html" (dict "model" $model "id" $refid) */ -}}
+{{- return partialCached "docsygen/plan/inherited/build.html" . (printf "%s|%s" .model.dir .id) -}}

@@ -15,7 +15,7 @@
 {{- if or $classLike (in (slice "namespace" "file" "group") $kind) -}}
   {{- $keys := slice -}}
   {{- range $sections -}}
-    {{- if and (eq .group "summary") (not (hasPrefix .key "user-defined-")) -}}{{- $keys = $keys | append .key -}}{{- end -}}
+    {{- if and (eq .group "summary") (not (hasPrefix .key "user-defined-")) (not .groupsOnly) -}}{{- $keys = $keys | append .key -}}{{- end -}}
   {{- end -}}
   {{- if index .ctx.paths.pageOf (string (jsonify (dict "role" "all-members" "id" $id))) -}}{{- $keys = $keys | append "all-members" -}}{{- end -}}
   {{- with $keys -}}{{- $blocks = $blocks | append (dict "type" "summary-links" "id" $id "anchorKeys" .) -}}{{- end -}}
@@ -30,9 +30,12 @@
   {{- $blocks = $blocks | append (dict "type" "inheritance" "id" $id) (dict "type" "diagram" "id" $id) -}}
 {{- end -}}
 {{- range $sections -}}
-  {{- if eq .group "summary" -}}
+  {{- if and (eq .group "summary") (not .in) -}}
     {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
   {{- end -}}
+{{- end -}}
+{{- if and $classLike (partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id)) -}}
+  {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" "inherited" "heading" (dict "level" 2 "text" "Additional Inherited Members" "anchorKey" "inherited")) -}}
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
     "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" "Detailed Description" "anchorKey" "details"))) -}}

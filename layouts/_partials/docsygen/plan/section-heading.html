@@ -1,0 +1,19 @@
+{{- /* The English heading of a summary section (translator_en.h), by key, for the page of a
+       compound of kind .kind, with OPTIMIZE_OUTPUT_FOR_C's wording.
+       Usage: partial "docsygen/plan/section-heading.html" (dict "model" $model "key" "public-func" "kind" "class") */ -}}
+{{- $cmode := eq (index ((index .model.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+{{- $headings := dict
+    "inner-class" (cond $cmode "Data Structures" "Classes") "inner-namespace" "Namespaces" "inner-concept" "Concepts"
+    "inner-group" "Topics" "inner-dir" "Directories" "inner-file" "Files"
+    "public-type" "Public Types" "public-slot" "Public Slots" "signal" "Signals" "public-func" "Public Member Functions"
+    "public-static-func" "Static Public Member Functions" "public-attrib" (cond $cmode "Data Fields" "Public Attributes")
+    "public-static-attrib" "Static Public Attributes" "protected-type" "Protected Types" "protected-slot" "Protected Slots"
+    "protected-func" "Protected Member Functions" "protected-static-func" "Static Protected Member Functions"
+    "protected-attrib" "Protected Attributes" "protected-static-attrib" "Static Protected Attributes"
+    "package-type" "Package Types" "package-func" "Package Functions" "package-static-func" "Static Package Functions"
+    "package-attrib" "Package Attributes" "package-static-attrib" "Static Package Attributes" "property" "Properties"
+    "event" "Events" "private-type" "Private Types" "private-slot" "Private Slots" "private-func" "Private Member Functions"
+    "private-static-func" "Static Private Member Functions" "private-attrib" "Private Attributes"
+    "private-static-attrib" "Static Private Attributes" "friend" "Friends" "related" "Related Symbols"
+    "define" "Macros" "typedef" "Typedefs" "enum" "Enumerations" "enumvalue" "Enumerator" "func" "Functions" "var" "Variables" -}}
+{{- return (index $headings .key | default "") -}}

@@ -1,0 +1,174 @@
+{{- /* The declaration rows of a member (memberdef.cpp, writeDeclaration; memberlist.cpp,
+       writePlainDeclarations for enums): an optional template row, the member row with the type
+       on the left and the linked name and arguments on the right, and its brief. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .id -}}
+{{- $e := index $m.ids $id -}}
+{{- /* The page's own copy of the memberdef, if it has one: Doxygen links its words in the scope
+       of that page, as the XML does in each copy. */ -}}
+{{- with and .page (ne .page $e.home) -}}
+  {{- range (index $m.ids $.page).node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "sectiondef") -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "memberdef") (eq .attributes.id $id) -}}{{- $e = merge $e (dict "node" .) -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $a := $e.node.attributes -}}
+{{- $anchor := index $ctx.anchors $id -}}
+{{- /* Names resolve in the class of the page (an inherited member's: its base). */ -}}
+{{- $classes := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $scope := "" -}}
+{{- if in $classes (index $m.ids .page).kind -}}{{- $scope = cond .inherit $e.home .page -}}{{- end -}}
+{{- $parts := dict -}}
+{{- range $e.node.children -}}{{- if reflect.IsMap . -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
+{{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+{{- $link := index $ctx.links $id -}}
+{{- $tparams := slice -}}
+{{- with $parts.templateparamlist -}}
+  {{- range .children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+      {{- $p := dict -}}
+      {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+      {{- $t := $p.type | default "" -}}
+      {{- with $p.declname -}}{{- $t = printf "%s %s" $t . -}}{{- end -}}
+      {{- with $p.defval -}}{{- $t = printf "%s = %s" $t . -}}{{- end -}}
+      {{- $tparams = $tparams | append $t -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $left := "" -}}
+{{- $right := "" -}}
+{{- /* The type as Doxygen declares it: the keywords that lead the definition (virtual, typedef,
+       friend…, which the type and the attributes don't all tell), static and constexpr from the
+       attributes when the definition lacks them, then the linked type. */ -}}
+{{- $definition := "" -}}
+{{- with $parts.definition -}}{{- $definition = partial "docsygen/text/plain.html" . -}}{{- end -}}
+{{- $keywords := slice -}}
+{{- $leading := true -}}
+{{- range split $definition " " -}}
+  {{- if and $leading (in (slice "static" "virtual" "typedef" "friend" "constexpr" "consteval" "constinit" "mutable" "extern") .) -}}
+    {{- $keywords = $keywords | append . -}}
+  {{- else -}}{{- $leading = false -}}{{- end -}}
+{{- end -}}
+{{- if and (eq $a.constexpr "yes") (not (in $keywords "constexpr")) -}}{{- $keywords = slice "constexpr" | append $keywords -}}{{- end -}}
+{{- if and (eq $a.static "yes") (not (in $keywords "static")) (ne $e.kind "friend") -}}{{- $keywords = slice "static" | append $keywords -}}{{- end -}}
+{{- /* The Friends section doesn't repeat friend. */ -}}
+{{- if eq $e.kind "friend" -}}{{- $keywords = complement (slice "friend") $keywords -}}{{- end -}}
+{{- $type := "" -}}
+{{- with $parts.type -}}{{- $type = partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope) -}}{{- end -}}
+{{- /* A using alias: "using", and "name = type" as the definition writes the type. */ -}}
+{{- $alias := "" -}}
+{{- if and (eq $e.kind "typedef") (hasPrefix $definition "using ") (strings.Contains $definition " = ") -}}
+  {{- $type = "using" -}}
+  {{- $alias = partial "docsygen/markup/linkify.html" (dict "text" (trim (index (split $definition " = ") 1) " ") "sources" (slice $parts.type) "ctx" $ctx "scope" $scope) -}}
+{{- end -}}
+{{- $type = trim (printf "%s %s" (delimit $keywords " ") $type) " " | safeHTML -}}
+{{- /* The refs of the arguments, in their order: Doxygen links the parameter types as the XML
+       does, and also the parameter names that are members of the class (inherited ones too). */ -}}
+{{- /* The members of the class and of the classes around it, innermost first. */ -}}
+{{- $members := dict -}}
+{{- $around := slice -}}
+{{- with $scope -}}
+  {{- $c := . -}}
+  {{- range seq 10 -}}
+    {{- if and $c (in $classes (index $m.ids $c).kind) -}}{{- $around = $around | append $c -}}{{- $c = index (partial "docsygen/model/scopes.html" $m) $c | default "" -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $around -}}
+  {{- range (index $m.ids .).node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "member") -}}
+          {{- $mid := .attributes.refid -}}
+          {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") (not (index $members (delimit .children ""))) -}}{{- $members = merge $members (dict (delimit .children "") $mid) -}}{{- end -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $params := slice -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+    {{- range .children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if in (slice "type" "defval") .tag -}}{{- $params = $params | append . -}}
+      {{- else if eq .tag "declname" -}}
+        {{- $pname := delimit .children "" -}}
+        {{- /* Never the member itself. */ -}}
+        {{- if ne $pname $short -}}
+          {{- with index $members $pname -}}{{- $params = $params | append (dict "children" (slice (dict "tag" "ref" "attributes" (dict "refid" .) "children" (slice $pname)))) -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $argsText := "" -}}
+{{- with $parts.argsstring -}}{{- $argsText = delimit .children "" -}}{{- end -}}
+{{- /* A function pointer's name closes a parenthesis that its type opens: ") (args)". */ -}}
+{{- with $a.noexceptexpression -}}{{- if not (strings.Contains $argsText "noexcept") -}}{{- $argsText = printf "%s noexcept(%s)" $argsText . -}}{{- end -}}{{- end -}}
+{{- if and (eq $e.kind "typedef") (hasPrefix $argsText ")") -}}{{- $argsText = printf ") %s" (strings.TrimPrefix ")" $argsText) -}}{{- end -}}
+{{- $args := partial "docsygen/markup/linkify.html" (dict "text" $argsText "sources" $params "ctx" $ctx "scope" $scope "resolve" (eq $e.kind "typedef")) -}}
+{{- /* A file's page names the namespace members it lists by their qualified name. */ -}}
+{{- $qualify := and (eq (index $m.ids .page).kind "file") (eq (index $m.ids $e.home).kind "namespace") -}}
+{{- if $qualify -}}{{- $short = $e.name -}}{{- end -}}
+{{- $name := printf "<a class=\"el\" href=\"%s\">%s</a>" ($link | htmlEscape) ($short | htmlEscape) | safeHTML -}}
+{{- $kind := $e.kind -}}
+{{- if eq $kind "enum" -}}
+  {{- $left = printf "enum %s" (cond (eq $a.strong "yes") "class " "") -}}
+  {{- $perLine := int (index ((index $m.options "ENUM_VALUES_PER_LINE") | default (slice "4")) 0) -}}
+  {{- $values := slice -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}
+      {{- $vname := "" -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+      {{- if $qualify -}}{{- $vname = printf "%s::%s" (index $m.ids $e.home).name $vname -}}{{- end -}}
+      {{- $v := printf "<a class=\"el\" href=\"%s\">%s</a>" (index $ctx.links .attributes.id | htmlEscape) ($vname | htmlEscape) -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $v = printf "%s %s" $v (partial "docsygen/text/plain.html" . | htmlEscape) -}}{{- end -}}{{- end -}}
+      {{- $values = $values | append $v -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $base := "" -}}
+  {{- with $parts.type -}}{{- with trim (partial "docsygen/text/plain.html" .) " " -}}{{- $base = printf " : %s" (htmlEscape .) -}}{{- end -}}{{- end -}}
+  {{- /* memberdef.cpp, writeEnumDeclaration: ENUM_VALUES_PER_LINE values per line. */ -}}
+  {{- $wrap := and (gt $perLine 0) (gt (len $values) $perLine) -}}
+  {{- $list := "" -}}
+  {{- range $i, $v := $values -}}
+    {{- if $i -}}{{- $list = printf "%s, " $list -}}{{- end -}}
+    {{- if and $wrap (eq (mod $i $perLine) 0) -}}{{- $list = printf "%s<br />\n&#160;&#160;" $list -}}{{- end -}}
+    {{- $list = printf "%s%s\n" $list $v -}}
+  {{- end -}}
+  {{- if $wrap -}}{{- $list = printf "%s<br />\n" $list -}}{{- end -}}
+  {{- $right = printf "%s%s { %s }" $name $base $list | safeHTML -}}
+{{- else if eq $kind "define" -}}
+  {{- $left = "#define" -}}
+  {{- $params := slice -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = $params | append (partial "docsygen/text/plain.html" .) -}}{{- end -}}{{- end -}}
+  {{- $right = $name -}}
+  {{- if $params -}}{{- $right = printf "%s(%s)" $name (delimit $params ",  " | htmlEscape) | safeHTML -}}{{- end -}}
+  {{- with and (not $params) $parts.initializer -}}{{- $right = printf "%s&#160;&#160;&#160;%s" $name (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) | safeHTML -}}{{- end -}}
+{{- else -}}
+  {{- $left = $type -}}
+  {{- $right = $name -}}
+  {{- if in (slice "function" "friend" "slot" "signal") $kind -}}
+    {{- $right = printf "%s %s" $name $args | safeHTML -}}
+  {{- else if $args -}}
+    {{- $right = printf "%s%s" $name $args | safeHTML -}}
+  {{- end -}}
+  {{- with $parts.initializer -}}{{- $right = printf "%s %s" $right (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) | safeHTML -}}{{- end -}}
+  {{- with $alias -}}{{- $right = printf "%s = %s" $right . | safeHTML -}}{{- end -}}
+{{- end -}}
+{{- $inherit := cond .inherit (printf " inherit %s" .inherit) "" -}}
+{{- if $tparams -}}
+<tr class="memitem:{{ $anchor }}{{ $inherit }}" id="r_{{ $anchor }}"><td class="memTemplParams" colspan="2">template&lt;{{ delimit $tparams ", " }}&gt; </td></tr>
+<tr class="memitem:{{ $anchor }} template{{ $inherit }}"><td class="memItemLeft" align="right" valign="top">{{ $left | safeHTML }}&#160;</td><td class="memItemRight" valign="bottom">{{ $right }}</td></tr>
+{{- else -}}
+<tr class="memitem:{{ $anchor }}{{ $inherit }}" id="r_{{ $anchor }}"><td class="memItemLeft" align="right" valign="top">{{ $left | safeHTML }}&#160;</td><td class="memItemRight" valign="bottom">{{ $right }}</td></tr>
+{{- end -}}
+{{- with $parts.briefdescription -}}
+  {{- $text := false -}}
+  {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
+  {{- if $text -}}
+<tr class="memdesc:{{ $anchor }}{{ $inherit }}"><td class="mdescLeft">&#160;</td><td class="mdescRight">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }} {{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }}<a href="{{ $link }}">More...</a>{{ end }}<br /></td></tr>
+  {{- end -}}
+{{- end -}}

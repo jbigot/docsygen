@@ -1,0 +1,14 @@
+{{- /* The first constructor of a class, in the order of its sections, or "". */ -}}
+{{- $m := .ctx.model -}}
+{{- $e := index $m.ids .id -}}
+{{- $short := replaceRE `<.*$` "" (index (split $e.name "::") (sub (len (split $e.name "::")) 1)) -}}
+{{- $out := "" -}}
+{{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+  {{- if eq .group "summary" -}}
+    {{- range .members -}}
+      {{- $member := index $m.ids . -}}
+      {{- if and (not $out) (eq $member.kind "function") (eq (index (split $member.name "::") (sub (len (split $member.name "::")) 1)) $short) -}}{{- $out = . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

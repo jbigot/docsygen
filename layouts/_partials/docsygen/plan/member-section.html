@@ -1,0 +1,20 @@
+{{- /* The summary section of a member on the page of a compound of kind .kind: on a class's page
+       from its kind, protection (or .prot, its protection once inherited) and staticness; on a
+       namespace's, file's or group's page from its kind.
+       Usage: partial "docsygen/plan/member-section.html" (dict "member" $entry "kind" "class" "prot" "") */ -}}
+{{- $e := .member -}}
+{{- $a := $e.node.attributes -}}
+{{- $prot := .prot | default $a.prot -}}
+{{- $static := cond (eq $a.static "yes") "static-" "" -}}
+{{- $section := "" -}}
+{{- if in (slice "namespace" "file" "group") .kind -}}
+  {{- $section = index (dict "function" "func" "variable" "var" "typedef" "typedef" "enum" "enum" "define" "define") $e.kind | default $e.kind -}}
+{{- else if eq $e.kind "friend" -}}{{- $section = "friend" -}}
+{{- else if eq $e.kind "signal" -}}{{- $section = "signal" -}}
+{{- else if eq $e.kind "slot" -}}{{- $section = printf "%s-slot" $prot -}}
+{{- else if eq $e.kind "function" -}}{{- $section = printf "%s-%sfunc" $prot $static -}}
+{{- else if eq $e.kind "variable" -}}{{- $section = printf "%s-%sattrib" $prot $static -}}
+{{- else if in (slice "typedef" "enum") $e.kind -}}{{- $section = printf "%s-type" $prot -}}
+{{- else -}}{{- $section = $e.kind -}}
+{{- end -}}
+{{- return $section -}}

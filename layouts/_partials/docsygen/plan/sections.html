@@ -13,6 +13,8 @@
          members   the ids of the members Doxygen shows (docsygen/model/linkable.html), in order;
                    for a file, the members it declares and others document come last
          inner     the refids of the inner compounds
+         in        for a member group, the section that shows it ("" for a table of its own)
+         groupsOnly  true for a section that only shows member groups
        Sections without members are left out. Cached per compound.
        Usage: partial "docsygen/plan/sections.html" (dict "model" $model "id" $refid) */ -}}
 {{- return partialCached "docsygen/plan/sections/build.html" . (printf "%s|%s" .model.dir .id) -}}

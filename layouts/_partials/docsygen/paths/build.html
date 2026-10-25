@@ -31,7 +31,13 @@
   {{- $home := (index $m.ids $id).home -}}
   {{- /* A file without a page of its own, with SHOW_FILES=NO, is linked to its source listing. */ -}}
   {{- $source := cond (eq $id $home) ($pageOf.Get (jsonify (dict "role" "source" "id" $home))) "" -}}
-  {{- with $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) | default $source -}}
+  {{- $page := $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) | default $source -}}
+  {{- /* A class without a page of its own is documented on its scope's page, or its group's. */ -}}
+  {{- if not $page -}}
+    {{- $container := index (partial "docsygen/model/scopes.html" $m) $home | default (index (index (partialCached "docsygen/plan/groups/map.html" $m $m.dir) $home | default (slice "")) 0) -}}
+    {{- with $container -}}{{- $page = $pageOf.Get (jsonify (dict "role" "compound" "id" .)) -}}{{- end -}}
+  {{- end -}}
+  {{- with $page -}}
     {{- $targets.SetInMap "m" $id (dict "page" . "anchor" $anchor) -}}
   {{- end -}}
 {{- end -}}

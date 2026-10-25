@@ -58,16 +58,20 @@
       {{- $found.Set "file-groups" (($found.Get "file-groups" | default slice) | append (dict "heading" $group.heading "description" $group.description "member" $mid)) -}}
     {{- else -}}
       {{- with index $byKind (index $m.ids $mid).kind -}}
-        {{- if partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid) -}}{{- $found.Set . (($found.Get . | default slice) | append $mid) -}}{{- end -}}
+        {{- if and (partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid)) (not (in ($found.Get . | default slice) $mid)) -}}{{- $found.Set . (($found.Get . | default slice) | append $mid) -}}{{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- range $found.Get "file-groups" -}}
     {{- $g := . -}}
+    {{- /* Shown in its group only. */ -}}
+    {{- range $k, $list := $found.Values -}}
+      {{- if and (reflect.IsSlice $list) (in $list $g.member) (ne $k "file-groups") -}}{{- $found.Set $k (complement (slice $g.member) $list) -}}{{- end -}}
+    {{- end -}}
     {{- $known := false -}}
     {{- $merged := slice -}}
     {{- range $groups -}}
-      {{- if eq .heading $g.heading -}}{{- $known = true -}}{{- $merged = $merged | append (merge . (dict "members" (.members | append $g.member))) -}}
+      {{- if eq .heading $g.heading -}}{{- $known = true -}}{{- $merged = $merged | append (merge . (dict "members" (cond (in .members $g.member) .members (.members | append $g.member)))) -}}
       {{- else -}}{{- $merged = $merged | append . -}}{{- end -}}
     {{- end -}}
     {{- if not $known -}}{{- $merged = $merged | append (dict "heading" $g.heading "description" $g.description "members" (slice $g.member)) -}}{{- end -}}
@@ -76,20 +80,7 @@
 {{- end -}}
 
 {{- /* The summary sections, in the layout's order. */ -}}
-{{- $headings := dict
-    "inner-class" (cond $cmode "Data Structures" "Classes") "inner-namespace" "Namespaces" "inner-concept" "Concepts"
-    "inner-group" "Topics" "inner-dir" "Directories" "inner-file" "Files"
-    "public-type" "Public Types" "public-slot" "Public Slots" "signal" "Signals" "public-func" "Public Member Functions"
-    "public-static-func" "Static Public Member Functions" "public-attrib" (cond $cmode "Data Fields" "Public Attributes")
-    "public-static-attrib" "Static Public Attributes" "protected-type" "Protected Types" "protected-slot" "Protected Slots"
-    "protected-func" "Protected Member Functions" "protected-static-func" "Static Protected Member Functions"
-    "protected-attrib" "Protected Attributes" "protected-static-attrib" "Static Protected Attributes"
-    "package-type" "Package Types" "package-func" "Package Functions" "package-static-func" "Static Package Functions"
-    "package-attrib" "Package Attributes" "package-static-attrib" "Static Package Attributes" "property" "Properties"
-    "event" "Events" "private-type" "Private Types" "private-slot" "Private Slots" "private-func" "Private Member Functions"
-    "private-static-func" "Static Private Member Functions" "private-attrib" "Private Attributes"
-    "private-static-attrib" "Static Private Attributes" "friend" "Friends" "related" "Related Symbols"
-    "define" "Macros" "typedef" "Typedefs" "enum" "Enumerations" "enumvalue" "Enumerator" "func" "Functions" "var" "Variables" -}}
+
 {{- $order := slice -}}
 {{- if $isClass -}}
   {{- $order = slice "inner-class" "public-type" "public-slot" "signal" "public-func" "public-static-func" "public-attrib"
@@ -107,18 +98,36 @@
 {{- else if eq $kind "dir" -}}
   {{- $order = slice "inner-dir" "inner-file" -}}
 {{- end -}}
+{{- /* SUBGROUPING: but on a group's page, a member group whose members share a section is shown
+       in that section, which exists for it if need be (without a summary link). */ -}}
+{{- $in := dict -}}
+{{- if ne $kind "group" -}}
+  {{- range $i, $g := $groups -}}
+    {{- $keys := dict -}}
+    {{- range $g.members -}}{{- $keys = merge $keys (dict (partial "docsygen/plan/member-section.html" (dict "member" (index $m.ids .) "kind" (cond $isClass "class" $kind))) true) -}}{{- end -}}
+    {{- if eq (len $keys) 1 -}}
+      {{- range $k, $_ := $keys -}}
+        {{- $in = merge $in (dict (printf "user-defined-%d" (add $i 1)) $k) -}}
+        {{- if not ($found.Get $k) -}}{{- $found.Set $k slice -}}{{- $found.Set (printf "only-%s" $k) true -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- $sections := slice -}}
 {{- range $order -}}
   {{- $key := . -}}
-  {{- with $found.Get $key -}}
+  {{- $list := $found.Get $key -}}
+  {{- if or $list ($found.Get (printf "only-%s" $key)) -}}
     {{- $inner := hasPrefix $key "inner-" -}}
-    {{- $sections = $sections | append (dict "key" $key "heading" (index $headings $key) "subtitle" (cond (eq $key "related") "(Note that these are not member symbols.)" "")
-        "group" "summary" "members" (cond $inner slice .) "inner" (cond $inner . slice)) -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" (cond (eq $key "related") "(Note that these are not member symbols.)" "")
+        "group" "summary" "members" (cond $inner slice ($list | default slice)) "inner" (cond $inner $list slice)
+        "groupsOnly" (not $list)) -}}
   {{- end -}}
 {{- end -}}
 {{- range $i, $g := $groups -}}
-  {{- $sections = $sections | append (dict "key" (printf "user-defined-%d" (add $i 1)) "heading" $g.heading "subtitle" ""
-      "description" $g.description "group" "summary" "members" $g.members "inner" slice) -}}
+  {{- $key := printf "user-defined-%d" (add $i 1) -}}
+  {{- $sections = $sections | append (dict "key" $key "heading" $g.heading "subtitle" ""
+      "description" $g.description "group" "summary" "members" $g.members "inner" slice "in" (index $in $key | default "")) -}}
 {{- end -}}
 
 {{- /* The detailed sections, in the layout's order: every member that has a detailed entry, from

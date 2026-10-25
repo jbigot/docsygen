@@ -62,23 +62,20 @@
 {{- end -}}
 {{- $homes := newScratch -}}
 {{- $homes.Set "m" dict -}}
+{{- $paged := newScratch -}}
+{{- range .roles -}}{{- if eq .role "compound" -}}{{- $paged.Set .id true -}}{{- end -}}{{- end -}}
 {{- range $id, $e := $m.ids -}}
   {{- $anchor := "" -}}
-  {{- if ne $e.what "compound" -}}
+  {{- /* A class embedded in its scope's page (INLINE_SIMPLE_STRUCTS) is anchored by its refid. */ -}}
+  {{- if and (eq $e.what "compound") (not ($paged.Get $id)) (in (slice "class" "struct" "union") $e.kind) -}}
+    {{- $anchor = $id -}}
+  {{- else if ne $e.what "compound" -}}
     {{- $prefix := printf "%s_1" $e.home -}}
     {{- $anchor = cond (hasPrefix $id $prefix) (strings.TrimPrefix $prefix $id) (replaceRE `^.*_1` "" $id) -}}
   {{- end -}}
   {{- $homes.SetInMap "m" $id $anchor -}}
 {{- end -}}
-{{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists (types.h,
-       ML_TYPES) and details. */ -}}
-{{- $labels := dict "inner-class" "nested-classes" "inner-namespace" "namespaces" "inner-concept" "concepts"
-    "inner-group" "groups" "inner-dir" "subdirs" "inner-file" "files" "signal" "signals" "property" "properties"
-    "event" "events" "friend" "friends" "related" "related" "define" "define-members" "typedef" "typedef-members"
-    "enum" "enum-members" "enumvalue" "enumval-members" "func" "func-members" "var" "var-members" -}}
-{{- $protections := dict "public" "pub" "protected" "pro" "package" "pac" "private" "pri" -}}
-{{- $kinds := dict "type" "types" "slot" "slots" "func" "methods" "static-func" "static-methods" "attrib" "attribs"
-    "static-attrib" "static-attribs" -}}
+{{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists and details. */ -}}
 {{- $anchors := newScratch -}}
 {{- range $out -}}
   {{- $key := .key -}}
@@ -88,10 +85,8 @@
       {{- $page := dict "details" "details" -}}
       {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
         {{- $section := .key -}}
-        {{- $label := index $labels $section -}}
-        {{- with findRESubmatch `^(public|protected|package|private)-(.*)$` $section 1 -}}
-          {{- $label = printf "%s-%s" (index $protections (index . 0 1)) (index $kinds (index . 0 2)) -}}
-        {{- end -}}
+        {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
+        {{- $label := partial "docsygen/markup/section-label.html" $section -}}
         {{- with $label -}}{{- $page = merge $page (dict $section .) -}}{{- end -}}
       {{- end -}}
       {{- $anchors.SetInMap "m" $key $page -}}

@@ -1,0 +1,18 @@
+{{- /* Linked text of the XML (a type, an initializer), as Doxygen's linkifyText leaves it: refs
+       become links. On a class's page (.scope), Doxygen resolves the class's own name to its
+       first constructor. */ -}}
+{{- $ctx := .ctx -}}
+{{- $scope := .scope | default "" -}}
+{{- range .node.children -}}
+  {{- if not (reflect.IsMap .) -}}{{ . }}
+  {{- else if eq .tag "ref" -}}
+    {{- $target := .attributes.refid -}}
+    {{- if and $scope (eq $target $scope) -}}
+      {{- $constructor := partial "docsygen/markup/first-constructor.html" (dict "ctx" $ctx "id" $scope) -}}
+      {{- with $constructor -}}{{- $target = . -}}{{- end -}}
+    {{- end -}}
+    {{- $text := partial "docsygen/text/plain.html" . -}}
+    {{- with index $ctx.links $target -}}<a class="el" href="{{ . }}">{{ $text }}</a>{{- else -}}{{ $text }}{{- end -}}
+  {{- else -}}{{ partial "docsygen/text/plain.html" (dict "children" (slice .)) }}
+  {{- end -}}
+{{- end -}}
