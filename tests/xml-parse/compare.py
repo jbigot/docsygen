@@ -3,8 +3,8 @@
 Usage: python3 -I compare.py [--layout document] trees.json NAME=DIR [NAME=DIR ...]
        python3 -I compare.py --cases CASES.json
   trees.json  keys are corpus/NAME/<path>, as produced by mounting DIR at assets/corpus/NAME
-  --layout document  the trees are transform.Unmarshal's document layout ({tag, attributes,
-              children}), compared as is so that its invariants are checked too
+  --layout document  the trees are in the document layout ({tag, attributes, children}) of
+              both readers, compared as is so that its invariants are checked too
   --cases     check the case tables of Hugo's document layout tests against expat:
               {"ok": [...], "lenient": [...], "errors": [...]}, entries {name, in, want},
               with `in` base64-encoded (it can hold invalid UTF-8)

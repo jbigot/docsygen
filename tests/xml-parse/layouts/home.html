@@ -1,6 +1,6 @@
-{{- /* Dump the parsed tree of every assets/corpus/**.xml file to trees.json, keyed by path. */ -}}
+{{- /* Dump the tree of every assets/corpus/**.xml file to trees.json, keyed by path. */ -}}
 {{- $out := newScratch -}}
 {{- range resources.Match "corpus/**.xml" -}}
-  {{- $out.SetInMap "m" .Name (partial "docsygen/xml/parse.html" .Content) -}}
+  {{- $out.SetInMap "m" .Name (partial "docsygen/xml/unmarshal.html" .) -}}
 {{- end -}}
 {{- (resources.FromString "trees.json" (jsonify ($out.Get "m"))).RelPermalink -}}

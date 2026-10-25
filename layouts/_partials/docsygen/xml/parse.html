@@ -1,55 +1,155 @@
-{{- /* Parse an XML string into an order-preserving tree.
-       A node's content is a list; text is a string, an element is a map
-       {<tag>: [content...], "#<attr>": "value", ...}. "#" cannot start an XML name,
-       so attribute keys never clash with the tag key. Returns the document's content.
+{{- /* Parse an XML string into its root element, in the document layout of transform.Unmarshal
+       with targetType "document" (gohugoio/hugo#15485): an element is a map {tag, attributes,
+       children}, attributes maps names to strings, and children holds strings and elements.
+       Children never hold an empty string or two strings in a row: CDATA and text split by a
+       comment or a PI are merged. Comments, PIs, the DOCTYPE and whitespace outside the root are
+       dropped. An empty string gives an empty map.
+       Malformed input stops the build, and so does anything encoding/xml rejects, so that a site
+       that builds with this reader builds identically with the native decoder; it rejects a
+       little more (tests/xml-parse/known-differences.md).
        Usage: partial "docsygen/xml/parse.html" $xmlString */ -}}
-{{- $tokens := findRE `<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<!DOCTYPE(?:[^>\[]|\[[^\]]*\])*>|<(?:[^>"']|"[^"]*"|'[^']*')*>|[^<]+` . -}}
-{{- if ne (len (delimit $tokens "")) (len .) -}}
-  {{- errorf "xml/parse: malformed XML (unmatched markup near %q)" (substr (replaceRE `^(?:<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<!DOCTYPE(?:[^>\[]|\[[^\]]*\])*>|<(?:[^>"']|"[^"]*"|'[^']*')*>|[^<]+)*` "" . 1) 0 40) -}}
-{{- end -}}
-{{- $stack := slice (dict "c" slice) -}}
-{{- range $tokens -}}
-  {{- $item := false -}}
-  {{- if hasPrefix . "</" -}}
-    {{- $n := len $stack -}}
-    {{- $top := index $stack (sub $n 1) -}}
-    {{- $close := trim (substr . 2 -1) " \t\r\n" -}}
-    {{- if eq $n 1 -}}
-      {{- errorf "xml/parse: unexpected </%s>, no element is open" $close -}}
-    {{- else if ne $close $top.n -}}
-      {{- errorf "xml/parse: unexpected </%s>, expected </%s>" $close $top.n -}}
-    {{- end -}}
-    {{- $stack = first (sub $n 1) $stack -}}
-    {{- $top.a.SetInMap "m" $top.n $top.c -}}
-    {{- $item = $top.a.Get "m" -}}
-  {{- else if or (hasPrefix . "<?") (hasPrefix . "<!--") (hasPrefix . "<!DOCTYPE") -}}
-  {{- else if hasPrefix . "<![CDATA[" -}}
-    {{- $item = substr . 9 -3 -}}
-  {{- else if hasPrefix . "<" -}}
-    {{- $match := findRESubmatch `^<([A-Za-z_:][^\s/>]*)` . 1 -}}
-    {{- if not $match -}}{{- errorf "xml/parse: invalid markup %q" . -}}{{- end -}}
-    {{- $name := index (index $match 0) 1 -}}
-    {{- /* Scratch maps keep key case; merge would fold it (XML names are case-sensitive). */ -}}
-    {{- $attrs := newScratch -}}
-    {{- range findRESubmatch `\s([^\s=/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)')` . -}}
-      {{- $attrs.SetInMap "m" (printf "#%s" (index . 1)) (htmlUnescape (add (index . 2) (index . 3))) -}}
-    {{- end -}}
-    {{- if hasSuffix . "/>" -}}
-      {{- $attrs.SetInMap "m" $name slice -}}
-      {{- $item = $attrs.Get "m" -}}
-    {{- else -}}
-      {{- $stack = $stack | append (dict "n" $name "a" $attrs "c" slice) -}}
-    {{- end -}}
-  {{- else -}}
-    {{- $item = htmlUnescape . -}}
+{{- $root := dict -}}
+{{- if . -}}
+  {{- range findRE `\x{FFFD}` . -}}
+    {{- /* An invalid byte matches U+FFFD with a width of 1, a real U+FFFD with a width of 3. */ -}}
+    {{- if eq (len .) 1 -}}{{- errorf "xml/parse: invalid UTF-8" -}}{{- end -}}
   {{- end -}}
-  {{- if not (eq $item false) -}}
-    {{- $n := len $stack -}}
-    {{- $top := index $stack (sub $n 1) -}}
-    {{- $stack = (first (sub $n 1) $stack) | append (dict "n" $top.n "a" $top.a "c" ($top.c | append $item)) -}}
+  {{- with findRE `[\x00-\x08\x0B\x0C\x0E-\x1F\x{FFFE}\x{FFFF}]` . 1 -}}
+    {{- errorf "xml/parse: illegal character %q" (index . 0) -}}
   {{- end -}}
+  {{- /* ASCII names with at most one colon: encoding/xml rejects more colons. */ -}}
+  {{- $name := `(?:[A-Za-z_][A-Za-z0-9._-]*(?::[A-Za-z0-9._-]*)?|:[A-Za-z0-9._-]*)` -}}
+  {{- $startRE := printf `^<(%s)((?:\s+%s\s*=\s*(?:"[^"<]*"|'[^'<]*'))*)\s*(/?)>$` $name $name -}}
+  {{- $attrRE := printf `(%s)\s*=\s*(?:"([^"<]*)"|'([^'<]*)')` $name -}}
+  {{- $endRE := printf `^</(%s)\s*>$` $name -}}
+  {{- $piRE := printf `^<\?(%s)(?:\s[\s\S]*)?\?>$` $name -}}
+  {{- $tokenRE := `<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[\s\S]*?\?>|<!DOCTYPE(?:[^>\[]|\[[^\]]*\])*>|<(?:[^>"']|"[^"]*"|'[^']*')*>|[^<]+` -}}
+  {{- $tokens := findRE $tokenRE . -}}
+  {{- /* findRE skips what no alternative matches: the tokens must cover the input. */ -}}
+  {{- if ne (len (delimit $tokens "")) (len .) -}}
+    {{- errorf "xml/parse: malformed XML (unmatched markup near %q)" (substr (replaceRE (printf `^(?:%s)*` $tokenRE) "" . 1) 0 40) -}}
+  {{- end -}}
+  {{- /* Each open element is {n: name, a: attributes, s: a scratch holding its children in
+         "c", appended one at a time: Scratch.Add would append a one-element slice as a slice}, above a bottom entry that collects what lies outside the root. Text accumulates
+         in $pending until the next tag, which merges text split by comments, PIs and CDATA. */ -}}
+  {{- $top := dict "s" newScratch -}}
+  {{- $stack := slice $top -}}
+  {{- $pending := "" -}}
+  {{- range $tokens -}}
+    {{- if not (hasPrefix . "<") -}}
+      {{- if strings.ContainsAny . "&\r]" -}}
+        {{- if strings.Contains . "]]>" -}}{{- errorf "xml/parse: %q outside CDATA" "]]>" -}}{{- end -}}
+        {{- $pending = add $pending (partial "docsygen/xml/inline/decode.html" .) -}}
+      {{- else -}}
+        {{- $pending = add $pending . -}}
+      {{- end -}}
+    {{- else if hasPrefix . "</" -}}
+      {{- $match := findRESubmatch $endRE . 1 -}}
+      {{- if not $match -}}{{- errorf "xml/parse: invalid markup %q" . -}}{{- end -}}
+      {{- $close := index (index $match 0) 1 -}}
+      {{- if not $top.n -}}
+        {{- errorf "xml/parse: unexpected </%s>, no element is open" $close -}}
+      {{- else if ne $close $top.n -}}
+        {{- errorf "xml/parse: unexpected </%s>, expected </%s>" $close $top.n -}}
+      {{- end -}}
+      {{- if $pending -}}{{- $top.s.Set "c" (($top.s.Get "c") | append $pending) -}}{{- $pending = "" -}}{{- end -}}
+      {{- $element := dict "tag" $top.n "attributes" $top.a "children" ($top.s.Get "c" | default slice) -}}
+      {{- $stack = first (sub (len $stack) 1) $stack -}}
+      {{- $top = index $stack (sub (len $stack) 1) -}}
+      {{- $top.s.Set "c" (($top.s.Get "c") | append $element) -}}
+    {{- else if hasPrefix . "<!--" -}}
+      {{- $comment := substr . 4 -3 -}}
+      {{- if or (strings.Contains $comment "--") (hasSuffix $comment "-") -}}
+        {{- errorf "xml/parse: %q is not allowed in a comment" "--" -}}
+      {{- end -}}
+    {{- else if hasPrefix . "<![CDATA[" -}}
+      {{- $pending = add $pending (replaceRE `\r\n?` "\n" (substr . 9 -3)) -}}
+    {{- else if hasPrefix . "<?" -}}
+      {{- $match := findRESubmatch $piRE . 1 -}}
+      {{- if not $match -}}{{- errorf "xml/parse: invalid processing instruction %q" . -}}{{- end -}}
+      {{- if eq (index (index $match 0) 1) "xml" -}}
+        {{- range findRESubmatch `\s(version|encoding)\s*=\s*(?:"([^"]*)"|'([^']*)')` . -}}
+          {{- $value := add (index . 2) (index . 3) -}}
+          {{- if and (eq (index . 1) "version") (ne $value "1.0") -}}
+            {{- errorf "xml/parse: unsupported XML version %q" $value -}}
+          {{- else if and (eq (index . 1) "encoding") (ne (lower $value) "utf-8") -}}
+            {{- errorf "xml/parse: unsupported encoding %q, only UTF-8 is read" $value -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else if not (hasPrefix . "<!DOCTYPE") -}}
+      {{- $match := findRESubmatch $startRE . 1 -}}
+      {{- if not $match -}}{{- errorf "xml/parse: invalid markup %q" . -}}{{- end -}}
+      {{- $match = index $match 0 -}}
+      {{- if $pending -}}{{- $top.s.Set "c" (($top.s.Get "c") | append $pending) -}}{{- $pending = "" -}}{{- end -}}
+      {{- $attributes := dict -}}
+      {{- with index $match 2 -}}
+        {{- /* Scratch maps keep key case; merge would fold it (XML names are case-sensitive).
+               A duplicate attribute keeps its last value, as in encoding/xml. */ -}}
+        {{- $attrs := newScratch -}}
+        {{- range findRESubmatch $attrRE . -}}
+          {{- $value := add (index . 2) (index . 3) -}}
+          {{- if strings.ContainsAny $value "&\r" -}}
+            {{- $value = partial "docsygen/xml/inline/decode.html" $value -}}
+          {{- end -}}
+          {{- $attrs.SetInMap "m" (index . 1) $value -}}
+        {{- end -}}
+        {{- $attributes = $attrs.Get "m" -}}
+      {{- end -}}
+      {{- if index $match 3 -}}
+        {{- $top.s.Set "c" (($top.s.Get "c") | append (dict "tag" (index $match 1) "attributes" $attributes "children" slice)) -}}
+      {{- else -}}
+        {{- $top = dict "n" (index $match 1) "a" $attributes "s" newScratch -}}
+        {{- $stack = $stack | append $top -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if ne (len $stack) 1 -}}{{- errorf "xml/parse: unclosed element <%s>" $top.n -}}{{- end -}}
+  {{- if $pending -}}{{- $top.s.Set "c" (($top.s.Get "c") | append $pending) -}}{{- end -}}
+  {{- range $top.s.Get "c" -}}
+    {{- if reflect.IsMap . -}}
+      {{- if $root -}}{{- errorf "xml/parse: a second root element <%s>" .tag -}}{{- end -}}
+      {{- $root = . -}}
+    {{- else if trim . " \t\r\n" -}}
+      {{- errorf "xml/parse: text outside the root element (%q)" (substr (trim . " \t\r\n") 0 40) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $root -}}{{- errorf "xml/parse: no root element" -}}{{- end -}}
 {{- end -}}
-{{- if ne (len $stack) 1 -}}
-  {{- errorf "xml/parse: unclosed element <%s>" (index $stack (sub (len $stack) 1)).n -}}
+{{- return $root -}}
+
+{{- define "_partials/docsygen/xml/inline/decode.html" -}}
+  {{- /* Decode text or an attribute value: line ends become \n, then XML's five predefined
+         entities and character references are decoded, and any other & stops the build.
+         htmlUnescape would accept HTML's entities, and maps &#x80;-&#x9F; to Windows-1252. */ -}}
+  {{- $s := replaceRE `\r\n?` "\n" . -}}
+  {{- $out := $s -}}
+  {{- if strings.Contains $s "&" -}}
+    {{- $out = "" -}}
+    {{- range findRE `&[^&;]*;?|[^&]+` $s -}}
+      {{- if hasPrefix . "&" -}}
+        {{- $ref := findRESubmatch `^&(?:(lt|gt|amp|quot|apos)|#([0-9]{1,7})|#x([0-9A-Fa-f]{1,6}));$` . 1 -}}
+        {{- if not $ref -}}{{- errorf "xml/parse: invalid entity or character reference %q" . -}}{{- end -}}
+        {{- $ref = index $ref 0 -}}
+        {{- with index $ref 1 -}}
+          {{- $out = add $out (index (dict "lt" "<" "gt" ">" "amp" "&" "quot" `"` "apos" "'") .) -}}
+        {{- else -}}
+          {{- $c := 0 -}}
+          {{- with index $ref 2 -}}
+            {{- $c = int (strings.TrimLeft "0" . | default "0") -}}
+          {{- else -}}
+            {{- $c = int (printf "0x%s" (index $ref 3)) -}}
+          {{- end -}}
+          {{- /* A Char, or a surrogate, which %c turns into U+FFFD as encoding/xml does. */ -}}
+          {{- if not (or (eq $c 9) (eq $c 10) (eq $c 13) (and (ge $c 32) (le $c 0xFFFD)) (and (ge $c 0x10000) (le $c 0x10FFFF))) -}}
+            {{- errorf "xml/parse: character reference %q to an illegal character" . -}}
+          {{- end -}}
+          {{- $out = add $out (printf "%c" $c) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $out = add $out . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
 {{- end -}}
-{{- return (index $stack 0).c -}}

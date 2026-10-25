@@ -1,0 +1,1 @@
+<r><a>a<!--c-->b</a><b>x<![CDATA[y]]>z</b><c><![CDATA[]]></c><d>p<?pi x?>q</d><e><!--only--></e></r>

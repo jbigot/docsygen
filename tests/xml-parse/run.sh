@@ -1,10 +1,12 @@
 #!/bin/sh
-# Check an XML reader against expat: every corpus file must give the same tree, and every file
-# in edge/bad must fail the build. READER selects the reader: `template` (the default) is the
-# template parser (layouts/_partials/docsygen/xml/parse.html), `unmarshal` is
-# transform.Unmarshal's document layout (targetType: document). With `unmarshal`, extra.xml is
-# accepted by design (what follows the root is ignored), and every file in edge/lenient must
-# build: they are known differences from expat, inherited from encoding/xml.
+# Check an XML reader against expat: every corpus file must give the same tree, in the document
+# layout ({tag, attributes, children}), and every file in edge/bad must fail the build. READER
+# selects the reader: `template` (the default) is the template reader, through
+# layouts/_partials/docsygen/xml/unmarshal.html, and `unmarshal` is transform.Unmarshal's document
+# layout (targetType: document). With `unmarshal`, the bad files that the template reader rejects
+# only by being stricter are accepted by design. The files in edge/lenient are known differences
+# from expat, inherited from encoding/xml: each one is either accepted with the tree encoding/xml
+# gives, or, for the template reader only, rejected. known-differences.md lists them all.
 #
 # Usage: [READER=template|unmarshal] sh tests/xml-parse/run.sh [NAME=DIR ...]
 #   NAME=DIR  an extra directory of XML files to compare, e.g. doxytest=<doxygen>/testing
@@ -19,8 +21,8 @@ hugo=${HUGO:-$root/exampleSite/node_modules/.bin/hugo}
 [ -x "$hugo" ] || hugo=hugo
 reader=${READER:-template}
 case $reader in
-  template) layouts=$here/layouts; layout_opt= ;;
-  unmarshal) layouts=$here/layouts-unmarshal; layout_opt='--layout document' ;;
+  template) layouts=$here/layouts ;;
+  unmarshal) layouts=$here/layouts-unmarshal ;;
   *) echo "READER must be template or unmarshal, not $reader" >&2; exit 2 ;;
 esac
 work=$(mktemp -d)
@@ -56,42 +58,60 @@ for corpus in "$@"; do
   bytes=$((bytes + $(find "${corpus#*=}" -type f -name '*.xml' -exec cat {} + | wc -c)))
 done
 LC_ALL=C awk -v s="$start" -v e="$end" -v b="$bytes" 'BEGIN { printf "build: %.2f s for %.1f MB of XML\n", e - s, b / 1e6 }'
-python3 -I "$here/compare.py" $layout_opt "$work/good/public/trees.json" "$@"
-
 status=0
+python3 -I "$here/compare.py" --layout document "$work/good/public/trees.json" "$@" || status=1
+
 for bad in "$here"/edge/bad/*.xml; do
   name=$(basename "$bad")
   mkdir -p "$work/bad"
   site_config "$work/bad/hugo.yaml" "bad/$name=$bad"
   # Not --quiet: it would hide the ERROR line that errorf logs.
   if message=$("$hugo" --source "$work/bad" --destination "$work/bad/public" 2>&1); then
-    if [ "$reader" = unmarshal ] && [ "$name" = extra.xml ]; then
-      printf 'accepted by design %s\n' "$name"
-    else
-      printf 'NOT REJECTED %s\n' "$name"; status=1
-    fi
+    case $reader/$name in
+      # What follows the root is ignored, and encoding/xml accepts more names and declarations.
+      unmarshal/extra.xml | unmarshal/text-outside.xml | unmarshal/second-root.xml | \
+      unmarshal/non-ascii-name.xml | unmarshal/declaration.xml) printf 'accepted by design %s\n' "$name" ;;
+      *) printf 'NOT REJECTED %s\n' "$name"; status=1 ;;
+    esac
   else
-    printf 'rejected %-22s %s\n' "$name" "$(printf '%s' "$message" | grep -oE 'xml/parse: .*|unmarshal failed: .*' | head -n 1)"
+    case $reader in
+      template) pattern='xml/parse: .*' ;;
+      unmarshal) pattern='unmarshal failed: .*' ;;
+    esac
+    if reason=$(printf '%s' "$message" | grep -oE "$pattern" | head -n 1) && [ -n "$reason" ]; then
+      printf 'rejected %-22s %s\n' "$name" "$reason"
+    else
+      printf 'REJECTED WITHOUT A READER MESSAGE %s\n%s\n' "$name" "$message"; status=1
+    fi
   fi
   rm -rf "$work/bad"
 done
 
-if [ "$reader" = unmarshal ]; then
-  for lenient in "$here"/edge/lenient/*.xml; do
-    name=$(basename "$lenient")
-    case $name in
-      duplicate-attr.xml) issue=go#68295 ;;
-      no-space-between-attrs.xml) issue=go#68385 ;;
-      *) issue=unreported ;;
-    esac
-    mkdir -p "$work/lenient"
-    site_config "$work/lenient/hugo.yaml" "lenient/$name=$lenient"
-    if "$hugo" --quiet --source "$work/lenient" --destination "$work/lenient/public" > /dev/null 2>&1; then
+for lenient in "$here"/edge/lenient/*.xml; do
+  name=$(basename "$lenient")
+  # The tree encoding/xml gives, and whether the template reader rejects the file instead.
+  case $name in
+    duplicate-attr.xml) issue=go#68295 want='{"attributes":{"a":"2"},"children":[],"tag":"r"}' strict= ;;
+    no-space-between-attrs.xml) issue=go#68385 want='{"attributes":{"a":"1","b":"2"},"children":[],"tag":"r"}' strict=template ;;
+    surrogate-ref.xml) issue=unreported want='{"attributes":{},"children":["\ufffd"],"tag":"r"}' strict= ;;
+    *) printf 'UNLISTED %s: add its expected outcome to run.sh\n' "$name"; status=1; continue ;;
+  esac
+  mkdir -p "$work/lenient"
+  site_config "$work/lenient/hugo.yaml" "lenient/$name=$lenient"
+  if "$hugo" --source "$work/lenient" --destination "$work/lenient/public" > "$work/lenient.log" 2>&1; then
+    if [ "$strict" = "$reader" ]; then
+      printf 'NOT REJECTED %s: the %s reader rejects it\n' "$name" "$reader"; status=1
+    elif python3 -I -c 'import json, sys; (got,) = json.load(open(sys.argv[1])).values(); sys.exit(got != json.loads(sys.argv[2]))' \
+        "$work/lenient/public/trees.json" "$want"; then
       printf 'KNOWN accepted %s (%s)\n' "$name" "$issue"
     else
-      printf 'NOW REJECTED %s: drop it from edge/lenient\n' "$name"
+      printf 'DIFF %s: %s instead of %s\n' "$name" "$(cat "$work/lenient/public/trees.json")" "$want"; status=1
     fi
-    rm -rf "$work/lenient"
-  done
-fi
+  elif [ "$strict" = "$reader" ]; then
+    printf 'rejected (stricter) %s\n' "$name"
+  else
+    printf 'NOW REJECTED %s (%s): drop it from edge/lenient\n' "$name" "$issue"; cat "$work/lenient.log"; status=1
+  fi
+  rm -rf "$work/lenient"
+done
 exit $status
