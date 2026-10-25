@@ -28,6 +28,12 @@
   count: 106
   reason: "PROVISIONAL, to be approved: the tooltips that follow a code fragment repeat a symbol's name, declaration, brief and definition, but which fragments get them depends on the state of Doxygen's code parser (once per output file, yet missing on some pages that link the symbol), and an enum value's line isn't in the XML"
   evidence: "First_steps.xml links PDI_expose (group__annotation_1gae809befdb9bde9abad07a9e0eab894d7) in code, and First_steps.html links it without its tooltip, which how_to_create_plugin.html has; <enumvalue> has no <location>"
+- oracle: sample-c
+  pages: "*"
+  select: div.ttc
+  count: 14
+  reason: "PROVISIONAL, to be approved: see the sample entry (all of sample-c's tooltips are on its source listing)"
+  evidence: "see the sample entry"
 - oracle: pdi
   pages: "*"
   select: div.ttc

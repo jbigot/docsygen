@@ -1,7 +1,8 @@
 {{- /* A program listing as a Doxygen code fragment: one div.line per codeline, highlights as
        spans, links to documented symbols with their kind (none for files, as in #include lines),
-       then their tooltips (htmlgen.cpp,
-       HtmlCodeGenerator). */ -}}
+       then their tooltips (htmlgen.cpp, HtmlCodeGenerator). .numbered writes each line's anchor
+       and number (writeLineNumber), linked to what the line defines (the codeline's refid); an
+       empty line followed by a gap, where Doxygen stripped a comment, then has no blank. */ -}}
 {{- $ctx := .ctx -}}
 {{- $kinds := dict "function" "function" "variable" "variable" "typedef" "typedef" "enum" "enumeration"
     "enumvalue" "enumvalue" "define" "define" "class" "class" "struct" "struct" "union" "union" "namespace" "namespace"
@@ -15,13 +16,26 @@
   {{- end -}}
 {{- end -}}
 {{- $r := 0 -}}
+{{- $lines := slice -}}
+{{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "codeline") -}}{{- $lines = $lines | append . -}}{{- end -}}{{- end -}}
 <div class="fragment">
-{{- range .node.children -}}
-  {{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
+{{- range $li, $line := $lines -}}
+  {{- with $line -}}
     <div class="line">
     {{- $empty := true -}}
     {{- range .children -}}{{- if and (reflect.IsMap .) .children -}}{{- $empty = false -}}{{- end -}}{{- end -}}
-    {{- if $empty -}}{{ " " }}{{- end -}}
+    {{- if $.numbered -}}
+      {{- $n := int .attributes.lineno -}}
+      {{- $number := printf "%5d" $n -}}
+      <a id="{{ printf "l%05d" $n }}" name="{{ printf "l%05d" $n }}"></a><span class="lineno">
+      {{- /* A line that defines a compound links to its page, without the anchor of an embedded one. */ -}}
+      {{- $url := "" -}}
+      {{- with and .attributes.refid (index $ctx.links .attributes.refid) -}}{{- $url = cond (eq $line.attributes.refkind "compound") (replaceRE `#.*$` "" .) . -}}{{- end -}}
+      {{- with $url -}}<a class="line" href="{{ . }}">{{ $number }}</a>{{- else -}}{{ $number }}{{- end -}}
+      </span>
+      {{- $gap := and (lt (add $li 1) (len $lines)) (gt (int (index $lines (add $li 1)).attributes.lineno) (add $n 1)) -}}
+      {{- if and $empty (not $gap) -}}{{ " " }}{{- end -}}
+    {{- else if $empty -}}{{ " " }}{{- end -}}
     {{- range .children -}}
       {{- if and (reflect.IsMap .) (eq .tag "highlight") -}}
         {{- if ne .attributes.class "normal" -}}<span class="{{ .attributes.class }}">{{- end -}}

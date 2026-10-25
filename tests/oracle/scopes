@@ -43,5 +43,7 @@ contents:*_8*!*_source!*-members!*-example
 contents:dir_*
 contents:group__*
 contents:*-example
+contents:*-members
+contents:*_source
 memberdecls
 memitem

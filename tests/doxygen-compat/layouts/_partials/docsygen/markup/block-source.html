@@ -1,0 +1,14 @@
+{{- /* A file's source listing (filedef.cpp, writeSourceBody): the link to the file's page when it
+       has one, then the numbered listing. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .block.id -}}
+{{- $e := index $m.ids $id -}}
+{{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $id))) -}}
+<a href="{{ index $ctx.urls . }}">Go to the documentation of this file.</a>
+{{- end -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}
+    {{- partial "docsygen/markup/listing.html" (dict "node" . "ctx" $ctx "numbered" true) -}}
+  {{- end -}}
+{{- end -}}
