@@ -1,0 +1,32 @@
+- name: slug of a qualified name
+  partial: docsygen/text/slug.html
+  context: PDI::Datatype
+  expect: pdi-datatype
+- name: slug of a template
+  partial: docsygen/text/slug.html
+  context: Foo< int, 3 >
+  expect: foo-int-3
+- name: slug of an operator
+  partial: docsygen/text/slug.html
+  context: operator<<
+  expect: operator
+- name: slug of a page title
+  partial: docsygen/text/slug.html
+  context: Decl'HDF5 plugin
+  expect: decl-hdf5-plugin
+- name: slug keeps letters and underscores
+  partial: docsygen/text/slug.html
+  context: Élan_x
+  expect: élan_x
+- name: slug of punctuation only
+  partial: docsygen/text/slug.html
+  context: "::"
+  expect: ""
+- name: md-escape of emphasis and links
+  partial: docsygen/text/md-escape.html
+  context: a_b*c[d]
+  expect: a\_b\*c\[d\]
+- name: md-escape of a heading attribute
+  partial: docsygen/text/md-escape.html
+  context: "{#id}"
+  expect: \{\#id\}

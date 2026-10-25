@@ -1,0 +1,4 @@
+{{- /* A string as literal Markdown text: every ASCII punctuation character backslash-escaped,
+       which CommonMark allows for each of them.
+       Usage: partial "docsygen/text/md-escape.html" "a_b" → a\_b */ -}}
+{{- return replaceRE "([!-/:-@\\[-`{-~])" `\$1` . -}}

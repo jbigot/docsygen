@@ -1,0 +1,5 @@
+{{- /* A string as a URL or anchor segment: lowercase, with each run of characters other than
+       Unicode letters, digits and _ turned into -, and no - at either end. The result can be
+       empty (for "::").
+       Usage: partial "docsygen/text/slug.html" "PDI::Datatype" → pdi-datatype */ -}}
+{{- return trim (replaceRE `[^\p{L}\p{N}_]+` "-" (lower .)) "-" -}}

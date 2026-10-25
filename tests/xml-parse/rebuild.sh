@@ -4,26 +4,20 @@
 # doesn't do it, since Hugo clears its cache at the start of every build.
 #
 # Usage: sh tests/xml-parse/rebuild.sh
-# HUGO selects the Hugo binary, as in run.sh. PORT (default 13998) is the server's port.
+# HUGO selects the Hugo binary (tests/lib.sh). PORT (default 13998) is the server's port.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
-root=$(cd "$here/../.." && pwd)
-# The npm package's .bin/hugo is a Node.js wrapper: killing it would leave the server running.
-hugo=${HUGO:-$root/exampleSite/node_modules/hugo-extended/bin/hugo}
-[ -x "$hugo" ] || hugo=hugo
-work=$(mktemp -d)
+. "$here/../lib.sh"
+work=$tmp
 pid=
-trap '[ -z "$pid" ] || kill "$pid" 2> /dev/null || true; rm -rf "$work"' EXIT
+trap '[ -z "$pid" ] || kill "$pid" 2> /dev/null || true; rm -rf "$tmp"' EXIT
 
 mkdir -p "$work/content" "$work/corpus"
 cp "$here"/edge/good/*.xml "$work/corpus/"
 printf -- '---\ntitle: Home\n---\n' > "$work/content/_index.md"
-{
-  printf 'disableKinds: [taxonomy, term, rss, sitemap, page, section]\nmodule:\n  mounts:\n'
-  printf '    - {source: "%s", target: layouts}\n' "$root/layouts" "$here/layouts"
-  printf '    - {source: content, target: content}\n    - {source: corpus, target: assets/corpus/edge}\n'
-} > "$work/hugo.yaml"
+site_config "$work/hugo.yaml" "$here/layouts=layouts" content=content corpus=assets/corpus/edge
+printf 'disableKinds: [taxonomy, term, rss, sitemap, page, section]\n' >> "$work/hugo.yaml"
 
 # --templateMetrics prints one table per build: the number of parse.html calls is the number
 # of files parsed by that build.

@@ -1,0 +1,16 @@
+{{- /* Run one case, {name, partial, context, expect, select?, len?}, and return
+       {name, ok, got, want}. A string result is compared with expect after TrimSpace, any
+       other through jsonify. */ -}}
+{{- $got := partial .partial (partial "test/context.html" .context) -}}
+{{- range .select -}}{{- $got = index $got . -}}{{- end -}}
+{{- if .len -}}{{- $got = len $got -}}{{- end -}}
+{{- $g := "" -}}
+{{- $w := "" -}}
+{{- if in (slice "string" "template.HTML") (printf "%T" $got) -}}
+  {{- $g = strings.TrimSpace (string $got) -}}
+  {{- $w = strings.TrimSpace (string .expect) -}}
+{{- else -}}
+  {{- $g = jsonify $got -}}
+  {{- $w = jsonify .expect -}}
+{{- end -}}
+{{- return dict "name" .name "ok" (eq $g $w) "got" $g "want" $w -}}

@@ -10,42 +10,37 @@
 #
 # Usage: [READER=template|unmarshal] sh tests/xml-parse/run.sh [NAME=DIR ...]
 #   NAME=DIR  an extra directory of XML files to compare, e.g. doxytest=<doxygen>/testing
-# Always compared: the demo project in sample/ (regenerated with doxygen), edge/good, and
-# the example site's PDI XML. HUGO selects the Hugo binary (default: the example site's
-# npm-installed one, else `hugo` from PATH).
+# Always compared: the XML of the sample and sample-c oracles (regenerated with doxygen, see
+# tests/oracle/generate.sh), edge/good, and the example site's PDI XML. HUGO and DOXYGEN select
+# the binaries (tests/lib.sh).
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
-root=$(cd "$here/../.." && pwd)
-hugo=${HUGO:-$root/exampleSite/node_modules/.bin/hugo}
-[ -x "$hugo" ] || hugo=hugo
+. "$here/../lib.sh"
 reader=${READER:-template}
 case $reader in
   template) layouts=$here/layouts ;;
   unmarshal) layouts=$here/layouts-unmarshal ;;
   *) echo "READER must be template or unmarshal, not $reader" >&2; exit 2 ;;
 esac
-work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
+work=$tmp
 
-# site_config FILE NAME=SOURCE...: Hugo config mounting the parser, the dump layout and
-# each SOURCE (a directory or a single file) under assets/corpus/NAME.
-site_config() {
+# corpus_config FILE NAME=SOURCE...: the configuration of a site that imports docsygen and dumps
+# the tree of every XML file of each SOURCE (a directory or a single file), mounted under
+# assets/corpus/NAME.
+corpus_config() {
   config=$1; shift
-  {
-    printf 'disableKinds: [taxonomy, term, rss, sitemap, page, section]\nmodule:\n  mounts:\n'
-    printf '    - {source: "%s", target: layouts}\n' "$root/layouts" "$layouts"
-    for corpus in "$@"; do
-      printf '    - {source: "%s", target: "assets/corpus/%s"}\n' "${corpus#*=}" "${corpus%%=*}"
-    done
-  } > "$config"
+  n=$#
+  for corpus; do set -- "$@" "${corpus#*=}=assets/corpus/${corpus%%=*}"; done
+  shift "$n"
+  site_config "$config" "$layouts=layouts" "$@"
+  printf 'disableKinds: [taxonomy, term, rss, sitemap, page, section]\n' >> "$config"
 }
 
-(cat "$here/sample/Doxyfile"; printf '%s\n' "INPUT=$here/sample/src" "OUTPUT_DIRECTORY=$work/sample") | doxygen -
-
-set -- "sample=$work/sample/xml" "edge=$here/edge/good" "pdi=$root/exampleSite/assets/doxygen/pdi" "$@"
+set -- "sample=$(oracle sample)/xml" "sample-c=$(oracle sample-c)/xml" "edge=$here/edge/good" \
+  "pdi=$root/exampleSite/assets/doxygen/pdi" "$@"
 mkdir -p "$work/good"
-site_config "$work/good/hugo.yaml" "$@"
+corpus_config "$work/good/hugo.yaml" "$@"
 now() { python3 -c 'import time; print(time.time())'; }
 start=$(now)
 # Not --quiet: it would hide the ERROR line of a rejected file.
@@ -64,7 +59,7 @@ python3 -I "$here/compare.py" --layout document "$work/good/public/trees.json" "
 for bad in "$here"/edge/bad/*.xml; do
   name=$(basename "$bad")
   mkdir -p "$work/bad"
-  site_config "$work/bad/hugo.yaml" "bad/$name=$bad"
+  corpus_config "$work/bad/hugo.yaml" "bad/$name=$bad"
   # Not --quiet: it would hide the ERROR line that errorf logs.
   if message=$("$hugo" --source "$work/bad" --destination "$work/bad/public" 2>&1); then
     case $reader/$name in
@@ -97,7 +92,7 @@ for lenient in "$here"/edge/lenient/*.xml; do
     *) printf 'UNLISTED %s: add its expected outcome to run.sh\n' "$name"; status=1; continue ;;
   esac
   mkdir -p "$work/lenient"
-  site_config "$work/lenient/hugo.yaml" "lenient/$name=$lenient"
+  corpus_config "$work/lenient/hugo.yaml" "lenient/$name=$lenient"
   if "$hugo" --source "$work/lenient" --destination "$work/lenient/public" > "$work/lenient.log" 2>&1; then
     if [ "$strict" = "$reader" ]; then
       printf 'NOT REJECTED %s: the %s reader rejects it\n' "$name" "$reader"; status=1

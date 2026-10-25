@@ -1,0 +1,19 @@
+# The C++ sample: run doxygen from this directory (tests/oracle/generate.sh does), so that
+# paths are relative to it.
+PROJECT_NAME = "docsygen sample"
+PROJECT_NUMBER = 1.0
+PROJECT_BRIEF = "Every construct docsygen renders"
+INPUT = src
+RECURSIVE = YES
+FILE_PATTERNS = *.hpp *.h *.md
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE = YES
+INTERNAL_DOCS = YES
+CASE_SENSE_NAMES = YES
+SOURCE_BROWSER = YES
+IMAGE_PATH = images
+EXAMPLE_PATH = examples
+GENERATE_HTML = NO
+GENERATE_LATEX = NO
+GENERATE_XML = YES
+QUIET = YES

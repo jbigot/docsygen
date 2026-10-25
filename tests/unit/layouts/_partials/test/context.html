@@ -1,0 +1,32 @@
+{{- /* Prepare a case's context. A map's keys are kept, except:
+         xml: STRING          becomes node, the string parsed with docsygen/xml/parse.html;
+         model: NAME          becomes model, the model of assets/doxygen/NAME;
+         ctx: {model?, links?, anchors?}  becomes ctx, as docsygen/ctx.html returns it for a
+                              page, with page nil, empty maps for what is not given, and
+                              paths when model is given.
+       Any other context is passed as is. */ -}}
+{{- $c := . -}}
+{{- if reflect.IsMap $c -}}
+  {{- $s := newScratch -}}
+  {{- $s.Set "m" dict -}}
+  {{- range $k, $v := $c -}}
+    {{- if eq $k "xml" -}}
+      {{- $s.SetInMap "m" "node" (partial "docsygen/xml/parse.html" $v) -}}
+    {{- else if eq $k "model" -}}
+      {{- $s.SetInMap "m" "model" (partial "docsygen/model.html" (printf "doxygen/%s" $v)) -}}
+    {{- else if eq $k "ctx" -}}
+      {{- $ctx := newScratch -}}
+      {{- $ctx.Set "m" (dict "page" nil "links" ($v.links | default dict) "anchors" ($v.anchors | default dict)) -}}
+      {{- with $v.model -}}
+        {{- $model := partial "docsygen/model.html" (printf "doxygen/%s" .) -}}
+        {{- $ctx.SetInMap "m" "model" $model -}}
+        {{- $ctx.SetInMap "m" "paths" (partial "docsygen/paths.html" (dict "model" $model "pathMap" slice)) -}}
+      {{- end -}}
+      {{- $s.SetInMap "m" "ctx" ($ctx.Get "m") -}}
+    {{- else -}}
+      {{- $s.SetInMap "m" $k $v -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $c = $s.Get "m" -}}
+{{- end -}}
+{{- return $c -}}
