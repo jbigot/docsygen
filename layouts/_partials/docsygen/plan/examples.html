@@ -3,7 +3,9 @@
          anchors  {example refid: [one entry per ref of its listing, in order: the anchor Doxygen
                   writes before it, or ""]}. The first ref to each linkable class gets "_aN", to
                   each linkable member "aN", one counter per example; a related function gets
-                  none (demo::make_widget in the sample: unexplained, provisional).
+                  none, called with its scope or not. Doxygen picks the prefix by the path its
+                  code parser takes, which the XML doesn't record: an unqualified call to a
+                  function outside a class gets "_aN" (an XML gap that no oracle shows).
          uses     {class or member refid: [{example, anchor}]}, by example name: the "Examples"
                   section of its documentation.
        Usage: partial "docsygen/plan/examples.html" (dict "model" $model) */ -}}

@@ -1,9 +1,9 @@
 {{- /* One node of a description, as htmldocvisitor.cpp writes it. Context: node, parent (its
        element), index (its position in parent.children), ctx, root (whether parent is the
-       description itself), single (a brief), and the depth of ordered lists, olDepth. */ -}}
+       description itself) and single (a brief). */ -}}
 {{- $n := .node -}}
 {{- $ctx := .ctx -}}
-{{- $sub := dict "ctx" $ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $sub := dict "ctx" $ctx "single" .single -}}
 {{- if not (reflect.IsMap $n) -}}
   {{- /* Doxygen's XML ends an image with a newline that isn't text. */ -}}
   {{- $prev := cond (gt .index 0) (index .parent.children (sub .index 1)) "" -}}
@@ -59,22 +59,17 @@
 {{- else if in (slice "itemizedlist" "orderedlist") $tag -}}
   {{- $check := false -}}
   {{- range $n.children -}}{{- if and (reflect.IsMap .) .attributes.override -}}{{- $check = true -}}{{- end -}}{{- end -}}
-  {{- $depth := .olDepth | default 0 -}}
   {{- if eq $tag "orderedlist" -}}
-    {{- if or $n.attributes.type $n.attributes.start -}}
-      <ol{{ with $n.attributes.type }} type="{{ . }}"{{ end }}{{ with $n.attributes.start }} start="{{ . }}"{{ end }}>
-    {{- else -}}
-      {{- /* An auto list (Markdown, -#): the type follows the depth. */ -}}
-      <ol type="{{ index (slice "1" "a" "i" "A") (mod $depth 4) }}">
-    {{- end -}}
+    {{- /* Doxygen gives an auto list (Markdown, -#) a type that follows its depth, but the XML
+           doesn't tell auto lists from HTML ones: only the XML's type is written (an XML gap). */ -}}
+    <ol{{ with $n.attributes.type }} type="{{ . }}"{{ end }}{{ with $n.attributes.start }} start="{{ . }}"{{ end }}>
   {{- else if $check -}}<ul class="check">
   {{- else -}}<ul>
   {{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
       {{- with .attributes.override -}}<li class="{{ . }}">{{- else -}}<li>{{- end -}}
-      {{- $auto := or (eq $tag "itemizedlist") (not (or $n.attributes.type $n.attributes.start)) -}}
-      {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" (cond $auto "auto" $tag) "olDepth" (cond (eq $tag "orderedlist") (add $depth 1) $depth))) -}}
+      {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" $tag)) -}}
       </li>
     {{- end -}}
   {{- end -}}
@@ -128,16 +123,9 @@
 {{- else if eq $tag "parameterlist" -}}
   {{- partial "docsygen/markup/doc-params.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "variablelist" -}}
-  {{- /* The definition of each entry of an xref list page starts with the entry's anchor. */ -}}
-  {{- $reflist := true -}}
-  {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
-    {{- $para := false -}}
-    {{- range .children -}}{{- if and (not $para) (reflect.IsMap .) -}}{{- $para = . -}}{{- end -}}{{- end -}}
-    {{- $first := false -}}
-    {{- with $para -}}{{- range .children -}}{{- if and (not $first) (reflect.IsMap .) -}}{{- $first = . -}}{{- end -}}{{- end -}}{{- end -}}
-    {{- if not (and $first (eq $first.tag "anchor")) -}}{{- $reflist = false -}}{{- end -}}
-  {{- end -}}{{- end -}}
-  {{- if $reflist -}}<dl class="reflist">{{- else -}}<dl>{{- end -}}
+  {{- /* Doxygen writes the list of an xref page (\todo, \bug, \xrefitem…) as a reflist, which the
+         XML doesn't tell from other variable lists: no class (an XML gap). */ -}}
+  <dl>
   {{- range $n.children -}}
     {{- if not (reflect.IsMap .) -}}
     {{- else if eq .tag "varlistentry" -}}

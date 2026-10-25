@@ -6,8 +6,10 @@
          text, linked to that class, without a description; its derived classes are those
          that inherit that text;
          a class outside the model ("out:NAME"), unlinked, known from the references and the
-         inheritance graphs that name it, shown only above a class of the model. Doxygen names an
-         undocumented base without its template arguments, unless a reference carries its refid.
+         inheritance graphs that name it, shown only above a class of the model. Doxygen creates
+         a base it cannot resolve as an undocumented class, named without its template arguments
+         (doxygen.cpp, findClassRelation). A base it resolved keeps them, and some reference to it
+         has a refid, even when its class is not in the XML (EXCLUDE_SYMBOLS).
        Returns [{id, link, name, kind, children}], id "" for the nodes without a description.
        Usage: partial "docsygen/plan/tree/hierarchy.html" (dict "model" $model) */ -}}
 {{- $m := .model -}}

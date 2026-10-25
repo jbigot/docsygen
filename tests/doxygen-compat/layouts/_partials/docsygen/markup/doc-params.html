@@ -1,7 +1,7 @@
 {{- /* A parameter list: a table of names and descriptions, with directions when any is given
        (htmldocvisitor.cpp, operator()(DocParamSect)). */ -}}
 {{- $n := .node -}}
-{{- $sub := dict "ctx" .ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $sub := dict "ctx" .ctx "single" .single -}}
 {{- $kind := $n.attributes.kind -}}
 {{- $class := index (dict "param" "params" "retval" "retval" "exception" "exception" "templateparam" "tparams") $kind -}}
 {{- $title := index (dict "param" "Parameters" "retval" "Return values" "exception" "Exceptions" "templateparam" "Template Parameters") $kind -}}

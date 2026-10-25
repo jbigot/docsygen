@@ -153,6 +153,53 @@ class Gaps(unittest.TestCase):
         self.assertEqual(exact.normalize(pages['p'], exact.doxygen_links('p')),
                          exact.normalize(exact.parse('<div class="fragment"><div class="line">a</div>\n</div>'), exact.doxygen_links('p')))
 
+    def test_an_attribute_value_narrows_the_match(self):
+        pages = {'p': exact.parse('<ol type="1"><li>a</li></ol><ol type="a" start="3"><li>b</li></ol>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='ol[type=1]', attr='type', count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual([n.attrs for n in exact.find(pages['p'], 'ol')], [{}, {'type': 'a', 'start': '3'}])
+
+    def test_an_attribute_prefix_matches_any_tag(self):
+        pages = {'p': exact.parse('<table class="markdownTable"><tr class="markdownTableHead">'
+                                  '<th class="markdownTableHeadLeft">a</th></tr></table><table class="doxtable"></table>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='[class^=markdownTable]', attr='class', count=3)])
+        self.assertEqual(errors, [])
+        self.assertEqual([n.attrs for n in exact.find(pages['p'], 'table')], [{}, {'class': 'doxtable'}])
+
+    def test_a_space_selects_descendants(self):
+        pages = {'p': exact.parse('<table class="memname"><tr><td class="memname"><span><a class="el" href="h">x</a></span>'
+                                  '</td></tr></table><p><a class="el" href="h">x</a></p>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='td.memname a.el', unwrap=True, count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual([exact.text(n.parent) for n in exact.find(pages['p'], 'a.el')], ['x'])
+        self.assertEqual(exact.find(pages['p'], 'a.el')[0].parent.tag, 'p')
+
+    def test_a_tilde_selects_later_siblings(self):
+        pages = {'p': exact.parse('<table><tr><td class="memItemRight"><a class="el" href="h">size</a> (int '
+                                  '<a class="el" href="h">size</a>)</td></tr></table>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='td.memItemRight a.el ~ a.el', text='^size$', unwrap=True, count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual(exact.text(exact.find(pages['p'], 'td')[0]), 'size (int size)')
+        self.assertEqual(len(exact.find(pages['p'], 'a.el')), 1)
+
+    def test_contains_narrows_an_element_by_its_text(self):
+        pages = {'p': exact.parse('<table><tr><td class="memname">enum <a class="el" href="h">S</a></td></tr>'
+                                  '<tr><td class="memname">typedef void(* f) (<a class="el" href="h">S</a> s)</td></tr></table>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='td.memname:contains(typedef void) a.el', unwrap=True, count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual([exact.text(a.parent) for a in exact.find(pages['p'], 'a.el')], ['enum S'])
+
+    def test_replace_rewrites_the_own_text_of_an_element(self):
+        pages = {'p': exact.parse('<div class="contents"><hr/>from the following files:<ul><li>files:</li></ul></div>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='div.contents', replace='files:$', **{'with': 'file:'}, count=1)])
+        self.assertEqual(errors, [])
+        self.assertEqual(exact.text(pages['p']), 'from the following file:files:')
+
+    def test_replace_without_a_match_does_not_select(self):
+        errors, _ = exact.apply_gaps({'p': exact.parse('<div class="contents">a file</div>')},
+                                     [gap(select='div.contents', replace='files', **{'with': 'file'}, count=1)])
+        self.assertIn('stale', errors[0])
+
     def test_a_wrong_count_fails(self):
         errors, _ = exact.apply_gaps(self.pages(), [gap(select='div.memdoc', count=2)])
         self.assertEqual(len(errors), 1)

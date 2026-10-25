@@ -1,8 +1,7 @@
 {{- /* A concept's definition, Doxygen's "Concept definition" (conceptdef.cpp, writeDefinition):
-       its initializer as a code fragment. Doxygen runs its C++ code parser on it; this
-       highlights the words of code.l's KEYWORD, FLOWKW, FLOWCONDITION and TYPEKW lists instead,
-       but not after ::, . or -> (members), "concept" with the blanks after it as Doxygen's
-       lexer takes them, and expands leading tabs to TAB_SIZE. */ -}}
+       its initializer as a code fragment, leading tabs expanded to TAB_SIZE. Doxygen runs its
+       code parser on it, which highlights keywords that the XML's plain text doesn't mark (an
+       XML gap). */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $e := index $m.ids .block.id -}}
@@ -10,10 +9,6 @@
 {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = . -}}{{- end -}}{{- end -}}
 {{- with $init -}}
   {{- $tab := strings.Repeat (int (index ((index $m.options "TAB_SIZE") | default (slice "4")) 0)) " " -}}
-  {{- $classes := dict -}}
-  {{- range split "asm __assume auto class const delete enum explicit extern false friend gcnew gcroot set get inline internal mutable namespace new null nullptr override operator pin_ptr private protected public raise register remove self sizeof static struct __super function template generic this true typedef typeid typename union using virtual volatile abstract sealed final import synchronized transient alignas alignof concept requires decltype constexpr consteval constinit co_await co_return co_yield static_assert _Static_assert noexcept thread_local" " " -}}{{- $classes = merge $classes (dict . "keyword") -}}{{- end -}}
-  {{- range split "break catch continue default do else finally return switch throw throws case for foreach goto if try while" " " -}}{{- $classes = merge $classes (dict . "keywordflow") -}}{{- end -}}
-  {{- range split "bool byte char char8_t char16_t char32_t double float int long object short signed unsigned void wchar_t size_t boolean id SEL string" " " -}}{{- $classes = merge $classes (dict . "keywordtype") -}}{{- end -}}
   {{- /* The fragment as HTML, line breaks kept. */ -}}
   {{- $html := "" -}}
   {{- range .children -}}
@@ -27,13 +22,7 @@
       {{- end -}}
       {{- if $url -}}{{- $html = printf `%s<a class="code hl_%s" href="%s">%s</a>` $html $kind (htmlEscape $url) (htmlEscape $text) -}}
       {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape $text) -}}{{- end -}}
-    {{- else -}}
-      {{- range findRE `concept[ \t]+|[A-Za-z_][A-Za-z0-9_]*|[^A-Za-z_]+` . -}}
-        {{- $class := index $classes (trim . " \t") -}}
-        {{- if and $class (not (findRE `(::|\.|->)$` $html 1)) -}}
-          {{- $html = printf `%s<span class="%s">%s</span>` $html $class . -}}
-        {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}{{- end -}}
-      {{- end -}}
+    {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}
     {{- end -}}
   {{- end -}}
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>

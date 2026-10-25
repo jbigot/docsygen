@@ -1,8 +1,9 @@
 {{- /* A program listing as a Doxygen code fragment: one div.line per codeline, highlights as
        spans, links to documented symbols with their kind (none for files, as in #include lines),
        then their tooltips (htmlgen.cpp, HtmlCodeGenerator). .numbered writes each line's anchor
-       and number (writeLineNumber), linked to what the line defines (the codeline's refid); an
-       empty line followed by a gap, where Doxygen stripped a comment, then has no blank. */ -}}
+       and number (writeLineNumber), linked to what the line defines (the codeline's refid). An
+       empty line gets a blank (endCodeLine), but not one followed by a gap in the numbering: the
+       lines of a comment that STRIP_CODE_COMMENTS hides, whose start already hides the output. */ -}}
 {{- $ctx := .ctx -}}
 {{- $kinds := dict "function" "function" "variable" "variable" "typedef" "typedef" "enum" "enumeration"
     "enumvalue" "enumvalue" "define" "define" "class" "class" "struct" "struct" "union" "union" "namespace" "namespace"
@@ -57,6 +58,6 @@
     </div>{{ "\n" }}
   {{- end -}}
 {{- end -}}
-{{- /* Doxygen's tooltips are an XML gap (tests/oracle/xml-gaps.yaml): docsygen/markup/tooltips.html
-       writes them, but which fragments get them depends on Doxygen's code parser. */ -}}
+{{- /* Doxygen follows some fragments with tooltips, but which ones depends on the state of its
+       code parser (an XML gap). */ -}}
 </div>

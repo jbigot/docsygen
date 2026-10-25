@@ -4,7 +4,7 @@
        paragraph of a list item or a cell, and closed and reopened around each inner block. */ -}}
 {{- $n := .node -}}
 {{- $parent := .parent -}}
-{{- $sub := dict "ctx" .ctx "single" .single "olDepth" (.olDepth | default 0) -}}
+{{- $sub := dict "ctx" .ctx "single" .single -}}
 {{- $needsTag := or (in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" "internal" "listitem" "entry" "simplesect"
     "xrefdescription" "blockquote" "parblock" "details" "summary") $parent.tag) (and .root (not .single)) -}}
 {{- /* The position among the parent's paragraphs, and the context class it gives. */ -}}
@@ -27,10 +27,10 @@
   {{- $isLast = eq $k (sub $count 1) -}}
   {{- $c := cond (eq .grand "variablelist") "dd" (index $contexts $parent.tag) -}}
   {{- $class = cond $isLast (printf "end%s" $c) (cond $isFirst (printf "start%s" $c) (printf "inter%s" $c)) -}}
-  {{- /* An item of an auto list (Markdown, or -#) marks all its paragraphs startli. The XML
-         doesn't tell auto lists from HTML ones: an itemized list, or an ordered one without
-         type or start, is taken for an auto list. */ -}}
-  {{- if eq .grand "auto" -}}{{- $class = "startli" -}}{{- end -}}
+  {{- /* In a list item, Doxygen marks every paragraph startli for an auto list (Markdown, -#),
+         and by its position for an HTML one. The XML doesn't tell them apart: no class (an XML
+         gap). */ -}}
+  {{- if in (slice "itemizedlist" "orderedlist") .grand -}}{{- $class = "" -}}{{- end -}}
 {{- end -}}
 {{- $alone := and $isFirst $isLast -}}
 {{- /* The visible children, and which of them are blocks. */ -}}

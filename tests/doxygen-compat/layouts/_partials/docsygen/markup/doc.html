@@ -1,11 +1,11 @@
 {{- /* Doxygen's HTML for a description (htmldocvisitor.cpp): the children of .node, with .node
        as their parent. .single is true for a brief, which Doxygen parses as a single line, so
        that its paragraphs get no <p>. .grand is the tag of .node's parent where a paragraph
-       depends on it (a list item's list), and .olDepth the depth of ordered lists.
+       depends on it (a list item's list).
        Usage: partial "docsygen/markup/doc.html" (dict "node" $description "ctx" $ctx "single" false) */ -}}
 {{- $parent := .node -}}
 {{- $root := in (slice "briefdescription" "detaileddescription" "inbodydescription" "description") $parent.tag -}}
 {{- range $i, $c := $parent.children -}}
   {{- partial "docsygen/markup/doc-node.html" (dict "node" $c "parent" $parent "index" $i "ctx" $.ctx
-      "root" $root "single" ($.single | default false) "grand" ($.grand | default "") "olDepth" ($.olDepth | default 0)) -}}
+      "root" $root "single" ($.single | default false) "grand" ($.grand | default "")) -}}
 {{- end -}}

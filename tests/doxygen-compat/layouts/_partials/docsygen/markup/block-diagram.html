@@ -4,8 +4,9 @@
        a row in the order of a depth-first walk (DiagramRow::insertClass). A privately inherited
        base ends its branch. The first row of 8 or more classes is drawn as lists and ends the
        tree: on the base side in reverse, on the derived side every other class, as Doxygen's
-       DualDirIterator steps by two. A class outside the model is a box without an area, whose
-       bases and derived classes are those that name it in their own references; so is a template
+       DualDirIterator steps by two. A class outside the model, or a reference without a refid
+       (Doxygen links some by name, an XML gap), is a box without an area, whose bases and
+       derived classes are those that name it in their own references; so is a template
        instance (a reference whose text is not the class's name), which is labelled
        by that text and has no tooltip: its bases are its template's, its derived classes those that
        inherit that very instance. A diagram without areas has no map. Coordinates are not written: Doxygen's
@@ -24,13 +25,7 @@
     {{- $ref := . -}}
     {{- $label := partial "docsygen/text/plain.html" . -}}
     {{- $target := false -}}
-    {{- with .attributes.refid -}}{{- $target = index $m.ids . -}}
-    {{- else -}}
-      {{- range index $m.names (trim (replaceRE `<.*$` "" $label) " ") -}}
-        {{- $c := index $m.ids . -}}
-        {{- if and (not $target) (eq $c.what "compound") -}}{{- $target = $c -}}{{- end -}}
-      {{- end -}}
-    {{- end -}}
+    {{- with .attributes.refid -}}{{- $target = index $m.ids . -}}{{- end -}}
     {{- if and $target (ne $target.what "compound") -}}{{- $target = false -}}{{- end -}}
     {{- $tid := "" -}}
     {{- $instance := false -}}

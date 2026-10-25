@@ -64,43 +64,13 @@
   {{- $alias = partial "docsygen/markup/linkify.html" (dict "text" (trim (index (split $definition " = ") 1) " ") "sources" (slice $parts.type) "ctx" $ctx "scope" $scope) -}}
 {{- end -}}
 {{- $type = trim (printf "%s %s" (delimit $keywords " ") $type) " " | safeHTML -}}
-{{- /* The refs of the arguments, in their order: Doxygen links the parameter types as the XML
-       does, and also the parameter names that are members of the class (inherited ones too). */ -}}
-{{- /* The members of the class and of the classes around it, innermost first. */ -}}
-{{- $members := dict -}}
-{{- $around := slice -}}
-{{- with $scope -}}
-  {{- $c := . -}}
-  {{- range seq 10 -}}
-    {{- if and $c (in $classes (index $m.ids $c).kind) -}}{{- $around = $around | append $c -}}{{- $c = index (partial "docsygen/model/scopes.html" $m) $c | default "" -}}{{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- range $around -}}
-  {{- range (index $m.ids .).node.children -}}
-    {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") -}}
-      {{- range .children -}}
-        {{- if and (reflect.IsMap .) (eq .tag "member") -}}
-          {{- $mid := .attributes.refid -}}
-          {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") (not (index $members (delimit .children ""))) -}}{{- $members = merge $members (dict (delimit .children "") $mid) -}}{{- end -}}{{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- /* The refs of the arguments, in their order: those of the parameter types and default
+       values. Doxygen also links the parameter names that name a member of the class or of a
+       class around it, which the XML doesn't link (an XML gap). */ -}}
 {{- $params := slice -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "param") -}}
-    {{- range .children -}}
-      {{- if not (reflect.IsMap .) -}}
-      {{- else if in (slice "type" "defval") .tag -}}{{- $params = $params | append . -}}
-      {{- else if eq .tag "declname" -}}
-        {{- $pname := delimit .children "" -}}
-        {{- /* Never the member itself. */ -}}
-        {{- if ne $pname $short -}}
-          {{- with index $members $pname -}}{{- $params = $params | append (dict "children" (slice (dict "tag" "ref" "attributes" (dict "refid" .) "children" (slice $pname)))) -}}{{- end -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
+    {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "type" "defval") .tag) -}}{{- $params = $params | append . -}}{{- end -}}{{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $argsText := "" -}}
@@ -108,7 +78,7 @@
 {{- /* A function pointer's name closes a parenthesis that its type opens: ") (args)". */ -}}
 {{- with $a.noexceptexpression -}}{{- if not (strings.Contains $argsText "noexcept") -}}{{- $argsText = printf "%s noexcept(%s)" $argsText . -}}{{- end -}}{{- end -}}
 {{- if and (eq $e.kind "typedef") (hasPrefix $argsText ")") -}}{{- $argsText = printf ") %s" (strings.TrimPrefix ")" $argsText) -}}{{- end -}}
-{{- $args := partial "docsygen/markup/linkify.html" (dict "text" $argsText "sources" $params "ctx" $ctx "scope" $scope "resolve" (eq $e.kind "typedef")) -}}
+{{- $args := partial "docsygen/markup/linkify.html" (dict "text" $argsText "sources" $params "ctx" $ctx "scope" $scope) -}}
 {{- /* A file's page names the namespace members it lists by their qualified name. */ -}}
 {{- $qualify := and (eq (index $m.ids .page).kind "file") (eq (index $m.ids $e.home).kind "namespace") -}}
 {{- if $qualify -}}{{- $short = $e.name -}}{{- end -}}

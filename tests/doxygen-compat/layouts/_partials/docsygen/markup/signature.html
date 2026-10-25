@@ -21,7 +21,7 @@
        consteval, constinit or static, linked as linkifyText does. */ -}}
 {{- $ldef := $definition -}}
 {{- range slice "constexpr " "consteval " "constinit " "static " -}}{{- $ldef = strings.TrimPrefix . $ldef -}}{{- end -}}
-{{- $def := partial "docsygen/markup/linkify-def.html" (dict "text" $ldef "type" $parts.type "ctx" $ctx "scope" $scope "self" $short) -}}
+{{- $def := partial "docsygen/markup/linkify-def.html" (dict "text" $ldef "type" $parts.type "ctx" $ctx "scope" $scope) -}}
 {{- /* The template prefixes (_writeTemplatePrefix): those of the enclosing classes, outermost
        first, unless the member's class is a specialization, then the member's own. */ -}}
 {{- $lists := slice -}}
