@@ -1,3 +1,14 @@
-{{- /* The uncached body of docsygen/xml/unmarshal.html: the template reader on the resource's
-       content, read here so that the cached call reads it once. */ -}}
-{{- return partial "docsygen/xml/parse.html" .Content -}}
+{{- /* The body of docsygen/xml/unmarshal.html, cached by it for the build: the template reader
+       on the resource's content. Hugo clears partialCached at the start of every build and
+       evicts its entries above 1000, so the tree is also kept in hugo.Store, under the
+       resource's name and with a hash of its content: a hugo server rebuild re-parses only the
+       files that changed. */ -}}
+{{- $key := printf "docsygen/xml|%s" .Name -}}
+{{- $content := .Content -}}
+{{- $hash := md5 $content -}}
+{{- $entry := hugo.Store.Get $key -}}
+{{- if or (not $entry) (ne $entry.hash $hash) -}}
+  {{- $entry = dict "hash" $hash "tree" (partial "docsygen/xml/parse.html" $content) -}}
+  {{- hugo.Store.Set $key $entry -}}
+{{- end -}}
+{{- return $entry.tree -}}
