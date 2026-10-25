@@ -1,1 +1,17 @@
-{{- /* An index entry leaves only an anchor in HTML; its name depends on Doxygen's counters. */ -}}
+{{- /* An index entry leaves only an anchor (htmldocvisitor.cpp, convertIndexWordToAnchor): the
+       documented member's anchor, then a<N>_ and the entry with each character but [A-Za-z0-9.-]
+       written _XX. Doxygen's N counts the entries of the whole run in output order; this counts
+       those of the page. */ -}}
+{{- $entry := "" -}}
+{{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "primaryie") -}}{{- $entry = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+{{- $page := .ctx.page -}}
+{{- $n := $page.Store.Get "docsygen-indexentry" | default 0 -}}
+{{- $page.Store.Set "docsygen-indexentry" (add $n 1) -}}
+{{- $word := "" -}}
+{{- range split $entry "" -}}
+  {{- if findRE `^[A-Za-z0-9.-]$` . -}}{{- $word = printf "%s%s" $word . -}}
+  {{- else -}}{{- range split (printf "% X" .) " " -}}{{- $word = printf "%s_%s" $word . -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $anchor := printf "a%d_%s" $n $word -}}
+{{- with .ctx.member -}}{{- $anchor = printf "%s_%s" . $anchor -}}{{- end -}}
+<a id="{{ $anchor }}" name="{{ $anchor }}"></a>

@@ -1,0 +1,82 @@
+{{- /* The body of a member's documentation: brief and details, an enum's values (fieldtable),
+       what it reimplements and what reimplements it (memberdef.cpp, _writeReimplements,
+       _writeReimplementedBy; translator_en.h), and where it is defined (SOURCE_BROWSER). */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $p := .parts -}}
+{{- $e := index $m.ids .id -}}
+{{- /* A function-like macro shows its value first. */ -}}
+{{- if and (eq $e.kind "define") $p.initializer -}}
+  {{- $params := false -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = true -}}{{- end -}}{{- end -}}
+  {{- if $params -}}<b>Value:</b><div class="fragment"><div class="line">{{ partial "docsygen/text/plain.html" $p.initializer }}</div>{{ "\n" }}</div>{{- end -}}
+{{- end -}}
+{{- range slice "briefdescription" "detaileddescription" "inbodydescription" -}}
+  {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+{{- end -}}
+{{- if eq $e.kind "enum" -}}
+  {{- $values := slice -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}{{- $values = $values | append . -}}{{- end -}}{{- end -}}
+  {{- /* Initializers have a column under SHOW_ENUM_VALUES (\showenumvalues and
+         \hideenumvalues leave no trace in the XML). */ -}}
+  {{- $inits := false -}}
+  {{- if eq (index ((index $m.options "SHOW_ENUM_VALUES") | default (slice "NO")) 0) "YES" -}}
+  {{- range $values -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $inits = true -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- with $values -}}
+<table class="fieldtable"><tr><th colspan="{{ cond $inits 3 2 }}">Enumerator</th></tr>
+    {{- range . -}}
+      {{- $v := . -}}
+      {{- $name := "" -}}
+      {{- $init := "" -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}
+        {{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = trim (strings.TrimPrefix "=" (trim (partial "docsygen/text/plain.html" .) " \n")) " \n" -}}{{- end -}}
+      {{- end -}}
+<tr><td class="fieldname"><a id="{{ index $ctx.anchors $v.attributes.id }}" name="{{ index $ctx.anchors $v.attributes.id }}"></a>{{ $name }}&#160;</td>
+      {{- if $inits -}}<td class="fieldinit">{{ $init }}&#160;</td>{{- end -}}
+<td class="fielddoc">
+      {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}{{- end -}}
+</td></tr>
+    {{- end -}}
+</table>
+  {{- end -}}
+{{- end -}}
+{{- /* Reimplements, then reimplemented by. */ -}}
+{{- define "_partials/docsygen/markup/inline/reimplements.html" -}}
+  {{- $ctx := .ctx -}}
+  {{- $m := $ctx.model -}}
+  {{- $links := slice -}}
+  {{- range .refs -}}
+    {{- $other := index $m.ids .attributes.refid -}}
+    {{- with $other -}}
+      {{- $links = $links | append (printf `<a class="el" href="%s">%s</a>` (htmlEscape (index $ctx.links .id)) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $n := len $links -}}
+  {{- $list := "" -}}
+  {{- range $i, $l := $links -}}
+    {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) ", and " ", ")) $l -}}
+  {{- end -}}
+  {{- return $list -}}
+{{- end -}}
+{{- $from := slice -}}
+{{- $by := slice -}}
+{{- range $e.node.children -}}
+  {{- if not (reflect.IsMap .) -}}
+  {{- else if eq .tag "reimplements" -}}{{- $from = $from | append . -}}
+  {{- else if eq .tag "reimplementedby" -}}{{- $by = $by | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- with $from -}}
+  {{- $base := index $m.ids (index . 0).attributes.refid -}}
+  {{- $verb := cond (and $base (eq $base.node.attributes.virt "pure-virtual")) "Implements" "Reimplemented from" -}}
+<p>{{ $verb }} {{ partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx) | safeHTML }}.</p>
+{{- end -}}
+{{- with $by -}}
+<p>{{ cond (eq $e.node.attributes.virt "pure-virtual") "Implemented in" "Reimplemented in" }} {{ partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx) | safeHTML }}.</p>
+{{- end -}}
+{{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" .id) -}}
+{{- if and $definition (eq (index ((index $m.options "SOURCE_BROWSER") | default (slice "NO")) 0) "YES") (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $definition.file)))) -}}
+  {{- partial "docsygen/markup/definition.html" (dict "definition" $definition "ctx" $ctx) -}}
+{{- end -}}

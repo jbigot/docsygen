@@ -5,7 +5,18 @@
 {{- $ctx := .ctx -}}
 {{- $sub := dict "ctx" $ctx "single" .single "olDepth" (.olDepth | default 0) -}}
 {{- if not (reflect.IsMap $n) -}}
-  {{- $n -}}
+  {{- /* Doxygen's XML ends an image with a newline that isn't text. */ -}}
+  {{- $prev := cond (gt .index 0) (index .parent.children (sub .index 1)) "" -}}
+  {{- /* Doxygen writes no newline after a code fragment or a <pre> that ends a paragraph, unlike
+         its other blocks, whose end tags carry one. */ -}}
+  {{- $afterBlock := false -}}
+  {{- if and .root (reflect.IsMap $prev) (eq $prev.tag "para") (eq (trim $n " \n") "") -}}
+    {{- $last := "" -}}
+    {{- range $prev.children -}}{{- if not (partial "docsygen/markup/doc-invisible.html" .) -}}{{- $last = . -}}{{- end -}}{{- end -}}
+    {{- $afterBlock = and (reflect.IsMap $last) (in (slice "programlisting" "verbatim" "preformatted") $last.tag) -}}
+  {{- end -}}
+  {{- if $afterBlock -}}
+  {{- else if and (reflect.IsMap $prev) (eq $prev.tag "image") (hasPrefix $n "\n") -}}{{- strings.TrimPrefix "\n" $n -}}{{- else -}}{{- $n -}}{{- end -}}
 {{- else -}}
 {{- $tag := $n.tag -}}
 {{- $styles := dict "bold" "b" "emphasis" "em" "s" "s" "strike" "strike" "underline" "u" "subscript" "sub"
@@ -13,7 +24,10 @@
 {{- $simplesects := dict "see" "See also" "return" "Returns" "author" "Author" "authors" "Authors" "version" "Version"
     "since" "Since" "date" "Date" "note" "Note" "warning" "Warning" "pre" "Precondition" "post" "Postcondition"
     "copyright" "Copyright" "invariant" "Invariant" "remark" "Remarks" "attention" "Attention" "important" "Important" -}}
-{{- if eq $tag "para" -}}
+{{- if and (eq $tag "para") (not $n.children) (not $n.attributes) (eq .parent.tag "para") -}}
+  {{- /* The ¶ entity is an empty para element, which can only be one inside a paragraph. */ -}}
+  {{- partial "docsygen/render/entity-lookup.html" "para" -}}
+{{- else if eq $tag "para" -}}
   {{- partial "docsygen/markup/doc-para.html" . -}}
 {{- else if index $styles $tag -}}
   {{- $t := index $styles $tag -}}
@@ -86,7 +100,7 @@
   {{- if .continued -}}
     <dd>
   {{- else -}}
-  <dl class="section {{ cond (eq $kind "par") "user" $kind }}"><dt>
+  <dl class="section {{ index (dict "par" "user" "authors" "author") $kind | default $kind }}"><dt>
   {{- $title -}}
   {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}{{- end -}}
   </dt><dd>
@@ -147,10 +161,10 @@
 {{- else if in (slice "programlisting" "verbatim" "preformatted") $tag -}}
   {{- partial "docsygen/markup/doc-code.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "details" -}}
-  <details>
+  <details>{{ "\n" }}
   {{- range $i, $c := $n.children -}}
     {{- if and (reflect.IsMap $c) (eq $c.tag "summary") -}}
-      <summary>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $c)) }}</summary>
+      <summary>{{ "\n" }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $c)) }}</summary>{{ "\n" }}
     {{- else -}}
       {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
     {{- end -}}

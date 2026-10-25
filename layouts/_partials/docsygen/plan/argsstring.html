@@ -1,0 +1,28 @@
+{{- /* An argsstring split after the parenthesis that closes its parameter list, as
+       {params, rest}: "(int (*f)(int)) const noexcept(true)" gives "(int (*f)(int))" and
+       " const noexcept(true)", parentheses in character and string literals left out. Without a leading parenthesis (variables, typedefs), params is ""
+       and rest the whole text.
+       Usage: partial "docsygen/plan/argsstring.html" $text */ -}}
+{{- $params := "" -}}
+{{- $rest := . -}}
+{{- if hasPrefix . "(" -}}
+  {{- $depth := 0 -}}
+  {{- $done := false -}}
+  {{- $quote := "" -}}
+  {{- $escaped := false -}}
+  {{- $rest = "" -}}
+  {{- range split . "" -}}
+    {{- if $done -}}{{- $rest = printf "%s%s" $rest . -}}
+    {{- else -}}
+      {{- $params = printf "%s%s" $params . -}}
+      {{- if $escaped -}}{{- $escaped = false -}}
+      {{- else if $quote -}}
+        {{- if eq . "\\" -}}{{- $escaped = true -}}{{- else if eq . $quote -}}{{- $quote = "" -}}{{- end -}}
+      {{- else if in (slice "'" "\"") . -}}{{- $quote = . -}}
+      {{- else if eq . "(" -}}{{- $depth = add $depth 1 -}}
+      {{- else if eq . ")" -}}{{- $depth = sub $depth 1 -}}{{- if eq $depth 0 -}}{{- $done = true -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "params" $params "rest" $rest -}}

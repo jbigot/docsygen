@@ -1,0 +1,13 @@
+{{- /* Whether a member is a constructor or a destructor of its class: "constructor", "destructor",
+       or "" (also for members out of classes). A class template's name loses its arguments.
+       Usage: partial "docsygen/plan/constructor.html" (dict "model" $model "id" $memberId) */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $home := index $m.ids $e.home -}}
+{{- $out := "" -}}
+{{- if and (in (slice "function" "slot" "signal") $e.kind) (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $home.kind) -}}
+  {{- $class := replaceRE `<.*$` "" (index (split $home.name "::") (sub (len (split $home.name "::")) 1)) -}}
+  {{- $name := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+  {{- if eq $name $class -}}{{- $out = "constructor" -}}{{- else if eq $name (printf "~%s" $class) -}}{{- $out = "destructor" -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

@@ -143,7 +143,7 @@
       {{- $key := "" -}}
       {{- if or (eq $member.kind "friend") (eq $section "related") -}}{{- $key = "doc-related" -}}
       {{- else if in (slice "function" "slot" "signal") $member.kind -}}
-        {{- $key = cond (and $isClass (in (slice $short (printf "~%s" $short)) $name)) "doc-constructor" "doc-function" -}}
+        {{- $key = cond (partial "docsygen/plan/constructor.html" (dict "model" $m "id" .)) "doc-constructor" "doc-function" -}}
       {{- else if eq $member.kind "variable" -}}{{- $key = "doc-variable" -}}
       {{- else if in (slice "typedef" "enum" "define" "property" "event") $member.kind -}}{{- $key = printf "doc-%s" $member.kind -}}
       {{- end -}}
@@ -160,8 +160,21 @@
     "doc-related" "Friends And Related Symbol Documentation"
     "doc-variable" (cond $isClass (cond $cmode "Field Documentation" "Member Data Documentation") "Variable Documentation")
     "doc-property" "Property Documentation" "doc-event" "Event Documentation" "doc-define" "Macro Definition Documentation" -}}
+{{- /* SORT_MEMBER_DOCS sorts each detailed section by name, ignoring case, keeping the order of
+       equal names. */ -}}
+{{- $sort := eq (index ((index $m.options "SORT_MEMBER_DOCS") | default (slice "YES")) 0) "YES" -}}
 {{- range $docOrder -}}
   {{- $key := . -}}
+  {{- if and $sort ($doc.Get $key) -}}
+    {{- $keyed := slice -}}
+    {{- range $i, $id := $doc.Get $key -}}
+      {{- $name := index (split (index $m.ids $id).name "::") (sub (len (split (index $m.ids $id).name "::")) 1) -}}
+      {{- $keyed = $keyed | append (dict "id" $id "key" (printf "%s\x00%06d" (lower $name) $i)) -}}
+    {{- end -}}
+    {{- $sorted := slice -}}
+    {{- range sort $keyed "key" -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
+    {{- $doc.Set $key $sorted -}}
+  {{- end -}}
   {{- with $doc.Get $key -}}
     {{- $sections = $sections | append (dict "key" $key "heading" (index $docHeadings $key) "subtitle" "" "group" "doc" "members" . "inner" slice) -}}
   {{- end -}}

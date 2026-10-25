@@ -1,0 +1,70 @@
+{{- /* A member's definition (.text) linked as writeDocumentation's linkifyText links it. The
+       words of the XML type (.type) keep the XML's links: the definition's words are matched with
+       them in order, and those that are refs link as docsygen/markup/linked.html does. Any other
+       word is resolved in .scope's chain of names, then globally (once, with a leading ::), and
+       linked unless it names a member called .self (the member's own name, as getDefs does),
+       but for a typedef that is not a function type, which Doxygen's resolver links first. The
+       text is escaped. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $scope := .scope | default "" -}}
+{{- $self := .self | default "" -}}
+{{- $word := `(?:::)?[A-Za-z_][A-Za-z0-9_~:]*` -}}
+{{- /* The type's words, each with its ref if it is one. */ -}}
+{{- $typeWords := slice -}}
+{{- with .type -}}
+  {{- range .children -}}
+    {{- if not (reflect.IsMap .) -}}
+      {{- range findRE $word . -}}{{- $typeWords = $typeWords | append (dict "word" . "ref" "") -}}{{- end -}}
+    {{- else if eq .tag "ref" -}}
+      {{- $typeWords = $typeWords | append (dict "word" (partial "docsygen/text/plain.html" .) "ref" .attributes.refid) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $prefixes := slice "" -}}
+{{- with $scope -}}
+  {{- $parts := split (index $m.ids .).name "::" -}}
+  {{- range $i, $_ := $parts -}}{{- $prefixes = slice (printf "%s::" (delimit (first (add $i 1) $parts) "::")) | append $prefixes -}}{{- end -}}
+{{- end -}}
+{{- $next := 0 -}}
+{{- $out := "" -}}
+{{- range findRE (printf `%s|[^A-Za-z_:]+|:` $word) .text -}}
+  {{- $w := . -}}
+  {{- $url := "" -}}
+  {{- if not (findRE `^(?:::)?[A-Za-z_]` $w 1) -}}
+  {{- else if and (lt $next (len $typeWords)) (eq (index $typeWords $next).word $w) -}}
+    {{- $target := (index $typeWords $next).ref -}}
+    {{- $next = add $next 1 -}}
+    {{- if $target -}}
+      {{- if and $scope (eq $target $scope) -}}
+        {{- $constructor := partial "docsygen/markup/first-constructor.html" (dict "ctx" $ctx "id" $scope) -}}
+        {{- with $constructor -}}{{- $target = . -}}{{- end -}}
+      {{- end -}}
+      {{- $url = index $ctx.links $target | default "" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $search := $prefixes -}}
+    {{- $name := $w -}}
+    {{- if hasPrefix $w "::" -}}{{- $search = slice "" -}}{{- $name = strings.TrimPrefix "::" $w -}}{{- end -}}
+    {{- $found := false -}}
+    {{- range $search -}}
+      {{- if not $found -}}
+        {{- with index $m.names (printf "%s%s" . $name) -}}
+          {{- $found = true -}}
+          {{- $t := index $m.ids (index . 0) -}}
+          {{- $names := split $t.name "::" -}}
+          {{- $typeLike := false -}}
+          {{- if eq $t.kind "typedef" -}}
+            {{- $typeLike = true -}}
+            {{- range $t.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "argsstring") .children -}}{{- $typeLike = false -}}{{- end -}}{{- end -}}
+          {{- end -}}
+          {{- if or (eq $t.what "compound") $typeLike (ne (index $names (sub (len $names) 1)) $self) -}}
+            {{- $url = index $ctx.links $t.id | default "" -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = cond (ne $url "") (printf `%s<a class="el" href="%s">%s</a>` $out (htmlEscape $url) (htmlEscape $w)) (printf "%s%s" $out (htmlEscape $w)) -}}
+{{- end -}}
+{{- return ($out | safeHTML) -}}

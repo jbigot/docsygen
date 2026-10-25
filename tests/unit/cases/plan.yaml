@@ -37,3 +37,27 @@
     model: sample-c
     id: structcpoint
   expect: [{id: group__cdemo__shapes, groups: [{id: group__cdemo, groups: []}]}]
+- name: a constructor
+  partial: docsygen/plan/constructor.html
+  context: {model: sample, id: classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8}
+  expect: constructor
+- name: a destructor
+  partial: docsygen/plan/constructor.html
+  context: {model: sample, id: classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d}
+  expect: destructor
+- name: a method is no constructor
+  partial: docsygen/plan/constructor.html
+  context: {model: sample, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
+  expect: ""
+- name: a function out of classes is no constructor
+  partial: docsygen/plan/constructor.html
+  context: {model: sample, id: namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5}
+  expect: ""
+- name: argsstring with nested parentheses and noexcept
+  partial: docsygen/plan/argsstring.html
+  context: "(int (*f)(int), char c='(') const noexcept(true)"
+  expect: {params: "(int (*f)(int), char c='(')", rest: " const noexcept(true)"}
+- name: argsstring of a variable
+  partial: docsygen/plan/argsstring.html
+  context: "[3]"
+  expect: {params: "", rest: "[3]"}
