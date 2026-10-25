@@ -70,4 +70,32 @@
   {{- end -}}
   {{- $homes.SetInMap "m" $id $anchor -}}
 {{- end -}}
-{{- return dict "pages" $out "anchors" dict "merged" dict "homes" ($homes.Get "m") -}}
+{{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists (types.h,
+       ML_TYPES) and details. */ -}}
+{{- $labels := dict "inner-class" "nested-classes" "inner-namespace" "namespaces" "inner-concept" "concepts"
+    "inner-group" "groups" "inner-dir" "subdirs" "inner-file" "files" "signal" "signals" "property" "properties"
+    "event" "events" "friend" "friends" "related" "related" "define" "define-members" "typedef" "typedef-members"
+    "enum" "enum-members" "enumvalue" "enumval-members" "func" "func-members" "var" "var-members" -}}
+{{- $protections := dict "public" "pub" "protected" "pro" "package" "pac" "private" "pri" -}}
+{{- $kinds := dict "type" "types" "slot" "slots" "func" "methods" "static-func" "static-methods" "attrib" "attribs"
+    "static-attrib" "static-attribs" -}}
+{{- $anchors := newScratch -}}
+{{- range $out -}}
+  {{- $key := .key -}}
+  {{- $anchors.SetInMap "m" $key (dict "details" "details") -}}
+  {{- range .roles -}}
+    {{- if eq .role "compound" -}}
+      {{- $page := dict "details" "details" -}}
+      {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+        {{- $section := .key -}}
+        {{- $label := index $labels $section -}}
+        {{- with findRESubmatch `^(public|protected|package|private)-(.*)$` $section 1 -}}
+          {{- $label = printf "%s-%s" (index $protections (index . 0 1)) (index $kinds (index . 0 2)) -}}
+        {{- end -}}
+        {{- with $label -}}{{- $page = merge $page (dict $section .) -}}{{- end -}}
+      {{- end -}}
+      {{- $anchors.SetInMap "m" $key $page -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "pages" $out "anchors" ($anchors.Get "m") "merged" dict "homes" ($homes.Get "m") -}}

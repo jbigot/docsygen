@@ -5,6 +5,7 @@
          targets  {id: {page: key, anchor}}: where each id of the model is documented
          anchors  {key: {anchorKey: anchor}}: the fixed anchors of each page
          merged   {refid: key}: compounds that another page absorbed
+         pageOf   {role: key}: the page of each role, keyed by the role's jsonify
        The flavor's docsygen/paths/scheme.html decides the pages, paths and anchors.
        Usage: partial "docsygen/paths.html" (dict "model" $model "pathMap" $pathMap) */ -}}
 {{- return partialCached "docsygen/paths/build.html" . (printf "%s|%s" .model.dir (jsonify .pathMap)) -}}

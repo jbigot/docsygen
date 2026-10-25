@@ -1,0 +1,160 @@
+{{- /* The body of docsygen/plan/sections.html. */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $kind := $e.kind -}}
+{{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+{{- $private := eq (index ((index $m.options "EXTRACT_PRIVATE") | default (slice "NO")) 0) "YES" -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $isClass := in $classLike $kind -}}
+
+{{- /* Gather the members of each sectiondef, the inner compounds and the member groups. */ -}}
+{{- $found := newScratch -}}
+{{- $groups := slice -}}
+{{- range $e.node.children -}}
+  {{- if not (reflect.IsMap .) -}}
+  {{- else if in (slice "innerclass" "innernamespace" "innerconcept" "innergroup" "innerdir" "innerfile") .tag -}}
+    {{- $target := index $m.ids .attributes.refid -}}
+    {{- if and $target (or $target.name (ne $target.kind "namespace")) (or $private (ne .attributes.prot "private")) -}}
+      {{- $key := printf "inner-%s" (strings.TrimPrefix "inner" .tag) -}}
+      {{- $found.Set $key (($found.Get $key | default slice) | append .attributes.refid) -}}
+    {{- end -}}
+  {{- else if eq .tag "sectiondef" -}}
+    {{- $ids := slice -}}
+    {{- $header := "" -}}
+    {{- $description := false -}}
+    {{- range .children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if in (slice "memberdef" "member") .tag -}}
+        {{- $mid := .attributes.id | default .attributes.refid -}}
+        {{- if partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid) -}}{{- $ids = $ids | append $mid -}}{{- end -}}
+      {{- else if eq .tag "header" -}}
+        {{- $header = partial "docsygen/text/plain.html" . -}}
+      {{- else if eq .tag "description" -}}
+        {{- $description = . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $ids -}}
+      {{- if eq .attributes.kind "user-defined" -}}
+        {{- $groups = $groups | append (dict "heading" $header "description" $description "members" $ids) -}}
+      {{- else -}}
+        {{- $found.Set .attributes.kind (($found.Get .attributes.kind | default slice) | append $ids) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- /* A file page also lists the members it declares that another compound documents, in
+       their member group when they have one there. */ -}}
+{{- if eq $kind "file" -}}
+  {{- $byKind := dict "function" "func" "variable" "var" "typedef" "typedef" "enum" "enum" "define" "define" -}}
+  {{- $inGroup := newScratch -}}
+  {{- range index $m.fileMembers .id -}}
+    {{- $mid := . -}}
+    {{- $home := (index $m.ids $mid).home -}}
+    {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $home) -}}
+      {{- if and (hasPrefix .key "user-defined-") (in .members $mid) -}}{{- $inGroup.Set $mid . -}}{{- end -}}
+    {{- end -}}
+    {{- with $inGroup.Get $mid -}}
+      {{- $group := . -}}
+      {{- $found.Set "file-groups" (($found.Get "file-groups" | default slice) | append (dict "heading" $group.heading "description" $group.description "member" $mid)) -}}
+    {{- else -}}
+      {{- with index $byKind (index $m.ids $mid).kind -}}
+        {{- if partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid) -}}{{- $found.Set . (($found.Get . | default slice) | append $mid) -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $found.Get "file-groups" -}}
+    {{- $g := . -}}
+    {{- $known := false -}}
+    {{- $merged := slice -}}
+    {{- range $groups -}}
+      {{- if eq .heading $g.heading -}}{{- $known = true -}}{{- $merged = $merged | append (merge . (dict "members" (.members | append $g.member))) -}}
+      {{- else -}}{{- $merged = $merged | append . -}}{{- end -}}
+    {{- end -}}
+    {{- if not $known -}}{{- $merged = $merged | append (dict "heading" $g.heading "description" $g.description "members" (slice $g.member)) -}}{{- end -}}
+    {{- $groups = $merged -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* The summary sections, in the layout's order. */ -}}
+{{- $headings := dict
+    "inner-class" (cond $cmode "Data Structures" "Classes") "inner-namespace" "Namespaces" "inner-concept" "Concepts"
+    "inner-group" "Topics" "inner-dir" "Directories" "inner-file" "Files"
+    "public-type" "Public Types" "public-slot" "Public Slots" "signal" "Signals" "public-func" "Public Member Functions"
+    "public-static-func" "Static Public Member Functions" "public-attrib" (cond $cmode "Data Fields" "Public Attributes")
+    "public-static-attrib" "Static Public Attributes" "protected-type" "Protected Types" "protected-slot" "Protected Slots"
+    "protected-func" "Protected Member Functions" "protected-static-func" "Static Protected Member Functions"
+    "protected-attrib" "Protected Attributes" "protected-static-attrib" "Static Protected Attributes"
+    "package-type" "Package Types" "package-func" "Package Functions" "package-static-func" "Static Package Functions"
+    "package-attrib" "Package Attributes" "package-static-attrib" "Static Package Attributes" "property" "Properties"
+    "event" "Events" "private-type" "Private Types" "private-slot" "Private Slots" "private-func" "Private Member Functions"
+    "private-static-func" "Static Private Member Functions" "private-attrib" "Private Attributes"
+    "private-static-attrib" "Static Private Attributes" "friend" "Friends" "related" "Related Symbols"
+    "define" "Macros" "typedef" "Typedefs" "enum" "Enumerations" "enumvalue" "Enumerator" "func" "Functions" "var" "Variables" -}}
+{{- $order := slice -}}
+{{- if $isClass -}}
+  {{- $order = slice "inner-class" "public-type" "public-slot" "signal" "public-func" "public-static-func" "public-attrib"
+      "public-static-attrib" "protected-type" "protected-slot" "protected-func" "protected-static-func" "protected-attrib"
+      "protected-static-attrib" "package-type" "package-func" "package-static-func" "package-attrib" "package-static-attrib"
+      "property" "event" "private-type" "private-slot" "private-func" "private-static-func" "private-attrib"
+      "private-static-attrib" "friend" "related" -}}
+{{- else if eq $kind "namespace" -}}
+  {{- $order = slice "inner-namespace" "inner-class" "inner-concept" "typedef" "enum" "func" "var" "property" -}}
+{{- else if eq $kind "file" -}}
+  {{- $order = slice "inner-class" "inner-namespace" "inner-concept" "define" "typedef" "enum" "func" "var" "property" -}}
+{{- else if eq $kind "group" -}}
+  {{- $order = slice "inner-group" "inner-dir" "inner-file" "inner-namespace" "inner-concept" "inner-class" "define" "typedef"
+      "enum" "enumvalue" "func" "var" "signal" "public-slot" "protected-slot" "private-slot" "event" "property" "friend" -}}
+{{- else if eq $kind "dir" -}}
+  {{- $order = slice "inner-dir" "inner-file" -}}
+{{- end -}}
+{{- $sections := slice -}}
+{{- range $order -}}
+  {{- $key := . -}}
+  {{- with $found.Get $key -}}
+    {{- $inner := hasPrefix $key "inner-" -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (index $headings $key) "subtitle" (cond (eq $key "related") "(Note that these are not member symbols.)" "")
+        "group" "summary" "members" (cond $inner slice .) "inner" (cond $inner . slice)) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $i, $g := $groups -}}
+  {{- $sections = $sections | append (dict "key" (printf "user-defined-%d" (add $i 1)) "heading" $g.heading "subtitle" ""
+      "description" $g.description "group" "summary" "members" $g.members "inner" slice) -}}
+{{- end -}}
+
+{{- /* The detailed sections, in the layout's order: every member that has a detailed entry, from
+       the summary sections and the member groups, but not those another compound documents. */ -}}
+{{- $doc := newScratch -}}
+{{- $short := replaceRE `<.*$` "" (index (split $e.name "::") (sub (len (split $e.name "::")) 1)) -}}
+{{- range $sections -}}
+  {{- $section := .key -}}
+  {{- range .members -}}
+    {{- $member := index $m.ids . -}}
+    {{- if and (eq $member.home $.id) (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .)) -}}
+      {{- $name := index (split $member.name "::") (sub (len (split $member.name "::")) 1) -}}
+      {{- $key := "" -}}
+      {{- if or (eq $member.kind "friend") (eq $section "related") -}}{{- $key = "doc-related" -}}
+      {{- else if in (slice "function" "slot" "signal") $member.kind -}}
+        {{- $key = cond (and $isClass (in (slice $short (printf "~%s" $short)) $name)) "doc-constructor" "doc-function" -}}
+      {{- else if eq $member.kind "variable" -}}{{- $key = "doc-variable" -}}
+      {{- else if in (slice "typedef" "enum" "define" "property" "event") $member.kind -}}{{- $key = printf "doc-%s" $member.kind -}}
+      {{- end -}}
+      {{- if $key -}}{{- $doc.Set $key (($doc.Get $key | default slice) | append .) -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $docOrder := cond $isClass
+    (slice "doc-typedef" "doc-enum" "doc-constructor" "doc-function" "doc-related" "doc-variable" "doc-property" "doc-event")
+    (slice "doc-define" "doc-typedef" "doc-enum" "doc-function" "doc-variable" "doc-property" "doc-event") -}}
+{{- $docHeadings := dict "doc-typedef" (cond $isClass "Member Typedef Documentation" "Typedef Documentation")
+    "doc-enum" (cond $isClass "Member Enumeration Documentation" "Enumeration Type Documentation")
+    "doc-constructor" "Constructor & Destructor Documentation" "doc-function" (cond $isClass "Member Function Documentation" "Function Documentation")
+    "doc-related" "Friends And Related Symbol Documentation"
+    "doc-variable" (cond $isClass (cond $cmode "Field Documentation" "Member Data Documentation") "Variable Documentation")
+    "doc-property" "Property Documentation" "doc-event" "Event Documentation" "doc-define" "Macro Definition Documentation" -}}
+{{- range $docOrder -}}
+  {{- $key := . -}}
+  {{- with $doc.Get $key -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (index $docHeadings $key) "subtitle" "" "group" "doc" "members" . "inner" slice) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $sections -}}

@@ -1,0 +1,8 @@
+{{- /* The first .n blocks of the plan of page .key, as {type, text}: context {ctx, key, n}. */ -}}
+{{- $entry := false -}}
+{{- range .ctx.paths.pages -}}{{- if eq .key $.key -}}{{- $entry = . -}}{{- end -}}{{- end -}}
+{{- $out := slice -}}
+{{- range first .n (partial "docsygen/plan.html" (dict "entry" $entry "ctx" .ctx)) -}}
+  {{- $out = $out | append (dict "type" .type "text" (.text | default "")) -}}
+{{- end -}}
+{{- return $out -}}

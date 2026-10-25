@@ -1,0 +1,33 @@
+{{- /* Whether Doxygen documents a member in a detailed section of its compound's page, besides
+       listing it in a summary (memberdef.cpp, hasDetailedDescription): with EXTRACT_ALL, every
+       member it shows; otherwise those with detailed or in-body documentation, documented enum
+       values, or a brief that ALWAYS_DETAILED_SEC moves there.
+       Usage: partial "docsygen/plan/detailed.html" (dict "model" $model "id" $memberId) */ -}}
+{{- $m := .model -}}
+{{- $yes := newScratch -}}
+{{- range $k, $v := dict "EXTRACT_ALL" "NO" "ALWAYS_DETAILED_SEC" "NO" "REPEAT_BRIEF" "YES" "BRIEF_MEMBER_DESC" "YES" -}}
+  {{- $yes.Set $k (eq (index ((index $m.options $k) | default (slice $v)) 0) "YES") -}}
+{{- end -}}
+{{- $e := index $m.ids .id -}}
+{{- $has := newScratch -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription" "inbodydescription") .tag) -}}
+    {{- $tag := .tag -}}
+    {{- range .children -}}{{- if reflect.IsMap . -}}{{- $has.Set $tag true -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $values := false -}}
+{{- if eq $e.kind "enum" -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}
+          {{- range .children -}}{{- if reflect.IsMap . -}}{{- $values = true -}}{{- end -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $brief := and ($has.Get "briefdescription") ($yes.Get "ALWAYS_DETAILED_SEC") (or ($yes.Get "REPEAT_BRIEF") (not ($yes.Get "BRIEF_MEMBER_DESC"))) -}}
+{{- return and (partial "docsygen/model/linkable.html" .) (or ($yes.Get "EXTRACT_ALL") ($has.Get "detaileddescription")
+    ($has.Get "inbodydescription") $values $brief) -}}

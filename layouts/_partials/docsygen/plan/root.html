@@ -1,0 +1,9 @@
+{{- /* The root's blocks: Doxygen's title for a project without a main page, "PROJECT_NAME
+       Documentation". A main page brings its own blocks, as the compound indexpage. */ -}}
+{{- $m := .ctx.model -}}
+{{- $blocks := slice -}}
+{{- if not (index $m.ids "indexpage") -}}
+  {{- $blocks = $blocks | append (dict "type" "title" "id" "" "labels" slice "groups" slice
+      "text" (printf "%s Documentation" (index ((index $m.options "PROJECT_NAME") | default (slice "")) 0))) -}}
+{{- end -}}
+{{- return $blocks -}}

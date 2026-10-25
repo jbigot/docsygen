@@ -1,0 +1,51 @@
+{{- /* The blocks of a compound's page, in the order of Doxygen's default layout:
+         title, summary-links, brief, includes, inheritance, diagram, one decls per summary
+         section, description ("Detailed Description"), then each detailed section as a heading
+         block followed by one member block per member, and generated-from.
+       Blocks that a kind of compound doesn't have are left out. */ -}}
+{{- $m := .ctx.model -}}
+{{- $id := .role.id -}}
+{{- $e := index $m.ids $id -}}
+{{- $kind := $e.kind -}}
+{{- $classLike := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $kind -}}
+{{- $sections := partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
+{{- $title := partial "docsygen/plan/title.html" (dict "model" $m "id" $id) -}}
+{{- $blocks := slice (dict "type" "title" "id" $id "text" $title.text "labels" $title.labels
+    "groups" (partial "docsygen/plan/groups.html" (dict "model" $m "id" $id))) -}}
+{{- if or $classLike (in (slice "namespace" "file" "group") $kind) -}}
+  {{- $keys := slice -}}
+  {{- range $sections -}}
+    {{- if and (eq .group "summary") (not (hasPrefix .key "user-defined-")) -}}{{- $keys = $keys | append .key -}}{{- end -}}
+  {{- end -}}
+  {{- if index .ctx.paths.pageOf (string (jsonify (dict "role" "all-members" "id" $id))) -}}{{- $keys = $keys | append "all-members" -}}{{- end -}}
+  {{- with $keys -}}{{- $blocks = $blocks | append (dict "type" "summary-links" "id" $id "anchorKeys" .) -}}{{- end -}}
+{{- end -}}
+{{- if ne $kind "page" -}}
+  {{- $blocks = $blocks | append (dict "type" "brief" "id" $id "part" "brief") -}}
+{{- end -}}
+{{- if or $classLike (in (slice "file" "concept") $kind) -}}
+  {{- $blocks = $blocks | append (dict "type" "includes" "id" $id) -}}
+{{- end -}}
+{{- if $classLike -}}
+  {{- $blocks = $blocks | append (dict "type" "inheritance" "id" $id) (dict "type" "diagram" "id" $id) -}}
+{{- end -}}
+{{- range $sections -}}
+  {{- if eq .group "summary" -}}
+    {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
+    "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" "Detailed Description" "anchorKey" "details"))) -}}
+{{- range $sections -}}
+  {{- if eq .group "doc" -}}
+    {{- $blocks = $blocks | append (dict "type" "heading" "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
+    {{- range .members -}}
+      {{- $name := (index $m.ids .).name -}}
+      {{- $blocks = $blocks | append (dict "type" "member" "id" . "heading" (dict "level" 3 "text" (index (split $name "::") (sub (len (split $name "::")) 1)) "anchorKey" .)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $classLike -}}
+  {{- $blocks = $blocks | append (dict "type" "generated-from" "id" $id) -}}
+{{- end -}}
+{{- return $blocks -}}

@@ -1,0 +1,4 @@
+{{- /* The keys of the sections of compound .id in .model. */ -}}
+{{- $out := slice -}}
+{{- range partial "docsygen/plan/sections.html" . -}}{{- $out = $out | append .key -}}{{- end -}}
+{{- return $out -}}

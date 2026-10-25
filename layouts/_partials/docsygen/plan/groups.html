@@ -1,0 +1,13 @@
+{{- /* The groups that a compound belongs to, each with the groups that it belongs to, as
+       [{id, groups}], in the order of index.xml: what Doxygen writes as the "ingroups" line of a
+       title (util.cpp, recursivelyAddGroupListToTitle).
+       Usage: partial "docsygen/plan/groups.html" (dict "model" $model "id" $refid) */ -}}
+{{- $m := .model -}}
+{{- $map := partialCached "docsygen/plan/groups/map.html" $m $m.dir -}}
+{{- $out := slice -}}
+{{- if lt (.depth | default 0) 10 -}}
+  {{- range index $map .id -}}
+    {{- $out = $out | append (dict "id" . "groups" (partial "docsygen/plan/groups.html" (dict "model" $m "id" . "depth" (add ($.depth | default 0) 1)))) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

@@ -28,17 +28,13 @@
     "module" "requirement" "requirements") -}}
 
 {{- /* The scope of each class and namespace, and the classes in groups. */ -}}
-{{- $parent := newScratch -}}
+{{- $scopes := partial "docsygen/model/scopes.html" $m -}}
 {{- $grouped := newScratch -}}
 {{- range $m.order -}}
   {{- $e := index $m.ids . -}}
-  {{- range $e.node.children -}}
-    {{- if and (reflect.IsMap .) (in (slice "innerclass" "innernamespace") .tag) -}}
-      {{- if eq $e.kind "group" -}}
-        {{- $grouped.Set .attributes.refid true -}}
-      {{- else if ne $e.kind "file" -}}
-        {{- $parent.Set .attributes.refid $e.id -}}
-      {{- end -}}
+  {{- if eq $e.kind "group" -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "innerclass") -}}{{- $grouped.Set .attributes.refid true -}}{{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -89,7 +85,7 @@
     {{- end -}}
     {{- if $simple -}}
       {{- $linkable := false -}}
-      {{- with $parent.Get .id -}}
+      {{- with index $scopes .id -}}
         {{- $linkable = $page.Get . -}}
       {{- else -}}
         {{- range $e.node.children -}}

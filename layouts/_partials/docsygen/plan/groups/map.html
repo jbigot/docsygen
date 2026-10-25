@@ -1,0 +1,15 @@
+{{- /* {refid: [group ids]}: the groups that list each compound among their inner compounds. */ -}}
+{{- $m := . -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- $g := . -}}
+  {{- if eq (index $m.ids $g).kind "group" -}}
+    {{- range (index $m.ids $g).node.children -}}
+      {{- if and (reflect.IsMap .) (hasPrefix .tag "inner") .attributes.refid -}}
+        {{- $s.SetInMap "m" .attributes.refid ((index ($s.Get "m") .attributes.refid | default slice) | append $g) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s.Get "m" -}}

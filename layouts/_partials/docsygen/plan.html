@@ -1,0 +1,5 @@
+{{- /* The blocks of a page, the concatenation of the plans of its roles (docsygen/plan/<role>.html),
+       as [{type, …, heading?}]. heading is {level, text, anchorKey}, where anchorKey is a model id
+       or a key of the page's fixed anchors (docsygen/paths.html, anchors). Cached per page.
+       Usage: partial "docsygen/plan.html" (dict "entry" $pageEntry "ctx" $ctx) */ -}}
+{{- return partialCached "docsygen/plan/build.html" . (printf "%s|%s" .ctx.model.dir .entry.key) -}}

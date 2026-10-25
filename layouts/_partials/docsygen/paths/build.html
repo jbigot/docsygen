@@ -33,4 +33,4 @@
     {{- $targets.SetInMap "m" $id (dict "page" . "anchor" $anchor) -}}
   {{- end -}}
 {{- end -}}
-{{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged -}}
+{{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged "pageOf" $pageOf.Values -}}

@@ -1,0 +1,7 @@
+{{- /* A list of groups, each preceded by its own groups: "outer » inner | other". */ -}}
+{{- $ctx := .ctx -}}
+{{- range $i, $g := .groups -}}
+  {{- if $i }} &#124; {{ end -}}
+  {{- with $g.groups -}}{{- partial "docsygen/markup/ingroups.html" (dict "groups" . "ctx" $ctx) }} &raquo; {{ end -}}
+  <a class="el" href="{{ index $ctx.links $g.id }}">{{ (partial "docsygen/plan/title.html" (dict "model" $ctx.model "id" $g.id)).text }}</a>
+{{- end -}}

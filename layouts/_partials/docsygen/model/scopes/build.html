@@ -1,0 +1,14 @@
+{{- /* The body of docsygen/model/scopes.html. */ -}}
+{{- $m := . -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- $inner := cond (eq $e.kind "dir") (slice "innerfile" "innerdir") (slice "innerclass" "innernamespace") -}}
+  {{- if not (in (slice "file" "group" "page" "example") $e.kind) -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (in $inner .tag) -}}{{- $s.SetInMap "m" .attributes.refid $e.id -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s.Get "m" -}}

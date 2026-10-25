@@ -1,0 +1,39 @@
+- name: plan of a class starts with its title and summary links
+  partial: test/plan.html
+  context:
+    ctx: {model: sample}
+    key: classdemo_1_1Widget
+    n: 2
+  expect: [{type: title, text: demo::Widget Class Reference}, {type: summary-links, text: ""}]
+- name: sections of a class, summaries before detailed sections
+  partial: test/section-keys.html
+  context:
+    model: sample
+    id: classdemo_1_1Widget
+  expect: [public-func, public-static-func, public-attrib, public-static-attrib, protected-attrib, private-attrib,
+    friend, related, user-defined-1, doc-constructor, doc-function, doc-related, doc-variable]
+- name: sections of a namespace
+  partial: test/section-keys.html
+  context:
+    model: sample
+    id: namespacedemo
+  expect: [inner-namespace, inner-class, inner-concept, enum, func, var, doc-enum, doc-function, doc-variable]
+- name: title of a class template
+  partial: docsygen/plan/title.html
+  context:
+    model: sample
+    id: classdemo_1_1Box
+  expect: {text: "demo::Box< T, N > Class Template Reference", labels: []}
+- name: title of an abstract class
+  partial: docsygen/plan/title.html
+  context:
+    model: sample
+    id: classdemo_1_1Widget
+  select: [labels]
+  expect: [abstract]
+- name: groups of a struct in a subgroup
+  partial: docsygen/plan/groups.html
+  context:
+    model: sample-c
+    id: structcpoint
+  expect: [{id: group__cdemo__shapes, groups: [{id: group__cdemo, groups: []}]}]

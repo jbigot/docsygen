@@ -1,0 +1,18 @@
+{{- /* The sections of a compound's page, in the order of Doxygen 1.15's default layout
+       (templates/general/layout_default.xml), as [{key, heading, subtitle, group, members,
+       inner}]:
+         key       the sectiondef kind (public-func, func, …), inner-<kind> for a list of inner
+                   compounds (inner-class, inner-namespace, inner-concept, inner-group,
+                   inner-dir, inner-file), user-defined-N for the Nth member group, and
+                   doc-<kind> for the detailed documentation of members (doc-constructor,
+                   doc-function, doc-related, doc-variable, doc-typedef, doc-enum, doc-define,
+                   doc-property, doc-event)
+         heading   the English heading of translator_en.h, or a member group's header
+         subtitle  under the heading, for related symbols and member groups ("" otherwise)
+         group     summary, or doc
+         members   the ids of the members Doxygen shows (docsygen/model/linkable.html), in order;
+                   for a file, the members it declares and others document come last
+         inner     the refids of the inner compounds
+       Sections without members are left out. Cached per compound.
+       Usage: partial "docsygen/plan/sections.html" (dict "model" $model "id" $refid) */ -}}
+{{- return partialCached "docsygen/plan/sections/build.html" . (printf "%s|%s" .model.dir .id) -}}

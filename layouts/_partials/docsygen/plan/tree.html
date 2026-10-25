@@ -1,0 +1,8 @@
+{{- /* The blocks of a list page: its title (translator_en.h) and the list. */ -}}
+{{- $m := .ctx.model -}}
+{{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+{{- $titles := dict "annotated" (cond $cmode "Data Structures" "Class List") "hierarchy" "Class Hierarchy"
+    "namespaces" "Namespace List" "concepts" "Concepts" "files" "File List" "pages" "Related Pages" "topics" "Topics"
+    "examples" "Examples" -}}
+{{- return slice (dict "type" "title" "id" "" "labels" slice "groups" slice "text" (index $titles .role.name))
+    (dict "type" "tree" "name" .role.name) -}}

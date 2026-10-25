@@ -1,0 +1,8 @@
+{{- /* The body of docsygen/plan.html. */ -}}
+{{- $blocks := slice -}}
+{{- range .entry.roles -}}
+  {{- range partial (printf "docsygen/plan/%s.html" .role) (dict "role" . "entry" $.entry "ctx" $.ctx) -}}
+    {{- $blocks = $blocks | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- return $blocks -}}

@@ -1,0 +1,5 @@
+{{- /* {refid: refid} from each class and namespace to the class or namespace that holds it
+       (innerclass, innernamespace), and from each file and directory to its directory (innerfile,
+       innerdir), cached per model.
+       Usage: partial "docsygen/model/scopes.html" $model */ -}}
+{{- return partialCached "docsygen/model/scopes/build.html" . .dir -}}

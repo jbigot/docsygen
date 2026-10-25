@@ -1,0 +1,40 @@
+{{- /* How Doxygen names a compound in titles and lists: a class template with its parameters
+       ("demo::Box< T, N >"), a nested class after its class's name ("demo::Box< T, N >::Iterator"),
+       a directory by its last component, anything else by its name (a file's compoundname is
+       its base name, but a Markdown file's keeps its path, as Doxygen's titles do).
+       Usage: partial "docsygen/plan/display-name.html" (dict "model" $model "id" $refid) */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $name := $e.name -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- if eq $e.kind "dir" -}}
+  {{- $name = path.Base $name -}}
+{{- else if in $classLike $e.kind -}}
+  {{- with index (partial "docsygen/model/scopes.html" $m) .id -}}
+    {{- if in $classLike (index $m.ids .).kind -}}
+      {{- $name = printf "%s::%s" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .)) (strings.TrimPrefix (printf "%s::" (index $m.ids .).name) $name) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (in $classLike $e.kind) (not (strings.Contains (index (split $name "::") (sub (len (split $name "::")) 1)) "<")) -}}
+  {{- $params := slice -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+          {{- $type := "" -}}
+          {{- $declname := "" -}}
+          {{- range .children -}}
+            {{- if not (reflect.IsMap .) -}}
+            {{- else if eq .tag "type" -}}{{- $type = partial "docsygen/text/plain.html" . -}}
+            {{- else if eq .tag "declname" -}}{{- $declname = partial "docsygen/text/plain.html" . -}}
+            {{- end -}}
+          {{- end -}}
+          {{- $params = $params | append ($declname | default (index (split (trim $type " ") " ") (sub (len (split (trim $type " ") " ")) 1))) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $params -}}{{- $name = printf "%s< %s >" $name (delimit . ", ") -}}{{- end -}}
+{{- end -}}
+{{- return $name -}}

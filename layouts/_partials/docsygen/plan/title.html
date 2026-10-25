@@ -1,0 +1,50 @@
+{{- /* Doxygen's title for a compound's page, as {text, labels}: "demo::Box< T, N > Class Template
+       Reference", "demo Namespace Reference", a group's or page's title (classdef.cpp, title();
+       translator_en.h). labels are a class's (final, sealed, abstract, export, qualifiers).
+       HIDE_COMPOUND_REFERENCE leaves the name alone.
+       Usage: partial "docsygen/plan/title.html" (dict "model" $model "id" $refid) */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $hide := eq (index ((index $m.options "HIDE_COMPOUND_REFERENCE") | default (slice "NO")) 0) "YES" -}}
+{{- $words := dict "class" "Class" "struct" "Struct" "union" "Union" "interface" "Interface" "protocol" "Protocol"
+    "category" "Category" "exception" "Exception" -}}
+{{- $name := partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) -}}
+{{- $text := $name -}}
+{{- $labels := slice -}}
+{{- $title := "" -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}
+{{- end -}}
+{{- with index $words $e.kind -}}
+  {{- $template := false -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}
+      {{- range .children -}}{{- if reflect.IsMap . -}}{{- $template = true -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $hide -}}{{- $text = printf "%s %s%s Reference" $name . (cond $template " Template" "") -}}{{- end -}}
+  {{- $a := $e.node.attributes -}}
+  {{- range slice "final" "sealed" "abstract" "export" -}}
+    {{- if eq (index $a .) "yes" -}}{{- $labels = $labels | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "qualifier") (not (in $labels (delimit .children ""))) -}}{{- $labels = $labels | append (delimit .children "") -}}{{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $suffix := index (dict "namespace" " Namespace Reference" "file" " File Reference" "dir" " Directory Reference"
+      "concept" " Concept Reference") $e.kind -}}
+  {{- if and (eq $e.kind "file") (not (index (partial "docsygen/model/scopes.html" $m) .id))
+      (eq (index ((index $m.options "FULL_PATH_NAMES") | default (slice "YES")) 0) "YES") -}}
+    {{- /* filedef.cpp: a file outside any directory, such as a Markdown file, is titled by its path. */ -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $name = .attributes.file -}}{{- end -}}
+    {{- end -}}
+    {{- $text = cond $hide $name $text -}}
+  {{- end -}}
+  {{- if $suffix -}}
+    {{- if not $hide -}}{{- $text = printf "%s%s" $name $suffix -}}{{- end -}}
+  {{- else if $title -}}
+    {{- $text = $title -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "text" $text "labels" $labels -}}

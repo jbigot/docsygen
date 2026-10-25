@@ -1,0 +1,9 @@
+{{- /* The blocks of an index: the class index has a title, the member indexes have none in
+       Doxygen's HTML (their page title says what they list). */ -}}
+{{- $m := .ctx.model -}}
+{{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+{{- $blocks := slice -}}
+{{- if eq .role.name "classes" -}}
+  {{- $blocks = $blocks | append (dict "type" "title" "id" "" "labels" slice "groups" slice "text" (cond $cmode "Data Structure Index" "Class Index")) -}}
+{{- end -}}
+{{- return ($blocks | append (dict "type" "index" "name" .role.name "filter" .role.filter "letter" .role.letter)) -}}
