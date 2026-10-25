@@ -23,7 +23,8 @@ both are compared after these normalizations, and no others:
 Scopes: pages (the sets of keys are equal), header, textblock (each div.textblock, by page and
 position), memberdecls (each table.memberdecls, by the anchor of its heading), memitem (each
 h2.memtitle with its div.memitem, by anchor), contents, and contents:GLOB (contents, for the
-pages whose key matches GLOB; a glob that matches nothing is reported). Exit 1 on any
+pages whose key matches GLOB, but those matching any !GLOB after it; a glob that matches nothing
+is reported). Exit 1 on any
 difference.
 """
 import argparse, fnmatch, html.parser, json, os, re, sys
@@ -323,11 +324,12 @@ def main(argv):
             compared = len(keys)
         else:
             glob = scope.split(':', 1)[1] if scope.startswith('contents:') else '*'
+            glob, *excluded = glob.split('!')
             if not any(fnmatch.fnmatchcase(key, glob) for key in keys):
                 # Not a failure: the scopes are shared by projects that have different pages.
                 print(f'{scope}: no page matches {glob}')
             for key in keys:
-                if not fnmatch.fnmatchcase(key, glob):
+                if not fnmatch.fnmatchcase(key, glob) or any(fnmatch.fnmatchcase(key, x) for x in excluded):
                     continue
                 if key not in site_pages:
                     print(f'{scope}: {key} has no site page'); failed += 1

@@ -161,15 +161,23 @@
     "doc-variable" (cond $isClass (cond $cmode "Field Documentation" "Member Data Documentation") "Variable Documentation")
     "doc-property" "Property Documentation" "doc-event" "Event Documentation" "doc-define" "Macro Definition Documentation" -}}
 {{- /* SORT_MEMBER_DOCS sorts each detailed section by name, ignoring case, keeping the order of
-       equal names. */ -}}
+       equal names. Without it, a class's sections keep the order of declaration, across
+       protection levels (the XML groups members by protection). */ -}}
 {{- $sort := eq (index ((index $m.options "SORT_MEMBER_DOCS") | default (slice "YES")) 0) "YES" -}}
 {{- range $docOrder -}}
   {{- $key := . -}}
-  {{- if and $sort ($doc.Get $key) -}}
+  {{- if and (or $sort $isClass) ($doc.Get $key) -}}
     {{- $keyed := slice -}}
     {{- range $i, $id := $doc.Get $key -}}
-      {{- $name := index (split (index $m.ids $id).name "::") (sub (len (split (index $m.ids $id).name "::")) 1) -}}
-      {{- $keyed = $keyed | append (dict "id" $id "key" (printf "%s\x00%06d" (lower $name) $i)) -}}
+      {{- $member := index $m.ids $id -}}
+      {{- $name := index (split $member.name "::") (sub (len (split $member.name "::")) 1) -}}
+      {{- $line := 0 -}}
+      {{- $column := 0 -}}
+      {{- range $member.node.children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $line = int (.attributes.line | default 0) -}}{{- $column = int (.attributes.column | default 0) -}}{{- end -}}
+      {{- end -}}
+      {{- $sortKey := cond $sort (printf "%s\x00%06d" (lower $name) $i) (printf "%09d %06d %06d" $line $column $i) -}}
+      {{- $keyed = $keyed | append (dict "id" $id "key" $sortKey) -}}
     {{- end -}}
     {{- $sorted := slice -}}
     {{- range sort $keyed "key" -}}{{- $sorted = $sorted | append .id -}}{{- end -}}

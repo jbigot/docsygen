@@ -61,3 +61,11 @@
   partial: docsygen/plan/argsstring.html
   context: "[3]"
   expect: {params: "", rest: "[3]"}
+- name: files that declare a class
+  partial: docsygen/plan/class-files.html
+  context: {model: sample, id: classdemo_1_1Shape}
+  expect: [shapes_8hpp]
+- name: a class without files
+  partial: docsygen/plan/class-files.html
+  context: {model: sample, id: namespacedemo}
+  expect: []

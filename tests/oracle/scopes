@@ -5,7 +5,9 @@ header
 contents:index
 textblock
 contents:bug
+contents:class*!*-members!classes
 contents:Concepts
+contents:concept*!*-members!concepts
 contents:custom
 contents:Decl_HDF5_plugin
 contents:Decl_NetCDF_plugin
@@ -28,10 +30,12 @@ contents:serialize_plugin
 contents:set_value_plugin
 contents:Source_installation
 contents:Specification_tree_ref
+contents:struct*!*-members
 contents:test
 contents:timer_plugin
 contents:todo
 contents:trace_plugin
+contents:union*!*-members
 contents:user_code_plugin
 contents:YAML
 memberdecls

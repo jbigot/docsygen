@@ -1,0 +1,25 @@
+{{- /* A text shortened as Doxygen shortens tooltips (util.cpp, parseCommentAsText): trimmed, and
+       past 80 characters cut after the first ',', '.', '!', '?' or '}' among the next 20, or
+       after the 101st, with "..." appended.
+       Usage: partial "docsygen/text/tooltip.html" $plainText */ -}}
+{{- $s := trim . " \t\n\r" -}}
+{{- $chars := split $s "" -}}
+{{- $l := len $chars -}}
+{{- $out := $s -}}
+{{- if gt $l 80 -}}
+  {{- $i := 80 -}}
+  {{- $count := 80 -}}
+  {{- $done := false -}}
+  {{- range seq 21 -}}
+    {{- if not $done -}}
+      {{- $i = add $i 1 -}}
+      {{- if or (ge $i $l) (ge $count 100) -}}{{- $done = true -}}
+      {{- else -}}
+        {{- $count = add $count 1 -}}
+        {{- if in (slice "," "." "!" "?" "}") (index $chars $i) -}}{{- $i = add $i 1 -}}{{- $done = true -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if lt $i $l -}}{{- $out = printf "%s..." (delimit (first $i $chars) "") -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

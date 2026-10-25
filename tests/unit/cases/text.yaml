@@ -30,3 +30,19 @@
   partial: docsygen/text/md-escape.html
   context: "{#id}"
   expect: \{\#id\}
+- name: tooltip of a short text
+  partial: docsygen/text/tooltip.html
+  context: "  A short brief.  "
+  expect: A short brief.
+- name: tooltip cut at punctuation after 80 characters
+  partial: docsygen/text/tooltip.html
+  context: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  expect: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,..."
+- name: tooltip cut after 101 characters without punctuation
+  partial: docsygen/text/tooltip.html
+  context: "an Array_datatype is a Datatype that represents an array: i.e storage of multiple elements of the same type."
+  expect: "an Array_datatype is a Datatype that represents an array: i.e storage of multiple elements of the sam..."
+- name: tooltip of 81 characters is whole
+  partial: docsygen/text/tooltip.html
+  context: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  expect: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"

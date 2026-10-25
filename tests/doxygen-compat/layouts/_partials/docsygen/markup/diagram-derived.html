@@ -1,0 +1,18 @@
+{{- /* The inheritance references by their text, for the classes that block-diagram.html cannot
+       walk from their own XML (template instances, classes outside the model): {"base:TEXT":
+       [refids of the classes that inherit TEXT], "derived:TEXT": [refids of the classes that
+       TEXT inherits]}, in index.xml order. Cached per model. */ -}}
+{{- $m := . -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- $id := . -}}
+  {{- $e := index $m.ids $id -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (in (slice "basecompoundref" "derivedcompoundref") .tag) -}}
+      {{- $key := printf "%s:%s" (cond (eq .tag "basecompoundref") "base" "derived") (partial "docsygen/text/plain.html" .) -}}
+      {{- $s.SetInMap "m" $key ((index ($s.Get "m") $key | default slice) | append $id) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s.Get "m" -}}

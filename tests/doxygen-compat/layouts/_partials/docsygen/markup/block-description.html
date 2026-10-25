@@ -4,10 +4,6 @@
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $e := index $m.ids .block.id -}}
-{{- $yes := newScratch -}}
-{{- range $k, $v := dict "REPEAT_BRIEF" "YES" "SOURCE_BROWSER" "NO" -}}
-  {{- $yes.Set $k (eq (index ((index $m.options $k) | default (slice $v)) 0) "YES") -}}
-{{- end -}}
 {{- $parts := dict -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}
@@ -21,18 +17,10 @@
 {{- else if eq $e.kind "example" -}}
   {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
 {{- else -}}
-  {{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" .block.id) -}}
-  {{- if eq $e.kind "file" -}}{{- $definition = dict "file" .block.id "line" 0 -}}{{- end -}}
-  {{- if not (and ($yes.Get "SOURCE_BROWSER") $definition (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $definition.file))))) -}}
-    {{- $definition = false -}}
-  {{- end -}}
-  {{- if or (and ($yes.Get "REPEAT_BRIEF") $parts.briefdescription) $parts.detaileddescription $definition -}}
+  {{- if partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" .block.id) -}}
     <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
     {{- if $textblock -}}<div class="textblock">{{- end -}}
-    {{- partial "docsygen/markup/template-params.html" (dict "model" $m "id" .block.id) -}}
-    {{- with and ($yes.Get "REPEAT_BRIEF") $parts.briefdescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
-    {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
-    {{- with $definition -}}{{- partial "docsygen/markup/definition.html" (dict "definition" $definition "ctx" $ctx "model" $m "id" $.block.id) -}}{{- end -}}
+    {{- partial "docsygen/markup/description-body.html" (dict "ctx" $ctx "id" .block.id) -}}
     {{- if $textblock -}}</div>{{- end -}}
   {{- end -}}
 {{- end -}}

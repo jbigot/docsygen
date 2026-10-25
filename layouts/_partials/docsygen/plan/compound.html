@@ -1,7 +1,8 @@
 {{- /* The blocks of a compound's page, in the order of Doxygen's default layout:
-         title, summary-links, brief, includes, inheritance, diagram, one decls per summary
-         section, description ("Detailed Description"), then each detailed section as a heading
-         block followed by one member block per member, and generated-from.
+         title, summary-links, brief, includes, inheritance, diagram, concept-definition, one decls per summary
+         section, description ("Detailed Description"), inline-classes (the embedded classes),
+         then each detailed section as a heading block followed by one member block per member,
+         and generated-from.
        Blocks that a kind of compound doesn't have are left out. */ -}}
 {{- $m := .ctx.model -}}
 {{- $id := .role.id -}}
@@ -29,6 +30,9 @@
 {{- if $classLike -}}
   {{- $blocks = $blocks | append (dict "type" "inheritance" "id" $id) (dict "type" "diagram" "id" $id) -}}
 {{- end -}}
+{{- if eq $kind "concept" -}}
+  {{- $blocks = $blocks | append (dict "type" "concept-definition" "id" $id "heading" (dict "level" 2 "text" "Concept definition" "anchorKey" "conceptdef")) -}}
+{{- end -}}
 {{- range $sections -}}
   {{- if and (eq .group "summary") (not .in) -}}
     {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
@@ -39,6 +43,24 @@
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
     "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" "Detailed Description" "anchorKey" "details"))) -}}
+{{- /* The classes embedded in this page (INLINE_SIMPLE_STRUCTS, INLINE_GROUPED_CLASSES): inner
+       classes without a page of their own, shown on their group's page when they have one
+       (classlist.cpp, ClassLinkedRefMap::writeDocumentation). */ -}}
+{{- if or $classLike (in (slice "namespace" "file" "group") $kind) -}}
+  {{- $inline := slice -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "innerclass") -}}
+      {{- $inner := .attributes.refid -}}
+      {{- $own := index $.ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $inner))) -}}
+      {{- if and (index $m.ids $inner) (not $own) (or (eq $kind "group") (not (partial "docsygen/plan/groups.html" (dict "model" $m "id" $inner)))) -}}
+        {{- $inline = $inline | append $inner -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $inline -}}
+    {{- $blocks = $blocks | append (dict "type" "inline-classes" "id" $id "ids" . "heading" (dict "level" 2 "text" "Class Documentation" "anchorKey" "inline-classes")) -}}
+  {{- end -}}
+{{- end -}}
 {{- range $sections -}}
   {{- if eq .group "doc" -}}
     {{- $blocks = $blocks | append (dict "type" "heading" "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}

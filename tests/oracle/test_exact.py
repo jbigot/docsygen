@@ -219,6 +219,16 @@ class Run(unittest.TestCase):
         self.assertEqual(self.run_exact('memitem')[0], 1)
         self.assertEqual(self.run_exact('memberdecls')[0], 0)
 
+    def test_a_glob_leaves_out_the_pages_after_an_exclamation_mark(self):
+        path = os.path.join(self.public, 'ref', 'classx', 'index.html')
+        with open(path) as f:
+            text = f.read()
+        self.write(path, text.replace('>M<', '>N<'))
+        self.assertEqual(self.run_exact('contents:class*')[0], 1)
+        status, out = self.run_exact('contents:class*!classX')
+        self.assertEqual(status, 0, out)
+        self.assertNotIn('no page matches', out)
+
     def test_a_glob_without_pages_is_reported(self):
         status, out = self.run_exact('contents:other*')
         self.assertEqual(status, 0)

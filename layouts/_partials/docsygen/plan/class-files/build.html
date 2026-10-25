@@ -1,0 +1,46 @@
+{{- /* {class refid: [file refids]} for docsygen/plan/class-files.html: the files whose innerclass
+       lists the class, and those that forward-declare a class template (Doxygen registers them,
+       but not plain forward declarations), which only their listing shows (XML_PROGRAMLISTING):
+       a line "class NAME;" whose NAME refers to a class with template parameters. */ -}}
+{{- $m := . -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- $file := . -}}
+  {{- $e := index $m.ids $file -}}
+  {{- if eq $e.kind "file" -}}
+    {{- $found := slice -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if eq .tag "innerclass" -}}{{- $found = $found | append .attributes.refid -}}
+      {{- else if eq .tag "programlisting" -}}
+        {{- range .children -}}
+          {{- if reflect.IsMap . -}}
+            {{- $keyword := false -}}
+            {{- range .children -}}
+              {{- if reflect.IsMap . -}}
+                {{- $h := . -}}
+                {{- if and (eq $h.attributes.class "keyword") (in (slice "class" "struct" "union") (index $h.children 0)) -}}{{- $keyword = true -}}
+                {{- else if and $keyword (eq $h.attributes.class "normal") (ge (len $h.children) 2) -}}
+                  {{- $ref := index $h.children 0 -}}
+                  {{- $next := index $h.children 1 -}}
+                  {{- if and (reflect.IsMap $ref) (eq $ref.tag "ref") (eq $ref.attributes.kindref "compound") (not (reflect.IsMap $next)) (hasPrefix $next ";") -}}
+                    {{- with index $m.ids $ref.attributes.refid -}}
+                      {{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}{{- $found = $found | append $ref.attributes.refid -}}{{- end -}}{{- end -}}
+                    {{- end -}}
+                  {{- end -}}
+                  {{- $keyword = false -}}
+                {{- else if ne (len $h.children) 0 -}}{{- $keyword = false -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- range uniq $found -}}
+      {{- $s.SetInMap "m" . ((index ($s.Get "m") . | default slice) | append $file) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s.Get "m" -}}

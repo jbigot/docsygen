@@ -1,0 +1,5 @@
+{{- /* The files that declare a class-like compound (docsygen/plan/class-files/build.html), in index.xml
+       order: the files a class's documentation "was generated from" (classdef.cpp, m_files).
+       Usage: partial "docsygen/plan/class-files.html" (dict "model" $model "id" $refid) */ -}}
+{{- $map := partialCached "docsygen/plan/class-files/build.html" .model .model.dir -}}
+{{- return (index $map .id | default slice) -}}
