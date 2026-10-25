@@ -25,6 +25,8 @@ h2.memtitle with its div.memitem, by anchor), contents, and contents:GLOB (conte
 pages whose key matches GLOB, which must match one). Exit 1 on any difference.
 """
 import argparse, fnmatch, html.parser, json, os, re, sys
+# python3 -I keeps this script's directory off sys.path.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import listyaml
 
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param',

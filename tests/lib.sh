@@ -2,7 +2,8 @@
 # It sets:
 #   root  the repository root
 #   hugo  the Hugo binary: HUGO, else the example site's npm-installed one, else hugo from PATH
-#   tmp   a scratch directory, removed on exit (a script that sets its own EXIT trap removes it)
+#   tmp   a scratch directory, removed on exit unless DOCSYGEN_KEEP is set (a script that sets its
+#         own EXIT trap removes it)
 # and defines oracle and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
@@ -12,7 +13,7 @@ root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show
 hugo=${HUGO:-$root/exampleSite/node_modules/hugo-extended/bin/hugo}
 [ -x "$hugo" ] || hugo=hugo
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
+if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
 
 # oracle NAME: print the directory that holds Doxygen's xml/ and html/ for NAME (sample,
 # sample-c or pdi), generating them if needed (tests/oracle/generate.sh).

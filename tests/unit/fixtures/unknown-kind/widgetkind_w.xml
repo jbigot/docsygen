@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen version="1.15.0">
+  <compounddef id="widgetkind_w" kind="widgetkind">
+    <compoundname>W</compoundname>
+    <briefdescription><para>A compound of a kind docsygen doesn't know.</para></briefdescription>
+    <detaileddescription></detaileddescription>
+  </compounddef>
+</doxygen>

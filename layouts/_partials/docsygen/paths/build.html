@@ -1,0 +1,36 @@
+{{- /* Build the pages of a model: see docsygen/paths.html, which caches them. The scheme returns
+       pages, anchors, merged, and homes: {id: anchor} for each id on its home compound's page. */ -}}
+{{- $m := .model -}}
+{{- $roles := partial "docsygen/paths/roles.html" $m -}}
+{{- $scheme := partial "docsygen/paths/scheme.html" (dict "model" $m "roles" $roles "pathMap" (.pathMap | default slice)) -}}
+{{- $pageOf := newScratch -}}
+{{- $byPath := newScratch -}}
+{{- range $scheme.pages -}}
+  {{- $p := . -}}
+  {{- range .roles -}}
+    {{- $role := jsonify . -}}
+    {{- with $pageOf.Get $role -}}
+      {{- errorf "docsygen: role %s is on both pages %q and %q" $role . $p.key -}}
+    {{- end -}}
+    {{- $pageOf.Set $role $p.key -}}
+  {{- end -}}
+  {{- /* Hugo merges pages whose paths differ only by case, silently. */ -}}
+  {{- $lower := lower $p.path -}}
+  {{- with $byPath.Get $lower -}}
+    {{- errorf "docsygen: pages %q and %q collide at %q" . $p.key $lower -}}
+  {{- end -}}
+  {{- $byPath.Set $lower $p.key -}}
+{{- end -}}
+{{- range $roles -}}
+  {{- if not ($pageOf.Get (jsonify .)) -}}{{- errorf "docsygen: role %s is on no page" (jsonify .) -}}{{- end -}}
+{{- end -}}
+{{- /* An id is documented on the page of its home compound. */ -}}
+{{- $targets := newScratch -}}
+{{- $targets.Set "m" dict -}}
+{{- range $id, $anchor := $scheme.homes -}}
+  {{- $home := (index $m.ids $id).home -}}
+  {{- with $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) -}}
+    {{- $targets.SetInMap "m" $id (dict "page" . "anchor" $anchor) -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged -}}

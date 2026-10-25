@@ -87,7 +87,7 @@
                             {{- $vname := "" -}}
                             {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = delimit .children "" -}}{{- end -}}{{- end -}}
                             {{- if $scope -}}{{- $vname = printf "%s::%s" $scope $vname -}}{{- end -}}
-                            {{- $s.SetInMap "ids" $vid (dict "id" $vid "what" "enumvalue" "kind" "enumvalue" "home" $refid "node" . "name" $vname) -}}
+                            {{- $s.SetInMap "ids" $vid (dict "id" $vid "what" "enumvalue" "kind" "enumvalue" "home" $refid "node" . "name" $vname "enum" $id) -}}
                             {{- if eq $known nil -}}{{- $s.SetInMap "names" $vname ((index ($s.Get "names") $vname | default slice) | append $vid) -}}{{- end -}}
                           {{- end -}}
                         {{- end -}}

@@ -1,0 +1,13 @@
+{{- /* Publish paths.json, for tests/oracle/exact.py: {pages: {key: {url, roles}}, targets,
+       anchors} of the version root. */ -}}
+{{- range where site.Pages "Params.docsygen.root" true -}}
+  {{- $root := . -}}
+  {{- $ctx := partial "docsygen/ctx.html" . -}}
+  {{- $pages := newScratch -}}
+  {{- $pages.Set "m" dict -}}
+  {{- range $ctx.paths.pages -}}
+    {{- $page := cond (eq .path "") $root ($root.GetPage .path) -}}
+    {{- $pages.SetInMap "m" .key (dict "url" $page.RelPermalink "roles" .roles) -}}
+  {{- end -}}
+  {{- (resources.FromString "paths.json" (jsonify (dict "pages" ($pages.Get "m") "targets" $ctx.paths.targets "anchors" $ctx.paths.anchors))).Publish -}}
+{{- end -}}

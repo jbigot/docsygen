@@ -90,3 +90,21 @@
     model: sample-c
     file: cdemo_8h
   expect: [cstatus, cpoint_t, ccallback, CMAX, CDEMO_VERSION, cdemo_counter, cdemo_init, cdemo_finalize]
+- name: linkable, a private member hidden by EXTRACT_PRIVATE=NO
+  partial: docsygen/model/linkable.html
+  context:
+    model: pdi
+    id: classPDI_1_1Ref__any_1a9bbae392e5e4b3a8bb29c37df953fe60
+  expect: false
+- name: linkable, a private member with EXTRACT_PRIVATE=YES
+  partial: docsygen/model/linkable.html
+  context:
+    model: sample
+    id: classdemo_1_1Widget_1a20de62d183285978e7ca07da74f11fa0
+  expect: true
+- name: linkable, a public member
+  partial: docsygen/model/linkable.html
+  context:
+    model: pdi
+    id: group__annotation_1ga8f103855418326055020d6f71b365c7e
+  expect: true

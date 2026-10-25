@@ -2,7 +2,7 @@
 
 Run: python3 -I -m unittest discover -s tests/oracle -p 'test_exact.py'
 """
-import contextlib, io, json, os, tempfile, unittest
+import contextlib, io, json, os, subprocess, sys, tempfile, unittest
 import exact, listyaml
 
 
@@ -206,6 +206,13 @@ class Run(unittest.TestCase):
         status, out = self.run_exact('contents:other*')
         self.assertEqual(status, 1)
         self.assertIn('no page matches', out)
+
+    def test_the_script_runs_isolated(self):
+        """run.sh runs exact.py with python3 -I, which keeps its own directory off sys.path."""
+        result = subprocess.run([sys.executable, '-I', exact.__file__, '--doxygen', self.html, '--site', self.public,
+                                 '--paths', self.paths, '--gaps', self.gaps, '--scope', 'pages'],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_gaps_of_another_oracle_are_ignored(self):
         self.write(self.gaps, '- oracle: pdi\n  pages: "*"\n  select: div.memitem\n  count: 1\n  reason: r\n  evidence: e\n')

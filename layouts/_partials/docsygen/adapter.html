@@ -1,0 +1,41 @@
+{{- /* Add the pages of one Doxygen XML directory to a site. Call it from a content adapter in the
+       parent directory of the version root, once per version:
+         store    the content adapter's context, .
+         dir      the XML directory, under assets/
+         version  the version's label
+         path     the version root, relative to the adapter's directory
+         latest   whether this is the version unversioned links go to (default false)
+         pathMap  rewrites of file locations, [{from, to}] (default [])
+       store, dir, version and path are required.
+       Usage, in content/docs/_content.gotmpl:
+         {{ partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" "main") }} */ -}}
+{{- $ok := true -}}
+{{- range $k, $_ := . -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "latest" "pathMap") $k) -}}
+    {{- errorf "docsygen: unknown adapter option %q" $k -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- range slice "store" "dir" "version" "path" -}}
+  {{- if and $ok (not (index $ . )) -}}
+    {{- errorf "docsygen: %s is required" . -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- if $ok -}}
+  {{- $store := .store -}}
+  {{- $dir := .dir -}}
+  {{- $root := .path -}}
+  {{- $pathMap := .pathMap | default slice -}}
+  {{- $docsygen := dict "dir" $dir "version" .version "latest" (.latest | default false) "pathMap" $pathMap -}}
+  {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}
+  {{- range $paths.pages -}}
+    {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
+    {{- if eq .path "" -}}
+      {{- $params = merge $params (dict "sidebar_root_for" "self" "docsygen" (merge $docsygen (dict "key" .key "root" true))) -}}
+    {{- end -}}
+    {{- $store.AddPage (dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
+        "weight" .weight "type" "docs" "description" .description "params" $params
+        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir)))) -}}
+  {{- end -}}
+{{- end -}}

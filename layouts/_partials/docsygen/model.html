@@ -6,7 +6,8 @@
          ids          {id: {id, what, kind, home, node, name}} for every compound (what:
                       compound), memberdef (member), enumvalue, section and anchor (and an
                       xrefsect id without its anchor); home is the compound that documents it
-                      (itself for a compound), node its element, name its qualified name or title
+                      (itself for a compound), node its element, name its qualified name or title,
+                      and, for an enum value, enum the id of its enum
          names        {name: [ids]}: compounds (but anonymous namespaces), members and enum values
          files        {location path: file refid}
          fileMembers  {file refid: [member ids]}: the members declared in the file but documented

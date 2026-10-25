@@ -1,0 +1,75 @@
+- name: roles of the sample, a source page per header
+  partial: test/roles.html
+  context:
+    model: sample
+    match: {role: source}
+  len: true
+  expect: 8
+- name: roles of the sample, the members list of a class
+  partial: test/roles.html
+  context:
+    model: sample
+    match: {role: all-members, id: classdemo_1_1Widget}
+  expect: [{role: all-members, id: classdemo_1_1Widget}]
+- name: roles of the sample, the main page is a compound of the root
+  partial: test/roles.html
+  context:
+    model: sample
+    match: {role: compound, id: indexpage}
+  len: true
+  expect: 1
+- name: roles of the sample, no page for the anonymous namespace
+  partial: test/roles.html
+  context:
+    model: sample
+    match: {role: compound, id: namespacedemo_1_1_0d120023002357274100006257004322307273101100025142}
+  len: true
+  expect: 0
+- name: roles of the C sample, no namespace list
+  partial: test/roles.html
+  context:
+    model: sample-c
+    match: {role: tree, name: namespaces}
+  len: true
+  expect: 0
+- name: roles of the C sample, no members list in C
+  partial: test/roles.html
+  context:
+    model: sample-c
+    match: {role: all-members}
+  len: true
+  expect: 0
+- name: roles of the C sample, its file members
+  partial: test/roles.html
+  context:
+    model: sample-c
+    match: {role: index, name: file-members}
+  expect:
+    - {role: index, name: file-members, filter: all, letter: ""}
+    - {role: index, name: file-members, filter: functions, letter: ""}
+    - {role: index, name: file-members, filter: variables, letter: ""}
+    - {role: index, name: file-members, filter: typedefs, letter: ""}
+    - {role: index, name: file-members, filter: enums, letter: ""}
+    - {role: index, name: file-members, filter: enumvalues, letter: ""}
+    - {role: index, name: file-members, filter: macros, letter: ""}
+- name: roles of PDI, no file page with SHOW_FILES=NO
+  partial: test/roles.html
+  context:
+    model: pdi
+    match: {role: compound, id: export_8h}
+  len: true
+  expect: 0
+- name: roles of PDI, no page for a simple struct with INLINE_SIMPLE_STRUCTS
+  partial: test/roles.html
+  context:
+    model: pdi
+    match: {role: compound, id: structPDI__errhandler__t}
+  len: true
+  expect: 0
+- name: roles of PDI, a class member index split by letter
+  partial: test/roles.html
+  context:
+    model: pdi
+    match: {role: index, name: class-members, filter: all, letter: "~"}
+  len: true
+  expect: 1

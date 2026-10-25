@@ -1,0 +1,23 @@
+{{- /* Whether Doxygen documents a member, enum value included, of the model (memberdef.cpp,
+       _computeLinkableInProject): its protection is visible (EXTRACT_PRIVATE, EXTRACT_PACKAGE,
+       EXTRACT_PRIV_VIRTUAL for a private virtual) or it is a friend; it is not static outside a
+       class, unless EXTRACT_STATIC; and its name is not anonymous. Doxygen's XML has members
+       that its HTML hides, such as private ones with EXTRACT_PRIVATE=NO.
+       Usage: partial "docsygen/model/linkable.html" (dict "model" $model "id" $memberId) */ -}}
+{{- $m := .model -}}
+{{- $ok := false -}}
+{{- with index $m.ids .id -}}
+  {{- $yes := newScratch -}}
+  {{- range slice "EXTRACT_PRIVATE" "EXTRACT_PACKAGE" "EXTRACT_PRIV_VIRTUAL" "EXTRACT_STATIC" -}}
+    {{- $yes.Set . (eq (index ((index $m.options .) | default (slice "NO")) 0) "YES") -}}
+  {{- end -}}
+  {{- $a := .node.attributes -}}
+  {{- $names := split .name "::" -}}
+  {{- $private := and (eq $a.prot "private") (not ($yes.Get "EXTRACT_PRIVATE"))
+      (not (and ($yes.Get "EXTRACT_PRIV_VIRTUAL") $a.virt (ne $a.virt "non-virtual"))) -}}
+  {{- $package := and (eq $a.prot "package") (not ($yes.Get "EXTRACT_PACKAGE")) -}}
+  {{- $inClass := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") (index $m.ids .home).kind -}}
+  {{- $static := and (eq $a.static "yes") (not $inClass) (not ($yes.Get "EXTRACT_STATIC")) -}}
+  {{- $ok = not (or (and (or $private $package) (ne .kind "friend")) $static (hasPrefix (index $names (sub (len $names) 1)) "@")) -}}
+{{- end -}}
+{{- return $ok -}}

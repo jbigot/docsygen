@@ -1,0 +1,250 @@
+{{- /* The content units of a model, independent of any URL scheme, in this order:
+         {role: root}
+         {role: compound, id}       every compound that has a page in Doxygen's HTML, followed by
+         {role: all-members, id}    its list of all members (class-likes with listofallmembers)
+         {role: source, id}         and its source listing (files Doxygen writes one for)
+         {role: tree, name}         annotated, hierarchy, namespaces, concepts, files, pages,
+                                    topics, examples
+         {role: index, name, filter, letter}  classes, class-members, namespace-members and
+                                    file-members, by filter (all, functions, variables, typedefs,
+                                    enums, enumvalues, properties, events, related, macros), and
+                                    by first letter when the filter has more than 200 members
+                                    (letter is "" otherwise)
+       Only what Doxygen 1.15 generates is listed (src/index.cpp, classdef.cpp, filedef.cpp,
+       namespacedef.cpp), honouring the Doxyfile options that decide it: SHOW_FILES,
+       INLINE_SIMPLE_STRUCTS, EXTRACT_ANON_NSPACES, OPTIMIZE_OUTPUT_FOR_C, SOURCE_BROWSER,
+       VERBATIM_HEADERS, IGNORE_PREFIX, and those of docsygen/model/linkable.html for the members
+       of the indexes. An unknown compound kind warns once and gets a page.
+       Usage: partial "docsygen/paths/roles.html" $model */ -}}
+{{- $m := . -}}
+{{- $yes := newScratch -}}
+{{- range $k, $v := dict "SHOW_FILES" "YES" "INLINE_SIMPLE_STRUCTS" "NO" "EXTRACT_ANON_NSPACES" "NO"
+    "OPTIMIZE_OUTPUT_FOR_C" "NO" "SOURCE_BROWSER" "NO" "VERBATIM_HEADERS" "YES" -}}
+  {{- $yes.Set $k (eq (index ((index $m.options $k) | default (slice $v)) 0) "YES") -}}
+{{- end -}}
+{{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $known := $classLike | append (slice "file" "namespace" "group" "page" "example" "dir" "type" "concept"
+    "module" "requirement" "requirements") -}}
+
+{{- /* The scope of each class and namespace, and the classes in groups. */ -}}
+{{- $parent := newScratch -}}
+{{- $grouped := newScratch -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (in (slice "innerclass" "innernamespace") .tag) -}}
+      {{- if eq $e.kind "group" -}}
+        {{- $grouped.Set .attributes.refid true -}}
+      {{- else if ne $e.kind "file" -}}
+        {{- $parent.Set .attributes.refid $e.id -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Which compounds have a page. Classes come last, outer ones first: whether a simple struct
+       is embedded in its scope depends on the scope's page. */ -}}
+{{- $page := newScratch -}}
+{{- $classes := slice -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- $has := true -}}
+  {{- if eq $e.kind "namespace" -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "location") (eq .attributes.file "[generated]") -}}{{- $has = false -}}{{- end -}}
+    {{- end -}}
+    {{- if and (not $e.name) (not ($yes.Get "EXTRACT_ANON_NSPACES")) -}}{{- $has = false -}}{{- end -}}
+  {{- else if eq $e.kind "file" -}}
+    {{- $has = $yes.Get "SHOW_FILES" -}}
+  {{- else if in $classLike $e.kind -}}
+    {{- $classes = $classes | append (dict "id" . "depth" (len (split $e.name "::"))) -}}
+  {{- else if not (in $known $e.kind) -}}
+    {{- warnidf (printf "docsygen-unknown-%s" $e.kind) "docsygen: unknown compound kind %q" $e.kind -}}
+  {{- end -}}
+  {{- $page.Set . $has -}}
+{{- end -}}
+{{- range sort $classes "depth" -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $has := true -}}
+  {{- if $yes.Get "INLINE_SIMPLE_STRUCTS" -}}
+    {{- /* classdef.cpp: no base or derived class, and only public data members and typedefs that
+           are not function pointers. */ -}}
+    {{- $simple := true -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if in (slice "basecompoundref" "derivedcompoundref") .tag -}}
+        {{- $simple = false -}}
+      {{- else if eq .tag "sectiondef" -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "memberdef") -}}
+            {{- $type := "" -}}
+            {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "type") -}}{{- $type = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+            {{- $field := and (eq .attributes.kind "variable") (ne .attributes.static "yes") -}}
+            {{- $alias := and (eq .attributes.kind "typedef") (not (strings.Contains $type ")(")) -}}
+            {{- if not (and (eq .attributes.prot "public") (or $field $alias)) -}}{{- $simple = false -}}{{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $simple -}}
+      {{- $linkable := false -}}
+      {{- with $parent.Get .id -}}
+        {{- $linkable = $page.Get . -}}
+      {{- else -}}
+        {{- range $e.node.children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "location") (index $m.files .attributes.file) -}}{{- $linkable = $yes.Get "SHOW_FILES" -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if or $linkable ($grouped.Get .id) -}}{{- $has = false -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $page.Set .id $has -}}
+{{- end -}}
+
+{{- $roles := slice (dict "role" "root") -}}
+{{- $count := newScratch -}}
+{{- range $m.order -}}
+  {{- $id := . -}}
+  {{- $e := index $m.ids . -}}
+  {{- if $page.Get $id -}}
+    {{- $roles = $roles | append (dict "role" "compound" "id" $id) -}}
+    {{- $count.Add $e.kind 1 -}}
+  {{- end -}}
+  {{- if and (in $classLike $e.kind) ($page.Get $id) (not ($yes.Get "OPTIMIZE_OUTPUT_FOR_C")) -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") .children -}}
+        {{- $roles = $roles | append (dict "role" "all-members" "id" $id) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $e.kind "file" -}}
+    {{- /* filedef.cpp, generateSourceFile: not a documentation file, and SOURCE_BROWSER, or
+           VERBATIM_HEADERS for a header or a file that others include. */ -}}
+    {{- $ext := lower (path.Ext $e.name) -}}
+    {{- $header := in (slice ".h" ".hh" ".hxx" ".hpp" ".h++" ".idl" ".ddl" ".pidl" ".ice") $ext -}}
+    {{- $doc := in (slice ".doc" ".txt" ".dox" ".md" ".markdown") $ext -}}
+    {{- $listing := false -}}
+    {{- $included := false -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if eq .tag "programlisting" -}}{{- $listing = true -}}
+      {{- else if eq .tag "includedby" -}}{{- $included = true -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $listing (not $doc) (or ($yes.Get "SOURCE_BROWSER") (and ($yes.Get "VERBATIM_HEADERS") (or $header $included))) -}}
+      {{- $roles = $roles | append (dict "role" "source" "id" $id) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* The lists. */ -}}
+{{- $hasClasses := false -}}
+{{- range $classLike -}}{{- if $count.Get . -}}{{- $hasClasses = true -}}{{- end -}}{{- end -}}
+{{- $hierarchy := false -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- if and (in $classLike $e.kind) ($page.Get .) -}}
+    {{- $derived := false -}}
+    {{- $root := true -}}
+    {{- range $e.node.children -}}
+      {{- if not (reflect.IsMap .) -}}
+      {{- else if eq .tag "derivedcompoundref" -}}{{- $derived = true -}}
+      {{- else if and (eq .tag "basecompoundref") .attributes.refid ($page.Get .attributes.refid) -}}{{- $root = false -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $derived $root -}}{{- $hierarchy = true -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $pages := 0 -}}
+{{- range $m.order -}}{{- if and (eq (index $m.ids .).kind "page") (ne . "indexpage") -}}{{- $pages = add $pages 1 -}}{{- end -}}{{- end -}}
+{{- range $name, $present := dict "annotated" $hasClasses "hierarchy" $hierarchy "namespaces" ($count.Get "namespace")
+    "concepts" ($count.Get "concept") "files" ($count.Get "file") "pages" $pages "topics" ($count.Get "group")
+    "examples" ($count.Get "example") -}}
+  {{- if $present -}}{{- $roles = $roles | append (dict "role" "tree" "name" $name) -}}{{- end -}}
+{{- end -}}
+
+{{- /* The indexes, from the member lists of index.xml: each class, namespace or file lists its own
+       members (index.cpp, add*MemberNameToIndex). */ -}}
+{{- if $hasClasses -}}{{- $roles = $roles | append (dict "role" "index" "name" "classes" "filter" "all" "letter" "") -}}{{- end -}}
+{{- $filters := dict "function" "functions" "slot" "functions" "signal" "functions" "variable" "variables"
+    "typedef" "typedefs" "enum" "enums" "enumvalue" "enumvalues" "property" "properties" "event" "events"
+    "friend" "related" "define" "macros" -}}
+{{- $indexes := newScratch -}}
+{{- with resources.Get (printf "%s/index.xml" $m.dir) -}}
+  {{- range (partial "docsygen/xml/unmarshal.html" .).children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "compound") -}}
+      {{- $kind := .attributes.kind -}}
+      {{- $cid := .attributes.refid -}}
+      {{- $index := "" -}}
+      {{- if and (in $classLike $kind) (not (strings.Contains (index $m.ids $cid).name "@")) -}}
+        {{- $index = "class-members" -}}
+      {{- else if and (eq $kind "namespace") ($page.Get $cid) -}}
+        {{- $index = "namespace-members" -}}
+      {{- else if and (eq $kind "file") ($page.Get $cid) -}}
+        {{- $index = "file-members" -}}
+      {{- end -}}
+      {{- if $index -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "member") -}}
+            {{- $mid := .attributes.refid -}}
+            {{- $mkind := .attributes.kind -}}
+            {{- $name := "" -}}
+            {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $name = delimit .children "" -}}{{- end -}}{{- end -}}
+            {{- range $prefixes -}}{{- if and . (hasPrefix $name .) (gt (len $name) (len .)) -}}{{- $name = strings.TrimPrefix . $name -}}{{- end -}}{{- end -}}
+            {{- $letter := lower (substr $name 0 1) -}}
+            {{- $strong := false -}}
+            {{- if eq $mkind "enumvalue" -}}
+              {{- with index $m.ids $mid -}}{{- $strong = eq (index $m.ids .enum).node.attributes.strong "yes" -}}{{- end -}}
+            {{- end -}}
+            {{- $filter := index $filters $mkind -}}
+            {{- if and (eq $filter "macros") (ne $index "file-members") -}}{{- $filter = "" -}}{{- end -}}
+            {{- $linkable := partial "docsygen/model/linkable.html" (dict "model" $m "id" $mid) -}}
+            {{- if and $letter (not $strong) $linkable -}}
+              {{- $indexes.SetInMap $index (printf "all|%s|%s" $letter $mid) true -}}
+              {{- if $filter -}}{{- $indexes.SetInMap $index (printf "%s|%s|%s" $filter $letter $mid) true -}}{{- end -}}
+            {{- end -}}
+            {{- /* index.xml lists enum values under namespaces, not under files: take them from
+                   the enum. */ -}}
+            {{- if and (eq $mkind "enum") $linkable (ne (index $m.ids $mid).node.attributes.strong "yes") -}}
+              {{- range (index $m.ids $mid).node.children -}}
+                {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}
+                  {{- $vid := .attributes.id -}}
+                  {{- $vname := "" -}}
+                  {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = delimit .children "" -}}{{- end -}}{{- end -}}
+                  {{- range $prefixes -}}{{- if and . (hasPrefix $vname .) (gt (len $vname) (len .)) -}}{{- $vname = strings.TrimPrefix . $vname -}}{{- end -}}{{- end -}}
+                  {{- with lower (substr $vname 0 1) -}}
+                    {{- $indexes.SetInMap $index (printf "all|%s|%s" . $vid) true -}}
+                    {{- $indexes.SetInMap $index (printf "enumvalues|%s|%s" . $vid) true -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range slice "class-members" "namespace-members" "file-members" -}}
+  {{- $index := . -}}
+  {{- $entries := $indexes.Get $index | default dict -}}
+  {{- range slice "all" "functions" "variables" "typedefs" "enums" "enumvalues" "properties" "events" "related" "macros" -}}
+    {{- $filter := . -}}
+    {{- $letters := newScratch -}}
+    {{- $n := 0 -}}
+    {{- range $key, $_ := $entries -}}
+      {{- $parts := split $key "|" -}}
+      {{- if eq (index $parts 0) $filter -}}{{- $letters.Set (index $parts 1) true -}}{{- $n = add $n 1 -}}{{- end -}}
+    {{- end -}}
+    {{- if gt $n 200 -}}
+      {{- /* index.cpp sorts the letters as bytes, as the keys of this map are sorted. */ -}}
+      {{- range $letter, $_ := $letters.Values -}}
+        {{- $roles = $roles | append (dict "role" "index" "name" $index "filter" $filter "letter" $letter) -}}
+      {{- end -}}
+    {{- else if $n -}}
+      {{- $roles = $roles | append (dict "role" "index" "name" $index "filter" $filter "letter" "") -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $roles -}}

@@ -1,0 +1,3 @@
+{{- /* Call docsygen/adapter.html with the case's options and a stand-in store: only the option
+       checks can run outside a content adapter. */ -}}
+{{- partial "docsygen/adapter.html" (merge . (dict "store" "not a content adapter")) -}}

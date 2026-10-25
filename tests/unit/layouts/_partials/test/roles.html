@@ -1,0 +1,13 @@
+{{- /* The roles of .model (a model, or the name of a directory of assets/doxygen) whose fields
+       all equal those of .match. */ -}}
+{{- $m := .model -}}
+{{- if not (reflect.IsMap $m) -}}{{- $m = partial "docsygen/model.html" (printf "doxygen/%s" $m) -}}{{- end -}}
+{{- $match := .match | default dict -}}
+{{- $out := slice -}}
+{{- range partial "docsygen/paths/roles.html" $m -}}
+  {{- $role := . -}}
+  {{- $ok := true -}}
+  {{- range $k, $v := $match -}}{{- if ne (index $role $k) $v -}}{{- $ok = false -}}{{- end -}}{{- end -}}
+  {{- if $ok -}}{{- $out = $out | append $role -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

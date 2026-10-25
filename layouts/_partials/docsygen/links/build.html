@@ -1,0 +1,18 @@
+{{- /* The body of docsygen/links.html. */ -}}
+{{- $root := .root -}}
+{{- $urls := newScratch -}}
+{{- range .paths.pages -}}
+  {{- $page := cond (eq .path "") $root ($root.GetPage .path) -}}
+  {{- if $page -}}
+    {{- $urls.Set .key $page.RelPermalink -}}
+  {{- else -}}
+    {{- errorf "docsygen: no page %q under %s" .path $root.Path -}}
+  {{- end -}}
+{{- end -}}
+{{- $links := newScratch -}}
+{{- $links.Set "m" dict -}}
+{{- range $id, $t := .paths.targets -}}
+  {{- $url := $urls.Get $t.page -}}
+  {{- $links.SetInMap "m" $id (cond (eq $t.anchor "") $url (printf "%s#%s" $url $t.anchor)) -}}
+{{- end -}}
+{{- return $links.Get "m" -}}

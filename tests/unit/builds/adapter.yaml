@@ -1,0 +1,22 @@
+- name: adapter with an unknown option
+  partial: test/adapter.html
+  context: {dir: doxygen/sample, version: v, path: ref, latset: true}
+  error: 'docsygen: unknown adapter option "latset"'
+- name: adapter without a version
+  partial: test/adapter.html
+  context: {dir: doxygen/sample, path: ref}
+  error: "docsygen: version is required"
+- name: adapter without a path
+  partial: test/adapter.html
+  context: {dir: doxygen/sample, version: v}
+  error: "docsygen: path is required"
+- name: paths that differ only by case
+  partial: docsygen/paths.html
+  context: {model: sample, pathMap: []}
+  mounts: {fixtures/collide: layouts/_partials/docsygen}
+  error: 'collide at "a/x"'
+- name: unknown compound kind
+  partial: test/roles.html
+  context: {model: unknown-kind}
+  mounts: {fixtures/unknown-kind: doxygen/unknown-kind}
+  warning: 'docsygen: unknown compound kind "widgetkind"'

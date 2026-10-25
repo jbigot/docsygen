@@ -1,0 +1,73 @@
+{{- /* The compat scheme: Doxygen 1.15's own HTML file names and anchors, so that each page can
+       be compared with Doxygen's (tests/oracle/exact.py). Test-only.
+         key     Doxygen's file stem: the compound refid, <refid>-members, <refid>_source, index
+                 for the root, and the list and index names of src/index.cpp
+         path    the key with each ASCII uppercase letter X written _x, which is Doxygen's own
+                 escaping for CASE_SENSE_NAMES=NO, unambiguous since refids never have _ before
+                 a letter
+         anchor  a member's, section's or anchor's id without its home compound's refid and _1
+       Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
+{{- $m := .model -}}
+{{- $bases := dict "classes" "classes" "class-members" "functions" "namespace-members" "namespacemembers" "file-members" "globals" -}}
+{{- $suffixes := dict "all" "" "functions" "_func" "variables" "_vars" "typedefs" "_type" "enums" "_enum"
+    "enumvalues" "_eval" "properties" "_prop" "events" "_evnt" "related" "_rela" "macros" "_defs" -}}
+{{- /* The first letter of a multipage index takes its base name. */ -}}
+{{- $first := newScratch -}}
+{{- range .roles -}}
+  {{- if and (eq .role "index") .letter -}}
+    {{- $k := printf "%s%s" .name .filter -}}
+    {{- if or (not ($first.Get $k)) (lt .letter ($first.Get $k)) -}}{{- $first.Set $k .letter -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $pages := newScratch -}}
+{{- $order := slice -}}
+{{- range .roles -}}
+  {{- $role := . -}}
+  {{- $key := "" -}}
+  {{- if eq .role "root" -}}
+    {{- $key = "index" -}}
+  {{- else if eq .role "compound" -}}
+    {{- $key = cond (eq .id "indexpage") "index" .id -}}
+  {{- else if eq .role "all-members" -}}
+    {{- $key = printf "%s-members" .id -}}
+  {{- else if eq .role "source" -}}
+    {{- $key = printf "%s_source" .id -}}
+  {{- else if eq .role "tree" -}}
+    {{- $key = .name -}}
+  {{- else if eq .role "index" -}}
+    {{- $key = printf "%s%s" (index $bases .name) (index $suffixes .filter) -}}
+    {{- if and .letter (ne .letter ($first.Get (printf "%s%s" .name .filter))) -}}
+      {{- /* index.cpp, letterToLabel: printable ASCII as is, anything else in hex. */ -}}
+      {{- $label := .letter -}}
+      {{- if not (findRE `^[ -~]$` .letter) -}}
+        {{- $label = "0x" -}}
+        {{- range split (printf "% x" .letter) " " -}}{{- $label = add $label . -}}{{- end -}}
+      {{- end -}}
+      {{- $key = printf "%s_%s" $key $label -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $pages.Get $key -}}
+    {{- $pages.Set $key (merge . (dict "roles" (.roles | append $role))) -}}
+  {{- else -}}
+    {{- $pages.Set $key (dict "roles" (slice $role)) -}}
+    {{- $order = $order | append $key -}}
+  {{- end -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- range $i, $key := $order -}}
+  {{- $root := eq $key "index" -}}
+  {{- $out = $out | append (dict "key" $key "path" (cond $root "" (replaceRE `([A-Z])` "_$1" $key | lower))
+      "kind" (cond $root "section" "page") "parent" (cond $root "" "index") "title" $key "linkTitle" $key
+      "weight" $i "description" "" "summary" "" "roles" ($pages.Get $key).roles) -}}
+{{- end -}}
+{{- $homes := newScratch -}}
+{{- $homes.Set "m" dict -}}
+{{- range $id, $e := $m.ids -}}
+  {{- $anchor := "" -}}
+  {{- if ne $e.what "compound" -}}
+    {{- $prefix := printf "%s_1" $e.home -}}
+    {{- $anchor = cond (hasPrefix $id $prefix) (strings.TrimPrefix $prefix $id) (replaceRE `^.*_1` "" $id) -}}
+  {{- end -}}
+  {{- $homes.SetInMap "m" $id $anchor -}}
+{{- end -}}
+{{- return dict "pages" $out "anchors" dict "merged" dict "homes" ($homes.Get "m") -}}

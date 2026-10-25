@@ -1,0 +1,4 @@
+# The compat site: the docsygen module with Doxygen's own page names and markup
+# (layouts/_partials/docsygen overrides the module's flavor partials). tests/oracle/run.sh
+# mounts the oracle's XML at assets/doxygen/oracle.
+disableKinds: [taxonomy, term, rss, sitemap]

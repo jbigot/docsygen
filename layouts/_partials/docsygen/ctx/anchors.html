@@ -1,0 +1,5 @@
+{{- /* {id: anchor} from the targets of docsygen/paths.html. */ -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $id, $t := .targets -}}{{- $s.SetInMap "m" $id $t.anchor -}}{{- end -}}
+{{- return $s.Get "m" -}}

@@ -1,0 +1,5 @@
+{{- /* {id: URL} for every target of a version: the RelPermalink of its page, with #anchor when it
+       has one. Pages are found from the version root, by their path relative to it; a page that
+       doesn't exist stops the build. Cached per version root.
+       Usage: partial "docsygen/links.html" (dict "root" $rootPage "paths" $paths) */ -}}
+{{- return partialCached "docsygen/links/build.html" . .root.Path -}}

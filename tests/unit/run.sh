@@ -9,7 +9,8 @@
 # docsy run in a second build without them.
 # A build case is {name, partial, context, mounts?, error | warning}, one build each: the build
 # must fail with an error, or succeed with a warning, that contains the given text. mounts maps
-# directories of tests/unit to assets/ paths.
+# directories of tests/unit to assets/ paths, or to layouts paths when the target starts with
+# layouts.
 # Every site mounts the XML of the sample and sample-c oracles and the example site's committed
 # PDI XML at assets/doxygen/{sample,sample-c,pdi}.
 set -eu
@@ -25,7 +26,8 @@ set -- "$(oracle sample)/xml=assets/doxygen/sample" "$(oracle sample-c)/xml=asse
 unit_site() {
   dir=$1 flavor=$2; shift 2
   mkdir -p "$dir"
-  if [ "$flavor" = compat ] && [ -d "$compat" ]; then set -- "$compat=layouts/_partials/docsygen" "$@"; fi
+  # The first mount of a file wins: a case's own mounts, then the compat flavor's partials.
+  if [ "$flavor" = compat ] && [ -d "$compat" ]; then set -- "$@" "$compat=layouts/_partials/docsygen"; fi
   for data in builds cases; do
     if [ -d "$here/$data" ]; then set -- "$here/$data=assets/$data" "$@"; fi
   done
@@ -53,7 +55,8 @@ import json, re, sys
 for case in json.load(open(sys.argv[1])):
     if sys.argv[2] and not re.search(sys.argv[2], case['name']): continue
     want = 'error' if 'error' in case else 'warning'
-    mounts = ' '.join(f'{k}=assets/{v}' for k, v in (case.get('mounts') or {}).items())
+    mounts = ' '.join(f'{k}={v}' if v.split('/')[0] == 'layouts' else f'{k}=assets/{v}'
+                      for k, v in (case.get('mounts') or {}).items())
     print('\t'.join([case['name'], want, case[want], mounts]))
 EOF
 builds=0

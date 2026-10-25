@@ -1,0 +1,22 @@
+{{- /* What the renderers of a generated page need: {model, paths, anchors: {id: anchor},
+       links: {id: url}, page}. The version root is the page itself or its nearest ancestor with
+       params.docsygen.root (never derived from .Path, which Hugo lowercases).
+       Usage: partial "docsygen/ctx.html" .Page */ -}}
+{{- $root := false -}}
+{{- if .Params.docsygen.root -}}
+  {{- $root = . -}}
+{{- else -}}
+  {{- range .Ancestors -}}{{- if and (not $root) .Params.docsygen.root -}}{{- $root = . -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $ctx := dict -}}
+{{- if not $root -}}
+  {{- errorf "docsygen: %s is not under a docsygen version root" .Path -}}
+{{- else -}}
+  {{- $p := $root.Params.docsygen -}}
+  {{- $model := partial "docsygen/model.html" $p.dir -}}
+  {{- $paths := partial "docsygen/paths.html" (dict "model" $model "pathMap" ($p.pathMap | default slice)) -}}
+  {{- $ctx = dict "model" $model "paths" $paths "page" .
+      "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $p.dir (jsonify ($p.pathMap | default slice))))
+      "links" (partial "docsygen/links.html" (dict "root" $root "paths" $paths)) -}}
+{{- end -}}
+{{- return $ctx -}}
