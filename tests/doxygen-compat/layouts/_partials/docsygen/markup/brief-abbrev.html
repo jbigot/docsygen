@@ -1,0 +1,26 @@
+{{- /* A compound's brief as the lists show it (definition.cpp, briefDescription(true),
+       abbreviate; ftvhelp.cpp, generateBriefDoc): one line, without its final ".", without the
+       ABBREVIATE_BRIEF prefixes ($name being its name without scope), its first letter
+       capitalized. Doxygen abbreviates the raw comment; this edits the rendered text.
+       Usage: partial "docsygen/markup/brief-abbrev.html" (dict "ctx" $ctx "id" $refid) */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $e := index $m.ids .id -}}
+{{- $out := "" -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}
+    {{- $out = trim (string (partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true))) " \n" -}}
+  {{- end -}}
+{{- end -}}
+{{- if $out -}}
+  {{- $out = strings.TrimSuffix "." $out -}}
+  {{- $display := partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) -}}
+  {{- $scopeless := index (split $display "::") (sub (len (split $display "::")) 1) -}}
+  {{- $prefixes := (index $m.options "ABBREVIATE_BRIEF") | default (slice "The $name class" "The $name widget" "The $name file" "is" "provides" "specifies" "contains" "represents" "a" "an" "the") -}}
+  {{- range $prefixes -}}
+    {{- $p := htmlEscape (printf "%s " (replace . "$name" $scopeless)) -}}
+    {{- if hasPrefix $out $p -}}{{- $out = strings.TrimPrefix $p $out -}}{{- end -}}
+  {{- end -}}
+  {{- with findRESubmatch `^([a-z])(.*)$` $out 1 -}}{{- $out = printf "%s%s" (upper (index (index . 0) 1)) (index (index . 0) 2) -}}{{- end -}}
+{{- end -}}
+{{- return ($out | safeHTML) -}}

@@ -6,8 +6,8 @@ Usage: python3 -I exact.py --doxygen HTMLDIR --site PUBLIC --paths PATHS.json --
   PUBLIC     the built site; PATHS.json is its dump, {pages: {key: {url, roles}}, ...}
   GAPS.yaml  what Doxygen's HTML shows and the XML cannot give, removed from the Doxygen side:
              [{pages: GLOB, select: TAG.CLASS|TAG#ID, text?: REGEX, attr?: NAME, unwrap?: true,
-               count: N, reason, evidence, oracle?: NAME}]. attr removes that attribute only,
-             unwrap the element but not its children. count is the exact number of matches over all
+               empty?: true, count: N, reason, evidence, oracle?: NAME}]. attr removes that
+             attribute only, unwrap the element but not its children, empty its children only. count is the exact number of matches over all
              pages: any other number fails, and so does an entry without matches (stale). An
              entry with an oracle applies only when --oracle names it.
 Doxygen's X.html pairs with the site page whose key is X. The div.header and div.contents of
@@ -242,6 +242,8 @@ def apply_gaps(pages, gaps, oracle=None):
         for _, node in found:
             if 'attr' in gap:
                 del node.attrs[gap['attr']]
+            elif gap.get('empty'):
+                node.children = []
             elif gap.get('unwrap'):
                 siblings = node.parent.children
                 i = siblings.index(node)

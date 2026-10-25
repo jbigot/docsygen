@@ -1,0 +1,153 @@
+{{- /* The class hierarchy (writeClassHierarchy): the root classes sorted as Doxygen sorts its class
+       list (qstricmp_sort on the scopeless name, then on the full name), each with its derived
+       classes, a class expanded only once. Three kinds of nodes:
+         a class of the model ("id:REFID"), labelled by its display name;
+         a template instance ("inst:TEXT"), a reference to a class of the model by another
+         text, linked to that class, without a description; its derived classes are those
+         that inherit that text;
+         a class outside the model ("out:NAME"), unlinked, known from the references and the
+         inheritance graphs that name it, shown only above a class of the model. Doxygen names an
+         undocumented base without its template arguments, unless a reference carries its refid.
+       Returns [{id, link, name, kind, children}], id "" for the nodes without a description.
+       Usage: partial "docsygen/plan/tree/hierarchy.html" (dict "model" $model) */ -}}
+{{- $m := .model -}}
+{{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $refTags := slice "basecompoundref" "derivedcompoundref" -}}
+{{- define "_partials/docsygen/plan/tree/hierarchy-key.html" -}}
+  {{- /* The node of a reference with text .text and refid .refid, recorded in .s's "info". */ -}}
+  {{- $m := .model -}}
+  {{- $key := "" -}}
+  {{- $info := dict -}}
+  {{- $c := false -}}
+  {{- with .refid -}}{{- with index $m.ids . -}}{{- if eq .what "compound" -}}{{- $c = . -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- if $c -}}
+    {{- $dn := partial "docsygen/plan/display-name.html" (dict "model" $m "id" $c.id) -}}
+    {{- if eq .text $dn -}}
+      {{- $key = printf "id:%s" $c.id -}}
+      {{- $info = dict "id" $c.id "link" $c.id "name" $dn "full" $c.name -}}
+    {{- else -}}
+      {{- $key = printf "inst:%s" .text -}}
+      {{- $info = dict "id" "" "link" $c.id "name" .text "full" .text -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $name := .text -}}
+    {{- if not (index (.s.Get "withRefid") .text) -}}{{- $name = trim (replaceRE `<.*$` "" .text) " " -}}{{- end -}}
+    {{- $key = printf "out:%s" $name -}}
+    {{- $info = dict "id" "" "link" "" "name" $name "full" $name -}}
+  {{- end -}}
+  {{- if not (index (.s.Get "info") $key) -}}
+    {{- .s.SetInMap "info" $key $info -}}
+    {{- .s.Set "keys" ((.s.Get "keys") | append $key) -}}
+  {{- end -}}
+  {{- return $key -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/hierarchy-add.html" -}}
+  {{- /* Appends .value to .s's list .list[.key], once. */ -}}
+  {{- $l := index (.s.Get .list) .key | default slice -}}
+  {{- if not (in $l .value) -}}{{- .s.SetInMap .list .key ($l | append .value) -}}{{- end -}}
+  {{- return "" -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/hierarchy-visible.html" -}}
+  {{- $out := not (hasPrefix .key "out:") -}}
+  {{- if and (not $out) (lt .depth 64) -}}
+    {{- range index (.s.Get "kids") .key -}}
+      {{- if and (not $out) (partial "docsygen/plan/tree/hierarchy-visible.html" (dict "s" $.s "key" . "depth" (add $.depth 1))) -}}{{- $out = true -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/hierarchy-node.html" -}}
+  {{- /* The node .key with its visible derived classes, unless .s's "visited" has it. Doxygen marks a
+         nested class visited before writing its derived classes, a root class after. */ -}}
+  {{- $s := .s -}}
+  {{- $kids := slice -}}
+  {{- if not (index ($s.Get "visited") .key) -}}
+    {{- range index ($s.Get "kids") .key -}}
+      {{- if partial "docsygen/plan/tree/hierarchy-visible.html" (dict "s" $s "key" . "depth" 0) -}}{{- $kids = $kids | append . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $children := slice -}}
+  {{- if $kids -}}
+    {{- if .nested -}}{{- $s.SetInMap "visited" .key true -}}{{- end -}}
+    {{- range $kids -}}{{- $children = $children | append (partial "docsygen/plan/tree/hierarchy-node.html" (dict "s" $s "key" . "nested" true)) -}}{{- end -}}
+    {{- $s.SetInMap "visited" .key true -}}
+  {{- end -}}
+  {{- $info := index ($s.Get "info") .key -}}
+  {{- return dict "id" $info.id "link" $info.link "name" $info.name "kind" "class" "children" $children -}}
+{{- end -}}
+{{- $s := newScratch -}}
+{{- range slice "withRefid" "info" "kids" "parents" "visited" -}}{{- $s.Set . dict -}}{{- end -}}
+{{- $s.Set "keys" slice -}}
+{{- $classes := slice -}}
+{{- range $m.order -}}{{- if in $classKinds (index $m.ids .).kind -}}{{- $classes = $classes | append . -}}{{- end -}}{{- end -}}
+{{- range $classes -}}
+  {{- range (index $m.ids .).node.children -}}
+    {{- if and (reflect.IsMap .) (in $refTags .tag) .attributes.refid -}}{{- $s.SetInMap "withRefid" (partial "docsygen/text/plain.html" .) true -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $classes -}}
+  {{- $id := . -}}
+  {{- $self := partial "docsygen/plan/tree/hierarchy-key.html" (dict "model" $m "s" $s "text" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id)) "refid" $id) -}}
+  {{- range (index $m.ids $id).node.children -}}
+    {{- if and (reflect.IsMap .) (in $refTags .tag) -}}
+      {{- $k := partial "docsygen/plan/tree/hierarchy-key.html" (dict "model" $m "s" $s "text" (partial "docsygen/text/plain.html" .) "refid" .attributes.refid) -}}
+      {{- if eq .tag "basecompoundref" -}}
+        {{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "parents" "key" $self "value" $k) -}}
+        {{- if not (hasPrefix $k "id:") -}}{{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "kids" "key" $k "value" $self) -}}{{- end -}}
+      {{- else -}}
+        {{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "kids" "key" $self "value" $k) -}}
+        {{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "parents" "key" $k "value" $self) -}}
+      {{- end -}}
+    {{- else if and (reflect.IsMap .) (eq .tag "inheritancegraph") -}}
+      {{- /* Graph nodes link to their bases ("childnode"); only the bases' derived classes that the
+             references cannot give are taken from it. */ -}}
+      {{- $graph := newScratch -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "node") -}}
+          {{- $label := "" -}}
+          {{- $refid := "" -}}
+          {{- range .children -}}
+            {{- if not (reflect.IsMap .) -}}
+            {{- else if eq .tag "label" -}}{{- $label = partial "docsygen/text/plain.html" . -}}
+            {{- else if eq .tag "link" -}}{{- $refid = .attributes.refid -}}
+            {{- end -}}
+          {{- end -}}
+          {{- $graph.Set .attributes.id (partial "docsygen/plan/tree/hierarchy-key.html" (dict "model" $m "s" $s "text" $label "refid" $refid)) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "node") -}}
+          {{- $k := $graph.Get .attributes.id -}}
+          {{- range .children -}}
+            {{- if and (reflect.IsMap .) (eq .tag "childnode") -}}
+              {{- $base := $graph.Get .attributes.refid -}}
+              {{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "parents" "key" $k "value" $base) -}}
+              {{- if not (hasPrefix $base "id:") -}}{{- partial "docsygen/plan/tree/hierarchy-add.html" (dict "s" $s "list" "kids" "key" $base "value" $k) -}}{{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $roots := slice -}}
+{{- range $s.Get "keys" -}}
+  {{- $key := . -}}
+  {{- if and (not (hasPrefix $key "inst:")) (partial "docsygen/plan/tree/hierarchy-visible.html" (dict "s" $s "key" $key "depth" 0)) -}}
+    {{- $root := true -}}
+    {{- range index ($s.Get "parents") $key -}}
+      {{- if partial "docsygen/plan/tree/hierarchy-visible.html" (dict "s" $s "key" . "depth" 0) -}}{{- $root = false -}}{{- end -}}
+    {{- end -}}
+    {{- if $root -}}
+      {{- $full := (index ($s.Get "info") $key).full -}}
+      {{- $base := index (split $full "<") 0 -}}
+      {{- $class := printf "%s%s" (index (split $base "::") (sub (len (split $base "::")) 1)) (strings.TrimPrefix $base $full) -}}
+      {{- $roots = $roots | append (dict "key" $key "sort" (printf "%s\x01%s\x01%s\x01%s" (lower $class) $class (lower $full) $full)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $nodes := slice -}}
+{{- range partial "docsygen/text/sort-bytes.html" (dict "list" $roots "key" "sort") -}}
+  {{- $nodes = $nodes | append (partial "docsygen/plan/tree/hierarchy-node.html" (dict "s" $s "key" .key "nested" false)) -}}
+{{- end -}}
+{{- return $nodes -}}

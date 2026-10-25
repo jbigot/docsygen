@@ -1,0 +1,24 @@
+{{- /* The nodes of a list page, in Doxygen's order (index.cpp), as [{id, name, kind, children}]:
+       id the compound shown, name its label (plain text), kind its kind (namespace, class,
+       concept, dir, file, group, page, example).
+         annotated   root namespaces that hold classes, with their namespaces and classes in
+                     innernamespace and innerclass order, then the global classes in index.xml
+                     order; a class holds its nested classes (writeClassTreeInsideNamespace,
+                     writeClassTree)
+         namespaces  root namespaces Doxygen shows (documented, or holding something), each
+                     with its namespaces (writeNamespaceTree)
+         concepts    root namespaces that hold concepts, with their namespaces and concepts, then
+                     the global concepts (writeConceptTreeInsideNamespace, writeConceptRootList)
+         pages       the pages no other page lists (the main page's subpages are not shown), with
+         topics      their subpages; the groups no other group lists, with their subgroups; both
+                     in index.xml order and named by their title (writePageIndex, writeGroupIndex)
+         examples    the examples, in index.xml order
+         files       the directories no other one lists, each with its directories then its
+                     files, then the files outside any directory; documentation files are left
+                     out (writeDirHierarchy)
+         hierarchy   the root classes and their derived classes (plan/tree/hierarchy.html), whose
+                     nodes may have a link without a description, or neither
+       Cached per model and list.
+       A node of the hierarchy also has a link, the compound it links to.
+       Usage: partial "docsygen/plan/tree-nodes.html" (dict "model" $model "name" "annotated") */ -}}
+{{- return partialCached "docsygen/plan/tree/build.html" . (printf "%s|%s" .model.dir .name) -}}

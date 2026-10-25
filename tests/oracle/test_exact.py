@@ -139,6 +139,13 @@ class Gaps(unittest.TestCase):
         self.assertEqual(exact.find(pages['classX'], 'a'), [])
         self.assertIn('l', [c for c in exact.find(pages['classX'], 'div.contents')[0].children if isinstance(c, str)])
 
+    def test_empty_keeps_the_element(self):
+        pages = {'p': exact.parse('<table><tr><td class="desc">a <span class="tt">b</span> c</td></tr></table>')}
+        errors, _ = exact.apply_gaps(pages, [gap(select='td.desc', empty=True, count=1)])
+        self.assertEqual(errors, [])
+        (td,) = exact.find(pages['p'], 'td.desc')
+        self.assertEqual(td.children, [])
+
     def test_a_removed_line_takes_its_newline(self):
         pages = {'p': exact.parse('<div class="fragment"><div class="line">a</div>\n<div class="ttc">t</div>\n</div>')}
         errors, _ = exact.apply_gaps(pages, [gap(select='div.ttc', count=1)])

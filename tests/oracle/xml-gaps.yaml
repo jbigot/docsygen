@@ -40,3 +40,11 @@
   count: 548
   reason: "PROVISIONAL, to be approved: the tooltips that follow a code fragment repeat a symbol's name, declaration, brief and definition, but which fragments get them depends on the state of Doxygen's code parser (once per output file, yet missing on some pages that link the symbol), and an enum value's line isn't in the XML"
   evidence: "First_steps.xml links PDI_expose (group__annotation_1gae809befdb9bde9abad07a9e0eab894d7) in code, and First_steps.html links it without its tooltip, which how_to_create_plugin.html has; <enumvalue> has no <location>"
+- oracle: pdi
+  pages: hierarchy
+  select: td.desc
+  text: "^\"trait\" that implements"
+  empty: true
+  count: 1
+  reason: "PROVISIONAL, to be approved: the class hierarchy shows the brief of a class outside the XML (PDI::impl::What_impl, in an excluded namespace), which no XML file holds"
+  evidence: "What_impl appears only as a <basecompoundref> and an <inheritancegraph> <node> label in classPDI_1_1Multiple__errors.xml and classPDI_1_1Spectree__error.xml; hierarchy.html row 4_1_ has its brief"

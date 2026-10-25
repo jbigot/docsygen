@@ -1,0 +1,174 @@
+{{- /* docsygen/plan/tree-nodes.html, built once per model and list. */ -}}
+{{- $m := .model -}}
+{{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- define "_partials/docsygen/plan/tree/inner.html" -}}
+  {{- /* The refids of .tag children of compound .id that the model has. */ -}}
+  {{- $out := slice -}}
+  {{- range (index .model.ids .id).node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag $.tag) (index $.model.ids .attributes.refid) -}}{{- $out = $out | append .attributes.refid -}}{{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/class.html" -}}
+  {{- $m := .model -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $children := slice -}}
+  {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innerclass") -}}
+    {{- $children = $children | append (partial "docsygen/plan/tree/class.html" (dict "model" $m "id" .)) -}}
+  {{- end -}}
+  {{- /* displayName(false): no scope, no template parameters (a specialization keeps its arguments). */ -}}
+  {{- $base := index (split $e.name "<") 0 -}}
+  {{- $name := printf "%s%s" (index (split $base "::") (sub (len (split $base "::")) 1)) (strings.TrimPrefix $base $e.name) -}}
+  {{- return dict "id" .id "name" $name "kind" "class" "children" $children -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/class-namespace.html" -}}
+  {{- /* A namespace's node in the class list, or false when it holds no class. */ -}}
+  {{- $m := .model -}}
+  {{- $children := slice -}}
+  {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innernamespace") -}}
+    {{- with partial "docsygen/plan/tree/class-namespace.html" (dict "model" $m "id" .) -}}{{- $children = $children | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innerclass") -}}
+    {{- $children = $children | append (partial "docsygen/plan/tree/class.html" (dict "model" $m "id" .)) -}}
+  {{- end -}}
+  {{- $e := index $m.ids .id -}}
+  {{- return cond (gt (len $children) 0) (dict "id" .id "name" (index (split $e.name "::") (sub (len (split $e.name "::")) 1)) "kind" "namespace" "children" $children) false -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/namespace.html" -}}
+  {{- /* A namespace's node in the namespace list, or false: shown when Doxygen documents it or it
+         holds namespaces, classes, concepts or members; its children are its namespaces. */ -}}
+  {{- $m := .model -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $local := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+  {{- $out := false -}}
+  {{- if and $local (not (hasPrefix $local "@")) -}}
+    {{- $children := slice -}}
+    {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innernamespace") -}}
+      {{- with partial "docsygen/plan/tree/namespace.html" (dict "model" $m "id" .) -}}{{- $children = $children | append . -}}{{- end -}}
+    {{- end -}}
+    {{- $holds := gt (len $children) 0 -}}
+    {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (in (slice "innerclass" "innerconcept" "sectiondef") .tag) -}}{{- $holds = true -}}{{- end -}}{{- end -}}
+    {{- if $holds -}}{{- $out = dict "id" .id "name" $local "kind" "namespace" "children" $children -}}{{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/concept-namespace.html" -}}
+  {{- /* A namespace's node in the concept list, or false when it holds no concept. */ -}}
+  {{- $m := .model -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $local := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+  {{- $children := slice -}}
+  {{- if and $local (not (hasPrefix $local "@")) -}}
+    {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innernamespace") -}}
+      {{- with partial "docsygen/plan/tree/concept-namespace.html" (dict "model" $m "id" .) -}}{{- $children = $children | append . -}}{{- end -}}
+    {{- end -}}
+    {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" "innerconcept") -}}
+      {{- $c := index $m.ids . -}}
+      {{- $children = $children | append (dict "id" . "name" (index (split $c.name "::") (sub (len (split $c.name "::")) 1)) "kind" "concept" "children" slice) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return cond (gt (len $children) 0) (dict "id" .id "name" $local "kind" "namespace" "children" $children) false -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/titled.html" -}}
+  {{- $m := .model -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $children := slice -}}
+  {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" .id "tag" .tag) -}}
+    {{- $children = $children | append (partial "docsygen/plan/tree/titled.html" (dict "model" $m "id" . "tag" $.tag "kind" $.kind)) -}}
+  {{- end -}}
+  {{- $title := "" -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+  {{- return dict "id" .id "name" ($title | default $e.name) "kind" .kind "children" $children -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/doc-file.html" -}}
+  {{- /* Whether compound . is a documentation file, which the file list leaves out (filedef.cpp,
+         isDocumentationFile). */ -}}
+  {{- return and (eq .kind "file") (or (in (slice ".doc" ".txt" ".dox" ".md" ".markdown") (lower (path.Ext .name))) (eq .node.attributes.language "Markdown")) -}}
+{{- end -}}
+{{- define "_partials/docsygen/plan/tree/dir.html" -}}
+  {{- /* A directory with its directories and files, or a file. */ -}}
+  {{- $m := .model -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $children := slice -}}
+  {{- range slice "innerdir" "innerfile" -}}
+    {{- range partial "docsygen/plan/tree/inner.html" (dict "model" $m "id" $.id "tag" .) -}}
+      {{- if not (partial "docsygen/plan/tree/doc-file.html" (index $m.ids .)) -}}
+        {{- $children = $children | append (partial "docsygen/plan/tree/dir.html" (dict "model" $m "id" .)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return dict "id" .id "name" (cond (eq $e.kind "dir") (path.Base $e.name) $e.name) "kind" $e.kind "children" $children -}}
+{{- end -}}
+{{- $nodes := slice -}}
+{{- $roots := slice -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- if and (eq $e.kind "namespace") (not (strings.Contains $e.name "::")) -}}{{- $roots = $roots | append . -}}{{- end -}}
+{{- end -}}
+{{- if eq .name "namespaces" -}}
+  {{- range $roots -}}
+    {{- with partial "docsygen/plan/tree/namespace.html" (dict "model" $m "id" .) -}}{{- $nodes = $nodes | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq .name "concepts" -}}
+  {{- range $roots -}}
+    {{- with partial "docsygen/plan/tree/concept-namespace.html" (dict "model" $m "id" .) -}}{{- $nodes = $nodes | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if and (eq $e.kind "concept") (not (strings.Contains $e.name "::")) -}}
+      {{- $nodes = $nodes | append (dict "id" . "name" $e.name "kind" "concept" "children" slice) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq .name "annotated" -}}
+  {{- range $roots -}}
+    {{- with partial "docsygen/plan/tree/class-namespace.html" (dict "model" $m "id" .) -}}{{- $nodes = $nodes | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if and (in $classKinds $e.kind) (not (strings.Contains $e.name "::")) -}}
+      {{- $nodes = $nodes | append (partial "docsygen/plan/tree/class.html" (dict "model" $m "id" .)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if in (slice "pages" "topics") .name -}}
+  {{- /* The pages or groups that no other one lists (the main page's subpages are not shown),
+         with those they list. */ -}}
+  {{- $kind := cond (eq .name "pages") "page" "group" -}}
+  {{- $tag := cond (eq .name "pages") "innerpage" "innergroup" -}}
+  {{- $listed := newScratch -}}
+  {{- range $m.order -}}
+    {{- range (index $m.ids .).node.children -}}{{- if and (reflect.IsMap .) (eq .tag $tag) -}}{{- $listed.Set .attributes.refid true -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if and (eq $e.kind $kind) (ne . "indexpage") (not ($listed.Get .)) -}}
+      {{- $nodes = $nodes | append (partial "docsygen/plan/tree/titled.html" (dict "model" $m "id" . "tag" $tag "kind" $kind)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq .name "files" -}}
+  {{- /* The directories no other one lists, each with its directories then its files, then the
+         files outside any directory (writeDirHierarchy). */ -}}
+  {{- $listed := newScratch -}}
+  {{- range $m.order -}}
+    {{- range (index $m.ids .).node.children -}}{{- if and (reflect.IsMap .) (in (slice "innerdir" "innerfile") .tag) -}}{{- $listed.Set .attributes.refid true -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if and (in (slice "dir" "file") $e.kind) (not ($listed.Get .)) (not (partial "docsygen/plan/tree/doc-file.html" $e)) -}}
+      {{- $nodes = $nodes | append (partial "docsygen/plan/tree/dir.html" (dict "model" $m "id" .)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq .name "hierarchy" -}}
+  {{- $nodes = partial "docsygen/plan/tree/hierarchy.html" (dict "model" $m) -}}
+{{- end -}}
+{{- if eq .name "examples" -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if eq $e.kind "example" -}}{{- $nodes = $nodes | append (dict "id" . "name" $e.name "kind" "example" "children" slice) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $nodes -}}
