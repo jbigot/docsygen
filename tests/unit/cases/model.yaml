@@ -1,0 +1,92 @@
+- name: model of PDI, Doxygen version
+  partial: docsygen/model.html
+  context: doxygen/pdi
+  select: [doxygen]
+  expect: 1.15.0
+- name: model of PDI, compound order
+  partial: docsygen/model.html
+  context: doxygen/pdi
+  select: [order]
+  len: true
+  expect: 138
+- name: model of PDI, project name
+  partial: docsygen/model.html
+  context: doxygen/pdi
+  select: [options, PROJECT_NAME]
+  expect: [PDI]
+- name: model of PDI, home of a grouped member
+  partial: docsygen/model.html
+  context: doxygen/pdi
+  select: [ids, group__annotation_1ga8f103855418326055020d6f71b365c7e, home]
+  expect: group__annotation
+- name: model of PDI, a name maps to its id
+  partial: docsygen/model.html
+  context: doxygen/pdi
+  select: [names, PDI_share]
+  expect: [group__annotation_1ga8f103855418326055020d6f71b365c7e]
+- name: model of the sample, project name without its quotes
+  partial: docsygen/model.html
+  context: doxygen/sample
+  select: [options, PROJECT_NAME]
+  expect: [docsygen sample]
+- name: model of the sample, a section
+  partial: docsygen/model.html
+  context: doxygen/sample
+  select: [ids, guide_1first-section, what]
+  expect: section
+- name: model of the sample, a subsection
+  partial: test/ids-of-name.html
+  context:
+    model: sample
+    name: A subsection
+  expect: [{what: section, kind: sect2, home: guide, args: "", named: false}]
+- name: model of the sample, an xref list anchor
+  partial: docsygen/model.html
+  context: doxygen/sample
+  select: [ids, bug_1_bug000001, home]
+  expect: bug
+- name: model of the sample, overloads in source order
+  partial: test/ids-of-name.html
+  context:
+    model: sample
+    name: demo::Widget::resize
+  expect:
+    - {what: member, kind: function, home: classdemo_1_1Widget, args: (int side), named: true}
+    - {what: member, kind: function, home: classdemo_1_1Widget, args: "(int w, int h) const noexcept", named: true}
+- name: model of the sample, a strong enum value
+  partial: test/ids-of-name.html
+  context:
+    model: sample
+    name: demo::Color::red
+  expect: [{what: enumvalue, kind: enumvalue, home: namespacedemo, args: "", named: true}]
+- name: model of the sample, a weak enum value
+  partial: test/ids-of-name.html
+  context:
+    model: sample
+    name: demo::low
+  expect: [{what: enumvalue, kind: enumvalue, home: namespacedemo, args: "", named: true}]
+- name: model of the sample, the anonymous namespace
+  partial: test/ids-of-name.html
+  context:
+    model: sample
+    name: ""
+    what: compound
+  expect: [{what: compound, kind: namespace, home: self, args: "", named: false}]
+- name: model of the sample, a file member declared away from its namespace
+  partial: test/file-members.html
+  context:
+    model: sample
+    file: print_8hpp
+  expect: [demo::io::print]
+- name: model of the C sample, a grouped member
+  partial: docsygen/model.html
+  context: doxygen/sample-c
+  select: [names, cdemo_init]
+  len: true
+  expect: 1
+- name: model of the C sample, file members of a header whose members are grouped
+  partial: test/file-members.html
+  context:
+    model: sample-c
+    file: cdemo_8h
+  expect: [cstatus, cpoint_t, ccallback, CMAX, CDEMO_VERSION, cdemo_counter, cdemo_init, cdemo_finalize]

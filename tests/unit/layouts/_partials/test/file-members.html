@@ -1,0 +1,5 @@
+{{- /* The names of the members that .model lists for the file .file, in order. */ -}}
+{{- $m := .model -}}
+{{- $out := slice -}}
+{{- range index $m.fileMembers .file -}}{{- $out = $out | append (index $m.ids .).name -}}{{- end -}}
+{{- return $out -}}

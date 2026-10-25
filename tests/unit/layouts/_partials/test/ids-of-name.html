@@ -1,0 +1,25 @@
+{{- /* The ids that .model gives to .name, as {what, kind, home, args, named}: home is "self"
+       for a compound, args a member's argsstring, and named whether .name lists the id in
+       model.names. When names has no .name, every id with that name, of kind .what if given. */ -}}
+{{- $m := .model -}}
+{{- $name := .name -}}
+{{- $what := .what -}}
+{{- $ids := index $m.names $name -}}
+{{- $named := true -}}
+{{- if not $ids -}}
+  {{- $named = false -}}
+  {{- $ids = slice -}}
+  {{- range $id, $e := $m.ids -}}
+    {{- if and (eq $e.name $name) (or (not $what) (eq $e.what $what)) -}}{{- $ids = $ids | append $id -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- range $ids -}}
+  {{- $e := index $m.ids . -}}
+  {{- $args := "" -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "argsstring") -}}{{- $args = delimit .children "" -}}{{- end -}}
+  {{- end -}}
+  {{- $out = $out | append (dict "what" $e.what "kind" $e.kind "home" (cond (eq $e.home .) "self" $e.home) "args" $args "named" $named) -}}
+{{- end -}}
+{{- return $out -}}

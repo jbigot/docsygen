@@ -1,0 +1,23 @@
+{{- /* Register in the model scratch .s the sections, anchors and xrefsects found under .node,
+       homed in the compound .home. An anchor wins over an xrefsect of the same id: Doxygen gives
+       an xrefsect the id of its entry's anchor on the xref list page, which is the target.
+       Usage: partial "docsygen/model/scan.html" (dict "node" $compounddef "home" $refid "s" $s) */ -}}
+{{- $s := .s -}}
+{{- $home := .home -}}
+{{- $sections := slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" -}}
+{{- $skip := slice "programlisting" "listofallmembers" "location" "references" "referencedby" "type"
+    "incdepgraph" "invincdepgraph" "inheritancegraph" "collaborationgraph" -}}
+{{- range .node.children -}}
+  {{- if and (reflect.IsMap .) (not (in $skip .tag)) -}}
+    {{- $tag := .tag -}}
+    {{- $id := .attributes.id -}}
+    {{- if and $id (or (in $sections $tag) (eq $tag "anchor") (and (eq $tag "xrefsect") (not (index ($s.Get "ids") $id)))) -}}
+      {{- $name := "" -}}
+      {{- range .children -}}
+        {{- if and (reflect.IsMap .) (in (slice "title" "xreftitle") .tag) -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}
+      {{- end -}}
+      {{- $s.SetInMap "ids" $id (dict "id" $id "what" (cond (in $sections $tag) "section" $tag) "kind" $tag "home" $home "node" . "name" $name) -}}
+    {{- end -}}
+    {{- if .children -}}{{- partial "docsygen/model/scan.html" (dict "node" . "home" $home "s" $s) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}

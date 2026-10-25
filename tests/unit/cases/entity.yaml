@@ -1,0 +1,30 @@
+- name: entity with an umlaut
+  partial: docsygen/render/entity.html
+  context: Aumlaut
+  expect: Ä
+- name: entity ndash
+  partial: docsygen/render/entity.html
+  context: ndash
+  expect: –
+- name: entity tm
+  partial: docsygen/render/entity.html
+  context: tm
+  expect: ™
+- name: entity registered
+  partial: docsygen/render/entity.html
+  context: registered
+  expect: ®
+- name: entity imaginary
+  partial: docsygen/render/entity.html
+  context: imaginary
+  expect: ℑ
+- name: entity with its HTML name
+  partial: docsygen/render/entity.html
+  context: plusmn
+  expect: ±
+- name: plain text of a title with entities
+  partial: test/call-with-node.html
+  context:
+    call: docsygen/text/plain.html
+    xml: '<title>a <bold>b</bold><ndash/>c<nonbreakablespace/>d<sp/>e<emoji name=":smile:" unicode="&#x1f604;"/></title>'
+  expect: "a b\u2013c\u00a0d e\U0001F604"

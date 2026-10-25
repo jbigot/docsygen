@@ -1,0 +1,21 @@
+{{- /* The text of an element, markup removed: entities become their characters, <sp/> a space
+       (or character value), <linebreak/> a newline, <emoji/> its character, and other empty
+       elements (anchors, images without caption) nothing.
+       Usage: partial "docsygen/text/plain.html" $titleElement */ -}}
+{{- $out := "" -}}
+{{- range .children -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- $out = add $out . -}}
+  {{- else if .children -}}
+    {{- $out = add $out (partial "docsygen/text/plain.html" .) -}}
+  {{- else if eq .tag "sp" -}}
+    {{- $out = add $out (cond (isset .attributes "value") (printf "%c" (int (.attributes.value | default "32"))) " ") -}}
+  {{- else if eq .tag "linebreak" -}}
+    {{- $out = add $out "\n" -}}
+  {{- else if eq .tag "emoji" -}}
+    {{- $out = add $out (.attributes.unicode | default "") -}}
+  {{- else if and (not .attributes) (ne .tag "hruler") -}}
+    {{- $out = add $out (partial "docsygen/render/entity.html" .tag) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

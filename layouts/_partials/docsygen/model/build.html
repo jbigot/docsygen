@@ -1,0 +1,139 @@
+{{- /* Build the model of the Doxygen XML in assets/DIR: see docsygen/model.html, which caches it. */ -}}
+{{- $dir := . -}}
+{{- $s := newScratch -}}
+{{- range slice "options" "ids" "names" "files" "fileMembers" "rank" -}}{{- $s.Set . dict -}}{{- end -}}
+{{- $s.Set "order" slice -}}
+{{- $version := "" -}}
+{{- with resources.Get (printf "%s/index.xml" $dir) -}}
+  {{- $index := partial "docsygen/xml/unmarshal.html" . -}}
+  {{- $version = $index.attributes.version -}}
+  {{- with resources.Get (printf "%s/Doxyfile.xml" $dir) -}}
+    {{- range (partial "docsygen/xml/unmarshal.html" .).children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "option") -}}
+        {{- $values := slice -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "value") -}}
+            {{- $v := delimit .children "" -}}
+            {{- /* Doxyfile.xml keeps the quotes of the configuration: "docsygen sample". */ -}}
+            {{- with findRESubmatch `^"((?:[^"\\]|\\.)*)"$` $v 1 -}}{{- $v = replaceRE `\\(.)` "$1" (index . 0 1) -}}{{- end -}}
+            {{- $values = $values | append $v -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $s.SetInMap "options" .attributes.id $values -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* A member documented by several compounds is homed in the first one of the best rank. */ -}}
+  {{- $ranks := dict "group" 0 "class" 1 "struct" 1 "union" 1 "interface" 1 "protocol" 1 "category" 1
+      "exception" 1 "namespace" 2 "file" 3 -}}
+  {{- range $index.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "compound") -}}
+      {{- $refid := .attributes.refid -}}
+      {{- $kind := .attributes.kind -}}
+      {{- $indexName := "" -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $indexName = delimit .children "" -}}{{- end -}}{{- end -}}
+      {{- $rank := index $ranks $kind | default 4 -}}
+      {{- $s.Set "order" (($s.Get "order") | append $refid) -}}
+      {{- $res := resources.Get (printf "%s/%s.xml" $dir $refid) -}}
+      {{- if not $res -}}
+        {{- errorf "docsygen: assets/%s/index.xml lists %s, but %s.xml is missing" $dir $refid $refid -}}
+      {{- else -}}
+        {{- range (partial "docsygen/xml/unmarshal.html" $res).children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "compounddef") -}}
+            {{- $cdef := . -}}
+            {{- $name := "" -}}
+            {{- range $cdef.children -}}
+              {{- if not (reflect.IsMap .) -}}
+              {{- else if eq .tag "compoundname" -}}
+                {{- $name = delimit .children "" -}}
+              {{- else if and (eq .tag "location") (eq $kind "file") -}}
+                {{- $s.SetInMap "files" .attributes.file $refid -}}
+              {{- end -}}
+            {{- end -}}
+            {{- /* An anonymous namespace has an empty compoundname, or its parent's, and an index
+                   name whose last component starts with @. */ -}}
+            {{- if and (eq $kind "namespace") (or (not $name) (hasPrefix (index (split $indexName "::") (sub (len (split $indexName "::")) 1)) "@")) -}}
+              {{- $name = "" -}}
+            {{- end -}}
+            {{- $s.SetInMap "ids" $refid (dict "id" $refid "what" "compound" "kind" $kind "home" $refid "node" $cdef "name" $name) -}}
+            {{- if $name -}}{{- $s.SetInMap "names" $name ((index ($s.Get "names") $name | default slice) | append $refid) -}}{{- end -}}
+            {{- range $cdef.children -}}
+              {{- if and (reflect.IsMap .) (eq .tag "sectiondef") -}}
+                {{- range .children -}}
+                  {{- if and (reflect.IsMap .) (eq .tag "memberdef") -}}
+                    {{- $mdef := . -}}
+                    {{- $id := .attributes.id -}}
+                    {{- $known := index ($s.Get "rank") $id -}}
+                    {{- if or (eq $known nil) (lt $rank $known) -}}
+                      {{- $s.SetInMap "rank" $id $rank -}}
+                      {{- $mname := "" -}}
+                      {{- $qname := "" -}}
+                      {{- range .children -}}
+                        {{- if not (reflect.IsMap .) -}}
+                        {{- else if eq .tag "name" -}}{{- $mname = delimit .children "" -}}
+                        {{- else if eq .tag "qualifiedname" -}}{{- $qname = delimit .children "" -}}
+                        {{- end -}}
+                      {{- end -}}
+                      {{- $mname = $qname | default $mname -}}
+                      {{- $s.SetInMap "ids" $id (dict "id" $id "what" "member" "kind" .attributes.kind "home" $refid "node" $mdef "name" $mname) -}}
+                      {{- if eq $known nil -}}{{- $s.SetInMap "names" $mname ((index ($s.Get "names") $mname | default slice) | append $id) -}}{{- end -}}
+                      {{- if eq .attributes.kind "enum" -}}
+                        {{- /* A value of a strong enum is named in the enum, others in its scope. */ -}}
+                        {{- $scope := $mname -}}
+                        {{- if ne .attributes.strong "yes" -}}{{- $scope = replaceRE `(^|::)[^:]*$` "" $mname -}}{{- end -}}
+                        {{- range .children -}}
+                          {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}
+                            {{- $vid := .attributes.id -}}
+                            {{- $vname := "" -}}
+                            {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = delimit .children "" -}}{{- end -}}{{- end -}}
+                            {{- if $scope -}}{{- $vname = printf "%s::%s" $scope $vname -}}{{- end -}}
+                            {{- $s.SetInMap "ids" $vid (dict "id" $vid "what" "enumvalue" "kind" "enumvalue" "home" $refid "node" . "name" $vname) -}}
+                            {{- if eq $known nil -}}{{- $s.SetInMap "names" $vname ((index ($s.Get "names") $vname | default slice) | append $vid) -}}{{- end -}}
+                          {{- end -}}
+                        {{- end -}}
+                      {{- end -}}
+                    {{- end -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+            {{- /* Most compounds have no section or anchor: look for them in the text first. */ -}}
+            {{- if findRE `<(?:sect[1-6]|anchor|xrefsect) id=` $res.Content 1 -}}
+              {{- partial "docsygen/model/scan.html" (dict "node" $cdef "home" $refid "s" $s) -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* The members that a file page lists although they are documented elsewhere. */ -}}
+  {{- $classes := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+  {{- $byFile := newScratch -}}
+  {{- $ids := $s.Get "ids" -}}
+  {{- $files := $s.Get "files" -}}
+  {{- range $id, $e := $ids -}}
+    {{- if eq $e.what "member" -}}
+      {{- $home := index $ids $e.home -}}
+      {{- if not (in $classes $home.kind) -}}
+        {{- range $e.node.children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "location") -}}
+            {{- $file := index $files .attributes.file -}}
+            {{- if and $file (ne $file $e.home) -}}
+              {{- $member := dict "id" $id "line" (int (.attributes.line | default "0")) -}}
+              {{- $byFile.SetInMap "m" $file ((index ($byFile.Get "m") $file | default slice) | append $member) -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $file, $members := $byFile.Get "m" -}}
+    {{- $sorted := slice -}}
+    {{- range sort $members "line" -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
+    {{- $s.SetInMap "fileMembers" $file $sorted -}}
+  {{- end -}}
+{{- else -}}
+  {{- errorf "docsygen: no index.xml in assets/%s" $dir -}}
+{{- end -}}
+{{- return dict "dir" $dir "doxygen" $version "options" ($s.Get "options") "order" ($s.Get "order") "ids" ($s.Get "ids")
+    "names" ($s.Get "names") "files" ($s.Get "files") "fileMembers" ($s.Get "fileMembers") -}}

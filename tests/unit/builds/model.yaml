@@ -1,0 +1,8 @@
+- name: model of a directory without index.xml
+  partial: docsygen/model.html
+  context: doxygen/nope
+  error: "docsygen: no index.xml in assets/doxygen/nope"
+- name: unknown entity
+  partial: docsygen/render/entity.html
+  context: nosuch
+  warning: 'docsygen: unknown Doxygen entity "nosuch"'
