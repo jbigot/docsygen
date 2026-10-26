@@ -78,10 +78,12 @@
   {{- /* In a compound's description, a section is a block of its own (docsygen/plan/compound.html,
          docsygen/markup/block-section.html); elsewhere, as Doxygen writes it. */ -}}
   {{- if not $ctx.sectionblocks -}}
-  {{- $level := int (strings.TrimPrefix "sect" $tag) -}}
+  {{- /* Below the member's own heading (h3): sectN as h(3+N), h6 at most. */ -}}
+  {{- $level := int (strings.TrimPrefix "sect" $tag) | add 3 -}}
+  {{- if gt $level 6 -}}{{- $level = 6 -}}{{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "title") -}}
-      {{- printf "<h%d class=\"doxsection\">" $level | safeHTML }}<a class="anchor" id="{{ index $ctx.anchors $n.attributes.id }}"></a>{{ "\n" }}
+      {{- printf "<h%d id=\"%s\">" $level (index $ctx.anchors $n.attributes.id | default "") | safeHTML }}
       {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}{{ printf "</h%d>" $level | safeHTML -}}
     {{- end -}}
   {{- end -}}

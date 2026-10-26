@@ -132,3 +132,10 @@
     ctx: {}
     xml: '<detaileddescription><para>See <image type="html" name="https://example.com/a.png" inline="yes">A</image> here.</para></detaileddescription>'
   expect: '<p>See <img src="https://example.com/a.png" alt="A"> here.</p>'
+- name: docsy markup, a section in a member's documentation
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {anchors: {x_1s: s}}
+    xml: '<detaileddescription><para>Intro.</para><sect1 id="x_1s"><title>T</title><para>Body.</para></sect1></detaileddescription>'
+  expect: '<p>Intro.</p><h4 id="s">T</h4><p>Body.</p>'
