@@ -1,4 +1,6 @@
-# docsygen is consumed as a Hugo module; layouts/_partials requires Hugo 0.146.0+.
+# docsygen is consumed as a Hugo module. layouts/_partials needs Hugo 0.146.0, seq beyond 2000
+# values 0.149.0, and a template.HTML (jsonify's result) passed as a string argument 0.153.0
+# (tests/matrix.sh checks this minimum).
 module:
   hugoVersion:
-    min: 0.146.0
+    min: 0.153.0
