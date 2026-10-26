@@ -112,7 +112,7 @@
   {{- if .continued -}}
     <dd>
   {{- else -}}
-  <dl class="section {{ index (dict "par" "user" "authors" "author") $kind | default $kind }}"><dt>
+  <dl class="docsygen-{{ $kind }}"><dt>
   {{- $title -}}
   {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}{{- end -}}
   </dt><dd>
@@ -125,14 +125,14 @@
   </dd>{{- if not .continues -}}</dl>{{- end -}}
 {{- else if eq $tag "xrefsect" -}}
   {{- $list := index (split $n.attributes.id "_1") 0 -}}
-  <dl class="{{ $list }}"><dt><b>
+  <dl class="docsygen-xref docsygen-{{ $list }}"><dt>
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "xreftitle") -}}
       {{- $title := partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}
-      {{- with index $ctx.links $n.attributes.id -}}<a class="el" href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
+      {{- with index $ctx.links $n.attributes.id -}}<a href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
     {{- end -}}
   {{- end -}}
-  </b></dt><dd>
+  </dt><dd>
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "xrefdescription") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}
   {{- end -}}

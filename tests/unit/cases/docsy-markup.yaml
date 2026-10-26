@@ -12,3 +12,24 @@
     ctx: {}
     xml: '<detaileddescription><para><simplesect kind="note"><para>One.</para></simplesect><simplesect kind="note"><para>Two.</para></simplesect></para></detaileddescription>'
   expect: '<div class="alert alert-info" role="alert"><div class="h4 alert-heading" role="heading">Note</div><div>One.</div><div>Two.</div></div>'
+- name: docsy markup, a parameter list is a definition list
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><parameterlist kind="param"><parameteritem><parameternamelist><parametername direction="in">x</parametername></parameternamelist><parameterdescription><para>The x.</para></parameterdescription></parameteritem></parameterlist></para></detaileddescription>'
+  expect: '<dl class="docsygen-params"><dt>Parameters</dt><dd><dl class="docsygen-param-items"><dt><code>x</code> <span class="docsygen-direction">[in]</span></dt><dd>The x.</dd></dl></dd></dl>'
+- name: docsy markup, a returns section is a definition list
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><simplesect kind="return"><para>The result.</para></simplesect></para></detaileddescription>'
+  expect: '<dl class="docsygen-return"><dt>Returns</dt><dd>The result.</dd></dl>'
+- name: docsy markup, an xref item is a definition list
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Fix it.</para></xrefdescription></xrefsect></para></detaileddescription>'
+  expect: '<dl class="docsygen-xref docsygen-todo"><dt>Todo</dt><dd>Fix it.</dd></dl>'
