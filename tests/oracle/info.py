@@ -7,11 +7,11 @@ Usage: python3 -I info.py --doxygen HTMLDIR --compat C.json --site PUBLIC --path
              keys are Doxygen's file stems
   PUBLIC     the built Docsy site, and D.json its paths.json, of the same shape
   GAPS.yaml  xml-gaps.yaml, applied to the Doxygen side as exact.py applies it
-  RULES.yaml the intentional differences, [{rule: drop|tokens, select, phrase?, count, reason,
-             oracle?}],
+  RULES.yaml the intentional differences, [{rule: drop|tokens|unwrap, select, phrase?, count,
+             reason, oracle?}],
              on the Doxygen side: drop removes the nodes that select (exact.py's selectors)
              matches, those whose text matches the regex phrase if given; tokens matches the text
-             of those nodes word by word. count is the exact number of matches, as for the gaps.
+             of those nodes word by word; unwrap keeps their children only. count is the exact number of matches, as for the gaps.
 Pairing: a Doxygen page and a Docsy page that hold the same role (role and id or name; filter
 and letter are ignored) are compared together, as are all the pages connected that way. The
 Doxygen side is div.header and div.contents, the Docsy side main .td-content (main without it).
@@ -23,7 +23,7 @@ with each other. Each container checks, as multisets:
   2. links: an internal link maps to its page's roles, the id it targets (the targets of C.json
      or D.json), or its page's roles and anchor key (anchors) or fragment: see accepts();
   3. code: the text of each div.fragment (its lines joined with newlines) and each pre equals the
-     text of a Docsy pre.
+     text of a Docsy pre, trailing blanks of each line left out.
 What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
 """
 import argparse, collections, json, os, re, sys
@@ -51,7 +51,9 @@ def code_text(node):
         text = raw(node)
     else:
         text = '\n'.join(raw(line) for line in exact.find(node, 'div.line'))
-    return text[:-1] if text.endswith('\n') else text
+    text = text[:-1] if text.endswith('\n') else text
+    # Doxygen writes a blank on an empty line (htmlgen.cpp, endCodeLine).
+    return '\n'.join(line.rstrip() for line in text.split('\n'))
 
 
 def units(node, tokens=False):
@@ -215,6 +217,14 @@ def apply_rules(pages, rules, oracle=None):
                     detach(node)
             elif rule['rule'] == 'tokens':
                 node.attrs['data-info-tokens'] = ''
+            elif rule['rule'] == 'unwrap':
+                if node.parent is not None:
+                    siblings = node.parent.children
+                    i = siblings.index(node)
+                    for c in node.children:
+                        if isinstance(c, exact.Node):
+                            c.parent = node.parent
+                    siblings[i:i + 1] = node.children
             else:
                 errors.append(f'{name}: unknown rule {rule["rule"]!r}')
     return errors, report

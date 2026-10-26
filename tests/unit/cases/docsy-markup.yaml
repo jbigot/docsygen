@@ -33,3 +33,16 @@
     ctx: {}
     xml: '<detaileddescription><para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Fix it.</para></xrefdescription></xrefsect></para></detaileddescription>'
   expect: '<dl class="docsygen-xref docsygen-todo"><dt>Todo</dt><dd>Fix it.</dd></dl>'
+- name: docsy markup, a listing is a highlighted pre, a span per line
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><programlisting filename=".txt"><codeline><highlight class="keyword">int</highlight><highlight class="normal"><sp/>a;</highlight></codeline><codeline><highlight class="normal"></highlight></codeline></programlisting></para></detaileddescription>'
+  expect: "<pre class=\"docsygen-listing\"><code><span class=\"docsygen-line\">int a;</span>\n<span class=\"docsygen-line\"></span></code></pre>"
+- name: render, the text of a listing
+  partial: test/call-with-node.html
+  context:
+    call: docsygen/render/listing-text.html
+    xml: '<programlisting><codeline><highlight class="normal">a<sp/><ref refid="x" kindref="member">b</ref></highlight></codeline><codeline><highlight class="normal"><sp value="9"/>c</highlight></codeline></programlisting>'
+  expect: "a b\n\tc"

@@ -1,0 +1,17 @@
+{{- /* The text of a program listing or of one of its codelines: codelines joined with newlines,
+       <sp/> as a space, <sp value="N"/> as character N, refs and highlights as their text.
+       Usage: partial "docsygen/render/listing-text.html" $programlisting */ -}}
+{{- $out := "" -}}
+{{- if eq .tag "programlisting" -}}
+  {{- $lines := slice -}}
+  {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "codeline") -}}{{- $lines = $lines | append (partial "docsygen/render/listing-text.html" .) -}}{{- end -}}{{- end -}}
+  {{- $out = delimit $lines "\n" -}}
+{{- else -}}
+  {{- range .children -}}
+    {{- if not (reflect.IsMap .) -}}{{- $out = add $out . -}}
+    {{- else if eq .tag "sp" -}}{{- $out = add $out (cond (isset .attributes "value") (printf "%c" (int .attributes.value)) " ") -}}
+    {{- else -}}{{- $out = add $out (partial "docsygen/render/listing-text.html" .) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

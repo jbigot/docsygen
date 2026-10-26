@@ -9,6 +9,6 @@
 {{- end -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}
-    {{- partial "docsygen/markup/listing.html" (dict "node" . "ctx" $ctx "numbered" true) -}}
+    {{- partial "docsygen/markup/listing.html" (dict "node" . "ctx" $ctx "numbered" true "lang" (strings.TrimPrefix "." (path.Ext $e.name))) -}}
   {{- end -}}
 {{- end -}}

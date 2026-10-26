@@ -102,6 +102,16 @@ class Compare(unittest.TestCase):
         result = info.compare({'classX': doxygen('<p>A.</p>')}, self.compat, {'x': docsy('<p>A.</p>')}, self.site, [rule], 'mine')
         self.assertEqual(result.errors, [])
 
+    def test_code_lines_compare_without_their_trailing_blanks(self):
+        theirs = '<div class="fragment"><div class="line">a();</div>\n<div class="line"> </div>\n<div class="line">b();</div>\n</div>'
+        self.assertEqual(self.compare(theirs, '<pre><code>a();\n\nb();</code></pre>').missing, [])
+
+    def test_an_unwrap_rule_keeps_the_text(self):
+        theirs = '<div class="fragment"><div class="line"><a class="code" href="classX.html">X</a> x;</div>\n</div>'
+        rule = {'rule': 'unwrap', 'select': 'div.fragment a.code', 'count': 1, 'reason': 'r'}
+        self.assertEqual(len(self.compare(theirs, '<pre><code>X x;</code></pre>').missing), 1)
+        self.assertEqual(self.compare(theirs, '<pre><code>X x;</code></pre>', [rule]).missing, [])
+
     def test_reindented_code_fails(self):
         theirs = '<div class="fragment"><div class="line">if (a)</div>\n<div class="line">  b();</div>\n</div>'
         self.assertEqual(self.compare(theirs, '<pre><code>if (a)\n  b();\n</code></pre>').missing, [])
