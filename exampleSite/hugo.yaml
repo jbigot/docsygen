@@ -23,6 +23,8 @@ outputs:
 params:
   offlineSearch: true
   ui:
+    # Docsy's light/dark menu in the navbar.
+    showLightDarkModeMenu: true
     sidebar_menu_compact: true
     # docsygen makes each version root its own sidebar root (sidebar_root_for).
     sidebar_root_enabled: true
