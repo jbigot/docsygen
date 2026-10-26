@@ -1,6 +1,6 @@
 {{- /* A Mermaid diagram, as the client-side rendering of htmldocvisitor.cpp writes it (the default
-       MERMAID_RENDER_MODE, AUTO). A <mermaid>'s caption is an attribute, as plain text: the XML
-       drops its markup. */ -}}
+       MERMAID_RENDER_MODE, AUTO). A <mermaid>'s caption is an attribute: plain text, which
+       Doxygen's HTML shows as is too (markup and all). */ -}}
 {{- $n := .node -}}
 {{- $diagram := partial "docsygen/render/mermaid.html" (dict "node" $n "ctx" .ctx) -}}
 {{- $caption := $n.attributes.caption -}}

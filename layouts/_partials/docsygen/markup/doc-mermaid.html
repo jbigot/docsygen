@@ -1,6 +1,6 @@
 {{- /* A Mermaid diagram, which Docsy's Mermaid plugin renders on the pages that set hasmermaid, in
-       a figure with its caption. A <mermaid>'s caption is an attribute, as plain text: the XML
-       drops its markup. */ -}}
+       a figure with its caption. A <mermaid>'s caption is an attribute: plain text, which
+       Doxygen's HTML shows as is too (markup and all). */ -}}
 {{- $n := .node -}}
 {{- $diagram := partial "docsygen/render/mermaid.html" (dict "node" $n "ctx" .ctx) -}}
 {{- $caption := $n.attributes.caption -}}

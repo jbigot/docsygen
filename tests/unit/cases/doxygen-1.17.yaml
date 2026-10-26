@@ -53,3 +53,10 @@
       - 't.size();'
     lacks: ['Sized =  requires']
   expect: []
+- name: docsy markup, a mermaid caption is plain text, as in Doxygen's HTML
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: "<detaileddescription><para><mermaid caption=\"A &lt;b&gt;bold&lt;/b&gt; and **md** caption\">graph LR</mermaid>\n</para></detaileddescription>"
+  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph LR</pre><figcaption>A &lt;b&gt;bold&lt;/b&gt; and **md** caption</figcaption></figure>"
