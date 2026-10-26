@@ -140,15 +140,15 @@
 {{- end -}}
 {{- $left = printf "%s%s" $marks $left -}}
 {{- if $tparams -}}
-<tr class="memitem:{{ $anchor }}{{ $inherit }}"><td class="memTemplParams" colspan="2">template&lt;{{ delimit $tparams ", " }}&gt; </td></tr>
-<tr class="memitem:{{ $anchor }} template{{ $inherit }}"><td class="memItemLeft" align="right" valign="top">{{ $left | safeHTML }}&#160;</td><td class="memItemRight" valign="bottom">{{ $right }}</td></tr>
+<tr class="docsygen-summary-template"><td colspan="2">template&lt;{{ delimit $tparams ", " }}&gt;</td></tr>
+<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{ $right }}</td></tr>
 {{- else -}}
-<tr class="memitem:{{ $anchor }}{{ $inherit }}"><td class="memItemLeft" align="right" valign="top">{{ $left | safeHTML }}&#160;</td><td class="memItemRight" valign="bottom">{{ $right }}</td></tr>
+<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{ $right }}</td></tr>
 {{- end -}}
 {{- with $parts.briefdescription -}}
   {{- $text := false -}}
   {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
   {{- if $text -}}
-<tr class="memdesc:{{ $anchor }}{{ $inherit }}"><td class="mdescLeft">&#160;</td><td class="mdescRight">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }} {{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }}<a href="{{ $link }}">More...</a>{{ end }}<br /></td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }} <a href="{{ $link }}">More...</a>{{ end }}</td></tr>
   {{- end -}}
 {{- end -}}

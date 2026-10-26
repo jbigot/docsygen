@@ -11,7 +11,8 @@
 {{- $e := index $m.ids $id -}}
 {{- $isClass := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $e.kind -}}
 {{- $scope := cond $isClass $id "" -}}
-{{- $key := $ctx.page.Params.docsygen.key -}}
+{{- $key := "" -}}
+{{- with $ctx.page -}}{{- $key = .Params.docsygen.key -}}{{- end -}}
 {{- $sections := partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
 {{- $own := dict -}}
 {{- $section := dict "key" "inherited" "heading" "Additional Inherited Members" "subtitle" "" "members" slice "inner" slice -}}
@@ -37,18 +38,18 @@
 {{- end -}}
 {{- $grouped := hasPrefix $b.key "user-defined-" -}}
 {{- if or (ne $b.key "inherited") $inherited -}}
-<table class="memberdecls">
+<table class="docsygen-summary">
   {{- $anchor := cond $grouped "member-group" (index (index $ctx.paths.anchors $key) $b.key | default $b.key) -}}
 {{- if $b.heading -}}<tr class="heading"><td colspan="2"><h2 id="header-{{ $anchor }}" class="groupheader"><a id="{{ $anchor }}" name="{{ $anchor }}"></a>{{ "\n" }}{{ $section.heading }}</h2></td></tr>{{- end -}}
-  {{- with $section.subtitle -}}<tr><td class="ititle" colspan="2"><p>{{ . }} </p></td></tr>{{- end -}}
-  {{- if and $grouped $section.description -}}<tr><td class="ititle" colspan="2">{{ partial "docsygen/markup/doc.html" (dict "node" $section.description "ctx" $ctx) }}</td></tr>{{- end -}}
+  {{- with $section.subtitle -}}<tr class="docsygen-summary-note"><td colspan="2">{{ . }}</td></tr>{{- end -}}
+  {{- if and $grouped $section.description -}}<tr class="docsygen-summary-note"><td colspan="2">{{ partial "docsygen/markup/doc.html" (dict "node" $section.description "ctx" $ctx) }}</td></tr>{{- end -}}
   {{- range $section.inner -}}{{- partial "docsygen/markup/decl-inner.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
   {{- range $section.members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
   {{- $n := 0 -}}
   {{- range $sections -}}
     {{- if and (hasPrefix .key "user-defined-") (eq .in $b.key) -}}
-<tr id="{{ $anchor }}-{{ $n }}" class="groupHeader"><td colspan="2"><div class="groupHeader">{{ .heading }}</div></td></tr>
-      {{- with .description -}}<tr><td colspan="2" class="ititle"><div class="groupText">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) }}</div></td></tr>{{- end -}}
+<tr id="{{ $anchor }}-{{ $n }}" class="docsygen-summary-group"><th colspan="2">{{ .heading }}</th></tr>
+      {{- with .description -}}<tr class="docsygen-summary-note"><td colspan="2">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) }}</td></tr>{{- end -}}
       {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}
       {{- $n = add $n 1 -}}
     {{- end -}}
@@ -56,7 +57,7 @@
   {{- range $inherited -}}
     {{- $class := printf "%s_%s" (replace (partial "docsygen/markup/section-label.html" .key) "-" "_") .base -}}
     {{- $heading := partial "docsygen/plan/section-heading.html" (dict "model" $m "key" .key "kind" $e.kind) -}}
-<tr class="inherit_header {{ $class }}"><td colspan="2" onclick="javascript:dynsection.toggleInherit('{{ $class }}')"><span class="dynarrow"><span class="arrowhead closed"></span></span>{{ $heading }} inherited from <a class="el" href="{{ index $ctx.links .base }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}</a></td></tr>
+<tr class="docsygen-summary-inherited"><th colspan="2">{{ $heading }} inherited from <a href="{{ index $ctx.links .base }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}</a></th></tr>
     {{- $base := .base -}}
     {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id "inherit" $class) -}}{{- end -}}
   {{- end -}}

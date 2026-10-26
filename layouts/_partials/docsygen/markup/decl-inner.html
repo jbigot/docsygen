@@ -20,9 +20,9 @@
   {{- $key = $e.name -}}
   {{- $label = printf "%s " (partial "docsygen/plan/title.html" (dict "model" $m "id" .id)).text -}}
 {{- else if eq $e.kind "dir" -}}
-  {{- $left = `<span class="iconfolder"><div class="folder-icon"></div></span>` -}}
+  {{- $left = "dir" -}}
 {{- else if eq $e.kind "file" -}}
-  {{- $icon := `<span class="icondoc"><div class="doc-icon"></div></span>` -}}
+  {{- $icon := "file" -}}
   {{- $left = $icon -}}
   {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- $left = printf "<a href=\"%s\">%s</a>" (index $ctx.urls .) $icon -}}{{- end -}}
 {{- else if and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}
@@ -33,7 +33,7 @@
 {{- range split $key "" -}}
   {{- $escaped = add $escaped (cond (findRE `^[A-Za-z0-9-]$` . 1) . (printf "_%X" .)) -}}
 {{- end -}}
-<tr class="memitem:{{ $escaped }}" id="r_{{ $escaped }}"><td class="memItemLeft" align="right" valign="top">{{ $left | safeHTML }}&#160;</td><td class="memItemRight" valign="bottom">{{- $url := index $ctx.links .id -}}
+<tr id="r_{{ $escaped }}"><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := index $ctx.links .id -}}
 {{- if and (eq $e.kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}{{- $url = "" -}}{{- end -}}
 {{ with $url }}<a class="el" href="{{ . }}">{{ $label }}</a>{{ else }}<b>{{ $label }}</b>{{ end }}</td></tr>
 {{- range $e.node.children -}}
@@ -42,7 +42,7 @@
     {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
     {{- if $text -}}
 {{- $embedded := and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $e.id))))) -}}
-<tr class="memdesc:{{ cond (and (or $classLike (eq $e.kind "concept")) (not $embedded)) "" $e.id }}"><td class="mdescLeft">&#160;</td><td class="mdescRight">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }} {{ if $classLike }}<a href="{{ index $ctx.links $e.id }}{{ if not $embedded }}#details{{ end }}">More...</a>{{ end }}<br /></td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if $classLike }} <a href="{{ index $ctx.links $e.id }}{{ if not $embedded }}#details{{ end }}">More...</a>{{ end }}</td></tr>
     {{- end -}}
   {{- end -}}
 {{- end -}}

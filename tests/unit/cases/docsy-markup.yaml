@@ -109,3 +109,12 @@
       - 'data-doxygen-id="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4"'
     lacks: [fieldtable]
   expect: []
+- name: docsy markup, a summary table
+  flavor: docsy
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: decls, id: classdemo_1_1Widget, key: public-func}
+    contains: ['<table class="docsygen-summary">', '<td class="docsygen-summary-type">', '<td class="docsygen-summary-name">', '<tr class="docsygen-summary-brief">']
+    lacks: [memberdecls, memItemLeft, memItemRight, mdescRight, valign, 'memitem:']
+  expect: []
