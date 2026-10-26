@@ -1,0 +1,4 @@
+{{- /* The versions of the site, from their root pages (params.docsygen.root), as
+       [{version, dir, latest, page, pathMap}], cached. Two versions marked latest stop the build.
+       Usage: partial "docsygen/versions.html" . */ -}}
+{{- return partialCached "docsygen/versions/build.html" "versions" "versions" -}}

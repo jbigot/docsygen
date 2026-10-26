@@ -1,6 +1,6 @@
 """Check the output of the Docsy-flavor test site.
 
-Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL
+Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]
   PUBLIC    the built site, with the paths.json of its version root
   XMLDIR    the Doxygen XML it was built from
   ROOT_URL  the version root's URL (/ref/)
@@ -13,7 +13,9 @@ Checks:
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
     (.katex*) and the highlighted code of listings (pre.docsygen-listing);
-  - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left.
+  - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left;
+  - with --links, the hrefs of PAGE's main element (a path under PUBLIC) are, in order, the list
+    of EXPECTED.json.
 Exit 1 on any failure.
 """
 import collections, glob, json, os, re, sys, urllib.parse
@@ -48,6 +50,10 @@ def walk(node):
 
 
 def main(argv):
+    links = None
+    if '--links' in argv:
+        i = argv.index('--links')
+        links, argv = argv[i + 1:i + 3], argv[:i] + argv[i + 3:]
     public, xmldir, root_url = argv
     with open(os.path.join(public, root_url.strip('/'), 'paths.json') if os.path.exists(
             os.path.join(public, root_url.strip('/'), 'paths.json')) else os.path.join(public, 'paths.json')) as f:
@@ -109,6 +115,13 @@ def main(argv):
                 errors.append(f'{rel}: {href} leads to no file')
             elif fragment and urllib.parse.unquote(fragment) not in ids[target]:
                 errors.append(f'{rel}: {href} leads to no id in {target}')
+    if links:
+        page, want_file = links
+        with open(want_file) as f:
+            want = json.load(f)
+        got = [n.attrs.get('href') for m in exact.find(trees[page], 'main') for n in walk(m) if n.tag == 'a' and 'href' in n.attrs]
+        if got != want:
+            errors.append(f'{page}: links {got} instead of {want}')
     for e in errors:
         print(e)
     print(f'check.py: {len(trees)} files, {len(expected)} ids, {len(errors)} errors')

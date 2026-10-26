@@ -1,0 +1,8 @@
+{{- /* Links: doxygen: destinations through docsygen/link.html, the others as Goldmark renders
+       them (Hugo's embedded hook serves only multilingual single-host sites). A site's own
+       render-link.html shadows this one: it must send doxygen: destinations to docsygen/link.html. */ -}}
+{{- if hasPrefix .Destination "doxygen:" -}}
+  {{- partial "docsygen/link.html" . -}}
+{{- else -}}
+<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
+{{- end -}}

@@ -1,0 +1,70 @@
+{{- /* What a doxygen: link names, [VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT], as
+       {url, name, title, ok}: name the symbol's qualified name, title a page's or group's title.
+         VERSION    a version's label (docsygen/versions.html), else the latest version
+         KIND       a compound kind, a member kind, or member
+         NAME       a name of the model: without KIND, the first kind of candidates that has one
+                    wins, symbols, then pages, groups, files and dirs; several candidates of one
+                    kind, but overloads, warn and the first is taken
+         SIGNATURE  the overload whose parameter types and const match, blanks ignored:
+                    (int, int) const; without it, the first overload
+         FRAGMENT   the anchor, instead of the target's
+       Usage: partial "docsygen/resolve.html" (dict "target" "doxygen:demo::Widget" "page" .Page) */ -}}
+{{- $t := strings.TrimPrefix "doxygen:" .target -}}
+{{- $out := dict "url" "" "name" "" "title" "" "ok" false -}}
+{{- $fragment := "" -}}
+{{- with findRESubmatch `^([^#]*)#(.*)$` $t 1 -}}{{- $t = index . 0 1 -}}{{- $fragment = index . 0 2 -}}{{- end -}}
+{{- $versions := partial "docsygen/versions.html" . -}}
+{{- $v := false -}}
+{{- with findRESubmatch `^([^/]+)/(.+)$` $t 1 -}}
+  {{- $label := index . 0 1 -}}
+  {{- $rest := index . 0 2 -}}
+  {{- range $versions -}}{{- if eq .version $label -}}{{- $v = . -}}{{- $t = $rest -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- if not $v -}}{{- range $versions -}}{{- if .latest -}}{{- $v = . -}}{{- end -}}{{- end -}}{{- end -}}
+{{- $kind := "" -}}
+{{- with findRESubmatch `^([a-z]+):([^:].*)$` $t 1 -}}{{- $kind = index . 0 1 -}}{{- $t = index . 0 2 -}}{{- end -}}
+{{- $signature := "" -}}
+{{- with findRESubmatch `^([^(]*)(\(.*)$` $t 1 -}}{{- $t = index . 0 1 -}}{{- $signature = replaceRE `\s+` "" (index . 0 2) -}}{{- end -}}
+{{- $name := strings.TrimSpace $t -}}
+{{- with $v -}}
+  {{- $m := partial "docsygen/model.html" .dir -}}
+  {{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+  {{- $groups := newScratch -}}
+  {{- range index $m.names $name -}}
+    {{- $e := index $m.ids . -}}
+    {{- $group := "symbols" -}}
+    {{- if and (eq $e.what "compound") (in (slice "page" "group" "file" "dir") $e.kind) -}}{{- $group = $e.kind -}}{{- end -}}
+    {{- $match := or (eq $kind "") (eq $kind $e.kind) (and (eq $kind "member") (eq $e.what "member")) -}}
+    {{- if and $match (eq $e.what "member") $signature -}}
+      {{- $types := slice -}}
+      {{- range $e.node.children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+          {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "type") -}}{{- $types = $types | append (replaceRE `\s+` "" (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $match = eq $signature (printf "(%s)%s" (delimit $types ",") (cond (eq $e.node.attributes.const "yes") "const" "")) -}}
+    {{- end -}}
+    {{- if $match -}}{{- $groups.Set $group (($groups.Get $group | default slice) | append $e) -}}{{- end -}}
+  {{- end -}}
+  {{- $found := slice -}}
+  {{- range slice "symbols" "page" "group" "file" "dir" -}}{{- if not $found -}}{{- $found = $groups.Get . | default slice -}}{{- end -}}{{- end -}}
+  {{- with $found -}}
+    {{- $first := index . 0 -}}
+    {{- $members := where . "what" "member" -}}
+    {{- if and (gt (len .) 1) (ne (len $members) (len .)) -}}
+      {{- $list := slice -}}{{- range . -}}{{- $list = $list | append (printf "%s %s" .kind .id) -}}{{- end -}}
+      {{- warnf "docsygen: %s: doxygen:%s is ambiguous (%s), taking the first" $.page.Path $name (delimit $list ", ") -}}
+    {{- end -}}
+    {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" $v.pathMap) -}}
+    {{- with index (partial "docsygen/links.html" (dict "root" $v.page "paths" $paths)) $first.id -}}
+      {{- $url := . -}}
+      {{- with $fragment -}}{{- $url = printf "%s#%s" (index (split $url "#") 0) . -}}{{- end -}}
+      {{- $title := "" -}}
+      {{- if in (slice "page" "group") $first.kind -}}
+        {{- range $first.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+      {{- end -}}
+      {{- $out = dict "url" $url "name" $first.name "title" $title "ok" true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

@@ -23,7 +23,11 @@ for name; do
   esac
   work=$tmp/$name
   mkdir -p "$work"
-  site_config "$work/hugo.yaml" "$here/layouts=layouts" "$here/content=content" "$xml=assets/doxygen/oracle"
+  # The hand-written page links to the sample's symbols.
+  extra=
+  if [ "$name" = sample ]; then extra="$here/handwritten=content"; fi
+  # shellcheck disable=SC2086 # extra is one word or none
+  site_config "$work/hugo.yaml" "$here/layouts=layouts" "$here/content=content" $extra "$xml=assets/doxygen/oracle"
   cat "$here/config.yaml" >> "$work/hugo.yaml"
   # Not --quiet: it would hide the ERROR line that errorf logs.
   if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
@@ -33,6 +37,9 @@ for name; do
   if [ -n "$expected" ] && ! grep -qF "$expected" "$work/log"; then
     echo "run.sh: missing the warning: $expected" >&2; status=1; continue
   fi
-  python3 -I "$here/check.py" "$work/public" "$xml" /ref/ || status=1
+  links=
+  if [ "$name" = sample ]; then links="--links handwritten/index.html $here/expected-links.json"; fi
+  # shellcheck disable=SC2086 # links is words
+  python3 -I "$here/check.py" "$work/public" "$xml" /ref/ $links || status=1
 done
 exit $status

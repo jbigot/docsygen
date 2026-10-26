@@ -1,0 +1,14 @@
+{{- /* A link of the link render hook whose destination is doxygen:…, resolved by
+       docsygen/resolve.html: an empty text becomes the symbol's name as code, or the page's or
+       group's title. A destination that resolves to nothing stops the build.
+       Usage: partial "docsygen/link.html" . (the render hook's context) */ -}}
+{{- $r := partial "docsygen/resolve.html" (dict "target" .Destination "page" .Page) -}}
+{{- if not $r.ok -}}
+  {{- errorf "docsygen: %s: cannot resolve %q" .Page.Path .Destination -}}
+{{- else -}}
+  {{- $text := .Text -}}
+  {{- if not $text -}}
+    {{- $text = cond (ne $r.title "") (htmlEscape $r.title) (printf "<code>%s</code>" (htmlEscape $r.name)) | safeHTML -}}
+  {{- end -}}
+<a href="{{ $r.url }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ $text }}</a>
+{{- end -}}

@@ -1,0 +1,12 @@
+{{- /* The body of docsygen/versions.html. */ -}}
+{{- $out := slice -}}
+{{- $latest := "" -}}
+{{- range where site.Pages "Params.docsygen.root" true -}}
+  {{- $p := .Params.docsygen -}}
+  {{- if $p.latest -}}
+    {{- with $latest -}}{{- errorf "docsygen: versions %q and %q are both latest" . $p.version -}}{{- end -}}
+    {{- $latest = $p.version -}}
+  {{- end -}}
+  {{- $out = $out | append (dict "version" $p.version "dir" $p.dir "latest" ($p.latest | default false) "page" . "pathMap" ($p.pathMap | default slice)) -}}
+{{- end -}}
+{{- return $out -}}

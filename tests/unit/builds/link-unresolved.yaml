@@ -1,0 +1,4 @@
+- name: a doxygen link that resolves to nothing
+  partial: test/link.html
+  context: {destination: "doxygen:nope"}
+  error: 'cannot resolve "doxygen:nope"'
