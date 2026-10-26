@@ -1,0 +1,121 @@
+#!/bin/sh
+# Check the template reader against the native decoder of gohugoio/hugo#15485, with one Hugo
+# binary for both readers, so that a difference can only come from the reader.
+#
+# Usage: sh tests/reader-diff.sh
+#   HUGO_SRC  the Hugo fork (default: the hugo directory next to this repository). Its branch
+#             docsygen-native (the native decoder merged with the fix of merge) is built into
+#             /tmp/docsygen-hugo-doc/<commit>/hugo when that is missing, then Go's build cache
+#             is cleaned: building Hugo fills it.
+# With each reader (DOCSYGEN_READER=native mounts tests/reader-native, tests/lib.sh):
+#   1. tests/xml-parse/run.sh, then the two trees of every corpus file compared with each other;
+#   2. tests/unit/run.sh, which must pass with both;
+#   3. the Docsy test site and the compat site on the sample, sample-c and pdi oracles, and the
+#      example site, whose public/ directories must be identical.
+# The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go
+# or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
+set -eu
+
+here=$(cd "$(dirname "$0")" && pwd)
+. "$here/lib.sh"
+src=${HUGO_SRC:-$(dirname "$root")/hugo}
+commit=$(git -C "$src" rev-parse --short=9 docsygen-native)
+bin=/tmp/docsygen-hugo-doc/$commit/hugo
+if [ ! -x "$bin" ]; then
+  echo "reader-diff.sh: building docsygen-native ($commit) into $bin" >&2
+  git -C "$src" worktree add -q -d "$tmp/hugo-src" "$commit"
+  mkdir -p "$(dirname "$bin")"
+  built=0
+  (cd "$tmp/hugo-src" && CGO_ENABLED=1 go build -tags extended -o "$bin.new" .) && built=1
+  git -C "$src" worktree remove --force "$tmp/hugo-src"
+  go clean -cache
+  [ $built -eq 1 ] || { echo "reader-diff.sh: the build failed" >&2; exit 1; }
+  mv "$bin.new" "$bin"
+fi
+HUGO=$bin
+# The same sample XML for every run: Doxygen writes its output directory into Doxyfile.xml.
+DOCSYGEN_ORACLES=$tmp/oracle
+export HUGO DOCSYGEN_ORACLES
+hugo=$bin
+"$hugo" version
+status=0
+fail() { echo "reader-diff.sh: FAILED: $*" >&2; status=1; }
+
+echo "== xml-parse"
+for reader in template unmarshal; do
+  if ! READER=$reader TREES=$tmp/trees-$reader.json sh "$root/tests/xml-parse/run.sh" > "$tmp/xml-$reader.log" 2>&1; then
+    cat "$tmp/xml-$reader.log" >&2; fail "tests/xml-parse/run.sh with READER=$reader"
+  fi
+done
+if [ -f "$tmp/trees-template.json" ] && [ -f "$tmp/trees-unmarshal.json" ]; then
+  python3 -I - "$tmp/trees-template.json" "$tmp/trees-unmarshal.json" <<'EOF' || fail "the two readers' trees differ"
+import json, sys
+a, b = (json.load(open(p)) for p in sys.argv[1:])
+diff = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
+for k in diff: print('DIFF', k)
+print(f'{len(a) - len(diff)} of {len(a)} trees identical')
+sys.exit(1 if diff else 0)
+EOF
+fi
+
+echo "== unit"
+for reader in template native; do
+  if ! DOCSYGEN_READER=$reader sh "$root/tests/unit/run.sh" > "$tmp/unit-$reader.log" 2>&1; then
+    cat "$tmp/unit-$reader.log" >&2; fail "tests/unit/run.sh with the $reader reader"
+  fi
+  printf '%s: %s\n' "$reader" "$(tail -n 1 "$tmp/unit-$reader.log")"
+done
+
+# compare NAME: the public/ directories of $tmp/NAME-template and $tmp/NAME-native.
+compare() {
+  if diff -r "$tmp/$1-template/public" "$tmp/$1-native/public" > "$tmp/$1.diff"; then
+    printf '%s: %s files identical\n' "$1" "$(find "$tmp/$1-template/public" -type f | wc -l)"
+  else
+    head -n 20 "$tmp/$1.diff" >&2; fail "$1 differs between the readers"
+  fi
+}
+
+echo "== sites"
+for site in site doxygen-compat; do
+  for name in sample sample-c pdi; do
+    if ! dir=$(oracle "$name"); then fail "no $name oracle"; continue; fi
+    ok=1
+    for reader in template native; do
+      work=$tmp/$site-$name-$reader
+      mkdir -p "$work"
+      extra=
+      if [ "$site" = site ] && [ "$name" = sample ]; then extra="$root/tests/site/handwritten=content"; fi
+      DOCSYGEN_READER=$reader
+      # shellcheck disable=SC2086 # extra is one word or none
+      site_config "$work/hugo.yaml" "$root/tests/$site/layouts=layouts" "$root/tests/$site/content=content" $extra \
+        "$dir/xml=assets/doxygen/oracle"
+      cat "$root/tests/$site/config.yaml" >> "$work/hugo.yaml"
+      # Not --quiet: it would hide the ERROR line that errorf logs.
+      if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
+        cat "$work/log" >&2; fail "$site $name with the $reader reader"; ok=0
+      fi
+    done
+    DOCSYGEN_READER=template
+    [ $ok -eq 0 ] || compare "$site-$name"
+  done
+done
+
+# The example site as it is, with the reader's layouts mounted before its own for native.
+example=$root/exampleSite
+for reader in template native; do
+  work=$tmp/example-$reader
+  mkdir -p "$work"
+  {
+    printf 'module:\n  mounts:\n'
+    if [ "$reader" = native ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-native/layouts"; fi
+    for d in content assets static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
+  } > "$work/mounts.yaml"
+  if ! PATH="$example/node_modules/.bin:$PATH" "$hugo" --source "$example" --config "$example/hugo.yaml,$work/mounts.yaml" \
+      --destination "$work/public" > "$work/log" 2>&1; then
+    cat "$work/log" >&2; fail "the example site with the $reader reader"
+  fi
+done
+compare example
+
+[ $status -eq 0 ] && echo "reader-diff.sh: OK"
+exit $status

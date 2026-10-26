@@ -17,11 +17,12 @@ if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 
 
 # oracle NAME: print the directory that holds Doxygen's xml/ and html/ for NAME (sample,
 # sample-c or pdi), generating them if needed (tests/oracle/generate.sh).
-# The samples are generated once per test run, in $tmp. pdi is generated once into the kept
+# The samples are generated once per test run, in $tmp, or in DOCSYGEN_ORACLES when it is set
+# (shared by the scripts a script runs: tests/reader-diff.sh). pdi is generated once into the kept
 # cache /var/tmp/docsygen-oracle/pdi-9645c141, and needs PDI_SRC the first time.
 oracle() {
   case $1 in
-    sample | sample-c) dir=$tmp/oracle/$1 ;;
+    sample | sample-c) dir=${DOCSYGEN_ORACLES:-$tmp/oracle}/$1 ;;
     pdi) dir=/var/tmp/docsygen-oracle/pdi-9645c141 ;;
     *) echo "oracle: unknown oracle $1 (sample, sample-c or pdi)" >&2; return 2 ;;
   esac
@@ -43,8 +44,11 @@ oracle() {
 # or relative to the site) is mounted at TARGET. Project mounts replace the site's default ones,
 # so a site that has its own layouts or content lists them too; a site's own mounts override
 # the module's files of the same name. Append the rest of the configuration to FILE.
+# With DOCSYGEN_READER=native, tests/reader-native is mounted first, so that docsygen reads the
+# XML with the native decoder (tests/reader-diff.sh).
 site_config() {
   config=$1; shift
+  if [ "${DOCSYGEN_READER:-template}" = native ]; then set -- "$root/tests/reader-native/layouts=layouts" "$@"; fi
   {
     printf 'module:\n'
     printf '  replacements: "github.com/jbigot/docsygen -> %s"\n' "$root"

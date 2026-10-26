@@ -12,7 +12,8 @@
 #   NAME=DIR  an extra directory of XML files to compare, e.g. doxytest=<doxygen>/testing
 # Always compared: the XML of the sample and sample-c oracles (regenerated with doxygen, see
 # tests/oracle/generate.sh), edge/good, and the example site's PDI XML. HUGO and DOXYGEN select
-# the binaries (tests/lib.sh).
+# the binaries (tests/lib.sh). TREES names a file to keep the trees of those files in
+# (tests/reader-diff.sh).
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -55,6 +56,7 @@ done
 LC_ALL=C awk -v s="$start" -v e="$end" -v b="$bytes" 'BEGIN { printf "build: %.2f s for %.1f MB of XML\n", e - s, b / 1e6 }'
 status=0
 python3 -I "$here/compare.py" --layout document "$work/good/public/trees.json" "$@" || status=1
+if [ -n "${TREES:-}" ]; then cp "$work/good/public/trees.json" "$TREES"; fi
 
 for bad in "$here"/edge/bad/*.xml; do
   name=$(basename "$bad")
@@ -71,7 +73,7 @@ for bad in "$here"/edge/bad/*.xml; do
   else
     case $reader in
       template) pattern='xml/parse: .*' ;;
-      unmarshal) pattern='unmarshal failed: .*' ;;
+      unmarshal) pattern='failed to unmarshal XML: .*' ;;
     esac
     if reason=$(printf '%s' "$message" | grep -oE "$pattern" | head -n 1) && [ -n "$reason" ]; then
       printf 'rejected %-22s %s\n' "$name" "$reason"
