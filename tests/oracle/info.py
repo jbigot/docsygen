@@ -41,7 +41,11 @@ def identity(role):
 
 
 def is_code(node):
-    return node.tag == 'pre' or (node.tag == 'div' and 'fragment' in exact.classes(node))
+    """Whether node is a code block: a div.fragment or a pre, but a member's signature (Docsy's
+    pre.docsygen-signature), which is the text of Doxygen's prototype."""
+    if node.tag == 'pre':
+        return 'docsygen-signature' not in exact.classes(node)
+    return node.tag == 'div' and 'fragment' in exact.classes(node)
 
 
 def code_text(node):
@@ -187,26 +191,38 @@ def detach(node):
 
 
 def doxygen_members(root, key, side):
-    """Detach each memitem of a Doxygen page that documents a known id: {id: [nodes]}."""
+    """Detach each memitem of a Doxygen page that documents a known id, with its title (when a
+    rule left it): {id: [nodes]}. Its anchor is the a[id] before it, the title in between."""
     out = {}
-    for title in exact.find(root, 'h2.memtitle'):
-        siblings = [c for c in title.parent.children if isinstance(c, exact.Node)]
-        i = siblings.index(title)
-        anchor = next((a.attrs.get('id') or a.attrs.get('name') for a in reversed(siblings[:i])
-                       if a.tag == 'a' and (a.attrs.get('id') or a.attrs.get('name'))), None)
+    for item in exact.find(root, 'div.memitem'):
+        if item.parent is None:
+            continue
+        siblings = [c for c in item.parent.children if isinstance(c, exact.Node)]
+        i = siblings.index(item)
+        nodes = [item]
+        j = i - 1
+        if j >= 0 and siblings[j].tag == 'h2' and 'memtitle' in exact.classes(siblings[j]):
+            nodes.insert(0, siblings[j])
+            j -= 1
+        anchor = None
+        if j >= 0 and siblings[j].tag == 'a':
+            anchor = siblings[j].attrs.get('id') or siblings[j].attrs.get('name')
         ident = side.ids.get((key, anchor))
         if ident is None:
             continue
-        nodes = [title] + [s for s in siblings[i + 1:i + 2] if 'memitem' in exact.classes(s)]
         for n in nodes:
             detach(n)
         out.setdefault(ident, []).extend(nodes)
     return out
 
 
-def docsy_members(root):
+def docsy_members(root, ids):
+    """Detach each element that documents one of ids: {id: [nodes]}. The others, such as enum
+    values, stay in their container."""
     out = {}
     for node in reversed(exact.find(root, '[data-doxygen-id]')):
+        if node.attrs['data-doxygen-id'] not in ids:
+            continue
         detach(node)
         out.setdefault(node.attrs['data-doxygen-id'], []).append(node)
     return out
@@ -326,7 +342,7 @@ def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
             root = docsy_pages[key]
             main = (exact.find(root, 'main .td-content') or exact.find(root, 'main') or [root])[0]
             formulas(main, False)
-            for ident, nodes in docsy_members(main).items():
+            for ident, nodes in docsy_members(main, dmembers).items():
                 for n in nodes:
                     smembers.setdefault(ident, Container()).add(n, ours, key)
             srest.add(main, ours, key)

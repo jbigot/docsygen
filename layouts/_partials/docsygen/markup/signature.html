@@ -1,6 +1,6 @@
 {{- /* A member's prototype in its detailed documentation (memberdef.cpp, writeDocumentation and
        writeDefArgumentList), as {templates, proto}: the template prefixes (HTML, outermost
-       first) and the memname table.
+       first) and the prototype on one line (HTML, links kept), for a code block.
        Usage: partial "docsygen/markup/signature.html" (dict "ctx" $ctx "id" $id "parts" $parts
          "scope" $classOrEmpty "hasParams" $bool) */ -}}
 {{- $ctx := .ctx -}}
@@ -54,9 +54,9 @@
     {{- end -}}
   {{- end -}}
   {{- if $params -}}
-  {{- $prefix := printf "template&lt;%s&gt; " (delimit $params ", ") -}}
+  {{- $prefix := printf "template&lt;%s&gt;" (delimit $params ", ") -}}
   {{- if .own -}}
-    {{- with $parts.requiresclause -}}{{- $prefix = printf "%s<br />\nrequires %s" $prefix (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) -}}{{- end -}}
+    {{- with $parts.requiresclause -}}{{- $prefix = printf "%s\nrequires %s" $prefix (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) -}}{{- end -}}
   {{- end -}}
   {{- $templates = $templates | append $prefix -}}
   {{- end -}}
@@ -110,49 +110,32 @@
     {{- with $pp.defval -}}
       {{- $text := partial "docsygen/text/plain.html" . -}}
       {{- if $cName -}}{{- $text = replaceRE (printf `%s([^<A-Za-z0-9_]|$)` $clRealName) (printf "%s%s${1}" $clRealName $cName) $text -}}{{- end -}}
-      {{- $default = printf `<span class="paramdefsep"> = </span><span class="paramdefval">%s</span>` (partial "docsygen/markup/linkify.html" (dict "text" $text "sources" (slice .) "ctx" $ctx "scope" $scope)) -}}
+      {{- $default = printf ` = %s` (partial "docsygen/markup/linkify.html" (dict "text" $text "sources" (slice .) "ctx" $ctx "scope" $scope)) -}}
     {{- end -}}
     {{- $rows = $rows | append (dict "type" $type "name" $name "default" $default) -}}
   {{- end -}}
-  {{- $proto = printf `<table class="memname"><tr><td class="memname">%s </td><td>(</td>` $def -}}
-  {{- if not $rows -}}
-    {{- $proto = printf `%s<td class="paramname"><span class="paramname"><em></em></span></td><td>)</td><td>%s</td></tr></table>` $proto (htmlEscape $qualifiers) -}}
-  {{- else if eq (len $rows) 1 -}}
-    {{- $r := index $rows 0 -}}
-    {{- $proto = printf `%s<td class="paramtype">%s</td><td class="paramname"><span class="paramname"><em>%s</em></span>%s</td><td>)</td><td>%s</td></tr></table>` $proto $r.type (htmlEscape $r.name) $r.default (htmlEscape $qualifiers) -}}
-  {{- else -}}
-    {{- range $i, $r := $rows -}}
-      {{- if $i -}}{{- $proto = printf `%s<tr><td class="paramkey"></td><td></td>` $proto -}}{{- end -}}
-      {{- $end := cond (eq $i (sub (len $rows) 1)) (printf "&#160;)%s" (htmlEscape $qualifiers)) ", " -}}
-      {{- $proto = printf `%s<td class="paramtype">%s</td><td class="paramname"><span class="paramname"><em>%s</em></span>%s%s</td></tr>` $proto $r.type (htmlEscape $r.name) $r.default $end -}}
-    {{- end -}}
-    {{- $proto = printf "%s</table>" $proto -}}
-  {{- end -}}
+  {{- $items := slice -}}
+  {{- range $rows -}}{{- $items = $items | append (trim (printf "%s %s%s" .type (htmlEscape .name) .default) " ") -}}{{- end -}}
+  {{- $proto = printf "%s(%s)%s" $def (delimit $items ", ") (htmlEscape $qualifiers) -}}
 {{- else if eq $kind "define" -}}
   {{- $params := slice -}}
   {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = $params | append (partial "docsygen/text/plain.html" .) -}}{{- end -}}{{- end -}}
   {{- if $params -}}
-    {{- $proto = printf `<table class="memname"><tr><td class="memname">#define %s</td><td>(</td>` (htmlEscape $short) -}}
-    {{- range $i, $pn := $params -}}
-      {{- if $i -}}{{- $proto = printf `%s<tr><td class="paramkey"></td><td></td>` $proto -}}{{- end -}}
-      {{- $proto = printf `%s<td class="paramtype"></td><td class="paramname"><span class="paramname"><em>%s</em></span>%s</td></tr>` $proto (htmlEscape $pn) (cond (eq $i (sub (len $params) 1)) "&#160;)" ", ") -}}
-    {{- end -}}
-    {{- $proto = printf "%s</table>" $proto -}}
+    {{- $proto = printf "#define %s(%s)" (htmlEscape $short) (htmlEscape (delimit $params ", ")) -}}
   {{- else -}}
     {{- $value := "" -}}
-    {{- with $parts.initializer -}}{{- $value = printf "&#160;&#160;&#160;%s" (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) -}}{{- end -}}
-    {{- $proto = printf `<table class="memname"><tr><td class="memname">#define %s%s</td></tr></table>` (htmlEscape $short) $value -}}
+    {{- with $parts.initializer -}}{{- $value = printf " %s" (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) -}}{{- end -}}
+    {{- $proto = printf "#define %s%s" (htmlEscape $short) $value -}}
   {{- end -}}
 {{- else if eq $kind "enum" -}}
   {{- $base := "" -}}
   {{- with $parts.type -}}{{- with .children -}}{{- $base = printf " : %s" (partial "docsygen/markup/linked.html" (dict "node" $parts.type "ctx" $ctx "scope" $scope)) -}}{{- end -}}{{- end -}}
-  {{- $proto = printf `<table class="memname"><tr><td class="memname">enum %s<a class="el" href="%s">%s</a>%s</td></tr></table>`
-      (cond (eq $a.strong "yes") "class " "") (htmlEscape (index $ctx.links $id)) (htmlEscape $e.name) $base -}}
+  {{- $proto = printf `enum %s<a href="%s">%s</a>%s` (cond (eq $a.strong "yes") "class " "") (htmlEscape (index $ctx.links $id)) (htmlEscape $e.name) $base -}}
 {{- else -}}
   {{- $rest := "" -}}
   {{- if ne $kind "typedef" -}}
     {{- with $parts.initializer -}}{{- $rest = printf " %s" (partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope)) -}}{{- end -}}
   {{- end -}}
-  {{- $proto = printf `<table class="memname"><tr><td class="memname">%s%s</td></tr></table>` $def $rest -}}
+  {{- $proto = printf "%s%s" $def $rest -}}
 {{- end -}}
 {{- return dict "templates" $templates "proto" $proto -}}

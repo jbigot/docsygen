@@ -25,7 +25,7 @@
   {{- range $values -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $inits = true -}}{{- end -}}{{- end -}}{{- end -}}
   {{- end -}}
   {{- with $values -}}
-<table class="fieldtable"><tr><th colspan="{{ cond $inits 3 2 }}">Enumerator</th></tr>
+<table class="docsygen-enumvalues"><tr><th colspan="{{ cond $inits 3 2 }}">Enumerator</th></tr>
     {{- range . -}}
       {{- $v := . -}}
       {{- $name := "" -}}
@@ -34,8 +34,8 @@
         {{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}
         {{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = trim (strings.TrimPrefix "=" (trim (partial "docsygen/text/plain.html" .) " \n")) " \n" -}}{{- end -}}
       {{- end -}}
-<tr><td class="fieldname"><a id="{{ index $ctx.anchors $v.attributes.id }}" name="{{ index $ctx.anchors $v.attributes.id }}" data-doxygen-id="{{ $v.attributes.id }}"></a>{{ $name }}&#160;</td>
-      {{- if $inits -}}<td class="fieldinit">{{ $init }}&#160;</td>{{- end -}}
+<tr id="{{ index $ctx.anchors $v.attributes.id }}" data-doxygen-id="{{ $v.attributes.id }}"><td class="fieldname">{{ $name }}</td>
+      {{- if $inits -}}<td class="fieldinit">{{ $init }}</td>{{- end -}}
 <td class="fielddoc">
       {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}{{- end -}}
 </td></tr>

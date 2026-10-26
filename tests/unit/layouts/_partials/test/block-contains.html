@@ -1,0 +1,7 @@
+{{- /* The strings of .contains that the markup of .block (test/block.html) lacks, and those of
+       .lacks that it holds. */ -}}
+{{- $html := string (partial "test/block.html" .) -}}
+{{- $out := slice -}}
+{{- range .contains -}}{{- if not (strings.Contains $html .) -}}{{- $out = $out | append (printf "missing %s" .) -}}{{- end -}}{{- end -}}
+{{- range .lacks -}}{{- if strings.Contains $html . -}}{{- $out = $out | append (printf "has %s" .) -}}{{- end -}}{{- end -}}
+{{- return $out -}}

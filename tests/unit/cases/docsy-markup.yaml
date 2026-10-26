@@ -79,3 +79,33 @@
     ctx: {model: sample}
     block: {type: diagram, id: classdemo_1_1Button}
   expect: "<div class=\"docsygen-diagram\"><div class=\"docsygen-diagram-title\">Inheritance diagram for demo::Button:</div><pre class=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre></div>"
+- name: docsy markup, a member with its signature
+  flavor: docsy
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
+    contains:
+      - '<div class="docsygen-member" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd">'
+      - '<pre class="docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre>'
+    lacks: [memitem, memname, memtitle, memproto, memdoc]
+  expect: []
+- name: docsy markup, a member's template line in its signature
+  flavor: docsy
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2}
+    contains: ["<pre class=\"docsygen-signature\"><code>template&lt;typename T, int N = 3&gt;\nconst T &amp; demo::Box&lt; T, N &gt;::front("]
+  expect: []
+- name: docsy markup, an enum's values
+  flavor: docsy
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: namespacedemo_1a51fd45e2c1747ad809621bc76892966d}
+    contains:
+      - '<table class="docsygen-enumvalues">'
+      - 'data-doxygen-id="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4"'
+    lacks: [fieldtable]
+  expect: []

@@ -150,6 +150,23 @@ class Compare(unittest.TestCase):
         self.assertEqual(self.compare(theirs, inside).missing, [])
         self.assertEqual(len(self.compare(theirs, outside).missing), 1)
 
+    def test_an_element_of_an_id_without_a_doxygen_member_stays_in_its_container(self):
+        self.compat['targets']['m1'] = {'page': 'classX', 'anchor': 'a1'}
+        theirs = '<a id="a1"></a><h2 class="memtitle">E</h2><div class="memitem"><table><tr><td>red</td></tr></table></div>'
+        ours = '<div data-doxygen-id="m1"><h3>E</h3><table><tr id="red" data-doxygen-id="v1"><td>red</td></tr></table></div>'
+        self.assertEqual(self.compare(theirs, ours).missing, [])
+
+    def test_a_signature_is_text(self):
+        theirs = '<table><tr><td class="memname">void f</td><td>(</td><td>)</td></tr></table>'
+        self.assertEqual(self.compare(theirs, '<pre class="docsygen-signature"><code>void f()</code></pre>').missing, [])
+
+    def test_a_member_without_its_title_is_still_a_member(self):
+        self.compat['targets']['m1'] = {'page': 'classX', 'anchor': 'a1'}
+        rule = {'rule': 'drop', 'select': 'h2.memtitle', 'count': 1, 'reason': 'r'}
+        theirs = '<p>Intro.</p><a id="a1"></a><h2 class="memtitle">f()</h2><div class="memitem">Resizes.</div>'
+        outside = '<p>Intro. Resizes.</p><div data-doxygen-id="m1"><h3>f()</h3></div>'
+        self.assertEqual(len(self.compare(theirs, outside, [rule]).missing), 1)
+
     def test_extra_text_is_reported_but_passes(self):
         result = self.compare('<p>A.</p>', '<p>A. And more.</p>')
         self.assertEqual(result.missing, [])

@@ -70,3 +70,33 @@
   select: div.fragment a.code
   count: 1088
   reason: "See the sample entry"
+- oracle: sample
+  rule: drop
+  select: h2.memtitle
+  count: 66
+  reason: "A member's title is its Markdown heading, outside its element; the overload counter [1/2] is left out"
+- oracle: sample
+  rule: tokens
+  select: div.memproto
+  count: 66
+  reason: "The Docsy signature is one line of code, where Doxygen spreads the prototype over table cells with non-breaking spaces"
+- oracle: sample-c
+  rule: drop
+  select: h2.memtitle
+  count: 12
+  reason: "See the sample entry"
+- oracle: sample-c
+  rule: tokens
+  select: div.memproto
+  count: 12
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: drop
+  select: h2.memtitle
+  count: 407
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: tokens
+  select: div.memproto
+  count: 407
+  reason: "See the sample entry"

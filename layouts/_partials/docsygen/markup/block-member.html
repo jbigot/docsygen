@@ -1,5 +1,5 @@
-{{- /* A member's documentation (memberdef.cpp, writeDocumentation): its anchor, its title with
-       the overload counter, its prototype with its labels (getLabels), and its documentation:
+{{- /* A member's documentation (memberdef.cpp, writeDocumentation), its heading in the page's
+       skeleton: its signature, its labels (getLabels), and its documentation:
        brief, details, enum values, what it reimplements or what reimplements it, and where it
        is defined. */ -}}
 {{- $ctx := .ctx -}}
@@ -54,19 +54,9 @@
 {{- $proto := partial "docsygen/markup/signature.html" (dict "ctx" $ctx "id" $id "parts" $parts "scope" $scope "hasParams" $hasParams) -}}
 {{- $templates := $proto.templates -}}
 {{- $proto = $proto.proto -}}
-<div data-doxygen-id="{{ $id }}">
-{{- if .block.heading -}}<a id="{{ $anchor }}" name="{{ $anchor }}"></a>{{- end }}
-<h2 class="memtitle"><span class="permalink"><a href="#{{ $anchor }}">&#9670;&#160;</a></span>{{ $short }}{{ if $isFunction }}(){{ end }}
-{{- if gt $count 1 }} <span class="overload">[{{ $rank }}/{{ $count }}]</span>{{ end -}}
-</h2>
-<div class="memitem"><div class="memproto">
-{{- range $templates -}}<div class="memtemplate">{{ "\n" }}{{ . | safeHTML }}</div>{{- end -}}
-{{- if $labels -}}
-<table class="mlabels"><tr><td class="mlabels-left">{{ $proto | safeHTML }}</td><td class="mlabels-right"><span class="mlabels">{{ range $labels }}<span class="mlabel {{ replace . " " "-" }}">{{ . }}</span>{{ end }}</span></td></tr></table>
-{{- else -}}
-{{ $proto | safeHTML }}
-{{- end -}}
-</div><div class="memdoc">
+<div class="docsygen-member" data-doxygen-id="{{ $id }}">
+{{- if .block.heading -}}<a id="{{ $anchor }}"></a>{{- end -}}
+<pre class="docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre>
+{{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="docsygen-label">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}
-</div></div>
 </div>
