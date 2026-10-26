@@ -1,9 +1,11 @@
-{{- /* An HTML image, in a block with its caption, or inline with the caption as title. */ -}}
+{{- /* An HTML image: a figure with its caption in a block, an img inline; the caption's text is
+       its alt text. */ -}}
 {{- $n := .node -}}
 {{- $img := partial "docsygen/render/image.html" (dict "node" $n "ctx" .ctx) -}}
 {{- $caption := partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}
+{{- $alt := partial "docsygen/text/plain.html" $n -}}
 {{- if eq $n.attributes.inline "yes" -}}
-  <img src="{{ $img.src }}" alt="" class="inline"{{ with $caption }} title="{{ . }}"{{ end }}/>
+  <img src="{{ $img.src }}" alt="{{ $alt }}">
 {{- else -}}
-  <div class="image"><img src="{{ $img.src }}" alt=""/>{{ with $caption }}<div class="caption">{{ . }}</div>{{ end }}</div>
+  <figure class="docsygen-figure"><img src="{{ $img.src }}" alt="{{ $alt }}">{{ with $caption }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
 {{- end -}}
