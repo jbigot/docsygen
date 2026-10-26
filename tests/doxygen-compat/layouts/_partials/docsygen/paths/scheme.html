@@ -76,14 +76,29 @@
   {{- $homes.SetInMap "m" $id $anchor -}}
 {{- end -}}
 {{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists and details; and
-       of member index pages, the letters' sections (letter-<filter>-<letter>). */ -}}
+       of index pages, the letters (letter-<L> on the class index, letter-<filter>-<letter> on a
+       member index). */ -}}
 {{- $anchors := newScratch -}}
 {{- $entries := partial "docsygen/paths/index-entries.html" $m -}}
 {{- range $out -}}
   {{- $key := .key -}}
   {{- $anchors.SetInMap "m" $key (dict "details" "details") -}}
   {{- range .roles -}}
-    {{- if and (eq .role "index") (ne .name "classes") -}}
+    {{- if and (eq .role "index") (eq .name "classes") -}}
+      {{- $page := newScratch -}}
+      {{- $page.Set "m" (index ($anchors.Get "m") $key) -}}
+      {{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+      {{- range $m.order -}}
+        {{- $e := index $m.ids . -}}
+        {{- if in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $e.kind -}}
+          {{- $base := index (split $e.name "<") 0 -}}
+          {{- $n := index (split $base "::") (sub (len (split $base "::")) 1) -}}
+          {{- $l := upper (substr (partial "docsygen/text/ignore-prefix.html" (dict "name" $n "prefixes" $prefixes)) 0 1) -}}
+          {{- $page.SetInMap "m" (printf "letter-%s" $l) (printf "letter_%s" $l) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $anchors.SetInMap "m" $key ($page.Get "m") -}}
+    {{- else if eq .role "index" -}}
       {{- $page := newScratch -}}
       {{- $page.Set "m" (index ($anchors.Get "m") $key) -}}
       {{- $filter := .filter -}}

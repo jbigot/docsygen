@@ -11,6 +11,10 @@
 {{- $yes := newScratch -}}
 {{- range slice "EXTRACT_ALL" "OPTIMIZE_OUTPUT_FOR_C" -}}{{- $yes.Set . (eq (index ((index $m.options .) | default (slice "NO")) 0) "YES") -}}{{- end -}}
 {{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+{{- /* The letters' anchors are the page's fixed anchors (docsygen/paths/scheme.html): letter-<L>
+       on the class index, letter-<filter>-<letter> on a member index. */ -}}
+{{- $fixed := dict -}}
+{{- with $ctx.page -}}{{- $fixed = index $ctx.paths.anchors .Params.docsygen.key | default dict -}}{{- end -}}
 {{- if eq $b.name "classes" -}}
   {{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
   {{- $scopes := partial "docsygen/model/scopes.html" $m -}}
@@ -38,13 +42,13 @@
   {{- $letters := slice -}}
   {{- range $letter, $_ := $byLetter.Values -}}{{- $letters = $letters | append $letter -}}{{- end -}}
 <div class="docsygen-index-letters">
-  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a href="#letter_{{ $l }}">{{ $l }}</a>{{- end -}}
+  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a href="#{{ index $fixed (printf "letter-%s" $l) }}">{{ $l }}</a>{{- end -}}
 </div>
   {{- with $letters }}
 <div class="docsygen-index-classes">
     {{- range $i, $l := . }}
 <dl class="docsygen-index-letter">
-<dt><a id="letter_{{ $l }}" name="letter_{{ $l }}">{{ $l }}</a></dt>
+<dt id="{{ index $fixed (printf "letter-%s" $l) }}">{{ $l }}</dt>
       {{ range partial "docsygen/text/sort-bytes.html" (dict "list" ($byLetter.Get $l) "key" "sort") -}}
 <dd><a href="{{ index $ctx.links .id }}">{{ .name }}</a>
         {{- with .ns }} (
@@ -80,10 +84,7 @@
     {{- $intro = printf "%snamespace %ss with links to %s" $prefix $one
         (cond ($yes.Get "EXTRACT_ALL") (printf "the namespace documentation for each %s:" $one) "the namespaces they belong to:") -}}
   {{- end -}}
-  {{- /* The letters link to their section, or to their first member without sections, at the
-         page's anchors letter-<filter>-<letter> (docsygen/paths/scheme.html). */ -}}
-  {{- $fixed := dict -}}
-  {{- with $ctx.page -}}{{- $fixed = index $ctx.paths.anchors .Params.docsygen.key | default dict -}}{{- end -}}
+  {{- /* The letters link to their section, or to their first member without sections. */ -}}
   {{- $letters := slice -}}
   {{- $html := "" -}}
   {{- $prevKey := "" -}}
