@@ -1,6 +1,8 @@
 {{- /* Parse an XML string into its root element, in the document layout of transform.Unmarshal
        with targetType "document" (gohugoio/hugo#15485): an element is a map {tag, attributes,
        children}, attributes maps names to strings, and children holds strings and elements.
+       Names lose their prefix, as encoding/xml's Token() gives them (docsygen/xml/inline/local):
+       of two attributes with the same local name, the later wins.
        Children never hold an empty string or two strings in a row: CDATA and text split by a
        comment or a PI are merged. Comments, PIs, the DOCTYPE and whitespace outside the root are
        dropped. An empty string gives an empty map.
@@ -8,6 +10,12 @@
        that builds with this reader builds identically with the native decoder; it rejects a
        little more (tests/xml-parse/known-differences.md).
        Usage: partial "docsygen/xml/parse.html" $xmlString */ -}}
+{{- define "_partials/docsygen/xml/inline/local.html" -}}
+  {{- /* A name without its prefix: the part after the colon of prefix:local, any other name
+         whole (nsname, src/encoding/xml/xml.go). */ -}}
+  {{- $parts := split . ":" -}}
+  {{- return cond (and (eq (len $parts) 2) (ne (index $parts 0) "") (ne (index $parts 1) "")) (index $parts 1) . -}}
+{{- end -}}
 {{- $root := dict -}}
 {{- if . -}}
   {{- range findRE `\x{FFFD}` . -}}
@@ -29,8 +37,8 @@
   {{- if ne (len (delimit $tokens "")) (len .) -}}
     {{- errorf "xml/parse: malformed XML (unmatched markup near %q)" (substr (replaceRE (printf `^(?:%s)*` $tokenRE) "" . 1) 0 40) -}}
   {{- end -}}
-  {{- /* Each open element is {n: name, a: attributes, s: a scratch holding its children in
-         "c", appended one at a time: Scratch.Add would append a one-element slice as a slice}, above a bottom entry that collects what lies outside the root. Text accumulates
+  {{- /* Each open element is {n: name as written, t: its tag, a: attributes, s: a scratch
+         holding its children in "c", appended one at a time: Scratch.Add would append a one-element slice as a slice}, above a bottom entry that collects what lies outside the root. Text accumulates
          in $pending until the next tag, which merges text split by comments, PIs and CDATA. */ -}}
   {{- $top := dict "s" newScratch -}}
   {{- $stack := slice $top -}}
@@ -53,7 +61,7 @@
         {{- errorf "xml/parse: unexpected </%s>, expected </%s>" $close $top.n -}}
       {{- end -}}
       {{- if $pending -}}{{- $top.s.Set "c" (($top.s.Get "c") | append $pending) -}}{{- $pending = "" -}}{{- end -}}
-      {{- $element := dict "tag" $top.n "attributes" $top.a "children" ($top.s.Get "c" | default slice) -}}
+      {{- $element := dict "tag" $top.t "attributes" $top.a "children" ($top.s.Get "c" | default slice) -}}
       {{- $stack = first (sub (len $stack) 1) $stack -}}
       {{- $top = index $stack (sub (len $stack) 1) -}}
       {{- $top.s.Set "c" (($top.s.Get "c") | append $element) -}}
@@ -92,14 +100,18 @@
           {{- if strings.ContainsAny $value "&\r" -}}
             {{- $value = partial "docsygen/xml/inline/decode.html" $value -}}
           {{- end -}}
-          {{- $attrs.SetInMap "m" (index . 1) $value -}}
+          {{- $key := index . 1 -}}
+          {{- if strings.Contains $key ":" -}}{{- $key = partial "docsygen/xml/inline/local.html" $key -}}{{- end -}}
+          {{- $attrs.SetInMap "m" $key $value -}}
         {{- end -}}
         {{- $attributes = $attrs.Get "m" -}}
       {{- end -}}
+      {{- $tag := index $match 1 -}}
+      {{- if strings.Contains $tag ":" -}}{{- $tag = partial "docsygen/xml/inline/local.html" $tag -}}{{- end -}}
       {{- if index $match 3 -}}
-        {{- $top.s.Set "c" (($top.s.Get "c") | append (dict "tag" (index $match 1) "attributes" $attributes "children" slice)) -}}
+        {{- $top.s.Set "c" (($top.s.Get "c") | append (dict "tag" $tag "attributes" $attributes "children" slice)) -}}
       {{- else -}}
-        {{- $top = dict "n" (index $match 1) "a" $attributes "s" newScratch -}}
+        {{- $top = dict "n" (index $match 1) "t" $tag "a" $attributes "s" newScratch -}}
         {{- $stack = $stack | append $top -}}
       {{- end -}}
     {{- end -}}

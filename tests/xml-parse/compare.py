@@ -4,7 +4,8 @@ Usage: python3 -I compare.py [--layout document] trees.json NAME=DIR [NAME=DIR .
        python3 -I compare.py --cases CASES.json
   trees.json  keys are corpus/NAME/<path>, as produced by mounting DIR at assets/corpus/NAME
   --layout document  the trees are in the document layout ({tag, attributes, children}) of
-              both readers, compared as is so that its invariants are checked too
+              both readers, compared as is so that its invariants are checked too; names lose
+              their prefix, as the native decoder's do
   --cases     check the case tables of Hugo's document layout tests against expat:
               {"ok": [...], "lenient": [...], "errors": [...]}, entries {name, in, want},
               with `in` base64-encoded (it can hold invalid UTF-8)
@@ -44,11 +45,21 @@ def norm(x):
     if isinstance(x, dict): return {k: norm(v) for k, v in x.items()}
     return x
 
+def local(name):
+    """A name without its prefix, as encoding/xml's Token() gives it: the part after the colon
+    of prefix:local, any other name whole (nsname, src/encoding/xml/xml.go)."""
+    prefix, colon, rest = name.partition(':')
+    return rest if colon and prefix and rest else name
+
 def document(nodes):
-    """Turn expat's tree into the document layout: the single top-level element."""
+    """Turn expat's tree into the document layout: the single top-level element, its names
+    without prefix (of two attributes with the same local name, the later wins)."""
     def el(node):
         (tag,) = [k for k in node if not k.startswith('#')]
-        return {'tag': tag, 'attributes': {k[1:]: v for k, v in node.items() if k.startswith('#')},
+        attributes = {}
+        for k, v in node.items():
+            if k.startswith('#'): attributes[local(k[1:])] = v
+        return {'tag': local(tag), 'attributes': attributes,
                 'children': [el(c) if isinstance(c, dict) else c for c in norm(node[tag])]}
     (root,) = [n for n in nodes if isinstance(n, dict)]
     return el(root)
