@@ -90,7 +90,8 @@ The destination is `[VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT]`:
 A destination that resolves to nothing stops the build.
 
 The links go through docsygen's `layouts/_markup/render-link.html`, which renders other links as
-Goldmark does. If your site has its own `render-link.html`, it shadows docsygen's: send
+Hugo's embedded link hook does: a destination that names a page or a resource links to it. If
+your site has its own `render-link.html`, it shadows docsygen's: send
 `doxygen:` destinations to docsygen from it:
 
 ```go-html-template

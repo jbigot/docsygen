@@ -1,8 +1,21 @@
-{{- /* Links: doxygen: destinations through docsygen/link.html, the others as Goldmark renders
-       them (Hugo's embedded hook serves only multilingual single-host sites). A site's own
+{{- /* Links: doxygen: destinations through docsygen/link.html, the others as Hugo's embedded link
+       hook renders them (tpl/tplimpl/embedded/templates/_markup/render-link.html), which this
+       hook shadows: a destination that names a page or a resource links to it. A site's own
        render-link.html shadows this one: it must send doxygen: destinations to docsygen/link.html. */ -}}
 {{- if hasPrefix .Destination "doxygen:" -}}
   {{- partial "docsygen/link.html" . -}}
 {{- else -}}
-<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
+  {{- $u := urls.Parse .Destination -}}
+  {{- $href := $u.String -}}
+  {{- if hasPrefix $u.String "#" -}}
+    {{- $href = printf "%s#%s" .PageInner.RelPermalink $u.Fragment -}}
+  {{- else if and $href (not $u.IsAbs) -}}
+    {{- $path := strings.TrimPrefix "./" $u.Path -}}
+    {{- with or (.PageInner.GetPage $path) (.PageInner.Resources.Get $path) (resources.Get $path) -}}
+      {{- $href = .RelPermalink -}}
+      {{- with $u.RawQuery -}}{{- $href = printf "%s?%s" $href . -}}{{- end -}}
+      {{- with $u.Fragment -}}{{- $href = printf "%s#%s" $href . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+<a href="{{ $href }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
 {{- end -}}

@@ -10,3 +10,4 @@ Links from a hand-written page (tests/site/expected-links.json):
 - [d](doxygen:dir:src)
 - [x](https://example.org/a?b&c)
 - [y](other/)
+- [z](other.md)
