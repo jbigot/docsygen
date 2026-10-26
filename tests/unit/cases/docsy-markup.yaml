@@ -46,3 +46,29 @@
     call: docsygen/render/listing-text.html
     xml: '<programlisting><codeline><highlight class="normal">a<sp/><ref refid="x" kindref="member">b</ref></highlight></codeline><codeline><highlight class="normal"><sp value="9"/>c</highlight></codeline></programlisting>'
   expect: "a b\n\tc"
+- name: docsy markup, an inline formula through KaTeX
+  flavor: docsy
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para>Inline <formula id="0">$ a^2 $</formula>.</para></detaileddescription>'
+    contains: ['class="katex"', '<annotation encoding="application/x-tex">a^2</annotation>']
+    lacks: ['katex-display', '$']
+  expect: []
+- name: docsy markup, a display formula through KaTeX
+  flavor: docsy
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><formula id="1">\[ x \]</formula></para></detaileddescription>'
+    contains: ['katex-display', '<annotation encoding="application/x-tex">x</annotation>']
+    lacks: ['\[']
+  expect: []
+- name: docsy markup, a formula environment through KaTeX
+  flavor: docsy
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><formula id="2">\begin{aligned} a &amp;= b \end{aligned}</formula></para></detaileddescription>'
+    contains: ['katex-display', 'application/x-tex">\begin{aligned} a &amp;= b \end{aligned}</annotation>']
+  expect: []

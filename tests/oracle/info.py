@@ -24,7 +24,7 @@ with each other. Each container checks, as multisets:
      or D.json), or its page's roles and anchor key (anchors) or fragment: see accepts();
   3. code: the text of each div.fragment (its lines joined with newlines) and each pre equals the
      text of a Docsy pre, trailing blanks of each line left out.
-What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
+Formulas compare as their TeX (formulas()). What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
 """
 import argparse, collections, json, os, re, sys
 # python3 -I keeps this script's directory off sys.path.
@@ -162,6 +162,25 @@ def ancestors(node, stop):
         n = n.parent
 
 
+MATHJAX = re.compile(r'\\\(\s*(.*?)\s*\\\)|\\\[\s*(.*?)\s*\\\]', re.S)
+
+
+def formulas(root, doxygen):
+    """Formulas as their TeX: Doxygen's MathJax delimiters removed, a KaTeX element (span.katex)
+    replaced by the text of its annotation."""
+    def walk(node):
+        for i, c in enumerate(node.children):
+            if isinstance(c, str):
+                if doxygen:
+                    node.children[i] = MATHJAX.sub(lambda m: m.group(1) if m.group(1) is not None else m.group(2), c)
+            elif not doxygen and 'katex' in exact.classes(c):
+                tex = next((exact.text(a) for a in exact.find(c, 'annotation')), '')
+                node.children[i] = tex
+            else:
+                walk(c)
+    walk(root)
+
+
 def detach(node):
     node.parent.children.remove(node)
     node.parent = None
@@ -296,6 +315,7 @@ def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
         dmembers, drest = {}, Container()
         for key in sorted(dkeys):
             root = doxygen_pages[key]
+            formulas(root, True)
             for ident, nodes in doxygen_members(root, key, theirs).items():
                 for n in nodes:
                     dmembers.setdefault(ident, Container()).add(n, theirs, key)
@@ -305,6 +325,7 @@ def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
         for key in sorted(skeys):
             root = docsy_pages[key]
             main = (exact.find(root, 'main .td-content') or exact.find(root, 'main') or [root])[0]
+            formulas(main, False)
             for ident, nodes in docsy_members(main).items():
                 for n in nodes:
                     smembers.setdefault(ident, Container()).add(n, ours, key)

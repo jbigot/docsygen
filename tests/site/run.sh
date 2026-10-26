@@ -4,7 +4,8 @@
 # Usage: sh tests/site/run.sh [NAME ...]
 #   NAME   sample, sample-c, pdi (the oracles' XML, tests/lib.sh) or unknown-kind
 #          (tests/unit/fixtures/unknown-kind); all four by default
-# A build fails on any WARN or ERROR line, but the unknown-kind fixture's expected warning.
+# A build fails on any WARN or ERROR line, but an expected warning: the unknown-kind fixture's, and
+# the sample's for its eqnarray* formula, an environment KaTeX lacks (its source is shown).
 # Exit 1 on any failure.
 set -eu
 
@@ -17,7 +18,8 @@ for name; do
   expected=
   case $name in
     unknown-kind) xml=$root/tests/unit/fixtures/unknown-kind; expected='docsygen: unknown compound kind "widgetkind"' ;;
-    *) if ! dir=$(oracle "$name"); then status=1; continue; fi; xml=$dir/xml ;;
+    *) if ! dir=$(oracle "$name"); then status=1; continue; fi; xml=$dir/xml
+       if [ "$name" = sample ]; then expected='docsygen: formula "\\begin{eqnarray*}'; fi ;;
   esac
   work=$tmp/$name
   mkdir -p "$work"

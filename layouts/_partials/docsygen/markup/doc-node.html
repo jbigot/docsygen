@@ -157,12 +157,31 @@
 {{- else if eq $tag "image" -}}
   {{- if eq $n.attributes.type "html" -}}{{- partial "docsygen/markup/doc-image.html" (merge $sub (dict "node" $n)) -}}{{- end -}}
 {{- else if eq $tag "formula" -}}
-  {{- $text := delimit $n.children "" -}}
-  {{- if hasPrefix $text "$" -}}
-    {{- printf "\\(%s\\)" (strings.TrimSuffix "$" (strings.TrimPrefix "$" $text)) -}}
+  {{- /* KaTeX, as Docsy's scripts/math.html renders: $…$ inline, anything else displayed, without
+         Doxygen's delimiters; \f{env}{…\f} as \begin{env}…\end{env}. A formula KaTeX rejects is
+         its source in <code>, with a warning. */ -}}
+  {{- $text := trim (delimit $n.children "") " \n" -}}
+  {{- $tex := $text -}}
+  {{- $display := true -}}
+  {{- if and (hasPrefix $text "$") (hasSuffix $text "$") -}}
+    {{- $tex = trim (strings.TrimSuffix "$" (strings.TrimPrefix "$" $text)) " \n" -}}
+    {{- $display = false -}}
+  {{- else if and (hasPrefix $text "\\[") (hasSuffix $text "\\]") -}}
+    {{- $tex = trim (strings.TrimSuffix "\\]" (strings.TrimPrefix "\\[" $text)) " \n" -}}
   {{- else -}}
-    <p class="formulaDsp">{{ $text }}</p>
+    {{- with findRESubmatch `^\\f\{([^}]*)\}\{((?s).*)\\f\}$` $text 1 -}}
+      {{- $tex = printf "\\begin{%s}%s\\end{%s}" (index . 0 1) (index . 0 2) (index . 0 1) -}}
+    {{- end -}}
   {{- end -}}
+  {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" $display)) -}}
+    {{- with .Err -}}
+      {{- warnidf "docsygen-formula" "docsygen: formula %q: %s" $text . -}}
+      <code>{{ $text }}</code>
+    {{- else -}}
+      {{- .Value -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
 {{- else if in (slice "programlisting" "verbatim" "preformatted") $tag -}}
   {{- partial "docsygen/markup/doc-code.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "details" -}}

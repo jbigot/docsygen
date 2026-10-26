@@ -112,6 +112,16 @@ class Compare(unittest.TestCase):
         self.assertEqual(len(self.compare(theirs, '<pre><code>X x;</code></pre>').missing), 1)
         self.assertEqual(self.compare(theirs, '<pre><code>X x;</code></pre>', [rule]).missing, [])
 
+    def test_formulas_compare_as_their_tex(self):
+        katex = ('<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>{0}</mi></mrow>'
+                 '<annotation encoding="application/x-tex">{0}</annotation></semantics></math></span>'
+                 '<span class="katex-html">{0}X</span></span>')
+        theirs = '<p>Inline \\( a^2 \\), display</p><p class="formulaDsp">\\[ x \\]</p>'
+        ours = '<p>Inline ' + katex.format('a^2') + ', display <span class="katex-display">' + katex.format('x') + '</span></p>'
+        result = self.compare(theirs, ours)
+        self.assertEqual(result.missing, [])
+        self.assertEqual(result.extra, [])
+
     def test_reindented_code_fails(self):
         theirs = '<div class="fragment"><div class="line">if (a)</div>\n<div class="line">  b();</div>\n</div>'
         self.assertEqual(self.compare(theirs, '<pre><code>if (a)\n  b();\n</code></pre>').missing, [])
