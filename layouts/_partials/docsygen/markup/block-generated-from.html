@@ -1,0 +1,25 @@
+{{- /* The footer of a class's page: the files its documentation was generated from
+       (classdef.cpp, showUsedFiles; translator_en.h, trGeneratedFromFiles), each with its path
+       under FULL_PATH_NAMES and a link to its source listing, else to its page. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .block.id -}}
+{{- $e := index $m.ids $id -}}
+{{- $files := partial "docsygen/plan/class-files.html" (dict "model" $m "id" $id) -}}
+{{- $words := dict "class" "class" "struct" "struct" "union" "union" "interface" "interface" "protocol" "protocol" "category" "category" "exception" "exception" -}}
+{{- $full := eq (index ((index $m.options "FULL_PATH_NAMES") | default (slice "YES")) 0) "YES" -}}
+<hr/>The documentation for this {{ index $words $e.kind }} was generated from the following file{{ if ne (len $files) 1 }}s{{ end }}:
+{{- with $files -}}
+<ul>
+  {{- range . -}}
+    {{- $f := index $m.ids . -}}
+    {{- $path := "" -}}
+    {{- range $f.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $path = .attributes.file -}}{{- end -}}{{- end -}}
+    {{- $dir := replaceRE `[^/]*$` "" $path -}}
+    {{- $url := "" -}}
+    {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $ctx.urls . -}}
+    {{- else -}}{{- $url = index $ctx.links . | default "" -}}{{- end -}}
+<li>{{ if $full }}{{ $dir }}{{ end }}{{ if $url }}<a class="el" href="{{ $url }}">{{ $f.name }}</a>{{ else }}<b>{{ $f.name }}</b>{{ end }}</li>
+  {{- end -}}
+</ul>
+{{- end -}}

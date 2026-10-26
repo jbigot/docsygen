@@ -1,0 +1,39 @@
+{{- /* A member's definition (.text) linked as writeDocumentation's linkifyText links it, with the
+       links of the XML: the words of the XML type (.type) are matched with the definition's in
+       order, and those that are refs link as docsygen/markup/linked.html does. Doxygen also links
+       the other words that name a symbol in the scope or globally, which the XML doesn't link
+       (an XML gap). The text is escaped. */ -}}
+{{- $ctx := .ctx -}}
+{{- $scope := .scope | default "" -}}
+{{- $word := `(?:::)?[A-Za-z_][A-Za-z0-9_~:]*` -}}
+{{- /* The type's words, each with its ref if it is one. */ -}}
+{{- $typeWords := slice -}}
+{{- with .type -}}
+  {{- range .children -}}
+    {{- if not (reflect.IsMap .) -}}
+      {{- range findRE $word . -}}{{- $typeWords = $typeWords | append (dict "word" . "ref" "") -}}{{- end -}}
+    {{- else if eq .tag "ref" -}}
+      {{- $typeWords = $typeWords | append (dict "word" (partial "docsygen/text/plain.html" .) "ref" .attributes.refid) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $next := 0 -}}
+{{- $out := "" -}}
+{{- range findRE (printf `%s|[^A-Za-z_:]+|:` $word) .text -}}
+  {{- $w := . -}}
+  {{- $url := "" -}}
+  {{- if not (findRE `^(?:::)?[A-Za-z_]` $w 1) -}}
+  {{- else if and (lt $next (len $typeWords)) (eq (index $typeWords $next).word $w) -}}
+    {{- $target := (index $typeWords $next).ref -}}
+    {{- $next = add $next 1 -}}
+    {{- if $target -}}
+      {{- if and $scope (eq $target $scope) -}}
+        {{- $constructor := partial "docsygen/markup/first-constructor.html" (dict "ctx" $ctx "id" $scope) -}}
+        {{- with $constructor -}}{{- $target = . -}}{{- end -}}
+      {{- end -}}
+      {{- $url = index $ctx.links $target | default "" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = cond (ne $url "") (printf `%s<a class="el" href="%s">%s</a>` $out (htmlEscape $url) (htmlEscape $w)) (printf "%s%s" $out (htmlEscape $w)) -}}
+{{- end -}}
+{{- return ($out | safeHTML) -}}

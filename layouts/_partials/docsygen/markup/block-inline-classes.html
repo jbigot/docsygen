@@ -1,0 +1,49 @@
+{{- /* The classes embedded in a page, Doxygen's "Class Documentation" (classlist.cpp,
+       ClassLinkedRefMap::writeDocumentation; classdef.cpp, writeInlineDocumentation): for each,
+       a member-like title and prototype, its detailed description, and its members as a field
+       table (MemberList::writeSimpleDocumentation, MemberDef::writeMemberDocSimple). Only simple
+       structs are written this way: INLINE_GROUPED_CLASSES' full documentation is not. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- if .block.heading -}}<hr/><h2 id="header-inline_5Fclasses" class="groupheader">Class Documentation</h2>{{- end -}}
+{{- range .block.ids -}}
+  {{- $id := . -}}
+  {{- $e := index $m.ids $id -}}
+  {{- $anchor := index $ctx.anchors $id -}}
+<div data-doxygen-id="{{ $id }}">
+<a name="{{ $anchor }}" id="{{ $anchor }}"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#{{ $anchor }}">&#9670;&#160;</a></span>{{ $e.name }}</h2>
+<div class="memitem">
+<div class="memproto">
+<table class="memname"><tr><td class="memname">{{ $e.kind }} {{ $e.name }}</td></tr></table>
+</div><div class="memdoc">
+<div class="textblock">{{ partial "docsygen/markup/description-body.html" (dict "ctx" $ctx "id" $id) }}</div>
+  {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
+    {{- if eq .group "doc" -}}
+<table class="fieldtable">
+<tr><th colspan="3">Class Members</th></tr>
+      {{- range .members -}}
+        {{- $v := index $m.ids . -}}
+        {{- $p := dict -}}
+        {{- range $v.node.children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
+        {{- $va := index $ctx.anchors . -}}
+<tr><td class="fieldtype">
+<a id="{{ $va }}" name="{{ $va }}" data-doxygen-id="{{ $v.id }}"></a>{{ with $p.type }}{{ partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $id) }}{{ end }}</td>
+<td class="fieldname">
+{{ index (split $v.name "::") (sub (len (split $v.name "::")) 1) }}
+        {{- with $p.argsstring -}}{{- htmlEscape (delimit .children "") -}}{{- end -}}
+        {{- with $p.bitfield -}}{{- htmlEscape (delimit .children "") -}}{{- end -}}
+        {{- with $p.initializer -}} {{ partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $id) }}{{- end -}}
+</td>
+<td class="fielddoc">
+        {{- with $p.briefdescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) -}}{{- end -}}
+        {{- with $p.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+</td></tr>
+      {{- end -}}
+</table>
+    {{- end -}}
+  {{- end -}}
+</div>
+</div>
+</div>
+{{- end -}}

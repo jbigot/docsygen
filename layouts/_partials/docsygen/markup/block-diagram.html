@@ -1,0 +1,111 @@
+{{- /* Doxygen's built-in inheritance diagram (CLASS_GRAPH without HAVE_DOT): its heading, the PNG
+       that Doxygen draws, named after the class's file, and its image map (diagram.cpp). The map
+       lists the linkable classes of the base tree, then those of the derived tree, row by row,
+       a row in the order of a depth-first walk (DiagramRow::insertClass). A privately inherited
+       base ends its branch. The first row of 8 or more classes is drawn as lists and ends the
+       tree: on the base side in reverse, on the derived side every other class, as Doxygen's
+       DualDirIterator steps by two. A class outside the model, or a reference without a refid
+       (Doxygen links some by name, an XML gap), is a box without an area, whose bases and
+       derived classes are those that name it in their own references; so is a template
+       instance (a reference whose text is not the class's name), which is labelled
+       by that text and has no tooltip: its bases are its template's, its derived classes those that
+       inherit that very instance. A diagram without areas has no map. Coordinates are not written: Doxygen's
+       depend on its font metrics. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .block.id -}}
+{{- $graph := upper (index ((index $m.options "CLASS_GRAPH") | default (slice "YES")) 0) -}}
+{{- $dot := eq (index ((index $m.options "HAVE_DOT") | default (slice "NO")) 0) "YES" -}}
+{{- define "_partials/docsygen/markup/inline/diagram-tree.html" -}}
+  {{- /* The classes under .refs (base or derived references) at .level+1 and below, depth
+         first: [{id, label, instance, level}], id "" for a class outside the model. */ -}}
+  {{- $m := .ctx.model -}}
+  {{- $out := slice -}}
+  {{- range .refs -}}
+    {{- $ref := . -}}
+    {{- $label := partial "docsygen/text/plain.html" . -}}
+    {{- $target := false -}}
+    {{- with .attributes.refid -}}{{- $target = index $m.ids . -}}{{- end -}}
+    {{- if and $target (ne $target.what "compound") -}}{{- $target = false -}}{{- end -}}
+    {{- $tid := "" -}}
+    {{- $instance := false -}}
+    {{- with $target -}}
+      {{- $tid = .id -}}
+      {{- $instance = ne $label (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id)) -}}
+    {{- end -}}
+    {{- $out = $out | append (dict "id" $tid "label" $label "instance" $instance "level" (add $.level 1)) -}}
+    {{- if not (and $.bases (eq $ref.attributes.prot "private")) -}}
+      {{- $refs := slice -}}
+      {{- if or (not $target) (and $instance (not $.bases)) -}}
+        {{- /* The classes that name this one in their own references. */ -}}
+        {{- range index (partialCached "docsygen/markup/diagram-derived.html" $m $m.dir) (printf "%s:%s" (cond $.bases "derived" "base") $label) -}}
+          {{- $refs = $refs | append (dict "tag" "ref" "attributes" (dict "refid" . "prot" "public") "children" (slice (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .)))) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- range $target.node.children -}}{{- if and (reflect.IsMap .) (eq .tag (cond $.bases "basecompoundref" "derivedcompoundref")) -}}{{- $refs = $refs | append . -}}{{- end -}}{{- end -}}
+      {{- end -}}
+      {{- $out = $out | append (partial "docsygen/markup/inline/diagram-tree.html" (dict "ctx" $.ctx "refs" $refs "level" (add $.level 1) "bases" $.bases)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $areas := slice -}}
+{{- $count := 0 -}}
+{{- range slice true false -}}
+  {{- $bases := . -}}
+  {{- $refs := slice -}}
+  {{- range (index $m.ids $id).node.children -}}{{- if and (reflect.IsMap .) (eq .tag (cond $bases "basecompoundref" "derivedcompoundref")) -}}{{- $refs = $refs | append . -}}{{- end -}}{{- end -}}
+  {{- $items := partial "docsygen/markup/inline/diagram-tree.html" (dict "ctx" $ctx "refs" $refs "level" 0 "bases" $bases) -}}
+  {{- range $items -}}{{- if eq .level 1 -}}{{- $count = add $count 1 -}}{{- end -}}{{- end -}}
+  {{- $depth := 0 -}}
+  {{- range $items -}}{{- if gt .level $depth -}}{{- $depth = .level -}}{{- end -}}{{- end -}}
+  {{- $done := false -}}
+  {{- range $level := cond (gt $depth 0) (seq $depth) slice -}}
+    {{- if not $done -}}
+      {{- $row := where $items "level" $level -}}
+      {{- if ge (len $row) 8 -}}
+        {{- $done = true -}}
+        {{- if $bases -}}{{- $row = collections.Reverse $row -}}
+        {{- else -}}
+          {{- $even := slice -}}
+          {{- range $i, $c := $row -}}{{- if eq (mod $i 2) 0 -}}{{- $even = $even | append $c -}}{{- end -}}{{- end -}}
+          {{- $row = $even -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range $row -}}{{- if .id -}}{{- $areas = $areas | append . -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (in (slice "YES" "GRAPH" "BUILTIN") $graph) (not $dot) (gt $count 0) -}}
+  {{- $name := partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id) -}}
+  {{- $mapId := "" -}}
+  {{- range $i, $c := split $name "" -}}
+    {{- if findRE `^[0-9A-Za-z-]$` $c -}}{{- $mapId = printf "%s%s%s" $mapId (cond (and (eq $i 0) (findRE `^[0-9]$` $c)) "a" "") $c -}}
+    {{- else -}}{{- range split (printf "% X" $c) " " -}}{{- $mapId = printf "%s_%s" $mapId . -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- $mapId = printf "%s_map" $mapId -}}
+<div class="dynheader">
+Inheritance diagram for {{ $name }}:</div>
+<div class="dyncontent">
+ <div class="center">
+  {{- $links := slice -}}
+  {{- range $areas -}}{{- if index $ctx.links .id -}}{{- $links = $links | append . -}}{{- end -}}{{- end -}}
+  {{- if not $links }}
+  <img src="{{ $id }}.png" alt=""/>
+  {{- else }}
+  <img src="{{ $id }}.png" usemap="#{{ $mapId }}" alt=""/>
+  <map id="{{ $mapId }}" name="{{ $mapId }}">{{ "\n" }}
+  {{- range $a := $areas -}}
+    {{- with index $ctx.links $a.id -}}
+      {{- $c := index $m.ids $a.id -}}
+      {{- $title := "" -}}
+      {{- if not $a.instance -}}
+        {{- range $c.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}{{- $title = partial "docsygen/text/tooltip.html" (partial "docsygen/text/plain.html" .) -}}{{- end -}}{{- end -}}
+      {{- end -}}
+<area href="{{ . }}"{{ with $title }} title="{{ . }}"{{ end }} alt="{{ cond $a.instance $a.label (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $a.id)) }}" shape="rect"/>{{ "\n" }}
+    {{- end -}}
+  {{- end -}}
+{{ "  " }}</map>
+  {{- end }}
+</div></div>
+{{- end -}}

@@ -1,0 +1,38 @@
+{{- /* A list page (index.cpp): its intro and its tree (docsygen/plan/tree-nodes.html), each
+       node linked to its page when it has one. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $name := .block.name -}}
+{{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+{{- $all := eq (index ((index $m.options "EXTRACT_ALL") | default (slice "NO")) 0) "YES" -}}
+{{- $documented := cond $all "" "documented " -}}
+{{- $intros := dict
+    "annotated" (cond $cmode "Here are the data structures with brief descriptions:" "Here are the classes, structs, unions and interfaces with brief descriptions:")
+    "hierarchy" "This inheritance list is sorted roughly, but not completely, alphabetically:"
+    "files" (printf "Here is a list of all %sfiles with brief descriptions:" $documented)
+    "namespaces" (printf "Here is a list of all %snamespaces with brief descriptions:" $documented)
+    "concepts" (printf "Here is a list of all %sconcepts with brief descriptions:" $documented)
+    "pages" "Here is a list of all related documentation pages:"
+    "topics" "Here is a list of all topics with brief descriptions:"
+    "examples" "Here is a list of all examples:" -}}
+{{- define "_partials/docsygen/markup/inline/tree-nodes.html" -}}
+  {{- $out := slice -}}
+  {{- range .nodes -}}
+    {{- $src := "" -}}
+    {{- if eq .kind "file" -}}{{- with index $.ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- $src = index $.ctx.urls . -}}{{- end -}}{{- end -}}
+    {{- $out = $out | append (dict "id" .id "name" (htmlEscape .name) "url" (index $.ctx.links (.link | default .id) | default "") "src" $src "kind" .kind
+        "children" (partial "docsygen/markup/inline/tree-nodes.html" (dict "ctx" $.ctx "nodes" .children))) -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $nodes := partial "docsygen/markup/inline/tree-nodes.html" (dict "ctx" $ctx "nodes" (partial "docsygen/plan/tree-nodes.html" (dict "model" $m "name" $name))) -}}
+{{- if eq $name "examples" -}}
+  {{- /* The example index is a plain list (writeExampleIndex). */ -}}
+<div class="textblock">{{ index $intros $name }}</div><ul>
+  {{- range $nodes }}
+<li><a class="el" href="{{ .url }}">{{ .name | safeHTML }}</a></li>
+  {{- end }}
+</ul>
+{{- else -}}
+  {{- partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "intro" (index $intros $name) "nodes" $nodes "prefix" (printf "%s_" $name)) -}}
+{{- end -}}

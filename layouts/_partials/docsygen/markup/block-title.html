@@ -1,0 +1,12 @@
+{{- /* Doxygen's page title, with a class's labels and the groups of a compound (htmlgen.cpp,
+       startTitleHead; classdef.cpp, addClassAttributes; util.cpp, addGroupListToTitle). */ -}}
+{{- $b := .block -}}
+<div class="headertitle"><div class="title">{{ $b.text }}
+{{- with $b.labels -}}
+  <span class="mlabels">{{ range . }}<span class="mlabel {{ . }}">{{ . }}</span>{{ end }}</span>
+{{- end -}}
+{{- with $b.groups -}}
+  <div class="ingroups">{{ partial "docsygen/markup/ingroups.html" (dict "groups" . "ctx" $.ctx) }}</div>
+{{- end -}}
+</div></div>
+{{- /**/ -}}

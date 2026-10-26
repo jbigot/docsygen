@@ -1,0 +1,125 @@
+{{- /* An index page (index.cpp). The class index (writeAlphabeticalClassList): the letters, then
+       per letter the classes Doxygen documents, by their name without scope (IGNORE_PREFIX
+       ignored), each after its namespace. A member index (writeMemberList): the intro
+       (translator_en.h), then the members of the filter, those of the page's letter only on a
+       page of one letter, in sections per letter when the filter has more than 30 members; a
+       name is followed by the scopes that define it (a scope once per run of entries). */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $b := .block -}}
+{{- $yes := newScratch -}}
+{{- range slice "EXTRACT_ALL" "OPTIMIZE_OUTPUT_FOR_C" -}}{{- $yes.Set . (eq (index ((index $m.options .) | default (slice "NO")) 0) "YES") -}}{{- end -}}
+{{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+{{- define "_partials/docsygen/markup/inline/index-id.html" -}}
+  {{- /* convertToId (util.cpp) of a string. */ -}}
+  {{- $out := "" -}}
+  {{- range $i, $c := split . "" -}}
+    {{- if findRE `^[0-9A-Za-z-]$` $c -}}{{- $out = printf "%s%s%s" $out (cond (and (eq $i 0) (findRE `^[0-9]$` $c)) "a" "") $c -}}
+    {{- else -}}{{- range split (printf "% X" $c) " " -}}{{- $out = printf "%s_%s" $out . -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- if eq $b.name "classes" -}}
+  {{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+  {{- $scopes := partial "docsygen/model/scopes.html" $m -}}
+  {{- $byLetter := newScratch -}}
+  {{- range $m.order -}}
+    {{- $e := index $m.ids . -}}
+    {{- if and (in $classKinds $e.kind) (index $ctx.links .) -}}
+      {{- $base := index (split $e.name "<") 0 -}}
+      {{- $class := printf "%s%s" (index (split $base "::") (sub (len (split $base "::")) 1)) (strings.TrimPrefix $base $e.name) -}}
+      {{- $class = partial "docsygen/text/ignore-prefix.html" (dict "name" $class "prefixes" $prefixes) -}}
+      {{- /* extractNamespaceName: the innermost enclosing namespace, and the name after it. */ -}}
+      {{- $ns := "" -}}
+      {{- $scope := index $scopes . -}}
+      {{- range seq 32 -}}
+        {{- if and $scope (not $ns) -}}
+          {{- if eq (index $m.ids $scope).kind "namespace" -}}{{- $ns = $scope -}}{{- else -}}{{- $scope = index $scopes $scope -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $name := $e.name -}}
+      {{- with $ns -}}{{- $name = strings.TrimPrefix (printf "%s::" (index $m.ids .).name) $name -}}{{- end -}}
+      {{- $letter := upper (substr $class 0 1) -}}
+      {{- $byLetter.Set $letter (($byLetter.Get $letter | default slice) | append (dict "id" . "name" $name "ns" $ns "sort" (printf "%s\x01%s" (lower $class) $class))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $letters := slice -}}
+  {{- range $letter, $_ := $byLetter.Values -}}{{- $letters = $letters | append $letter -}}{{- end -}}
+<div class="qindex">
+  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a class="qindex" href="#letter_{{ $l }}">{{ $l }}</a>{{- end -}}
+</div>
+  {{- with $letters }}
+<div class="classindex">
+    {{- range $i, $l := . }}
+<dl class="classindex {{ cond (eq (mod $i 2) 0) "even" "odd" }}">
+<dt class="alphachar"><a id="letter_{{ $l }}" name="letter_{{ $l }}">{{ $l }}</a></dt>
+      {{ range partial "docsygen/text/sort-bytes.html" (dict "list" ($byLetter.Get $l) "key" "sort") -}}
+<dd><a class="el" href="{{ index $ctx.links .id }}">{{ .name }}</a>
+        {{- with .ns }} (
+          {{- $nsName := (index $m.ids .).name -}}
+          {{- with index $ctx.links . -}}<a class="el" href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}
+        ){{- end -}}
+</dd>
+      {{- end -}}
+</dl>
+    {{- end }}
+</div>
+  {{- end -}}
+{{- else -}}
+  {{- $all := index (partial "docsygen/paths/index-entries.html" $m) $b.name -}}
+  {{- $entries := where $all "filters" "intersect" (slice $b.filter) -}}
+  {{- $sections := gt (len $entries) 30 -}}
+  {{- with $b.letter -}}{{- $entries = where $entries "letter" . -}}{{- end -}}
+  {{- $prefix := printf "Here is a list of all %s" (cond ($yes.Get "EXTRACT_ALL") "" "documented ") -}}
+  {{- $cmode := $yes.Get "OPTIMIZE_OUTPUT_FOR_C" -}}
+  {{- $intro := "" -}}
+  {{- if eq $b.name "class-members" -}}
+    {{- $nouns := dict "all" (cond $cmode "struct and union fields" "class members") "enumvalues" "enum values" "related" "related symbols" -}}
+    {{- $intro = printf "%s%s with links to %s" $prefix (index $nouns $b.filter | default $b.filter)
+        (cond ($yes.Get "EXTRACT_ALL")
+          (cond $cmode "the structures/unions they belong to:" "the classes they belong to:")
+          (cond $cmode "the struct/union documentation for each field:" "the class documentation for each member:")) -}}
+  {{- else if eq $b.name "file-members" -}}
+    {{- $nouns := dict "all" (cond $cmode "functions, variables, defines, enums, and typedefs" "file members") "enumvalues" "enum values" -}}
+    {{- $intro = printf "%s%s with links to %s" $prefix (index $nouns $b.filter | default $b.filter)
+        (cond ($yes.Get "EXTRACT_ALL") "the files they belong to:" "the documentation:") -}}
+  {{- else -}}
+    {{- $one := index (dict "all" "member" "functions" "function" "variables" "variable" "typedefs" "typedef" "enums" "enum" "enumvalues" "enum value") $b.filter -}}
+    {{- $intro = printf "%snamespace %ss with links to %s" $prefix $one
+        (cond ($yes.Get "EXTRACT_ALL") (printf "the namespace documentation for each %s:" $one) "the namespaces they belong to:") -}}
+  {{- end -}}
+  {{- $html := "" -}}
+  {{- $prevKey := "" -}}
+  {{- $prevLetter := "" -}}
+  {{- $prevScope := "" -}}
+  {{- range $entries -}}
+    {{- if ne .key $prevKey -}}
+      {{- if $prevKey -}}{{- $html = printf "%s</li>\n" $html -}}{{- end -}}
+      {{- if and $sections (ne .letter $prevLetter) -}}
+        {{- if $prevLetter -}}{{- $html = printf "%s</ul>\n" $html -}}{{- end -}}
+        {{- $id := partial "docsygen/markup/inline/index-id.html" .letter -}}
+        {{- $html = printf "%s\n\n<h3 class=\"doxsection\"><a id=\"index_%s_%s\" name=\"index_%s_%s\"></a>- %s -</h3><ul>\n" $html $b.filter $id $b.filter $id (htmlEscape .letter) -}}
+        {{- $prevLetter = .letter -}}
+      {{- end -}}
+      {{- $kind := (index $m.ids .id).kind -}}
+      {{- $html = printf "%s<li>%s%s" $html (htmlEscape .name) (cond (in (slice "function" "slot" "signal") $kind) "()" "") -}}
+      {{- $prevKey = .key -}}
+      {{- $prevScope = "" -}}
+      {{- $sep := "&#160;:&#160;" -}}
+      {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
+      {{- $html = printf "%s%s<a class=\"el\" href=\"%s\">%s</a>" $html $sep (index $ctx.links .id) (htmlEscape $scope) -}}
+      {{- $prevScope = $scope -}}
+    {{- else -}}
+      {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
+      {{- if ne $scope $prevScope -}}
+        {{- $html = printf "%s, <a class=\"el\" href=\"%s\">%s</a>" $html (index $ctx.links .id) (htmlEscape $scope) -}}
+        {{- $prevScope = $scope -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $prevKey -}}{{- $html = printf "%s</li>\n" $html -}}{{- end -}}
+<div class="textblock">{{ $intro }}</div>
+  {{- if not $sections }}<ul>{{ "\n" }}{{- end -}}
+  {{- $html | safeHTML -}}
+</ul>
+{{ end -}}

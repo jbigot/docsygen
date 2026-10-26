@@ -1,0 +1,4 @@
+{{- /* The markers of the compounds that this page absorbed (docsygen/paths.html, merged), for
+       tests/site/check.py and tests/oracle/info.py. */ -}}
+{{- $key := .block.key -}}
+{{- range $id, $page := .ctx.paths.merged -}}{{- if eq $page $key -}}<span hidden data-doxygen-id="{{ $id }}"></span>{{- end -}}{{- end -}}

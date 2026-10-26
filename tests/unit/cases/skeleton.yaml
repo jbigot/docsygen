@@ -1,0 +1,32 @@
+- name: skeleton of the guide, a section heading before its block
+  flavor: docsy
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: pages/guide
+    contains: ["## First section {#first-section}\n\n{{< docsygen/block n="]
+  expect: []
+- name: skeleton of a page, Markdown characters of a section title escaped
+  flavor: docsy
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: pages/escapes
+    contains: ["## A section titled a\\*b\\, \\[c\\] and \\#d {#"]
+  expect: []
+- name: skeleton of a class, a member heading before its block
+  flavor: docsy
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/widget
+    contains: ["### resize {#resize}\n\n{{< docsygen/block n="]
+  expect: []
+- name: skeleton of a class, no title block
+  flavor: docsy
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/widget
+    contains: ["{{< docsygen/block n=0 >}}"]
+  expect: ["{{< docsygen/block n=0 >}}"]

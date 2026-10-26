@@ -1,0 +1,36 @@
+{{- /* A concept's definition, Doxygen's "Concept definition" (conceptdef.cpp, writeDefinition):
+       its initializer as a code fragment, leading tabs expanded to TAB_SIZE. Doxygen runs its
+       code parser on it, which highlights keywords that the XML's plain text doesn't mark (an
+       XML gap). */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $e := index $m.ids .block.id -}}
+{{- $init := false -}}
+{{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = . -}}{{- end -}}{{- end -}}
+{{- with $init -}}
+  {{- $tab := strings.Repeat (int (index ((index $m.options "TAB_SIZE") | default (slice "4")) 0)) " " -}}
+  {{- /* The fragment as HTML, line breaks kept. */ -}}
+  {{- $html := "" -}}
+  {{- range .children -}}
+    {{- if reflect.IsMap . -}}
+      {{- $text := partial "docsygen/text/plain.html" . -}}
+      {{- $url := "" -}}
+      {{- $kind := "" -}}
+      {{- if eq .tag "ref" -}}
+        {{- $url = index $ctx.links .attributes.refid | default "" -}}
+        {{- with index $m.ids .attributes.refid -}}{{- $kind = .kind -}}{{- end -}}
+      {{- end -}}
+      {{- if $url -}}{{- $html = printf `%s<a class="code hl_%s" href="%s">%s</a>` $html $kind (htmlEscape $url) (htmlEscape $text) -}}
+      {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape $text) -}}{{- end -}}
+    {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}
+    {{- end -}}
+  {{- end -}}
+{{- if $.block.heading -}}<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>{{- end -}}
+<div class="fragment">
+  {{- range split (strings.TrimRight " \t\n" $html) "\n" -}}
+    {{- $line := . -}}
+    {{- with findRE `^\t+` $line 1 -}}{{- $line = printf "%s%s" (strings.Repeat (len (index . 0)) $tab) (strings.TrimLeft "\t" $line) -}}{{- end -}}
+<div class="line">{{ $line | safeHTML }}</div>{{ "\n" }}
+  {{- end -}}
+</div>
+{{- end -}}

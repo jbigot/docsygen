@@ -1,0 +1,29 @@
+{{- /* A class template's declaration at the top of its detailed description: "template<typename T,
+       int N = 3>" and "class demo::Box< T, N >" (classdef.cpp, writeTemplateSpec). */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $params := slice -}}
+{{- /* A class nested in a class template shows the template's parameters. */ -}}
+{{- $holder := $e -}}
+{{- $templated := false -}}
+{{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "templateparamlist") .children -}}{{- range .children -}}{{- if reflect.IsMap . -}}{{- $templated = true -}}{{- end -}}{{- end -}}{{- end -}}{{- end -}}
+{{- if not $templated -}}
+  {{- with index (partial "docsygen/model/scopes.html" $m) .id -}}{{- $holder = index $m.ids . -}}{{- end -}}
+{{- end -}}
+{{- range $holder.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+        {{- $p := dict -}}
+        {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+        {{- $text := $p.type | default "" -}}
+        {{- with $p.declname -}}{{- $text = printf "%s %s" $text . -}}{{- end -}}
+        {{- with $p.defval -}}{{- $text = printf "%s = %s" $text . -}}{{- end -}}
+        {{- $params = $params | append $text -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and $params (in (slice "class" "struct" "union") $e.kind) -}}
+  <div class="compoundTemplParams">template&lt;{{ delimit $params ", " }}&gt;<br />{{ "\n" }}{{ $e.kind }} {{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) }}</div>
+{{- end -}}

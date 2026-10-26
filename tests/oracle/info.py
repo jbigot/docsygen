@@ -7,7 +7,8 @@ Usage: python3 -I info.py --doxygen HTMLDIR --compat C.json --site PUBLIC --path
              keys are Doxygen's file stems
   PUBLIC     the built Docsy site, and D.json its paths.json, of the same shape
   GAPS.yaml  xml-gaps.yaml, applied to the Doxygen side as exact.py applies it
-  RULES.yaml the intentional differences, [{rule: drop|tokens, select, phrase?, count, reason}],
+  RULES.yaml the intentional differences, [{rule: drop|tokens, select, phrase?, count, reason,
+             oracle?}],
              on the Doxygen side: drop removes the nodes that select (exact.py's selectors)
              matches, those whose text matches the regex phrase if given; tokens matches the text
              of those nodes word by word. count is the exact number of matches, as for the gaps.
@@ -19,8 +20,8 @@ compat targets, pairs with the Docsy element [data-doxygen-id=I]; the rest of th
 with each other. Each container checks, as multisets:
   1. text: each run of inline text between block boundaries (code left out) is found as a
      substring of the Docsy text, on word boundaries, and that occurrence is consumed;
-  2. links: an internal link maps to the id it targets (the targets of C.json or D.json), or to
-     its page's roles and anchor key (anchors) when no id has that anchor;
+  2. links: an internal link maps to its page's roles, the id it targets (the targets of C.json
+     or D.json), or its page's roles and anchor key (anchors) or fragment: see accepts();
   3. code: the text of each div.fragment (its lines joined with newlines) and each pre equals the
      text of a Docsy pre.
 What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
@@ -106,26 +107,36 @@ class Side:
         return None
 
     def target(self, href, key):
-        """('id', I), ('anchor', roles, anchorKey), ('file', name), ('external', href) or
-        ('unknown', page, fragment)."""
+        """('page', roles) for a page, ('id', I), ('anchor', roles, anchorKey) for a fixed anchor,
+        ('fragment', roles, fragment) for another one, ('file', name), ('external', href) or
+        ('unknown', page, fragment) for a page that paths.json doesn't have."""
         if exact.EXTERNAL.match(href):
             return ('external', href)
         path, _, fragment = href.partition('#')
         page = self.page_of(path, key)
         if page is None:
             return ('file', path.rsplit('/', 1)[-1])
+        if page not in self.pages:
+            return ('unknown', page, fragment)
+        roles = tuple(self.roles(page))
+        if not fragment:
+            return ('page', roles)
         if (page, fragment) in self.ids:
             return ('id', self.ids[(page, fragment)])
-        if page in self.pages and (not fragment or fragment in self.keys.get(page, {})):
-            return ('anchor', tuple(self.roles(page)), self.keys.get(page, {}).get(fragment, ''))
-        return ('unknown', page, fragment)
+        if fragment in self.keys.get(page, {}):
+            return ('anchor', roles, self.keys[page][fragment])
+        return ('fragment', roles, fragment)
 
 
 def accepts(theirs, ours):
-    """Whether a Docsy link target satisfies a Doxygen one: an anchor link matches a page that
-    holds the first role of the Doxygen page."""
-    if theirs[0] == 'anchor' and ours[0] == 'anchor':
-        return theirs[2] == ours[2] and bool(theirs[1]) and theirs[1][0] in ours[1]
+    """Whether a Docsy link target satisfies a Doxygen one. A link to a page, an anchor or another
+    fragment reaches a Docsy page that holds the first role of the Doxygen page: a page link
+    anywhere on it, the others at the same anchor key or fragment."""
+    paged = ('page', 'anchor', 'fragment')
+    if theirs[0] in paged and ours[0] in paged:
+        if not theirs[1] or theirs[1][0] not in ours[1]:
+            return False
+        return theirs[0] == 'page' or (theirs[0] == ours[0] and theirs[2] == ours[2])
     return theirs == ours
 
 
@@ -180,9 +191,11 @@ def docsy_members(root):
     return out
 
 
-def apply_rules(pages, rules):
+def apply_rules(pages, rules, oracle=None):
     errors, report = [], []
     for n, rule in enumerate(rules, 1):
+        if rule.get('oracle', oracle) != oracle:
+            continue
         found = []
         for key in sorted(pages):
             for node in exact.find(pages[key], rule['select']):
@@ -239,11 +252,12 @@ def check(name, theirs, ours):
     return missing, ([f'{name}: extra text {rest[:200]!r}'] if rest else [])
 
 
-def compare(doxygen_pages, compat, docsy_pages, site, rules):
+def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
     """Compare Doxygen pages {key: tree} (gaps applied) with Docsy pages {key: tree}, through the
-    compat and site paths.json; rules apply to the Doxygen side. Return a Result."""
+    compat and site paths.json; rules apply to the Doxygen side, those of the oracle given if
+    they name one. Return a Result."""
     theirs, ours = Side(compat, True), Side(site, False)
-    errors, report = apply_rules(doxygen_pages, rules)
+    errors, report = apply_rules(doxygen_pages, rules, oracle)
     # Connected components of pages through the roles they share.
     parent = {}
 
@@ -323,7 +337,7 @@ def main(argv):
         if p['url'].endswith('/'):
             path = os.path.join(path, 'index.html')
         docsy[key] = read(path)
-    result = compare(doxy, compat, docsy, site, listyaml.load(args.rules))
+    result = compare(doxy, compat, docsy, site, listyaml.load(args.rules), args.oracle)
     for line in report + result.report:
         print(line)
     for line in result.extra:

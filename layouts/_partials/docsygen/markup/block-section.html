@@ -1,0 +1,8 @@
+{{- /* A section of a description, the skeleton's heading above it: its text, without its title
+       nor its subsections, which are blocks of their own. */ -}}
+{{- $ctx := .ctx -}}
+{{- with index $ctx.model.ids .block.id -}}
+  {{- $children := slice -}}
+  {{- range .node.children -}}{{- if not (and (reflect.IsMap .) (eq .tag "title")) -}}{{- $children = $children | append . -}}{{- end -}}{{- end -}}
+<div class="textblock">{{ partial "docsygen/markup/doc.html" (dict "node" (dict "tag" "detaileddescription" "attributes" dict "children" $children) "ctx" (merge $ctx (dict "sectionblocks" true))) }}</div>
+{{- end -}}

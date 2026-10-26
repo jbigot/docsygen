@@ -16,7 +16,7 @@
        Dirs mapped to one path share the first one's page; a dir with no file under its path
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
        Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
-       for member groups, all-members, source, letter-<l>), the members (slug(name)), the enum
+       for member groups, conceptdef, inherited, inline-classes, all-members, source, letter-<l>), the members (slug(name)), the enum
        values (<enum anchor>-<slug(value)>), the sections (slug(title)), the anchors (slug(id
        without its compound's prefix)); -2, … on a collision, "a" for an empty slug.
        Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
@@ -173,7 +173,13 @@
 {{- /* The root. */ -}}
 {{- $title := index ((index $m.options "PROJECT_NAME") | default (slice "")) 0 -}}
 {{- with index $m.ids "indexpage" -}}
-  {{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- with partial "docsygen/text/plain.html" . -}}{{- $title = . -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- range .node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "title") -}}
+      {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
+      {{- $t := partial "docsygen/text/plain.html" . -}}
+      {{- with $t -}}{{- $title = . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" "" "seg" "" "title" $title "roles" $rootRoles "brief" "indexpage") -}}
 
@@ -410,13 +416,14 @@
   {{- end -}}
 {{- end -}}
 
-{{- /* Anchors: on the page that shows each compound, its own or its container's. */ -}}
+{{- /* Anchors: on the page that shows each compound, its own or, for a class without one (INLINE_SIMPLE_STRUCTS), its
+       scope's or group's. Members that Doxygen hides (docsygen/model/linkable.html) get none. */ -}}
 {{- $groupsMap := partialCached "docsygen/plan/groups/map.html" $m $m.dir -}}
 {{- $shown := newScratch -}}
 {{- $rolePage := $s.Get "rolePage" -}}
 {{- range $id := $m.order -}}
   {{- $page := index $rolePage $id -}}
-  {{- if not $page -}}
+  {{- if and (not $page) (in $classLike (index $m.ids $id).kind) -}}
     {{- with index $scopes $id | default (index (index $groupsMap $id | default (slice "")) 0) -}}{{- $page = index $rolePage . -}}{{- end -}}
   {{- end -}}
   {{- with $page -}}{{- $shown.Set . (($shown.Get . | default slice) | append $id) -}}{{- end -}}
@@ -434,6 +441,8 @@
         {{- if hasPrefix .key "user-defined-" -}}{{- $base = partial "docsygen/text/slug.html" .heading | default .key -}}{{- end -}}
         {{- $fixed = $fixed | append (dict "key" .key "base" $base) -}}
       {{- end -}}
+      {{- /* The other headings of docsygen/plan/compound.html. */ -}}
+      {{- range slice "conceptdef" "inherited" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
     {{- else if in (slice "all-members" "source") .role -}}
       {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
     {{- else if eq .role "index" -}}
@@ -476,7 +485,7 @@
           {{- if and (reflect.IsMap .) (eq .tag "memberdef") -}}
             {{- $id := .attributes.id -}}
             {{- $e := index $m.ids $id -}}
-            {{- if and (eq $e.home $c) (not (isset ($s.Get "homes") $id)) -}}
+            {{- if and (eq $e.home $c) (not (isset ($s.Get "homes") $id)) (partial "docsygen/model/linkable.html" (dict "model" $m "id" $id)) -}}
               {{- $n := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
               {{- $s.SetInMap "homes" $id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/slug.html" $n))) -}}
               {{- if eq $e.kind "enum" -}}{{- $enums = $enums | append $e -}}{{- end -}}

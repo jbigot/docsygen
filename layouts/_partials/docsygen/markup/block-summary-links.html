@@ -1,0 +1,18 @@
+{{- /* The links at the top of a compound page to its summary sections, and to its list of all
+       members (classdef.cpp, writeSummaryLinks). */ -}}
+{{- $ctx := .ctx -}}
+{{- $b := .block -}}
+{{- $key := $ctx.page.Params.docsygen.key -}}
+{{- $headings := dict -}}
+{{- range partial "docsygen/plan/sections.html" (dict "model" $ctx.model "id" $b.id) -}}{{- $headings = merge $headings (dict .key .heading) -}}{{- end -}}
+<div class="summary">
+{{- range $i, $k := $b.anchorKeys -}}
+  {{- if $i }} &#124; {{ end -}}
+  {{- if eq $k "all-members" -}}
+    <a href="{{ index $ctx.urls (index $ctx.paths.pageOf (string (jsonify (dict "role" "all-members" "id" $b.id)))) }}">List of all members</a>
+  {{- else -}}
+    <a href="#{{ index (index $ctx.paths.anchors $key) $k }}">{{ index $headings $k }}</a>
+  {{- end -}}
+{{- end -}}
+</div>
+{{- /**/ -}}

@@ -1,0 +1,89 @@
+{{- /* A class's list of all members (classdef.cpp, writeMemberList), in listofallmembers'
+       order: the member's link and its arguments or kind, the class that defines it, and its
+       labels. A member Doxygen does not document is in bold, "defined in" its class, unless
+       HIDE_UNDOC_MEMBERS or its protection hides it. */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .block.id -}}
+{{- $e := index $m.ids $id -}}
+{{- $inline := eq (index ((index $m.options "INLINE_INFO") | default (slice "YES")) 0) "YES" -}}
+{{- $hideUndoc := eq (index ((index $m.options "HIDE_UNDOC_MEMBERS") | default (slice "NO")) 0) "YES" -}}
+{{- $visible := slice "public" -}}
+{{- if eq (index ((index $m.options "EXTRACT_PRIVATE") | default (slice "NO")) 0) "YES" -}}{{- $visible = $visible | append "private" -}}{{- end -}}
+{{- if eq (index ((index $m.options "EXTRACT_PACKAGE") | default (slice "NO")) 0) "YES" -}}{{- $visible = $visible | append "package" -}}{{- end -}}
+{{- $visible = $visible | append "protected" -}}
+<p>This is the complete list of members for <a class="el" href="{{ index $ctx.links $id }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id) }}</a>, including all inherited members.</p>
+{{- $rows := slice -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "member") -}}
+        {{- $item := . -}}
+        {{- $md := index $m.ids .attributes.refid -}}
+        {{- $cd := false -}}
+        {{- with $md -}}{{- $cd = index $m.ids .home -}}{{- end -}}
+        {{- if and $md $cd (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $cd.kind) (not (hasPrefix (index (split $md.name "::") (sub (len (split $md.name "::")) 1)) "@")) -}}
+          {{- $a := $md.node.attributes -}}
+          {{- $p := dict -}}
+          {{- range $md.node.children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
+          {{- $short := index (split $md.name "::") (sub (len (split $md.name "::")) 1) -}}
+          {{- $name := $short -}}
+          {{- with $item.attributes.ambiguityscope -}}{{- $name = printf "%s%s" . $short -}}{{- end -}}
+          {{- $args := "" -}}
+          {{- with $p.argsstring -}}{{- $args = delimit .children "" -}}{{- end -}}
+          {{- /* The XML moves a noexcept expression out of the argsstring. */ -}}
+          {{- with $a.noexceptexpression -}}{{- $args = printf "%s noexcept(%s)" $args . -}}{{- end -}}
+          {{- $type := "" -}}
+          {{- with $p.type -}}{{- $type = partial "docsygen/text/plain.html" . -}}{{- end -}}
+          {{- $suffix := "" -}}
+          {{- if or (in (slice "function" "signal" "slot") $md.kind) (and (eq $md.kind "friend") $args) -}}{{- $suffix = $args -}}
+          {{- else if eq $md.kind "enum" -}}{{- $suffix = " enum name" -}}
+          {{- else if eq $md.what "enumvalue" -}}{{- $suffix = " enum value" -}}
+          {{- else if eq $md.kind "typedef" -}}{{- $suffix = " typedef" -}}
+          {{- else if and (eq $md.kind "friend") (in (slice "class" "friend class") $type) -}}{{- $suffix = " class" -}}
+          {{- end -}}
+          {{- $classUrl := index $ctx.links $cd.id -}}
+          {{- $url := index $ctx.links $md.id -}}
+          {{- $first := "" -}}
+          {{- $plain := false -}}
+          {{- if and $classUrl $url (partial "docsygen/model/linkable.html" (dict "model" $m "id" $md.id)) -}}
+            {{- $first = printf `<a class="el" href="%s">%s</a>%s` (htmlEscape $url) (htmlEscape $name) (htmlEscape $suffix) -}}
+          {{- else if and (not $hideUndoc) (or (in $visible $a.prot) (eq $md.kind "friend")) -}}
+            {{- $plain = true -}}
+            {{- if in (slice "function" "signal" "slot") $md.kind -}}{{- $suffix = $args -}}{{- else if eq $suffix " class" -}}{{- $suffix = "" -}}{{- end -}}
+            {{- $first = printf `<b>%s</b>%s (defined in %s)` (htmlEscape $short) (htmlEscape $suffix)
+                (cond (ne $classUrl nil) (printf `<a class="el" href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) (printf "<b>%s</b>" (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id))))) -}}
+          {{- end -}}
+          {{- if $first -}}
+            {{- /* The labels, from the listed protection and the definition's specifiers. */ -}}
+            {{- $prot := $item.attributes.prot -}}
+            {{- $virt := $a.virt -}}
+            {{- $related := false -}}
+            {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $cd.id) -}}{{- if and (eq .key "related") (in .members $md.id) -}}{{- $related = true -}}{{- end -}}{{- end -}}
+            {{- $labels := slice -}}
+            {{- if eq $md.kind "friend" -}}{{- $labels = slice "friend" -}}
+            {{- else if $related -}}{{- $labels = slice "related" -}}
+            {{- else -}}
+              {{- if and $inline (eq $a.inline "yes") -}}{{- $labels = $labels | append "inline" -}}{{- end -}}
+              {{- range slice "explicit" "mutable" -}}{{- if eq (index $a .) "yes" -}}{{- $labels = $labels | append . -}}{{- end -}}{{- end -}}
+              {{- if in (slice "protected" "private" "package") $prot -}}{{- $labels = $labels | append $prot -}}{{- end -}}
+              {{- if eq $virt "virtual" -}}{{- $labels = $labels | append "virtual" -}}{{- else if eq $virt "pure-virtual" -}}{{- $labels = $labels | append "pure virtual" -}}{{- end -}}
+              {{- if eq $a.static "yes" -}}{{- $labels = $labels | append "static" -}}{{- end -}}
+              {{- if in (slice "signal" "slot") $md.kind -}}{{- $labels = $labels | append $md.kind -}}{{- end -}}
+            {{- end -}}
+            {{- $spans := "" -}}
+            {{- range $labels -}}{{- $spans = printf `%s<span class="mlabel">%s</span>` $spans (htmlEscape .) -}}{{- end -}}
+            {{- $rows = $rows | append (dict "first" $first "plain" $plain "class" (printf `<a class="el" href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) "labels" $spans) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $rows -}}
+<table class="directory">
+  {{- range $i, $r := . }}
+  <tr{{ if $r.plain }} bgcolor="#f0f0f0"{{ end }} class="{{ cond (eq (mod $i 2) 0) "even" "odd" }}"><td class="entry">{{ $r.first | safeHTML }}</td><td class="entry">{{ $r.class | safeHTML }}</td><td class="entry">{{ $r.labels | safeHTML }}</td></tr>
+  {{- end }}
+</table>
+{{- end -}}

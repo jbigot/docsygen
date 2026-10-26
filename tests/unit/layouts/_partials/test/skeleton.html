@@ -1,0 +1,9 @@
+{{- /* The strings of .contains that the skeleton of page .key of .model (Docsy scheme) lacks. */ -}}
+{{- $m := .model -}}
+{{- if not (reflect.IsMap $m) -}}{{- $m = partial "docsygen/model.html" (printf "doxygen/%s" $m) -}}{{- end -}}
+{{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
+{{- $skeleton := "" -}}
+{{- range where $paths.pages "key" .key -}}{{- $skeleton = partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $m.dir "pathMap" slice) -}}{{- end -}}
+{{- $out := slice -}}
+{{- range .contains -}}{{- if not (strings.Contains $skeleton .) -}}{{- $out = $out | append . -}}{{- end -}}{{- end -}}
+{{- return $out -}}

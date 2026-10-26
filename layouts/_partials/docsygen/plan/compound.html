@@ -1,6 +1,7 @@
 {{- /* The blocks of a compound's page, in the order of Doxygen's default layout:
          title, summary-links, brief, includes, inheritance, diagram, concept-definition, one decls per summary
-         section, description ("Detailed Description"), inline-classes (the embedded classes),
+         section, description ("Detailed Description"), a section block per section of the
+         description, inline-classes (the embedded classes),
          then each detailed section as a heading block followed by one member block per member,
          and generated-from.
        Blocks that a kind of compound doesn't have are left out. */ -}}
@@ -43,6 +44,33 @@
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
     "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" "Detailed Description" "anchorKey" "details"))) -}}
+{{- /* The sections of the detailed description, depth first: a heading each (its title's node
+       for flavors that render it), one level below the description's. */ -}}
+{{- define "_partials/docsygen/plan/compound/sections.html" -}}
+  {{- $out := slice -}}
+  {{- range .node.children -}}
+    {{- if reflect.IsMap . -}}
+      {{- if in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6") .tag -}}
+        {{- $title := false -}}
+        {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = . -}}{{- end -}}{{- end -}}
+        {{- $level := add $.base (int (strings.TrimPrefix "sect" .tag)) -}}
+        {{- $out = $out | append (dict "type" "section" "id" .attributes.id "heading" (dict "level" (cond (gt $level 6) 6 $level)
+            "text" (cond (ne $title false) (partial "docsygen/text/plain.html" $title) "") "node" $title "anchorKey" .attributes.id)) -}}
+      {{- end -}}
+      {{- if .children -}}
+        {{- range partial "docsygen/plan/compound/sections.html" (dict "node" . "base" $.base) -}}{{- $out = $out | append . -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "detaileddescription") -}}
+    {{- range partial "docsygen/plan/compound/sections.html" (dict "node" . "base" (cond (eq $kind "page") 1 2)) -}}
+      {{- if index $m.ids .id -}}{{- $blocks = $blocks | append . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- /* The classes embedded in this page (INLINE_SIMPLE_STRUCTS, INLINE_GROUPED_CLASSES): inner
        classes without a page of their own, shown on their group's page when they have one
        (classlist.cpp, ClassLinkedRefMap::writeDocumentation). */ -}}

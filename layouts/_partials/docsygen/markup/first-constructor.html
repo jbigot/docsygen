@@ -1,0 +1,11 @@
+{{- /* The first constructor of a class, in the order of its sections, or "". */ -}}
+{{- $m := .ctx.model -}}
+{{- $out := "" -}}
+{{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+  {{- if eq .group "summary" -}}
+    {{- range .members -}}
+      {{- if and (not $out) (eq (partial "docsygen/plan/constructor.html" (dict "model" $m "id" .)) "constructor") -}}{{- $out = . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

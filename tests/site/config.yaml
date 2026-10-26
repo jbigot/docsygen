@@ -1,0 +1,3 @@
+# The Docsy-flavor test site: the docsygen module as a site uses it, without Docsy itself
+# (tests/site/run.sh, tests/oracle/run.sh info). The XML is mounted at assets/doxygen/oracle.
+disableKinds: [taxonomy, term, rss, sitemap]

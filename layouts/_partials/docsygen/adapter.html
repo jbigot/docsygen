@@ -36,6 +36,6 @@
     {{- end -}}
     {{- $store.AddPage (dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
         "weight" .weight "type" "docs" "description" .description "params" $params
-        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir)))) -}}
+        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap)))) -}}
   {{- end -}}
 {{- end -}}

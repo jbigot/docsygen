@@ -1,1 +1,42 @@
-[]
+# The intentional differences of the Docsy output, removed from the Doxygen side before the
+# comparison: see info.py. The user reviews each rule.
+- oracle: sample
+  rule: drop
+  select: div.header div.headertitle
+  count: 88
+  reason: "Docsy shows the page's title from its front matter, not in its content"
+- oracle: sample
+  rule: drop
+  select: div.header div.summary
+  count: 30
+  reason: "Docsy's 'On this page' table of contents replaces Doxygen's summary links"
+- oracle: sample-c
+  rule: drop
+  select: div.header div.headertitle
+  count: 13
+  reason: "See the sample entry"
+- oracle: sample-c
+  rule: drop
+  select: div.header div.summary
+  count: 5
+  reason: "See the sample entry"
+- oracle: sample-c
+  rule: drop
+  select: "a[href=doxygen_crawl.html]"
+  count: 1
+  reason: "Doxygen's main page links its crawler page, a list of every link for search engines, not documentation"
+- oracle: pdi
+  rule: drop
+  select: div.header div.headertitle
+  count: 146
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: drop
+  select: div.header div.summary
+  count: 34
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: drop
+  select: "a[href=topics.html]"
+  count: 1
+  reason: "PDI's main page links Doxygen's topics.html by hand; docsygen leaves the author's link as written (docsygen-ulink)"

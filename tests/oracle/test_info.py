@@ -88,6 +88,20 @@ class Compare(unittest.TestCase):
                               '<p><a href="#public-member-functions">Public</a></p>')
         self.assertEqual(result.missing, [])
 
+    def test_a_link_to_a_page_reaches_the_page_that_holds_its_role(self):
+        self.compat['pages']['f_source'] = {'url': '/ref/f_source/', 'roles': [{'role': 'source', 'id': 'f'}]}
+        self.site['pages']['x']['roles'] = compound('classX') + [{'role': 'source', 'id': 'f'}]
+        result = self.compare('<p><a href="f_source.html">source</a> <a href="f_source.html#l00012">12</a></p>',
+                              '<p><a href="/ref/x/">source</a> <a href="/ref/x/#l00012">12</a></p>')
+        self.assertEqual(result.missing, [])
+        result = self.compare('<p><a href="f_source.html#l00012">12</a></p>', '<p><a href="/ref/x/#l00013">12</a></p>')
+        self.assertEqual(len(result.missing), 1)
+
+    def test_rules_of_another_oracle_are_ignored(self):
+        rule = {'rule': 'drop', 'select': 'p', 'count': 5, 'reason': 'r', 'oracle': 'other'}
+        result = info.compare({'classX': doxygen('<p>A.</p>')}, self.compat, {'x': docsy('<p>A.</p>')}, self.site, [rule], 'mine')
+        self.assertEqual(result.errors, [])
+
     def test_reindented_code_fails(self):
         theirs = '<div class="fragment"><div class="line">if (a)</div>\n<div class="line">  b();</div>\n</div>'
         self.assertEqual(self.compare(theirs, '<pre><code>if (a)\n  b();\n</code></pre>').missing, [])

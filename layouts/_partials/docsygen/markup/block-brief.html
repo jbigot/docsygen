@@ -1,0 +1,19 @@
+{{- /* A compound's brief at the top of its page, with its "More..." link to the detailed
+       description when there is one (classdef.cpp, writeBriefDescription, writeMoreLink; and their namespacedef.cpp, filedef.cpp,
+       groupdef.cpp, conceptdef.cpp counterparts). */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $id := .block.id -}}
+{{- $e := index $m.ids $id -}}
+{{- $brief := false -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}
+    {{- $node := . -}}
+    {{- range .children -}}{{- if reflect.IsMap . -}}{{- $brief = $node -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and $brief (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception" "concept" "namespace" "file" "group") $e.kind) -}}
+<p>{{ partial "docsygen/markup/doc.html" (dict "node" $brief "ctx" $ctx "single" true) }} {{ "\n" }}
+{{- if partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" $id) }} <a href="#details">More...</a>{{ end -}}
+</p>
+{{- end -}}
