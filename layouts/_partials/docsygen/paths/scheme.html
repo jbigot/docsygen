@@ -16,7 +16,8 @@
        Dirs mapped to one path share the first one's page; a dir with no file under its path
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
        Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
-       for member groups, conceptdef, inherited, inline-classes, all-members, source, letter-<l>), the members (slug(name)), the enum
+       for member groups, conceptdef, inherited, inline-classes, all-members, source, letter-<l> of
+       the class index, index-<filter>-<l> of a member index), the members (slug(name)), the enum
        values (<enum anchor>-<slug(value)>), the sections (slug(title)), the anchors (slug(id
        without its compound's prefix)); -2, … on a collision, "a" for an empty slug.
        Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
@@ -455,11 +456,16 @@
             {{- $letters = $letters | append (upper (substr (partial "docsygen/text/ignore-prefix.html" (dict "name" $n "prefixes" $prefixes)) 0 1)) -}}
           {{- end -}}
         {{- end -}}
+        {{- range uniq $letters -}}
+          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+        {{- end -}}
       {{- else -}}
-        {{- range index $entries .name -}}{{- $letters = $letters | append .letter -}}{{- end -}}
-      {{- end -}}
-      {{- range uniq $letters -}}
-        {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+        {{- /* A member index page shows each filter's list, with its own letters. */ -}}
+        {{- $filter := .filter -}}
+        {{- range where (index $entries .name) "filters" "intersect" (slice $filter) -}}{{- $letters = $letters | append .letter -}}{{- end -}}
+        {{- range uniq $letters -}}
+          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s-%s" $filter .) "base" (printf "index-%s-%s" $filter (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

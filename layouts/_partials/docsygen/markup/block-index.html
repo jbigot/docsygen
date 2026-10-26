@@ -1,24 +1,16 @@
 {{- /* An index page (index.cpp). The class index (writeAlphabeticalClassList): the letters, then
        per letter the classes Doxygen documents, by their name without scope (IGNORE_PREFIX
        ignored), each after its namespace. A member index (writeMemberList): the intro
-       (translator_en.h), then the members of the filter, those of the page's letter only on a
-       page of one letter, in sections per letter when the filter has more than 30 members; a
-       name is followed by the scopes that define it (a scope once per run of entries). */ -}}
+       (translator_en.h), its letters (as Doxygen 1.17 shows them), then the members of the
+       filter, those of the page's letter only on a page of one letter, in sections per letter
+       when the filter has more than 30 members; a name is followed by the scopes that define it
+       (a scope once per run of entries). */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $b := .block -}}
 {{- $yes := newScratch -}}
 {{- range slice "EXTRACT_ALL" "OPTIMIZE_OUTPUT_FOR_C" -}}{{- $yes.Set . (eq (index ((index $m.options .) | default (slice "NO")) 0) "YES") -}}{{- end -}}
 {{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
-{{- define "_partials/docsygen/markup/inline/index-id.html" -}}
-  {{- /* convertToId (util.cpp) of a string. */ -}}
-  {{- $out := "" -}}
-  {{- range $i, $c := split . "" -}}
-    {{- if findRE `^[0-9A-Za-z-]$` $c -}}{{- $out = printf "%s%s%s" $out (cond (and (eq $i 0) (findRE `^[0-9]$` $c)) "a" "") $c -}}
-    {{- else -}}{{- range split (printf "% X" $c) " " -}}{{- $out = printf "%s_%s" $out . -}}{{- end -}}{{- end -}}
-  {{- end -}}
-  {{- return $out -}}
-{{- end -}}
 {{- if eq $b.name "classes" -}}
   {{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
   {{- $scopes := partial "docsygen/model/scopes.html" $m -}}
@@ -88,6 +80,11 @@
     {{- $intro = printf "%snamespace %ss with links to %s" $prefix $one
         (cond ($yes.Get "EXTRACT_ALL") (printf "the namespace documentation for each %s:" $one) "the namespaces they belong to:") -}}
   {{- end -}}
+  {{- /* The letters link to their section, or to their first member without sections, at the
+         page's anchors letter-<filter>-<letter> (docsygen/paths/scheme.html). */ -}}
+  {{- $fixed := dict -}}
+  {{- with $ctx.page -}}{{- $fixed = index $ctx.paths.anchors .Params.docsygen.key | default dict -}}{{- end -}}
+  {{- $letters := slice -}}
   {{- $html := "" -}}
   {{- $prevKey := "" -}}
   {{- $prevLetter := "" -}}
@@ -95,14 +92,19 @@
   {{- range $entries -}}
     {{- if ne .key $prevKey -}}
       {{- if $prevKey -}}{{- $html = printf "%s</li>\n" $html -}}{{- end -}}
-      {{- if and $sections (ne .letter $prevLetter) -}}
-        {{- if $prevLetter -}}{{- $html = printf "%s</ul>\n" $html -}}{{- end -}}
-        {{- $id := partial "docsygen/markup/inline/index-id.html" .letter -}}
-        {{- $html = printf "%s\n\n<h3 class=\"docsygen-index-letter\"><a id=\"index_%s_%s\" name=\"index_%s_%s\"></a>- %s -</h3><ul>\n" $html $b.filter $id $b.filter $id (htmlEscape .letter) -}}
+      {{- $id := "" -}}
+      {{- if ne .letter $prevLetter -}}
+        {{- $id = index $fixed (printf "letter-%s-%s" $b.filter .letter) | default "" -}}
+        {{- $letters = $letters | append (dict "letter" .letter "id" $id) -}}
+        {{- if $sections -}}
+          {{- if $prevLetter -}}{{- $html = printf "%s</ul>\n" $html -}}{{- end -}}
+          {{- $html = printf "%s\n\n<h3 class=\"docsygen-index-letter\" id=\"%s\">- %s -</h3><ul>\n" $html $id (htmlEscape .letter) -}}
+          {{- $id = "" -}}
+        {{- end -}}
         {{- $prevLetter = .letter -}}
       {{- end -}}
       {{- $kind := (index $m.ids .id).kind -}}
-      {{- $html = printf "%s<li>%s%s" $html (htmlEscape .name) (cond (in (slice "function" "slot" "signal") $kind) "()" "") -}}
+      {{- $html = printf "%s<li%s>%s%s" $html (cond (ne $id "") (printf " id=\"%s\"" $id) "") (htmlEscape .name) (cond (in (slice "function" "slot" "signal") $kind) "()" "") -}}
       {{- $prevKey = .key -}}
       {{- $prevScope = "" -}}
       {{- $sep := "&#160;:&#160;" -}}
@@ -119,6 +121,9 @@
   {{- end -}}
   {{- if $prevKey -}}{{- $html = printf "%s</li>\n" $html -}}{{- end -}}
 <div class="docsygen-text">{{ $intro }}</div>
+<div class="docsygen-index-letters">
+  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a href="#{{ $l.id }}">{{ upper $l.letter }}</a>{{- end -}}
+</div>
   {{- if not $sections }}<ul>{{ "\n" }}{{- end -}}
   {{- $html | safeHTML -}}
 </ul>

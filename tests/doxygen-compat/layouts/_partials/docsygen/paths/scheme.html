@@ -75,13 +75,26 @@
   {{- end -}}
   {{- $homes.SetInMap "m" $id $anchor -}}
 {{- end -}}
-{{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists and details. */ -}}
+{{- /* The fixed anchors of compound pages: the labels of Doxygen's member lists and details; and
+       of member index pages, the letters' sections (letter-<filter>-<letter>). */ -}}
 {{- $anchors := newScratch -}}
+{{- $entries := partial "docsygen/paths/index-entries.html" $m -}}
 {{- range $out -}}
   {{- $key := .key -}}
   {{- $anchors.SetInMap "m" $key (dict "details" "details") -}}
   {{- range .roles -}}
-    {{- if eq .role "compound" -}}
+    {{- if and (eq .role "index") (ne .name "classes") -}}
+      {{- $page := newScratch -}}
+      {{- $page.Set "m" (index ($anchors.Get "m") $key) -}}
+      {{- $filter := .filter -}}
+      {{- range where (index $entries .name) "filters" "intersect" (slice $filter) -}}
+        {{- $letter := printf "letter-%s-%s" $filter .letter -}}
+        {{- if not (index ($page.Get "m") $letter) -}}
+          {{- $page.SetInMap "m" $letter (printf "index_%s" (partial "docsygen/markup/inline/index-id.html" .letter)) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $anchors.SetInMap "m" $key ($page.Get "m") -}}
+    {{- else if eq .role "compound" -}}
       {{- $page := dict "details" "details" -}}
       {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
         {{- $section := .key -}}
