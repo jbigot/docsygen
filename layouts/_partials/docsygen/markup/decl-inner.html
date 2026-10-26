@@ -35,7 +35,7 @@
 {{- end -}}
 <tr id="r_{{ $escaped }}"><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := index $ctx.links .id -}}
 {{- if and (eq $e.kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}{{- $url = "" -}}{{- end -}}
-{{ with $url }}<a class="el" href="{{ . }}">{{ $label }}</a>{{ else }}<b>{{ $label }}</b>{{ end }}</td></tr>
+{{ with $url }}<a href="{{ . }}">{{ $label }}</a>{{ else }}<b>{{ $label }}</b>{{ end }}</td></tr>
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}
     {{- $text := false -}}

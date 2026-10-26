@@ -33,27 +33,27 @@
   {{- $t := index $styles $tag -}}
   {{- printf "<%s>" $t | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}{{ printf "</%s>" $t | safeHTML -}}
 {{- else if eq $tag "computeroutput" -}}
-  <span class="tt">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</span>
+  <code>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</code>
 {{- else if eq $tag "ref" -}}
   {{- with index $ctx.links $n.attributes.refid -}}
-    <a class="el" href="{{ . }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
+    <a href="{{ . }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
   {{- else -}}
     {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
   {{- end -}}
 {{- else if eq $tag "ulink" -}}
   <a class="docsygen-ulink" href="{{ $n.attributes.url }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
 {{- else if eq $tag "anchor" -}}
-  <a class="anchor" id="{{ index $ctx.anchors $n.attributes.id }}"></a>
+  <a id="{{ index $ctx.anchors $n.attributes.id }}"></a>
 {{- else if eq $tag "linebreak" -}}
   <br />
 {{- else if eq $tag "hruler" -}}
   <hr />
 {{- else if eq $tag "emoji" -}}
-  <span class="emoji">{{ $n.attributes.unicode | safeHTML }}</span>
+  <span class="docsygen-emoji">{{ $n.attributes.unicode | safeHTML }}</span>
 {{- else if eq $tag "javadocliteral" -}}
   {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "javadoccode" -}}
-  <code class="JavaDocCode">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</code>
+  <code>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</code>
 {{- else if eq $tag "sp" -}}
   {{- cond (isset $n.attributes "value") (printf "%c" (int $n.attributes.value)) " " -}}
 {{- else if in (slice "itemizedlist" "orderedlist") $tag -}}
@@ -63,12 +63,12 @@
     {{- /* Doxygen gives an auto list (Markdown, -#) a type that follows its depth, but the XML
            doesn't tell auto lists from HTML ones: only the XML's type is written (an XML gap). */ -}}
     <ol{{ with $n.attributes.type }} type="{{ . }}"{{ end }}{{ with $n.attributes.start }} start="{{ . }}"{{ end }}>
-  {{- else if $check -}}<ul class="check">
+  {{- else if $check -}}<ul class="docsygen-checklist">
   {{- else -}}<ul>
   {{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
-      {{- with .attributes.override -}}<li class="{{ . }}">{{- else -}}<li>{{- end -}}
+      {{- with .attributes.override -}}<li class="docsygen-{{ . }}">{{- else -}}<li>{{- end -}}
       {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" $tag)) -}}
       </li>
     {{- end -}}
@@ -197,7 +197,7 @@
   {{- end -}}
   </details>
 {{- else if eq $tag "blockquote" -}}
-  <blockquote class="doxtable">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</blockquote>
+  <blockquote>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</blockquote>
 {{- else if in (slice "parblock" "internal") $tag -}}
   {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "htmlonly" -}}
@@ -206,10 +206,10 @@
 {{- else if eq $tag "indexentry" -}}
   {{- partial "docsygen/markup/doc-indexentry.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "toclist" -}}
-  <div><ul class="multicol">
+  <div><ul class="docsygen-multicol">
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "tocitem") -}}
-      <li><a class="el" href="{{ index $ctx.links .attributes.id }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</a></li>
+      <li><a href="{{ index $ctx.links .attributes.id }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</a></li>
     {{- end -}}
   {{- end -}}
   </ul></div>

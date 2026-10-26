@@ -20,17 +20,17 @@
         {{- $url = index $ctx.links .attributes.refid | default "" -}}
         {{- with index $m.ids .attributes.refid -}}{{- $kind = .kind -}}{{- end -}}
       {{- end -}}
-      {{- if $url -}}{{- $html = printf `%s<a class="code hl_%s" href="%s">%s</a>` $html $kind (htmlEscape $url) (htmlEscape $text) -}}
+      {{- if $url -}}{{- $html = printf `%s<a href="%s">%s</a>` $html (htmlEscape $url) (htmlEscape $text) -}}
       {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape $text) -}}{{- end -}}
     {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}
     {{- end -}}
   {{- end -}}
 {{- if $.block.heading -}}<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>{{- end -}}
-<div class="fragment">
+  {{- $lines := slice -}}
   {{- range split (strings.TrimRight " \t\n" $html) "\n" -}}
     {{- $line := . -}}
     {{- with findRE `^\t+` $line 1 -}}{{- $line = printf "%s%s" (strings.Repeat (len (index . 0)) $tab) (strings.TrimLeft "\t" $line) -}}{{- end -}}
-<div class="line">{{ $line | safeHTML }}</div>{{ "\n" }}
+    {{- $lines = $lines | append $line -}}
   {{- end -}}
-</div>
+<pre class="docsygen-concept"><code>{{ delimit $lines "\n" | safeHTML }}</code></pre>
 {{- end -}}

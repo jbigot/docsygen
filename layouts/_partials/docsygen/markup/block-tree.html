@@ -28,9 +28,9 @@
 {{- $nodes := partial "docsygen/markup/inline/tree-nodes.html" (dict "ctx" $ctx "nodes" (partial "docsygen/plan/tree-nodes.html" (dict "model" $m "name" $name))) -}}
 {{- if eq $name "examples" -}}
   {{- /* The example index is a plain list (writeExampleIndex). */ -}}
-<div class="textblock">{{ index $intros $name }}</div><ul>
+<div class="docsygen-text">{{ index $intros $name }}</div><ul>
   {{- range $nodes }}
-<li><a class="el" href="{{ .url }}">{{ .name | safeHTML }}</a></li>
+<li><a href="{{ .url }}">{{ .name | safeHTML }}</a></li>
   {{- end }}
 </ul>
 {{- else -}}

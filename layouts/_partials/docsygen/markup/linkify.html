@@ -24,7 +24,7 @@
   {{- $marked := replaceRE (printf `(^|[^A-Za-z0-9_:])%s([^A-Za-z0-9_:]|$)` $quoted) "${1}\x00${2}" $text 1 -}}
   {{- if and $url $word (strings.Contains $marked "\x00") -}}
     {{- $halves := split $marked "\x00" -}}
-    {{- $out = printf "%s%s<a class=\"el\" href=\"%s\">%s</a>" $out (htmlEscape (index $halves 0)) (htmlEscape $url) (htmlEscape $word) -}}
+    {{- $out = printf "%s%s<a href=\"%s\">%s</a>" $out (htmlEscape (index $halves 0)) (htmlEscape $url) (htmlEscape $word) -}}
     {{- $text = index $halves 1 -}}
   {{- end -}}
 {{- end -}}

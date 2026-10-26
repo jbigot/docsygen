@@ -34,6 +34,6 @@
       {{- $url = index $ctx.links $target | default "" -}}
     {{- end -}}
   {{- end -}}
-  {{- $out = cond (ne $url "") (printf `%s<a class="el" href="%s">%s</a>` $out (htmlEscape $url) (htmlEscape $w)) (printf "%s%s" $out (htmlEscape $w)) -}}
+  {{- $out = cond (ne $url "") (printf `%s<a href="%s">%s</a>` $out (htmlEscape $url) (htmlEscape $w)) (printf "%s%s" $out (htmlEscape $w)) -}}
 {{- end -}}
 {{- return ($out | safeHTML) -}}

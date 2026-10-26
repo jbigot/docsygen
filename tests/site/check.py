@@ -11,6 +11,8 @@ Checks:
     links the documentation's authors wrote (class docsygen-ulink), left as they are;
   - no id appears twice in a file;
   - no <p> holds a block element;
+  - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
+    (.katex*) and the highlighted code of listings (pre.docsygen-listing);
   - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left.
 Exit 1 on any failure.
 """
@@ -20,6 +22,22 @@ import exact
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
 LEFTOVERS = ('{{<', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
+ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*)$')
+
+
+def foreign_classes(node, out):
+    """The classes of node and its descendants that ALLOWED rejects, as {class: count}, skipping
+    KaTeX's output and the highlighted code of listings."""
+    for c in node.children:
+        if not isinstance(c, exact.Node):
+            continue
+        cls = exact.classes(c)
+        if any(x.startswith('katex') for x in cls) or (c.tag == 'pre' and 'docsygen-listing' in cls):
+            continue
+        for x in cls:
+            if not ALLOWED.match(x):
+                out[x] += 1
+        foreign_classes(c, out)
 
 
 def walk(node):
@@ -64,6 +82,10 @@ def main(argv):
                 if inner:
                     errors.append(f'{rel}: a <p> holds a <{inner}>')
         ids[rel] = set(seen)
+        for main in exact.find(tree, 'main'):
+            foreign = collections.Counter()
+            foreign_classes(main, foreign)
+            errors += [f'{rel}: class {x!r} appears {k} times' for x, k in sorted(foreign.items())]
         errors += [f'{rel}: id {i!r} appears {k} times' for i, k in sorted(seen.items()) if k > 1]
     for i in sorted(expected):
         if marks[i] != 1:

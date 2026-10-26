@@ -19,7 +19,7 @@
     {{- $url := "" -}}
     {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $ctx.urls . -}}
     {{- else -}}{{- $url = index $ctx.links . | default "" -}}{{- end -}}
-<li>{{ if $full }}{{ $dir }}{{ end }}{{ if $url }}<a class="el" href="{{ $url }}">{{ $f.name }}</a>{{ else }}<b>{{ $f.name }}</b>{{ end }}</li>
+<li>{{ if $full }}{{ $dir }}{{ end }}{{ if $url }}<a href="{{ $url }}">{{ $f.name }}</a>{{ else }}<b>{{ $f.name }}</b>{{ end }}</li>
   {{- end -}}
 </ul>
 {{- end -}}

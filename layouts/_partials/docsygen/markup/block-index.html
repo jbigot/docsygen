@@ -45,19 +45,19 @@
   {{- end -}}
   {{- $letters := slice -}}
   {{- range $letter, $_ := $byLetter.Values -}}{{- $letters = $letters | append $letter -}}{{- end -}}
-<div class="qindex">
-  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a class="qindex" href="#letter_{{ $l }}">{{ $l }}</a>{{- end -}}
+<div class="docsygen-index-letters">
+  {{- range $i, $l := $letters -}}{{- if $i -}}&#160;|&#160;{{- end -}}<a href="#letter_{{ $l }}">{{ $l }}</a>{{- end -}}
 </div>
   {{- with $letters }}
-<div class="classindex">
+<div class="docsygen-index-classes">
     {{- range $i, $l := . }}
-<dl class="classindex {{ cond (eq (mod $i 2) 0) "even" "odd" }}">
-<dt class="alphachar"><a id="letter_{{ $l }}" name="letter_{{ $l }}">{{ $l }}</a></dt>
+<dl class="docsygen-index-letter">
+<dt><a id="letter_{{ $l }}" name="letter_{{ $l }}">{{ $l }}</a></dt>
       {{ range partial "docsygen/text/sort-bytes.html" (dict "list" ($byLetter.Get $l) "key" "sort") -}}
-<dd><a class="el" href="{{ index $ctx.links .id }}">{{ .name }}</a>
+<dd><a href="{{ index $ctx.links .id }}">{{ .name }}</a>
         {{- with .ns }} (
           {{- $nsName := (index $m.ids .).name -}}
-          {{- with index $ctx.links . -}}<a class="el" href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}
+          {{- with index $ctx.links . -}}<a href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}
         ){{- end -}}
 </dd>
       {{- end -}}
@@ -98,7 +98,7 @@
       {{- if and $sections (ne .letter $prevLetter) -}}
         {{- if $prevLetter -}}{{- $html = printf "%s</ul>\n" $html -}}{{- end -}}
         {{- $id := partial "docsygen/markup/inline/index-id.html" .letter -}}
-        {{- $html = printf "%s\n\n<h3 class=\"doxsection\"><a id=\"index_%s_%s\" name=\"index_%s_%s\"></a>- %s -</h3><ul>\n" $html $b.filter $id $b.filter $id (htmlEscape .letter) -}}
+        {{- $html = printf "%s\n\n<h3 class=\"docsygen-index-letter\"><a id=\"index_%s_%s\" name=\"index_%s_%s\"></a>- %s -</h3><ul>\n" $html $b.filter $id $b.filter $id (htmlEscape .letter) -}}
         {{- $prevLetter = .letter -}}
       {{- end -}}
       {{- $kind := (index $m.ids .id).kind -}}
@@ -107,18 +107,18 @@
       {{- $prevScope = "" -}}
       {{- $sep := "&#160;:&#160;" -}}
       {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
-      {{- $html = printf "%s%s<a class=\"el\" href=\"%s\">%s</a>" $html $sep (index $ctx.links .id) (htmlEscape $scope) -}}
+      {{- $html = printf "%s%s<a href=\"%s\">%s</a>" $html $sep (index $ctx.links .id) (htmlEscape $scope) -}}
       {{- $prevScope = $scope -}}
     {{- else -}}
       {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
       {{- if ne $scope $prevScope -}}
-        {{- $html = printf "%s, <a class=\"el\" href=\"%s\">%s</a>" $html (index $ctx.links .id) (htmlEscape $scope) -}}
+        {{- $html = printf "%s, <a href=\"%s\">%s</a>" $html (index $ctx.links .id) (htmlEscape $scope) -}}
         {{- $prevScope = $scope -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- if $prevKey -}}{{- $html = printf "%s</li>\n" $html -}}{{- end -}}
-<div class="textblock">{{ $intro }}</div>
+<div class="docsygen-text">{{ $intro }}</div>
   {{- if not $sections }}<ul>{{ "\n" }}{{- end -}}
   {{- $html | safeHTML -}}
 </ul>

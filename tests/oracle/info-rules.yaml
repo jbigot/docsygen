@@ -100,3 +100,33 @@
   select: div.memproto
   count: 407
   reason: "See the sample entry"
+- oracle: sample
+  rule: drop
+  select: div.levels
+  count: 6
+  reason: "Doxygen's '[detail level …]' selector folds its tree with a script; the Docsy tree shows every level"
+- oracle: sample
+  rule: drop
+  select: span.icona
+  count: 42
+  reason: "Doxygen's tree icons (C, N, R) say the node's kind, which the Docsy tree gives as a class (docsygen-tree-<kind>)"
+- oracle: sample-c
+  rule: drop
+  select: div.levels
+  count: 2
+  reason: "See the sample entry"
+- oracle: sample-c
+  rule: drop
+  select: span.icona
+  count: 2
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: drop
+  select: div.levels
+  count: 3
+  reason: "See the sample entry"
+- oracle: pdi
+  rule: drop
+  select: span.icona
+  count: 82
+  reason: "See the sample entry"

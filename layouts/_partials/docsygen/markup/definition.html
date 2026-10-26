@@ -4,7 +4,7 @@
 {{- $ctx := .ctx -}}
 {{- $url := index $ctx.urls (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $d.file)))) -}}
 {{- if $d.line -}}
-<p class="definition">Definition at line <a class="el" href="{{ $url }}#{{ printf "l%05d" $d.line }}">{{ $d.line }}</a> of file <a class="el" href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
+<p class="docsygen-definition">Definition at line <a href="{{ $url }}#{{ printf "l%05d" $d.line }}">{{ $d.line }}</a> of file <a href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
 {{- else -}}
-<p class="definition">Definition in file <a class="el" href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
+<p class="docsygen-definition">Definition in file <a href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
 {{- end -}}

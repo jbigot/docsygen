@@ -42,7 +42,7 @@
 {{- end -}}
 {{- $before := and $needsTag (not $alone) (not (and $visible (index $visible 0).block)) -}}
 {{- $after := and $needsTag (not $alone) (not (and $visible (index $visible (sub (len $visible) 1)).block)) -}}
-{{- if $before -}}{{- with $class -}}<p class="{{ . }}">{{- else -}}<p>{{- end -}}{{- end -}}
+{{- if $before -}}<p>{{- end -}}
 {{- range $i, $c := $n.children -}}
   {{- $v := -1 -}}
   {{- range $j, $e := $visible -}}{{- if eq $e.i $i -}}{{- $v = $j -}}{{- end -}}{{- end -}}

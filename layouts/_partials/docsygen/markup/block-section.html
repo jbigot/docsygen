@@ -4,5 +4,5 @@
 {{- with index $ctx.model.ids .block.id -}}
   {{- $children := slice -}}
   {{- range .node.children -}}{{- if not (and (reflect.IsMap .) (eq .tag "title")) -}}{{- $children = $children | append . -}}{{- end -}}{{- end -}}
-<div class="textblock">{{ partial "docsygen/markup/doc.html" (dict "node" (dict "tag" "detaileddescription" "attributes" dict "children" $children) "ctx" (merge $ctx (dict "sectionblocks" true))) }}</div>
+<div class="docsygen-text">{{ partial "docsygen/markup/doc.html" (dict "node" (dict "tag" "detaileddescription" "attributes" dict "children" $children) "ctx" (merge $ctx (dict "sectionblocks" true))) }}</div>
 {{- end -}}

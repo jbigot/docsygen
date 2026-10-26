@@ -25,5 +25,5 @@
   {{- end -}}
 {{- end -}}
 {{- if and $params (in (slice "class" "struct" "union") $e.kind) -}}
-  <div class="compoundTemplParams">template&lt;{{ delimit $params ", " }}&gt;<br />{{ "\n" }}{{ $e.kind }} {{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) }}</div>
+  <div class="docsygen-template">template&lt;{{ delimit $params ", " }}&gt;<br />{{ "\n" }}{{ $e.kind }} {{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) }}</div>
 {{- end -}}

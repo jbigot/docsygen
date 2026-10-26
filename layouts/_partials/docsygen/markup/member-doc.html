@@ -10,7 +10,7 @@
 {{- if and (eq $e.kind "define") $p.initializer -}}
   {{- $params := false -}}
   {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = true -}}{{- end -}}{{- end -}}
-  {{- if $params -}}<b>Value:</b><div class="fragment"><div class="line">{{ partial "docsygen/text/plain.html" $p.initializer }}</div>{{ "\n" }}</div>{{- end -}}
+  {{- if $params -}}<b>Value:</b><pre class="docsygen-value"><code>{{ partial "docsygen/text/plain.html" $p.initializer }}</code></pre>{{- end -}}
 {{- end -}}
 {{- range slice "briefdescription" "detaileddescription" "inbodydescription" -}}
   {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
@@ -34,9 +34,9 @@
         {{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}
         {{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = trim (strings.TrimPrefix "=" (trim (partial "docsygen/text/plain.html" .) " \n")) " \n" -}}{{- end -}}
       {{- end -}}
-<tr id="{{ index $ctx.anchors $v.attributes.id }}" data-doxygen-id="{{ $v.attributes.id }}"><td class="fieldname">{{ $name }}</td>
-      {{- if $inits -}}<td class="fieldinit">{{ $init }}</td>{{- end -}}
-<td class="fielddoc">
+<tr id="{{ index $ctx.anchors $v.attributes.id }}" data-doxygen-id="{{ $v.attributes.id }}"><td class="docsygen-field-name">{{ $name }}</td>
+      {{- if $inits -}}<td class="docsygen-field-init">{{ $init }}</td>{{- end -}}
+<td class="docsygen-field-doc">
       {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}{{- end -}}
 </td></tr>
     {{- end -}}
@@ -51,7 +51,7 @@
   {{- range .refs -}}
     {{- $other := index $m.ids .attributes.refid -}}
     {{- with $other -}}
-      {{- $links = $links | append (printf `<a class="el" href="%s">%s</a>` (htmlEscape (index $ctx.links .id)) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)))) -}}
+      {{- $links = $links | append (printf `<a href="%s">%s</a>` (htmlEscape (index $ctx.links .id)) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)))) -}}
     {{- end -}}
   {{- end -}}
   {{- $n := len $links -}}

@@ -12,7 +12,7 @@
 {{- if eq (index ((index $m.options "EXTRACT_PRIVATE") | default (slice "NO")) 0) "YES" -}}{{- $visible = $visible | append "private" -}}{{- end -}}
 {{- if eq (index ((index $m.options "EXTRACT_PACKAGE") | default (slice "NO")) 0) "YES" -}}{{- $visible = $visible | append "package" -}}{{- end -}}
 {{- $visible = $visible | append "protected" -}}
-<p>This is the complete list of members for <a class="el" href="{{ index $ctx.links $id }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id) }}</a>, including all inherited members.</p>
+<p>This is the complete list of members for <a href="{{ index $ctx.links $id }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id) }}</a>, including all inherited members.</p>
 {{- $rows := slice -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") -}}
@@ -47,12 +47,12 @@
           {{- $first := "" -}}
           {{- $plain := false -}}
           {{- if and $classUrl $url (partial "docsygen/model/linkable.html" (dict "model" $m "id" $md.id)) -}}
-            {{- $first = printf `<a class="el" href="%s">%s</a>%s` (htmlEscape $url) (htmlEscape $name) (htmlEscape $suffix) -}}
+            {{- $first = printf `<a href="%s">%s</a>%s` (htmlEscape $url) (htmlEscape $name) (htmlEscape $suffix) -}}
           {{- else if and (not $hideUndoc) (or (in $visible $a.prot) (eq $md.kind "friend")) -}}
             {{- $plain = true -}}
             {{- if in (slice "function" "signal" "slot") $md.kind -}}{{- $suffix = $args -}}{{- else if eq $suffix " class" -}}{{- $suffix = "" -}}{{- end -}}
             {{- $first = printf `<b>%s</b>%s (defined in %s)` (htmlEscape $short) (htmlEscape $suffix)
-                (cond (ne $classUrl nil) (printf `<a class="el" href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) (printf "<b>%s</b>" (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id))))) -}}
+                (cond (ne $classUrl nil) (printf `<a href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) (printf "<b>%s</b>" (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id))))) -}}
           {{- end -}}
           {{- if $first -}}
             {{- /* The labels, from the listed protection and the definition's specifiers. */ -}}
@@ -72,8 +72,8 @@
               {{- if in (slice "signal" "slot") $md.kind -}}{{- $labels = $labels | append $md.kind -}}{{- end -}}
             {{- end -}}
             {{- $spans := "" -}}
-            {{- range $labels -}}{{- $spans = printf `%s<span class="mlabel">%s</span>` $spans (htmlEscape .) -}}{{- end -}}
-            {{- $rows = $rows | append (dict "first" $first "plain" $plain "class" (printf `<a class="el" href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) "labels" $spans) -}}
+            {{- range $labels -}}{{- $spans = printf `%s<span class="docsygen-label">%s</span>` $spans (htmlEscape .) -}}{{- end -}}
+            {{- $rows = $rows | append (dict "first" $first "plain" $plain "class" (printf `<a href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) "labels" $spans) -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -81,9 +81,9 @@
   {{- end -}}
 {{- end -}}
 {{- with $rows -}}
-<table class="directory">
+<table class="docsygen-members">
   {{- range $i, $r := . }}
-  <tr{{ if $r.plain }} bgcolor="#f0f0f0"{{ end }} class="{{ cond (eq (mod $i 2) 0) "even" "odd" }}"><td class="entry">{{ $r.first | safeHTML }}</td><td class="entry">{{ $r.class | safeHTML }}</td><td class="entry">{{ $r.labels | safeHTML }}</td></tr>
+  <tr{{ if $r.plain }} class="docsygen-members-undocumented"{{ end }}><td>{{ $r.first | safeHTML }}</td><td>{{ $r.class | safeHTML }}</td><td>{{ $r.labels | safeHTML }}</td></tr>
   {{- end }}
 </table>
 {{- end -}}

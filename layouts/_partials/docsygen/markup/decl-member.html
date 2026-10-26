@@ -82,7 +82,7 @@
 {{- /* A file's page names the namespace members it lists by their qualified name. */ -}}
 {{- $qualify := and (eq (index $m.ids .page).kind "file") (eq (index $m.ids $e.home).kind "namespace") -}}
 {{- if $qualify -}}{{- $short = $e.name -}}{{- end -}}
-{{- $name := printf "<a class=\"el\" href=\"%s\">%s</a>" ($link | htmlEscape) ($short | htmlEscape) | safeHTML -}}
+{{- $name := printf "<a href=\"%s\">%s</a>" ($link | htmlEscape) ($short | htmlEscape) | safeHTML -}}
 {{- $kind := $e.kind -}}
 {{- if eq $kind "enum" -}}
   {{- $left = printf "enum %s" (cond (eq $a.strong "yes") "class " "") -}}
@@ -93,7 +93,7 @@
       {{- $vname := "" -}}
       {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
       {{- if $qualify -}}{{- $vname = printf "%s::%s" (index $m.ids $e.home).name $vname -}}{{- end -}}
-      {{- $v := printf "<a class=\"el\" href=\"%s\">%s</a>" (index $ctx.links .attributes.id | htmlEscape) ($vname | htmlEscape) -}}
+      {{- $v := printf "<a href=\"%s\">%s</a>" (index $ctx.links .attributes.id | htmlEscape) ($vname | htmlEscape) -}}
       {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $v = printf "%s %s" $v (partial "docsygen/text/plain.html" . | htmlEscape) -}}{{- end -}}{{- end -}}
       {{- $values = $values | append $v -}}
     {{- end -}}

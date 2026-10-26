@@ -1,102 +1,26 @@
-{{- /* Doxygen's inline tree index (ftvhelp.cpp, generateTreeViewInline, generateTree): the
-       intro, the level selector, and one row per node, nested nodes indented, those below the
-       preferred depth (HTML_INDEX_NUM_ENTRIES) hidden. A node is {id, name, url, src, kind,
-       children}: id the compound it shows ("" for none), name its HTML label, url its link ("" for
-       none), src a file's source listing, kind its icon (namespace, class, concept, dir, file,
-       or none).
-       The ids of the rows start with .prefix, so that several trees can share a page.
-       Usage: partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "intro" $html "nodes" $nodes "prefix" "annotated_") */ -}}
-{{- $ctx := .ctx -}}
-{{- define "_partials/docsygen/markup/inline/ftv-depth.html" -}}
-  {{- $max := .level -}}
-  {{- range .node.children -}}
-    {{- if .children -}}
-      {{- $d := partial "docsygen/markup/inline/ftv-depth.html" (dict "node" . "level" (add $.level 1)) -}}
-      {{- if gt $d $max -}}{{- $max = $d -}}{{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- return $max -}}
-{{- end -}}
-{{- define "_partials/docsygen/markup/inline/ftv-count.html" -}}
-  {{- $n := 0 -}}
-  {{- if lt .level .max -}}
-    {{- $n = 1 -}}
-    {{- range .node.children -}}{{- $n = add $n (partial "docsygen/markup/inline/ftv-count.html" (dict "node" . "level" (add $.level 1) "max" $.max)) -}}{{- end -}}
-  {{- end -}}
-  {{- return $n -}}
-{{- end -}}
-{{- define "_partials/docsygen/markup/inline/ftv-rows.html" -}}
-  {{- /* The rows of .nodes at .level under the label .label, and the next row index. */ -}}
+{{- /* A list page's tree (ftvhelp.cpp, generateTreeViewInline) as nested lists: the intro, then
+       one item per node, its children in a list of their own, all shown (Doxygen's levels and
+       folding need its scripts). A node is {id, name, url, src, kind, children}: id the compound it
+       shows ("" for none), name its HTML label, url its link ("" for none), src a file's source
+       listing, kind its kind (namespace, class, concept, dir, file, or none). An item shows the
+       compound's abbreviated brief.
+       Usage: partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "intro" $html "nodes" $nodes) */ -}}
+{{- define "_partials/docsygen/markup/inline/ftv-items.html" -}}
   {{- $html := "" -}}
-  {{- $index := .index -}}
-  {{- range $i, $n := .nodes -}}
-    {{- $label := printf "%s%d_" $.label $i -}}
-    {{- $row := printf `<tr id="row_%s" class="%s"` $label (cond (eq (mod $index 2) 0) "even" "odd") -}}
-    {{- if ge $.level $.max -}}{{- $row = printf `%s style="display:none;"` $row -}}{{- else -}}{{- $index = add $index 1 -}}{{- end -}}
-    {{- $row = printf `%s><td class="entry">` $row -}}
-    {{- $opened := lt (add $.level 1) $.max -}}
-    {{- $dir := gt (len ($n.children | default slice)) 0 -}}
-    {{- if $dir -}}
-      {{- $row = printf `%s<span style="width:%dpx;display:inline-block;">&#160;</span><span id="arr_%s" class="arrow" onclick="dynsection.toggleFolder('%s')"><span class="arrowhead %s"></span></span>` $row (mul $.level 16) $label $label (cond $opened "opened" "closed") -}}
-    {{- else -}}
-      {{- $row = printf `%s<span style="width:%dpx;display:inline-block;">&#160;</span>` $row (mul (add $.level 1) 16) -}}
+  {{- range .nodes -}}
+    {{- $item := cond (ne .url "") (printf `<a href="%s">%s</a>` .url .name) (printf `<b>%s</b>` .name) -}}
+    {{- with .src -}}{{- $item = printf `%s <a class="docsygen-tree-source" href="%s">source</a>` $item . -}}{{- end -}}
+    {{- with .id -}}
+      {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
+      {{- $desc := partial "docsygen/markup/brief-abbrev.html" (dict "ctx" $.ctx "id" .) -}}
+      {{- with $desc -}}{{- $item = printf `%s <span class="docsygen-tree-desc">%s</span>` $item . -}}{{- end -}}
     {{- end -}}
-    {{- $icons := dict "namespace" "N" "class" "C" -}}
-    {{- if not $dir -}}{{- $icons = merge $icons (dict "concept" "R") -}}{{- end -}}
-    {{- $letter := index $icons $n.kind -}}
-    {{- if $letter -}}{{- $row = printf `%s<span class="icona"><span class="icon">%s</span></span>` $row $letter -}}
-    {{- else if and $dir (in (slice "dir" "file") $n.kind) -}}
-      {{- $row = printf `%s<span id="img_%s" class="iconfolder" onclick="dynsection.toggleFolder('%s')"><div class="folder-icon%s"></div></span>` $row $label $label (cond $opened " open" "") -}}
-    {{- else if eq $n.kind "dir" -}}{{- $row = printf `%s<span class="iconfolder"><div class="folder-icon"></div></span>` $row -}}
-    {{- else if eq $n.kind "file" -}}
-      {{- $icon := `<span class="icondoc"><div class="doc-icon"></div></span>` -}}
-      {{- with $n.src -}}{{- $icon = printf `<a href="%s">%s</a>` . $icon -}}{{- end -}}
-      {{- $row = printf "%s%s" $row $icon -}}
-    {{- end -}}
-    {{- if $n.url -}}{{- $row = printf `%s<a class="el" href="%s" target="_self">%s</a>` $row $n.url $n.name -}}
-    {{- else -}}{{- $row = printf `%s<b>%s</b>` $row $n.name -}}{{- end -}}
-    {{- $desc := "" -}}
-    {{- with $n.id -}}{{- $desc = partial "docsygen/markup/brief-abbrev.html" (dict "ctx" $.ctx "id" .) -}}{{- end -}}
-    {{- $html = printf "%s%s</td><td class=\"desc\">%s</td></tr>\n" $html $row $desc -}}
-    {{- if $dir -}}
-      {{- $sub := partial "docsygen/markup/inline/ftv-rows.html" (dict "ctx" $.ctx "nodes" $n.children "level" (add $.level 1) "max" $.max "index" $index "label" $label) -}}
-      {{- $html = printf "%s%s" $html $sub.html -}}
-      {{- $index = $sub.index -}}
-    {{- end -}}
+    {{- with .children -}}{{- $item = printf `%s<ul>%s</ul>` $item (partial "docsygen/markup/inline/ftv-items.html" (dict "ctx" $.ctx "nodes" .)) -}}{{- end -}}
+    {{- $html = printf `%s<li class="docsygen-tree-%s">%s</li>` $html (.kind | default "none") $item -}}
   {{- end -}}
-  {{- return dict "html" $html "index" $index -}}
+  {{- return $html -}}
 {{- end -}}
-{{- $depth := 1 -}}
-{{- range .nodes -}}
-  {{- if .children -}}
-    {{- $d := partial "docsygen/markup/inline/ftv-depth.html" (dict "node" . "level" 2) -}}
-    {{- if gt $d $depth -}}{{- $depth = $d -}}{{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- $preferred := $depth -}}
-{{- $entries := int (index ((index $ctx.model.options "HTML_INDEX_NUM_ENTRIES") | default (slice "100")) 0) -}}
-{{- $levels := "" -}}
-{{- if gt $depth 1 -}}
-  {{- range seq $depth -}}{{- $levels = printf `%s<span onclick="javascript:dynsection.toggleLevel(%d);">%d</span>` $levels . . -}}{{- end -}}
-  {{- if gt $entries 0 -}}
-    {{- $preferred = 1 -}}
-    {{- $stop := false -}}
-    {{- range $i := seq $depth -}}
-      {{- if not $stop -}}
-        {{- $num := 0 -}}
-        {{- range $.nodes -}}{{- $num = add $num (partial "docsygen/markup/inline/ftv-count.html" (dict "node" . "level" 0 "max" $i)) -}}{{- end -}}
-        {{- if le $num $entries -}}{{- $preferred = $i -}}{{- else -}}{{- $stop = true -}}{{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-<div class="textblock">{{ .intro | safeHTML }}</div><div class="directory">
-{{- with $levels }}
-<div class="levels">[detail level {{ . | safeHTML }}]</div>
-{{- end -}}
+<div class="docsygen-text">{{ .intro | safeHTML }}</div>
 {{- with .nodes -}}
-<table class="directory">
-{{ (partial "docsygen/markup/inline/ftv-rows.html" (dict "ctx" $ctx "nodes" . "level" 0 "max" $preferred "index" 0 "label" ($.prefix | default ""))).html | safeHTML -}}
-</table>
-{{- end }}
-</div><!-- directory -->
+<ul class="docsygen-tree">{{ partial "docsygen/markup/inline/ftv-items.html" (dict "ctx" $.ctx "nodes" .) | safeHTML }}</ul>
+{{- end -}}
