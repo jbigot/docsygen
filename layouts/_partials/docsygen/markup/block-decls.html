@@ -1,7 +1,8 @@
 {{- /* One summary table (memberlist.cpp, writeDeclarations; classdef.cpp,
-       writeInheritedMemberDeclarations): its heading, the related symbols' note, the rows of its
-       inner compounds or members, the member groups it shows (docsygen/plan/sections.html, in),
-       and on a class's page the members inherited into this section. A member group shown nowhere
+       writeInheritedMemberDeclarations), its heading in the page's skeleton: the related
+       symbols' note, the rows of its inner compounds or members, the member groups it shows
+       (docsygen/plan/sections.html, in), and on a class's page the members inherited into this
+       section. A member group shown nowhere
        else is a table of its own, under the anchor member-group, and the inherited members of
        sections the class lacks make the table "Additional Inherited Members". */ -}}
 {{- $ctx := .ctx -}}
@@ -40,7 +41,6 @@
 {{- if or (ne $b.key "inherited") $inherited -}}
 <table class="docsygen-summary">
   {{- $anchor := cond $grouped "member-group" (index (index $ctx.paths.anchors $key) $b.key | default $b.key) -}}
-{{- if $b.heading -}}<tr class="heading"><td colspan="2"><h2 id="header-{{ $anchor }}" class="groupheader"><a id="{{ $anchor }}" name="{{ $anchor }}"></a>{{ "\n" }}{{ $section.heading }}</h2></td></tr>{{- end -}}
   {{- with $section.subtitle -}}<tr class="docsygen-summary-note"><td colspan="2">{{ . }}</td></tr>{{- end -}}
   {{- if and $grouped $section.description -}}<tr class="docsygen-summary-note"><td colspan="2">{{ partial "docsygen/markup/doc.html" (dict "node" $section.description "ctx" $ctx) }}</td></tr>{{- end -}}
   {{- range $section.inner -}}{{- partial "docsygen/markup/decl-inner.html" (dict "ctx" $ctx "id" . "page" $id) -}}{{- end -}}

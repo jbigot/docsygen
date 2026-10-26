@@ -55,7 +55,6 @@
 {{- $templates := $proto.templates -}}
 {{- $proto = $proto.proto -}}
 <div class="docsygen-member" data-doxygen-id="{{ $id }}">
-{{- if .block.heading -}}<a id="{{ $anchor }}"></a>{{- end -}}
 <pre class="docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre>
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="docsygen-label">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}

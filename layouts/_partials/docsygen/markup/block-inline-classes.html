@@ -5,7 +5,6 @@
        structs are written this way: INLINE_GROUPED_CLASSES' full documentation is not. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
-{{- if .block.heading -}}<hr/><h2 id="header-inline_5Fclasses" class="groupheader">Class Documentation</h2>{{- end -}}
 {{- range .block.ids -}}
   {{- $id := . -}}
   {{- $e := index $m.ids $id -}}

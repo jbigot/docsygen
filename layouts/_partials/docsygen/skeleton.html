@@ -2,7 +2,8 @@
        {{< docsygen/block n=K >}} call, after a Markdown heading when the block has one ("#" per
        level, the text escaped, from the XML node through docsygen/text/markdown.html when the
        plan gives it, and the anchor as {#…}). The title and summary-links blocks are left out:
-       Docsy shows the title and the page's table of contents.
+       Docsy shows the title and the page's table of contents. A heading block is its heading
+       only.
        Usage: partial "docsygen/skeleton.html" (dict "entry" $page "paths" $paths "dir" $dir "pathMap" $pathMap) */ -}}
 {{- $m := partial "docsygen/model.html" .dir -}}
 {{- $anchors := partialCached "docsygen/ctx/anchors.html" .paths (printf "%s|%s" .dir (jsonify (.pathMap | default slice))) -}}
@@ -17,7 +18,7 @@
       {{- if not $anchor -}}{{- warnf "docsygen: no anchor for the heading %q of %s" .text $.entry.key -}}{{- end -}}
       {{- $out = $out | append (printf "%s %s%s" (strings.Repeat .level "#") $text (cond (ne $anchor "") (printf " {#%s}" $anchor) "")) -}}
     {{- end -}}
-    {{- $out = $out | append (printf "{{< docsygen/block n=%d >}}" $k) -}}
+    {{- if ne $b.type "heading" -}}{{- $out = $out | append (printf "{{< docsygen/block n=%d >}}" $k) -}}{{- end -}}
   {{- end -}}
 {{- end -}}
 {{- return printf "%s\n" (delimit $out "\n\n") -}}

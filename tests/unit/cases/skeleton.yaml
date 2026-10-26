@@ -30,3 +30,11 @@
     key: api/demo/widget
     contains: ["{{< docsygen/block n=0 >}}"]
   expect: ["{{< docsygen/block n=0 >}}"]
+- name: skeleton of a class, a heading block is its Markdown heading only
+  flavor: docsy
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/widget
+    contains: ["## Member Function Documentation {#doc-function}\n\n### "]
+  expect: []

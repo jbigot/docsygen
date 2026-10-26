@@ -14,7 +14,6 @@
   {{- if and (reflect.IsMap .) (eq .tag "conceptparts") -}}{{- $parts = . -}}{{- end -}}
 {{- end -}}
 {{- with $parts -}}
-{{- if $.block.heading -}}<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>{{- end -}}
   {{- range .children -}}
     {{- if and (reflect.IsMap .) (eq .tag "codepart") -}}
       {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}{{- partial "docsygen/markup/listing.html" (dict "node" . "ctx" $ctx "lang" "cpp") -}}{{- end -}}{{- end -}}
@@ -40,7 +39,6 @@
     {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}
     {{- end -}}
   {{- end -}}
-{{- if $.block.heading -}}<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>{{- end -}}
   {{- $lines := slice -}}
   {{- range split (strings.TrimRight " \t\n" $html) "\n" -}}
     {{- $line := . -}}

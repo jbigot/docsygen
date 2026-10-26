@@ -23,7 +23,6 @@
   {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $sctx) -}}{{- end -}}
 {{- else -}}
   {{- if partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" .block.id) -}}
-    {{- if .block.heading -}}<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>{{- end -}}
     {{- if $textblock -}}<div class="docsygen-text">{{- end -}}
     {{- partial "docsygen/markup/description-body.html" (dict "ctx" $sctx "id" .block.id) -}}
     {{- if $textblock -}}</div>{{- end -}}
