@@ -12,10 +12,12 @@ Checks:
   - no id appears twice in a file;
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
-    (.katex*) and the highlighted code of listings (pre.docsygen-listing);
+    (.katex*) and the highlighted code of listings (pre.docsygen-listing), on the pages of the
+    test site (those without Docsy's .td-content, whose own classes are Docsy's business);
   - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left;
   - with --links, the hrefs of PAGE's main element (a path under PUBLIC) are, in order, the list
     of EXPECTED.json.
+Docsy's print pages (_print/), which repeat every page of a section, are link targets only.
 Exit 1 on any failure.
 """
 import collections, glob, json, os, re, sys, urllib.parse
@@ -72,12 +74,16 @@ def main(argv):
         with open(path, encoding='utf-8') as f:
             text = f.read()
         rel = os.path.relpath(path, public)
+        printed = rel.split(os.sep)[0] == '_print'
         for s in LEFTOVERS:
             if s in text:
                 errors.append(f'{rel}: {s} left')
         tree = exact.parse(text)
         trees[rel] = tree
         seen = collections.Counter()
+        if printed:
+            ids[rel] = {n.attrs['id'] for n in walk(tree) if 'id' in n.attrs}
+            continue
         for n in walk(tree):
             if 'id' in n.attrs:
                 seen[n.attrs['id']] += 1
@@ -88,7 +94,7 @@ def main(argv):
                 if inner:
                     errors.append(f'{rel}: a <p> holds a <{inner}>')
         ids[rel] = set(seen)
-        for main in exact.find(tree, 'main'):
+        for main in ([] if exact.find(tree, '.td-content') else exact.find(tree, 'main')):
             foreign = collections.Counter()
             foreign_classes(main, foreign)
             errors += [f'{rel}: class {x!r} appears {k} times' for x, k in sorted(foreign.items())]

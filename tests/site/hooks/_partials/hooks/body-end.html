@@ -1,0 +1,13 @@
+{{- /* Test-only Docsy hook (exampleSite/check-docsy.sh, tests/oracle/run.sh info-docsy): the version
+       root publishes paths.json, as tests/site/layouts/home.html does for the test site. */ -}}
+{{- if .Params.docsygen.root -}}
+  {{- $ctx := partial "docsygen/ctx.html" . -}}
+  {{- $root := . -}}
+  {{- $pages := newScratch -}}
+  {{- $pages.Set "m" dict -}}
+  {{- range $ctx.paths.pages -}}
+    {{- $page := cond (eq .path "") $root ($root.GetPage .path) -}}
+    {{- $pages.SetInMap "m" .key (dict "url" $page.RelPermalink "roles" .roles) -}}
+  {{- end -}}
+  {{- $_ := (resources.FromString "paths.json" (jsonify (dict "pages" ($pages.Get "m") "targets" $ctx.paths.targets "anchors" $ctx.paths.anchors))).Publish -}}
+{{- end -}}

@@ -17,6 +17,15 @@ menu:
       pageRef: /docs/
       weight: 10
 
+outputs:
+  section: [HTML, RSS, print]
+
 params:
+  offlineSearch: true
   ui:
     sidebar_menu_compact: true
+    # docsygen makes each version root its own sidebar root (sidebar_root_for).
+    sidebar_root_enabled: true
+    # Not sidebar_menu_truncate: Hugo (≥ 0.152) reads YAML integers as uint64, and Docsy 0.18's
+    # sidebar-tree.html then warns that 18446744073709550… entries were truncated. PDI's sections
+    # stay under its default of 100 entries.

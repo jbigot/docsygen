@@ -1,0 +1,203 @@
+// docsygen's styles for the reference pages, imported by a site's _styles_project.scss:
+//   @import 'docsygen';
+// Only docsygen-* classes are styled, through Bootstrap's --bs-* variables, so that Docsy's light
+// and dark modes apply.
+
+// Members: the signature, the labels, the documentation.
+.docsygen-member {
+  margin-bottom: 2rem;
+}
+
+.docsygen-signature {
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--bs-primary);
+  background-color: var(--bs-tertiary-bg);
+  white-space: pre-wrap;
+}
+
+.docsygen-labels {
+  margin: -0.5rem 0 1rem;
+}
+
+.docsygen-label {
+  display: inline-block;
+  margin-right: 0.25rem;
+  padding: 0 0.4rem;
+  border-radius: var(--bs-border-radius-sm);
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-secondary-color);
+  font-size: 0.8em;
+}
+
+.docsygen-member-title {
+  font-weight: bold;
+}
+
+.docsygen-definition {
+  color: var(--bs-secondary-color);
+  font-size: 0.9em;
+}
+
+// Tables: summaries, enum values, fields, members lists.
+.docsygen-summary,
+.docsygen-enumvalues,
+.docsygen-fields,
+.docsygen-members {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  th,
+  td {
+    padding: 0.25rem 0.5rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+  }
+}
+
+.docsygen-summary {
+  .docsygen-summary-type {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    font-family: var(--bs-font-monospace);
+  }
+
+  .docsygen-summary-name {
+    font-family: var(--bs-font-monospace);
+  }
+
+  .docsygen-summary-template td {
+    border-bottom: none;
+    font-family: var(--bs-font-monospace);
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+  }
+
+  .docsygen-summary-brief td {
+    padding-top: 0;
+    color: var(--bs-secondary-color);
+  }
+
+  // A row's brief belongs to the row above it.
+  tr:has(+ .docsygen-summary-brief) td {
+    border-bottom: none;
+  }
+
+  .docsygen-summary-group th,
+  .docsygen-summary-inherited th {
+    background-color: var(--bs-tertiary-bg);
+  }
+}
+
+.docsygen-members-undocumented {
+  color: var(--bs-secondary-color);
+}
+
+// Definition lists: parameters, returns, notes, xref items, examples.
+dl[class^="docsygen-"] {
+  > dt {
+    font-weight: bold;
+  }
+
+  > dd {
+    margin-left: 1.5rem;
+  }
+}
+
+.docsygen-param-items {
+  > dt {
+    font-weight: normal;
+  }
+}
+
+.docsygen-direction {
+  color: var(--bs-secondary-color);
+  font-size: 0.85em;
+}
+
+// Code: listings with their line numbers, concepts, verbatim blocks, macro values.
+.docsygen-listing .docsygen-line {
+  display: block;
+  min-height: 1lh;
+
+  &[data-line]::before {
+    content: attr(data-line);
+    display: inline-block;
+    width: 4em;
+    margin-right: 1em;
+    text-align: right;
+    color: var(--bs-secondary-color);
+    user-select: none;
+  }
+}
+
+// Trees: lists, nested, with the kind of each node and its brief.
+.docsygen-tree {
+  ul {
+    margin-bottom: 0;
+  }
+
+  .docsygen-tree-desc {
+    color: var(--bs-secondary-color);
+
+    &::before {
+      content: "— ";
+    }
+  }
+
+  .docsygen-tree-source {
+    font-size: 0.85em;
+  }
+}
+
+// Indexes: the letters and their entries.
+.docsygen-index-letters {
+  margin-bottom: 1rem;
+
+  a {
+    margin-right: 0.5rem;
+  }
+}
+
+.docsygen-index-classes {
+  column-width: 14rem;
+
+  dl {
+    break-inside: avoid;
+  }
+}
+
+// Figures and diagrams.
+.docsygen-figure {
+  figcaption {
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+  }
+}
+
+.docsygen-diagram-title {
+  color: var(--bs-secondary-color);
+}
+
+.docsygen-diagram .docsygen-current > rect,
+.docsygen-diagram .docsygen-current > .label-container {
+  stroke-width: 2px;
+  stroke: var(--bs-primary);
+}
+
+// Lists from Doxygen's markup.
+.docsygen-checklist {
+  list-style: none;
+}
+
+.docsygen-checked::before {
+  content: "☑ ";
+}
+
+.docsygen-unchecked::before {
+  content: "☐ ";
+}
+
+.docsygen-multicol {
+  column-width: 14rem;
+}
