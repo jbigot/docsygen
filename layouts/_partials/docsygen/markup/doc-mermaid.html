@@ -1,0 +1,13 @@
+{{- /* A Mermaid diagram, which Docsy's Mermaid plugin renders on the pages that set hasmermaid, in
+       a figure with its caption. A <mermaid>'s caption is an attribute, as plain text: the XML
+       drops its markup. */ -}}
+{{- $n := .node -}}
+{{- $diagram := partial "docsygen/render/mermaid.html" (dict "node" $n "ctx" .ctx) -}}
+{{- $caption := $n.attributes.caption -}}
+{{- if eq $n.tag "mermaidfile" -}}{{- $caption = partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}{{- end -}}
+{{- if $diagram.ok -}}
+  {{- with .ctx.page -}}{{- .Store.Set "hasmermaid" true -}}{{- end -}}
+  <figure class="docsygen-figure"><pre class="mermaid">{{ $diagram.source }}</pre>{{ with $caption }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
+{{- else -}}
+  <figure class="docsygen-figure">{{ with $caption }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
+{{- end -}}

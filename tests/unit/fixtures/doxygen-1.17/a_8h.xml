@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="a_8h" kind="file" language="C++">
+    <compoundname>a.h</compoundname>
+    <innerconcept refid="conceptSized">Sized</innerconcept>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="a_8h_1a8cdb608bba3eda8b32c80c8971244919" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void f</definition>
+        <argsstring>(void)</argsstring>
+        <name>f</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A function. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="a.h" line="12" column="6" declfile="a.h" declline="12" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A file.</para>
+<para><mermaid caption="Flow caption">graph LR
+  A --&gt; B</mermaid>
+</para>
+<para><mermaidfile name="flow.mmd">File caption</mermaidfile>
+ </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="a_8h_1a8cdb608bba3eda8b32c80c8971244919" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="a_8h_1a8cdb608bba3eda8b32c80c8971244919" kindref="member">f</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="16" refid="conceptSized" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">concept<sp/></highlight><highlight class="normal"><ref refid="conceptSized" kindref="compound">Sized</ref><sp/>=<sp/></highlight><highlight class="keyword">requires</highlight><highlight class="normal">(T<sp/>t)<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>t.size();</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">};</highlight></codeline>
+    </programlisting>
+    <location file="a.h"/>
+  </compounddef>
+</doxygen>

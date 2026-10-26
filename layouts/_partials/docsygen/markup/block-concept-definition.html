@@ -1,4 +1,6 @@
 {{- /* A concept's definition, Doxygen's "Concept definition" (conceptdef.cpp, writeDefinition):
+       since Doxygen 1.16, its parts (conceptparts): code parts as code fragments, and the
+       descriptions written inside the definition, indented to their comment's column. Before,
        its initializer as a code fragment, leading tabs expanded to TAB_SIZE. Doxygen runs its
        code parser on it, which highlights keywords that the XML's plain text doesn't mark (an
        XML gap). */ -}}
@@ -6,8 +8,21 @@
 {{- $m := $ctx.model -}}
 {{- $e := index $m.ids .block.id -}}
 {{- $init := false -}}
-{{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = . -}}{{- end -}}{{- end -}}
-{{- with $init -}}
+{{- $parts := false -}}
+{{- range $e.node.children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = . -}}{{- end -}}
+  {{- if and (reflect.IsMap .) (eq .tag "conceptparts") -}}{{- $parts = . -}}{{- end -}}
+{{- end -}}
+{{- with $parts -}}
+{{- if $.block.heading -}}<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>{{- end -}}
+  {{- range .children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "codepart") -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}{{- partial "docsygen/markup/listing.html" (dict "node" . "ctx" $ctx "lang" "cpp") -}}{{- end -}}{{- end -}}
+    {{- else if and (reflect.IsMap .) (eq .tag "docpart") -}}
+<div class="docsygen-embeddoc" style="margin-left:{{ .attributes.col }}ch">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) }}</div>
+    {{- end -}}
+  {{- end -}}
+{{- else with $init -}}
   {{- $tab := strings.Repeat (int (index ((index $m.options "TAB_SIZE") | default (slice "4")) 0)) " " -}}
   {{- /* The fragment as HTML, line breaks kept. */ -}}
   {{- $html := "" -}}

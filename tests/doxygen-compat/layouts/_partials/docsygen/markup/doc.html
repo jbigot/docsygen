@@ -4,7 +4,7 @@
        depends on it (a list item's list).
        Usage: partial "docsygen/markup/doc.html" (dict "node" $description "ctx" $ctx "single" false) */ -}}
 {{- $parent := .node -}}
-{{- $root := in (slice "briefdescription" "detaileddescription" "inbodydescription" "description") $parent.tag -}}
+{{- $root := in (slice "briefdescription" "detaileddescription" "inbodydescription" "description" "docpart") $parent.tag -}}
 {{- range $i, $c := $parent.children -}}
   {{- partial "docsygen/markup/doc-node.html" (dict "node" $c "parent" $parent "index" $i "ctx" $.ctx
       "root" $root "single" ($.single | default false) "grand" ($.grand | default "")) -}}

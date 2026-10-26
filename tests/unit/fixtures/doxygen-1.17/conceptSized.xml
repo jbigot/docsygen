@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
+  <compounddef id="conceptSized" kind="concept">
+    <compoundname>Sized</compoundname>
+    <includes refid="a_8h" local="no">a.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="conceptSized" kindref="compound">Sized</ref> =  requires(T t) {
+  /// The size of a value.
+  t.size();
+}</initializer>
+    <conceptparts>
+      <codepart line="16">    <programlisting>
+<codeline><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">concept<sp/></highlight><highlight class="normal">Sized<sp/>=<sp/></highlight><highlight class="keyword">requires</highlight><highlight class="normal">(T<sp/>t)<sp/>{</highlight></codeline>
+    </programlisting>
+</codepart>
+      <docpart line="17" col="2">
+<para>The size of a value. </para>
+      </docpart>
+      <codepart line="18">    <programlisting>
+<codeline><highlight class="normal"><sp/><sp/>t.size();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+</codepart>
+    </conceptparts>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Types with a size. </para>
+    </detaileddescription>
+    <location file="a.h" line="16" column="1"/>
+  </compounddef>
+</doxygen>

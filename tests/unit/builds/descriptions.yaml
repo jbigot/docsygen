@@ -10,3 +10,9 @@
     xml: '<para><blink/></para>'
     ctx: {model: sample}
   warning: 'docsygen: unknown Doxygen element <blink>'
+- name: mermaid file missing from the XML directory
+  partial: docsygen/markup/doc.html
+  context:
+    xml: '<para><mermaidfile name="nope.mmd">The caption</mermaidfile></para>'
+    ctx: {model: sample}
+  warning: 'docsygen: mermaid file "nope.mmd" not found in assets/doxygen/sample'

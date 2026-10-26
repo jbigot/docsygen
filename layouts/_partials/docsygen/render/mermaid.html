@@ -1,0 +1,21 @@
+{{- /* The source of a Mermaid diagram of a description (Doxygen 1.17+), as {source, ok}: the text
+       of a <mermaid>, or the file a <mermaidfile> names, which Doxygen copies into the XML
+       directory. A missing file warns, naming the file and the page, and gives ok false.
+       Usage: partial "docsygen/render/mermaid.html" (dict "node" $node "ctx" $ctx) */ -}}
+{{- $n := .node -}}
+{{- $ctx := .ctx -}}
+{{- $source := "" -}}
+{{- $ok := true -}}
+{{- if eq $n.tag "mermaid" -}}
+  {{- $source = delimit $n.children "" -}}
+{{- else -}}
+  {{- with resources.Get (path.Join $ctx.model.dir $n.attributes.name) -}}
+    {{- $source = .Content -}}
+  {{- else -}}
+    {{- $page := "" -}}
+    {{- with $ctx.page -}}{{- $page = .Path -}}{{- end -}}
+    {{- warnf "docsygen: mermaid file %q not found in assets/%s (page %s)" $n.attributes.name $ctx.model.dir $page -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "source" $source "ok" $ok -}}

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.17.0" xml:lang="en-US">
+  <compound refid="conceptSized" kind="concept"><name>Sized</name>
+  </compound>
+  <compound refid="a_8h" kind="file"><name>a.h</name>
+    <member refid="a_8h_1a8cdb608bba3eda8b32c80c8971244919" kind="function"><name>f</name></member>
+  </compound>
+</doxygenindex>

@@ -1,0 +1,55 @@
+# What Doxygen 1.16 and 1.17 added to the XML: a concept's parts (1.16), Mermaid diagrams (1.17).
+# The XML is Doxygen 1.17.0's, of fixtures/doxygen-1.17/a.h: run doxygen there and copy index.xml,
+# a_8h.xml, conceptSized.xml and flow.mmd (the copy that Doxygen writes next to the XML for
+# \mermaidfile) from xml/.
+- name: mermaid, a diagram as Doxygen's client-side markup
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: "<detaileddescription><para>A file.</para>\n<para><mermaid caption=\"Flow caption\">graph LR\n  A --&gt; B</mermaid>\n</para></detaileddescription>"
+  expect: "<p>A file.</p>\n<div class=\"mermaidgraph\">\n<pre class=\"mermaid\">\ngraph LR\n  A --&gt; B</pre>\n<div class=\"caption\">\nFlow caption</div>\n</div>\n"
+- name: mermaid, a diagram file read from the XML directory
+  partial: test/doc.html
+  context:
+    ctx: {model: doxygen-1.17}
+    xml: "<detaileddescription><para><mermaidfile name=\"flow.mmd\">File caption</mermaidfile>\n </para></detaileddescription>"
+  expect: "<div class=\"mermaidgraph\">\n<pre class=\"mermaid\">\ngraph TD\n  X --&gt; Y\n</pre>\n<div class=\"caption\">\nFile caption</div>\n</div>\n"
+- name: docsy markup, a mermaid diagram for Docsy's Mermaid plugin
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: "<detaileddescription><para><mermaid caption=\"Flow caption\">graph LR\n  A --&gt; B</mermaid>\n</para></detaileddescription>"
+  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph LR\n  A --&gt; B</pre><figcaption>Flow caption</figcaption></figure>"
+- name: docsy markup, a mermaid diagram file without a caption
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {model: doxygen-1.17}
+    xml: "<detaileddescription><para><mermaidfile name=\"flow.mmd\"></mermaidfile>\n </para></detaileddescription>"
+  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph TD\n  X --&gt; Y\n</pre></figure>"
+- name: concept parts, code fragments and an embedded description
+  partial: test/block-contains.html
+  context:
+    ctx: {model: doxygen-1.17}
+    block: {type: concept-definition, id: conceptSized}
+    contains:
+      - '<h2 id="header-conceptdef" class="groupheader">Concept definition</h2>'
+      - '<span class="keyword">requires</span>(T t) {</div>'
+      - '<div class="embeddoc" style="margin-left:2ch;">'
+      - '<p>The size of a value. </p>'
+      - '<div class="line">  t.size();</div>'
+    lacks: ['Sized =  requires']
+  expect: []
+- name: docsy markup, concept parts, code and an embedded description
+  flavor: docsy
+  partial: test/block-contains.html
+  context:
+    ctx: {model: doxygen-1.17}
+    block: {type: concept-definition, id: conceptSized}
+    contains:
+      - '<div class="docsygen-embeddoc" style="margin-left:2ch">'
+      - '<p>The size of a value. </p>'
+      - 't.size();'
+    lacks: ['Sized =  requires']
+  expect: []

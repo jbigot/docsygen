@@ -162,6 +162,8 @@
   <blockquote class="doxtable">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</blockquote>
 {{- else if in (slice "parblock" "internal") $tag -}}
   {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
+{{- else if in (slice "mermaid" "mermaidfile") $tag -}}
+  {{- partial "docsygen/markup/doc-mermaid.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "htmlonly" -}}
   {{- delimit $n.children "" | safeHTML -}}
 {{- else if in (slice "latexonly" "manonly" "rtfonly" "xmlonly" "docbookonly" "dot" "msc" "plantuml") $tag -}}

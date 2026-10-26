@@ -11,8 +11,8 @@
 # must fail with an error, or succeed with a warning, that contains the given text. mounts maps
 # directories of tests/unit to assets/ paths, or to layouts paths when the target starts with
 # layouts.
-# Every site mounts the XML of the sample and sample-c oracles and the example site's committed
-# PDI XML at assets/doxygen/{sample,sample-c,pdi}.
+# Every site mounts the XML of the sample and sample-c oracles, the example site's committed PDI
+# XML and fixtures/doxygen-1.17 at assets/doxygen/{sample,sample-c,pdi,doxygen-1.17}.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -20,7 +20,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 filter=${1:-${DOCSYGEN_TEST:-}}
 compat=$root/tests/doxygen-compat/layouts/_partials/docsygen
 set -- "$(oracle sample)/xml=assets/doxygen/sample" "$(oracle sample-c)/xml=assets/doxygen/sample-c" \
-  "$root/exampleSite/assets/doxygen/pdi=assets/doxygen/pdi"
+  "$root/exampleSite/assets/doxygen/pdi=assets/doxygen/pdi" "$here/fixtures/doxygen-1.17=assets/doxygen/doxygen-1.17"
 
 # unit_site DIR FLAVOR [SOURCE=TARGET ...]: a unit site in DIR.
 unit_site() {
