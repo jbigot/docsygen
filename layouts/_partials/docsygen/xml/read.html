@@ -1,8 +1,7 @@
-{{- /* The body of docsygen/xml/unmarshal.html, cached by it for the build: the template reader
-       on the resource's content. Hugo clears partialCached at the start of every build and
-       evicts its entries above 1000, so the tree is also kept in hugo.Store, under the
-       resource's name and with a hash of its content: a hugo server rebuild re-parses only the
-       files that changed. */ -}}
+{{- /* The body of docsygen/xml/unmarshal.html: the template reader on the resource's content.
+       The tree is kept in hugo.Store, under the resource's name and with a hash of its content,
+       so a resource is parsed once, and a hugo server rebuild re-parses only the files that
+       changed. Not partialCached: its LRU of 1000 entries would evict the models for these. */ -}}
 {{- $key := printf "docsygen/xml|%s" .Name -}}
 {{- $content := .Content -}}
 {{- $hash := md5 $content -}}

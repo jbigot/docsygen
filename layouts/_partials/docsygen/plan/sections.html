@@ -17,4 +17,4 @@
          groupsOnly  true for a section that only shows member groups
        Sections without members are left out. Cached per compound.
        Usage: partial "docsygen/plan/sections.html" (dict "model" $model "id" $refid) */ -}}
-{{- return partialCached "docsygen/plan/sections/build.html" . (printf "%s|%s" .model.dir .id) -}}
+{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/sections/build.html" "context" . "scope" .model.dir "key" .id) -}}

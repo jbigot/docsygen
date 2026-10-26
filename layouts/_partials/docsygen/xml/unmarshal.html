@@ -4,4 +4,4 @@
        Usage: partial "docsygen/xml/unmarshal.html" (resources.Get "doxygen/pdi/index.xml") */ -}}
 {{- /* Once a Hugo release has the document layout (gohugoio/hugo#15485), switch here on
        hugo.Version to transform.Unmarshal (dict "format" "xml" "targetType" "document") . */ -}}
-{{- return partialCached "docsygen/xml/read.html" . .Name -}}
+{{- return partial "docsygen/xml/read.html" . -}}

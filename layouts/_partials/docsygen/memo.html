@@ -1,0 +1,15 @@
+{{- /* The result of partial NAME on CONTEXT, computed once per build for each KEY in SCOPE (a
+       model's dir), as partialCached would cache it. The results of a scope share one
+       partialCached entry: Hugo's partialCached is an LRU of 1000 entries, and an entry per page
+       or compound evicts the models they all use, which are then rebuilt for every page.
+       Usage: partial "docsygen/memo.html" (dict "name" "docsygen/plan/sections/build.html"
+              "context" . "scope" .model.dir "key" .id) */ -}}
+{{- $table := partialCached "docsygen/memo/table.html" .scope .scope -}}
+{{- $key := printf "%s|%s" .name .key -}}
+{{- $r := $table.Get $key -}}
+{{- if not $r -}}
+  {{- /* Wrapped, so that an empty result is found too. */ -}}
+  {{- $r = dict "v" (partial .name .context) -}}
+  {{- $table.Set $key $r -}}
+{{- end -}}
+{{- return $r.v -}}

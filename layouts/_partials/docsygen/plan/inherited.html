@@ -5,4 +5,4 @@
        included, friends and private members excluded, without the members the class overrides or hides (not in its listofallmembers), and members seen through
        an earlier base. Cached per class.
        Usage: partial "docsygen/plan/inherited.html" (dict "model" $model "id" $refid) */ -}}
-{{- return partialCached "docsygen/plan/inherited/build.html" . (printf "%s|%s" .model.dir .id) -}}
+{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/inherited/build.html" "context" . "scope" .model.dir "key" .id) -}}

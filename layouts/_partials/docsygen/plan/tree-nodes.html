@@ -21,4 +21,4 @@
        Cached per model and list.
        A node of the hierarchy also has a link, the compound it links to.
        Usage: partial "docsygen/plan/tree-nodes.html" (dict "model" $model "name" "annotated") */ -}}
-{{- return partialCached "docsygen/plan/tree/build.html" . (printf "%s|%s" .model.dir .name) -}}
+{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/tree/build.html" "context" . "scope" .model.dir "key" .name) -}}
