@@ -1,0 +1,547 @@
+{{- /* The Docsy scheme: the pages of the roles, as a tree of readable paths under the version root.
+         ""          the root and the main page (indexpage), titled from it or PROJECT_NAME
+         pages/      (10) the pages, nested by innerpage, the main page's subpages at the top
+         topics/     (20) the groups, nested by innergroup
+         api/        (30) "API reference": namespaces, classes and concepts, nested by scope
+         files/      (40) directories and files, by location (pathMap), dirs before files
+         examples/   (50) the examples
+         indexes/    (60) classes, hierarchy, class-members, namespace-members, file-members
+         other/      (70) compounds of other kinds
+       A section or page exists only with roles. A class page holds its all-members role, a file
+       page its source role. A segment is docsygen/paths/segment.html of the name (relative to
+       the parent's in api/), with -2, … on a collision, in index order. Weights follow innerpage
+       and innergroup, the name ignoring case in api/, and dirs then files by name in files/.
+       pathMap: the location relative to the common leading directories, rewritten by the first
+       {from, to} whose from starts it, then stripped of the new common leading directories.
+       Dirs mapped to one path share the first one's page; a dir with no file under its path
+       goes to its nearest kept ancestor's page, or to files/: both are in merged.
+       Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
+       for member groups, all-members, source, letter-<l>), the members (slug(name)), the enum
+       values (<enum anchor>-<slug(value)>), the sections (slug(title)), the anchors (slug(id
+       without its compound's prefix)); -2, … on a collision, "a" for an empty slug.
+       Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
+{{- define "_partials/docsygen/paths/scheme/alloc.html" -}}
+  {{- /* A name unique in .page of scratch .s: .base, or .base-2, …; "a" for an empty one. */ -}}
+  {{- $base := .base | default "a" -}}
+  {{- $a := $base -}}
+  {{- if index (.s.Get "used") (printf "%s|%s" .page $a) -}}
+    {{- range seq 2 10000 -}}
+      {{- $c := printf "%s-%d" $base . -}}
+      {{- if not (index ($.s.Get "used") (printf "%s|%s" $.page $c)) -}}{{- $a = $c -}}{{- break -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- .s.SetInMap "used" (printf "%s|%s" .page $a) true -}}
+  {{- return $a -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/add.html" -}}
+  {{- /* Add a page under .parent ("" for the root) to scratch .s, and return its key, its path. */ -}}
+  {{- $s := .s -}}
+  {{- $key := "index" -}}
+  {{- $path := "" -}}
+  {{- if .parent -}}
+    {{- $seg := partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" (printf "/%s" .parent) "base" .seg) -}}
+    {{- $pp := index ($s.Get "path") .parent -}}
+    {{- $path = cond (eq $pp "") $seg (printf "%s/%s" $pp $seg) -}}
+    {{- $key = $path -}}
+    {{- $s.SetInMap "children" .parent (add (index ($s.Get "children") .parent | default 0) 1) -}}
+  {{- end -}}
+  {{- $s.SetInMap "path" $key $path -}}
+  {{- $s.SetInMap "parent" $key (.parent | default "") -}}
+  {{- $s.SetInMap "title" $key .title -}}
+  {{- $s.SetInMap "linkTitle" $key (.linkTitle | default .title) -}}
+  {{- $s.SetInMap "weight" $key (.weight | default 0) -}}
+  {{- $s.SetInMap "brief" $key (.brief | default "") -}}
+  {{- $s.SetInMap "sort" $key (.sort | default "") -}}
+  {{- $s.SetInMap "roles" $key slice -}}
+  {{- $s.Set "order" (($s.Get "order") | append $key) -}}
+  {{- partial "docsygen/paths/scheme/roles.html" (dict "s" $s "key" $key "roles" (.roles | default slice)) -}}
+  {{- return $key -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/roles.html" -}}
+  {{- /* Add .roles to page .key of scratch .s. */ -}}
+  {{- $s := .s -}}
+  {{- $key := .key -}}
+  {{- range .roles -}}
+    {{- $s.SetInMap "roles" $key ((index ($s.Get "roles") $key) | append .) -}}
+    {{- if eq .role "compound" -}}{{- $s.SetInMap "rolePage" .id $key -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/section.html" -}}
+  {{- /* The top section .name of scratch .s, created with .title, .linkTitle, .weight and .roles if
+         need be. */ -}}
+  {{- if not (index (.s.Get "path") .name) -}}
+    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" .s "parent" "index" "seg" .name "title" .title
+        "linkTitle" .linkTitle "weight" .weight "roles" .roles) -}}
+  {{- end -}}
+  {{- return .name -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/titled.html" -}}
+  {{- /* Compound .id (a page or a group) under .parent with weight .weight, then the compounds of its
+         .tag children (innerpage, innergroup) that have a compound role and no page yet. */ -}}
+  {{- $s := .s -}}
+  {{- $m := .m -}}
+  {{- $e := index $m.ids .id -}}
+  {{- $title := "" -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+  {{- $title = $title | default $e.name -}}
+  {{- $s.SetInMap "placed" .id true -}}
+  {{- $key := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" .parent "seg" (partial "docsygen/paths/segment.html" (dict "name" $e.name "kind" $e.kind))
+      "title" $title "weight" .weight "roles" (slice (index ($s.Get "crole") .id)) "brief" .id) -}}
+  {{- $w := 0 -}}
+  {{- range $e.node.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag $.tag) (index ($s.Get "crole") .attributes.refid) (not (index ($s.Get "placed") .attributes.refid)) -}}
+      {{- $w = add $w 1 -}}
+      {{- $_ := partial "docsygen/paths/scheme/titled.html" (dict "s" $s "m" $m "id" .attributes.refid "parent" $key "weight" $w "tag" $.tag) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $key -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/strip.html" -}}
+  {{- /* .locs {id: location} without their common leading directories; .dirs {id: true} marks
+         the locations that are directories. */ -}}
+  {{- $common := slice -}}
+  {{- $started := false -}}
+  {{- range $id, $loc := .locs -}}
+    {{- $d := cond (index $.dirs $id) $loc (path.Dir $loc) -}}
+    {{- $comps := cond (in (slice "" ".") $d) slice (split $d "/") -}}
+    {{- if not $started -}}{{- $common = $comps -}}{{- $started = true -}}
+    {{- else -}}
+      {{- $n := 0 -}}
+      {{- range $i, $c := $common -}}{{- if and (eq $n $i) (lt $i (len $comps)) (eq $c (index $comps $i)) -}}{{- $n = add $n 1 -}}{{- end -}}{{- end -}}
+      {{- $common = first $n $common -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $prefix := delimit ($common | default slice) "/" -}}
+  {{- $out := newScratch -}}
+  {{- $out.Set "m" dict -}}
+  {{- range $id, $loc := .locs -}}
+    {{- $rel := $loc -}}
+    {{- if $prefix -}}{{- $rel = cond (eq $loc $prefix) "" (strings.TrimPrefix (printf "%s/" $prefix) $loc) -}}{{- end -}}
+    {{- $out.SetInMap "m" $id $rel -}}
+  {{- end -}}
+  {{- return $out.Get "m" -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/plain.html" -}}
+  {{- /* The text of .children for a description: code spans in backquotes, &, < and > as entities. */ -}}
+  {{- $out := "" -}}
+  {{- range .children -}}
+    {{- if not (reflect.IsMap .) -}}
+      {{- $out = add $out (replace (replace (replace . "&" "&amp;") "<" "&lt;") ">" "&gt;") -}}
+    {{- else if eq .tag "computeroutput" -}}
+      {{- $out = printf "%s`%s`" $out (partial "docsygen/text/plain.html" .) -}}
+    {{- else if .children -}}
+      {{- $out = printf "%s%s%s" $out (partial "docsygen/paths/scheme/plain.html" .) (cond (eq .tag "para") " " "") -}}
+    {{- else -}}
+      {{- $out = add $out (partial "docsygen/paths/scheme/plain.html" (dict "children" (slice (partial "docsygen/text/plain.html" (dict "children" (slice .)))))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/ids.html" -}}
+  {{- /* The ids of the sections, anchors and xrefsects under .children, in document order. */ -}}
+  {{- $out := slice -}}
+  {{- range .children -}}
+    {{- if and (reflect.IsMap .) (not (in (slice "programlisting" "listofallmembers" "location" "references" "referencedby" "type"
+        "incdepgraph" "invincdepgraph" "inheritancegraph" "collaborationgraph") .tag)) -}}
+      {{- if and .attributes.id (in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" "anchor" "xrefsect") .tag) -}}{{- $out = $out | append .attributes.id -}}{{- end -}}
+      {{- if .children -}}{{- range partial "docsygen/paths/scheme/ids.html" . -}}{{- $out = $out | append . -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $m := .model -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $s := newScratch -}}
+{{- range slice "used" "path" "parent" "title" "linkTitle" "weight" "roles" "brief" "children" "sort" "rolePage" "crole"
+    "placed" "anchor" "homes" "merged" -}}{{- $s.Set . dict -}}{{- end -}}
+{{- $s.Set "order" slice -}}
+
+{{- /* The roles, by kind. */ -}}
+{{- $rootRoles := slice -}}
+{{- $more := newScratch -}}
+{{- range .roles -}}
+  {{- if or (eq .role "root") (and (eq .role "compound") (eq .id "indexpage")) -}}{{- $rootRoles = $rootRoles | append . -}}
+  {{- else if eq .role "compound" -}}{{- $s.SetInMap "crole" .id . -}}
+  {{- else if in (slice "all-members" "source") .role -}}{{- $more.SetInMap .role .id . -}}
+  {{- else if eq .role "tree" -}}{{- $more.SetInMap "tree" .name . -}}
+  {{- else if eq .role "index" -}}{{- $more.SetInMap "index" .name ((index ($more.Get "index") .name | default slice) | append .) -}}
+  {{- end -}}
+{{- end -}}
+{{- $tree := $more.Get "tree" | default dict -}}
+{{- $crole := $s.Get "crole" -}}
+
+{{- /* The root. */ -}}
+{{- $title := index ((index $m.options "PROJECT_NAME") | default (slice "")) 0 -}}
+{{- with index $m.ids "indexpage" -}}
+  {{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- with partial "docsygen/text/plain.html" . -}}{{- $title = . -}}{{- end -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" "" "seg" "" "title" $title "roles" $rootRoles "brief" "indexpage") -}}
+
+{{- /* pages/ and topics/. */ -}}
+{{- range slice (dict "kind" "page" "tag" "innerpage" "name" "pages" "title" "Pages" "weight" 10)
+    (dict "kind" "group" "tag" "innergroup" "name" "topics" "title" "Topics" "weight" 20) -}}
+  {{- $t := . -}}
+  {{- $listed := newScratch -}}
+  {{- range $m.order -}}
+    {{- if and (eq (index $m.ids .).kind $t.kind) (ne . "indexpage") -}}
+      {{- range (index $m.ids .).node.children -}}{{- if and (reflect.IsMap .) (eq .tag $t.tag) -}}{{- $listed.Set .attributes.refid true -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $tops := slice -}}
+  {{- if eq $t.kind "page" -}}
+    {{- with index $m.ids "indexpage" -}}
+      {{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "innerpage") (index $crole .attributes.refid) -}}{{- $tops = $tops | append .attributes.refid -}}{{- end -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- if and (eq (index $m.ids .).kind $t.kind) (ne . "indexpage") (index $crole .) (not ($listed.Get .)) (not (in $tops .)) -}}{{- $tops = $tops | append . -}}{{- end -}}
+  {{- end -}}
+  {{- if or $tops (index $tree $t.name) -}}
+    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" $t.name "title" $t.title "weight" $t.weight
+        "roles" (cond (isset $tree $t.name) (slice (index $tree $t.name)) slice)) -}}
+    {{- range $i, $id := $tops -}}
+      {{- if not (index ($s.Get "placed") $id) -}}
+        {{- $_ := partial "docsygen/paths/scheme/titled.html" (dict "s" $s "m" $m "id" $id "parent" $sec "weight" (add $i 1) "tag" $t.tag) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* api/: namespaces, classes and concepts under the nearest enclosing one that has a page. */ -}}
+{{- $scopes := partial "docsygen/model/scopes.html" $m -}}
+{{- $conceptScope := newScratch -}}
+{{- range $m.order -}}
+  {{- $ns := . -}}
+  {{- if eq (index $m.ids $ns).kind "namespace" -}}
+    {{- range (index $m.ids $ns).node.children -}}{{- if and (reflect.IsMap .) (eq .tag "innerconcept") -}}{{- $conceptScope.Set .attributes.refid $ns -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $api := slice -}}
+{{- range $i, $id := $m.order -}}
+  {{- $e := index $m.ids $id -}}
+  {{- if and (index $crole $id) (or (in $classLike $e.kind) (in (slice "namespace" "concept") $e.kind)) -}}
+    {{- $parent := "" -}}
+    {{- $depth := 0 -}}
+    {{- $up := index $scopes $id | default ($conceptScope.Get $id) -}}
+    {{- range seq 32 -}}
+      {{- if $up -}}
+        {{- if and (not $parent) (index $crole $up) -}}{{- $parent = $up -}}{{- end -}}
+        {{- $depth = add $depth 1 -}}
+        {{- $up = index $scopes $up -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $api = $api | append (dict "id" $id "parent" $parent "order" (printf "%03d%06d" $depth $i)) -}}
+  {{- end -}}
+{{- end -}}
+{{- if or $api (index $tree "annotated") (index $tree "namespaces") (index $tree "concepts") -}}
+  {{- $treeRoles := slice -}}
+  {{- range slice "annotated" "namespaces" "concepts" -}}{{- with index $tree . -}}{{- $treeRoles = $treeRoles | append . -}}{{- end -}}{{- end -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "api" "title" "API reference" "linkTitle" "API" "weight" 30 "roles" $treeRoles) -}}
+  {{- range sort $api "order" -}}
+    {{- $e := index $m.ids .id -}}
+    {{- $rel := $e.name -}}
+    {{- $title := $e.name -}}
+    {{- with .parent -}}{{- $rel = strings.TrimPrefix (printf "%s::" (index $m.ids .).name) $e.name -}}{{- end -}}
+    {{- if eq $e.name "" -}}
+      {{- $rel = "(anonymous namespace)" -}}
+      {{- $title = cond (ne .parent "") (printf "%s::%s" (index $m.ids .parent).name $rel) $rel -}}
+    {{- end -}}
+    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" (cond (ne .parent "") (index ($s.Get "rolePage") .parent) $sec)
+        "seg" (partial "docsygen/paths/segment.html" (dict "name" (cond (eq $e.name "") "" $rel) "kind" $e.kind))
+        "title" $title "linkTitle" $rel "roles" (slice (index $crole .id)) "brief" .id "sort" (printf "%s\x00%s" (lower $rel) $rel)) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $id, $role := $more.Get "all-members" -}}
+  {{- partial "docsygen/paths/scheme/roles.html" (dict "s" $s "key" (index ($s.Get "rolePage") $id) "roles" (slice $role)) -}}
+{{- end -}}
+
+{{- /* files/: directories and files at their mapped locations. */ -}}
+{{- $locs := newScratch -}}
+{{- $dirs := newScratch -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- if in (slice "dir" "file") $e.kind -}}
+    {{- $loc := $e.name -}}
+    {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "location") .attributes.file -}}{{- $loc = .attributes.file -}}{{- end -}}{{- end -}}
+    {{- $locs.Set . (strings.TrimSuffix "/" $loc) -}}
+    {{- if eq $e.kind "dir" -}}{{- $dirs.Set . true -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $mapped := newScratch -}}
+{{- range $id, $rel := partial "docsygen/paths/scheme/strip.html" (dict "locs" $locs.Values "dirs" $dirs.Values) -}}
+  {{- $probe := cond (and ($dirs.Get $id) (ne $rel "")) (printf "%s/" $rel) $rel -}}
+  {{- range $.pathMap -}}
+    {{- if and (not ($mapped.Get (printf "done|%s" $id))) .from (hasPrefix $probe .from) -}}
+      {{- $mapped.Set $id (strings.TrimSuffix "/" (printf "%s%s" (.to | default "") (strings.TrimPrefix .from $probe))) -}}
+      {{- $mapped.Set (printf "done|%s" $id) true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not ($mapped.Get (printf "done|%s" $id)) -}}{{- $mapped.Set $id $rel -}}{{- end -}}
+{{- end -}}
+{{- $final := newScratch -}}
+{{- $finalLocs := newScratch -}}
+{{- range $id, $_ := $locs.Values -}}{{- $finalLocs.Set $id ($mapped.Get $id) -}}{{- end -}}
+{{- range $id, $rel := partial "docsygen/paths/scheme/strip.html" (dict "locs" $finalLocs.Values "dirs" $dirs.Values) -}}{{- $final.Set $id $rel -}}{{- end -}}
+{{- $filePaths := slice -}}
+{{- range $m.order -}}{{- if eq (index $m.ids .).kind "file" -}}{{- $filePaths = $filePaths | append ($final.Get .) -}}{{- end -}}{{- end -}}
+{{- /* Kept dirs: those with a file under their path; the first of a path gets the page. */ -}}
+{{- $kept := newScratch -}}
+{{- $keptList := slice -}}
+{{- range $i, $id := $m.order -}}
+  {{- if and ($dirs.Get $id) (index $crole $id) -}}
+    {{- $d := $final.Get $id -}}
+    {{- $has := false -}}
+    {{- range $filePaths -}}{{- if hasPrefix . (printf "%s/" $d) -}}{{- $has = true -}}{{- end -}}{{- end -}}
+    {{- if and (ne $d "") $has (not ($kept.Get $d)) -}}
+      {{- $kept.Set $d $id -}}
+      {{- $keptList = $keptList | append (dict "id" $id "path" $d "order" (printf "%03d%06d" (len (split $d "/")) $i)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/scheme/dir-parent.html" -}}
+  {{- /* The page of the longest kept dir path that is a proper prefix of .path, or "". */ -}}
+  {{- $best := "" -}}
+  {{- $page := "" -}}
+  {{- range $d, $_ := .kept -}}
+    {{- if and (hasPrefix $.path (printf "%s/" $d)) (gt (len $d) (len $best)) -}}{{- $best = $d -}}{{- end -}}
+  {{- end -}}
+  {{- with $best -}}{{- $page = index $.pages . -}}{{- end -}}
+  {{- return dict "path" $best "page" $page -}}
+{{- end -}}
+{{- $fileRoles := newScratch -}}
+{{- range $m.order -}}
+  {{- if and (eq (index $m.ids .).kind "file") (or (index $crole .) (index ($more.Get "source" | default dict) .)) -}}{{- $fileRoles.Set . true -}}{{- end -}}
+{{- end -}}
+{{- if or $keptList ($fileRoles.Values) (index $tree "files") -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "files" "title" "Files" "weight" 40
+      "roles" (cond (isset $tree "files") (slice (index $tree "files")) slice)) -}}
+  {{- $dirPages := newScratch -}}
+  {{- range sort $keptList "order" -}}
+    {{- $p := partial "docsygen/paths/scheme/dir-parent.html" (dict "path" .path "kept" $dirPages.Values "pages" $dirPages.Values) -}}
+    {{- $rest := cond (ne $p.path "") (strings.TrimPrefix (printf "%s/" $p.path) .path) .path -}}
+    {{- $key := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" ($p.page | default $sec)
+        "seg" (partial "docsygen/paths/segment.html" (dict "name" $rest "kind" "dir")) "title" .path
+        "roles" (slice (index $crole .id)) "brief" .id "sort" (printf "0%s\x00%s" (lower $rest) $rest)) -}}
+    {{- $dirPages.Set .path $key -}}
+  {{- end -}}
+  {{- /* The other dirs: on the page of the same path, or of their nearest kept ancestor. */ -}}
+  {{- range $m.order -}}
+    {{- $id := . -}}
+    {{- if and ($dirs.Get $id) (index $crole $id) (not (index ($s.Get "rolePage") $id)) -}}
+      {{- $page := $dirPages.Get ($final.Get $id) -}}
+      {{- $up := index $scopes $id -}}
+      {{- range seq 32 -}}
+        {{- if and (not $page) $up -}}
+          {{- $page = $dirPages.Get ($final.Get $up) -}}
+          {{- $up = index $scopes $up -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $page = $page | default $sec -}}
+      {{- partial "docsygen/paths/scheme/roles.html" (dict "s" $s "key" $page "roles" (slice (index $crole $id))) -}}
+      {{- $s.SetInMap "merged" $id $page -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $id := . -}}
+    {{- if $fileRoles.Get $id -}}
+      {{- $f := $final.Get $id -}}
+      {{- $p := partial "docsygen/paths/scheme/dir-parent.html" (dict "path" $f "kept" $dirPages.Values "pages" $dirPages.Values) -}}
+      {{- $rest := cond (ne $p.path "") (strings.TrimPrefix (printf "%s/" $p.path) $f) $f -}}
+      {{- $roles := slice -}}
+      {{- with index $crole $id -}}{{- $roles = $roles | append . -}}{{- end -}}
+      {{- with index ($more.Get "source" | default dict) $id -}}{{- $roles = $roles | append . -}}{{- end -}}
+      {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" ($p.page | default $sec)
+          "seg" (partial "docsygen/paths/segment.html" (dict "name" $rest "kind" "file")) "title" (path.Base $f)
+          "roles" $roles "brief" $id "sort" (printf "1%s\x00%s" (lower $rest) $rest)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* examples/. */ -}}
+{{- $examples := slice -}}
+{{- range $m.order -}}{{- if and (eq (index $m.ids .).kind "example") (index $crole .) -}}{{- $examples = $examples | append . -}}{{- end -}}{{- end -}}
+{{- if or $examples (index $tree "examples") -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "examples" "title" "Examples" "weight" 50
+      "roles" (cond (isset $tree "examples") (slice (index $tree "examples")) slice)) -}}
+  {{- range $i, $id := $examples -}}
+    {{- $e := index $m.ids $id -}}
+    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" (partial "docsygen/paths/segment.html" (dict "name" $e.name "kind" $e.kind))
+        "title" $e.name "weight" (add $i 1) "roles" (slice (index $crole $id)) "brief" $id) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* indexes/. */ -}}
+{{- $indexRoles := $more.Get "index" | default dict -}}
+{{- $indexPages := slice
+    (dict "name" "classes" "title" "Class Index" "roles" (index $indexRoles "classes" | default slice))
+    (dict "name" "hierarchy" "title" "Class Hierarchy" "roles" (cond (isset $tree "hierarchy") (slice (index $tree "hierarchy")) slice))
+    (dict "name" "class-members" "title" "Class Members" "roles" (index $indexRoles "class-members" | default slice))
+    (dict "name" "namespace-members" "title" "Namespace Members" "roles" (index $indexRoles "namespace-members" | default slice))
+    (dict "name" "file-members" "title" "File Members" "roles" (index $indexRoles "file-members" | default slice)) -}}
+{{- range $i, $p := $indexPages -}}
+  {{- if $p.roles -}}
+    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "indexes" "title" "Indexes" "weight" 60 "roles" slice) -}}
+    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" $p.name "title" $p.title "weight" (add $i 1) "roles" $p.roles) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* other/: the compounds placed nowhere else. */ -}}
+{{- range $i, $id := $m.order -}}
+  {{- if and (index $crole $id) (not (index ($s.Get "rolePage") $id)) -}}
+    {{- $e := index $m.ids $id -}}
+    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "other" "title" "Other" "weight" 70 "roles" slice) -}}
+    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" (partial "docsygen/paths/segment.html" (dict "name" $e.name "kind" $e.kind))
+        "title" $e.name "weight" (add $i 1) "roles" (slice (index $crole $id)) "brief" $id) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Weights by name, where pages carry a sort key. */ -}}
+{{- $byParent := newScratch -}}
+{{- range $key := $s.Get "order" -}}
+  {{- $sort := index ($s.Get "sort") $key -}}
+  {{- if $sort -}}
+    {{- $p := index ($s.Get "parent") $key -}}
+    {{- $byParent.Set $p (($byParent.Get $p | default slice) | append (dict "key" $key "sort" $sort)) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $p, $list := $byParent.Values -}}
+  {{- range $i, $c := partial "docsygen/text/sort-bytes.html" (dict "list" $list "key" "sort") -}}
+    {{- $s.SetInMap "weight" $c.key (add $i 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Anchors: on the page that shows each compound, its own or its container's. */ -}}
+{{- $groupsMap := partialCached "docsygen/plan/groups/map.html" $m $m.dir -}}
+{{- $shown := newScratch -}}
+{{- $rolePage := $s.Get "rolePage" -}}
+{{- range $id := $m.order -}}
+  {{- $page := index $rolePage $id -}}
+  {{- if not $page -}}
+    {{- with index $scopes $id | default (index (index $groupsMap $id | default (slice "")) 0) -}}{{- $page = index $rolePage . -}}{{- end -}}
+  {{- end -}}
+  {{- with $page -}}{{- $shown.Set . (($shown.Get . | default slice) | append $id) -}}{{- end -}}
+{{- end -}}
+{{- $withIds := newScratch -}}
+{{- range $id, $e := $m.ids -}}{{- if in (slice "section" "anchor" "xrefsect") $e.what -}}{{- $withIds.Set $e.home true -}}{{- end -}}{{- end -}}
+{{- $entries := partial "docsygen/paths/index-entries.html" $m -}}
+{{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
+{{- range $key := $s.Get "order" -}}
+  {{- $fixed := slice (dict "key" "details" "base" "details") -}}
+  {{- range index ($s.Get "roles") $key -}}
+    {{- if eq .role "compound" -}}
+      {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+        {{- $base := .key -}}
+        {{- if hasPrefix .key "user-defined-" -}}{{- $base = partial "docsygen/text/slug.html" .heading | default .key -}}{{- end -}}
+        {{- $fixed = $fixed | append (dict "key" .key "base" $base) -}}
+      {{- end -}}
+    {{- else if in (slice "all-members" "source") .role -}}
+      {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
+    {{- else if eq .role "index" -}}
+      {{- $letters := slice -}}
+      {{- if eq .name "classes" -}}
+        {{- range $m.order -}}
+          {{- $e := index $m.ids . -}}
+          {{- if and (in $classLike $e.kind) (index $crole .) -}}
+            {{- $n := index (split (index (split $e.name "<") 0) "::") (sub (len (split (index (split $e.name "<") 0) "::")) 1) -}}
+            {{- $letters = $letters | append (upper (substr (partial "docsygen/text/ignore-prefix.html" (dict "name" $n "prefixes" $prefixes)) 0 1)) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- else -}}
+        {{- range index $entries .name -}}{{- $letters = $letters | append .letter -}}{{- end -}}
+      {{- end -}}
+      {{- range uniq $letters -}}
+        {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $fixed -}}
+    {{- if not (index ($s.Get "anchor") (printf "%s\x00%s" $key .key)) -}}
+      {{- $s.SetInMap "anchor" (printf "%s\x00%s" $key .key) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" .base)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $compounds := $shown.Get $key | default slice -}}
+  {{- /* Members, the embedded compounds first. */ -}}
+  {{- range $compounds -}}
+    {{- $e := index $m.ids . -}}
+    {{- if ne (index $rolePage .) $key -}}
+      {{- $n := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+      {{- $s.SetInMap "homes" . (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/slug.html" $n))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $enums := slice -}}
+  {{- range $c := $compounds -}}
+    {{- range (index $m.ids $c).node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "sectiondef") -}}
+        {{- range .children -}}
+          {{- if and (reflect.IsMap .) (eq .tag "memberdef") -}}
+            {{- $id := .attributes.id -}}
+            {{- $e := index $m.ids $id -}}
+            {{- if and (eq $e.home $c) (not (isset ($s.Get "homes") $id)) -}}
+              {{- $n := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+              {{- $s.SetInMap "homes" $id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/slug.html" $n))) -}}
+              {{- if eq $e.kind "enum" -}}{{- $enums = $enums | append $e -}}{{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $enum := $enums -}}
+    {{- range $enum.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "enumvalue") (not (isset ($s.Get "homes") .attributes.id)) -}}
+        {{- $n := "" -}}
+        {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $n = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+        {{- $s.SetInMap "homes" .attributes.id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key
+            "base" (printf "%s-%s" (index ($s.Get "homes") $enum.id) (partial "docsygen/text/slug.html" $n)))) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* Sections, then anchors, in document order. */ -}}
+  {{- $found := slice -}}
+  {{- range $compounds -}}
+    {{- $c := . -}}
+    {{- if $withIds.Get $c -}}
+      {{- range partial "docsygen/paths/scheme/ids.html" (index $m.ids $c).node -}}
+        {{- $e := index $m.ids . -}}
+        {{- if and $e (eq $e.home $c) (in (slice "section" "anchor" "xrefsect") $e.what) -}}{{- $found = $found | append $e -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $what := slice "section" "anchor" -}}
+    {{- range $found -}}
+      {{- if and (eq (cond (eq .what "section") "section" "anchor") $what) (not (isset ($s.Get "homes") .id)) -}}
+        {{- $base := cond (eq $what "section") (partial "docsygen/text/slug.html" .name) (partial "docsygen/text/slug.html" (strings.TrimPrefix (printf "%s_1" .home) .id)) -}}
+        {{- $s.SetInMap "homes" .id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" $base)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $id, $_ := $rolePage -}}{{- $s.SetInMap "homes" $id "" -}}{{- end -}}
+
+{{- /* The result. */ -}}
+{{- $pages := slice -}}
+{{- range $key := $s.Get "order" -}}
+  {{- $parent := index ($s.Get "parent") $key -}}
+  {{- $description := "" -}}
+  {{- $summary := "" -}}
+  {{- with index ($s.Get "brief") $key -}}
+    {{- with index $m.ids . -}}
+      {{- range .node.children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}
+          {{- $description = strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/paths/scheme/plain.html" .)) -}}
+          {{- $summary = partial "docsygen/text/markdown.html" . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $section := or (eq $key "index") (eq $parent "index") (gt (index ($s.Get "children") $key | default 0) 0) -}}
+  {{- $pages = $pages | append (dict "key" $key "path" (index ($s.Get "path") $key) "kind" (cond $section "section" "page")
+      "parent" $parent "title" (index ($s.Get "title") $key) "linkTitle" (index ($s.Get "linkTitle") $key)
+      "weight" (index ($s.Get "weight") $key) "description" $description "summary" $summary "roles" (index ($s.Get "roles") $key)) -}}
+{{- end -}}
+{{- $anchors := newScratch -}}
+{{- range $k, $a := $s.Get "anchor" -}}
+  {{- $parts := split $k "\x00" -}}
+  {{- $anchors.SetInMap (index $parts 0) (index $parts 1) $a -}}
+{{- end -}}
+{{- return dict "pages" $pages "anchors" $anchors.Values "merged" ($s.Get "merged") "homes" ($s.Get "homes") -}}

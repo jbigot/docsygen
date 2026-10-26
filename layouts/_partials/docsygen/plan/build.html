@@ -1,8 +1,12 @@
-{{- /* The body of docsygen/plan.html. */ -}}
+{{- /* The body of docsygen/plan.html. A page that absorbs compounds of other pages (paths.merged)
+       ends with a merged block. */ -}}
 {{- $blocks := slice -}}
 {{- range .entry.roles -}}
   {{- range partial (printf "docsygen/plan/%s.html" .role) (dict "role" . "entry" $.entry "ctx" $.ctx) -}}
     {{- $blocks = $blocks | append . -}}
   {{- end -}}
 {{- end -}}
+{{- $merged := false -}}
+{{- with .ctx.paths -}}{{- range $_, $key := .merged -}}{{- if eq $key $.entry.key -}}{{- $merged = true -}}{{- end -}}{{- end -}}{{- end -}}
+{{- if $merged -}}{{- $blocks = $blocks | append (dict "type" "merged" "key" .entry.key) -}}{{- end -}}
 {{- return $blocks -}}

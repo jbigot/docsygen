@@ -1,0 +1,10 @@
+{{- /* The URL segment of a name (docsygen/text/slug.html): "anonymous" for an anonymous namespace
+       (an empty name), "x" when the slug is empty.
+       Usage: partial "docsygen/paths/segment.html" (dict "name" "Foo< int >" "kind" "class") → foo-int */ -}}
+{{- $out := "" -}}
+{{- if and (eq .name "") (eq .kind "namespace") -}}
+  {{- $out = "anonymous" -}}
+{{- else -}}
+  {{- $out = partial "docsygen/text/slug.html" .name | default "x" -}}
+{{- end -}}
+{{- return $out -}}

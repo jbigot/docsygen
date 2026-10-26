@@ -1,0 +1,27 @@
+{{- /* An element's text as one line of Markdown: computeroutput as a code span, bold as **, emphasis
+       as *, other elements as their text, everything else escaped (docsygen/text/md-escape.html),
+       whitespace collapsed.
+       Usage: partial "docsygen/text/markdown.html" $briefdescription */ -}}
+{{- define "_partials/docsygen/text/markdown/inline.html" -}}
+  {{- $out := "" -}}
+  {{- range .children -}}
+    {{- if not (reflect.IsMap .) -}}
+      {{- $out = add $out (partial "docsygen/text/md-escape.html" (replaceRE `\s+` " " .)) -}}
+    {{- else if eq .tag "computeroutput" -}}
+      {{- $code := replaceRE `\s+` " " (partial "docsygen/text/plain.html" .) -}}
+      {{- $fence := cond (strings.Contains $code "`") "``" "`" -}}
+      {{- $pad := cond (or (hasPrefix $code "`") (hasSuffix $code "`")) " " "" -}}
+      {{- $out = printf "%s%s%s%s%s%s" $out $fence $pad $code $pad $fence -}}
+    {{- else if in (slice "bold" "emphasis") .tag -}}
+      {{- $mark := cond (eq .tag "bold") "**" "*" -}}
+      {{- with strings.TrimSpace (partial "docsygen/text/markdown/inline.html" .) -}}{{- $out = printf "%s%s%s%s" $out $mark . $mark -}}{{- end -}}
+    {{- else if .children -}}
+      {{- /* A paragraph ends with a space, so that two paragraphs don't run together. */ -}}
+      {{- $out = printf "%s%s%s" $out (partial "docsygen/text/markdown/inline.html" .) (cond (eq .tag "para") " " "") -}}
+    {{- else -}}
+      {{- $out = add $out (partial "docsygen/text/md-escape.html" (replaceRE `\s+` " " (partial "docsygen/text/plain.html" (dict "children" (slice .))))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- return strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/markdown/inline.html" .)) -}}

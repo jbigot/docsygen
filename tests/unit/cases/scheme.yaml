@@ -1,0 +1,105 @@
+- name: scheme, a class under its namespace
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [path, classdemo_1_1Widget]
+  expect: api/demo/widget
+- name: scheme, a class whose name differs only by case takes a suffix
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [path, classdemo_1_1widget]
+  expect: api/demo/widget-2
+- name: scheme, the segment of an anonymous namespace
+  flavor: docsy
+  partial: docsygen/paths/segment.html
+  context: {name: "", kind: namespace}
+  expect: anonymous
+- name: scheme, the segment of an operator
+  flavor: docsy
+  partial: docsygen/paths/segment.html
+  context: {name: "operator()", kind: function}
+  expect: operator
+- name: scheme, an empty segment
+  flavor: docsy
+  partial: docsygen/paths/segment.html
+  context: {name: "::", kind: class}
+  expect: x
+- name: scheme, a template specialization
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [path, classdemo_1_1Foo_3_01int_01_4]
+  expect: api/demo/foo-int
+- name: scheme, the first overload's anchor
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, anchor]
+  expect: resize
+- name: scheme, the second overload's anchor
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca, anchor]
+  expect: resize-2
+- name: scheme, a member named details yields to the fixed anchor
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68, anchor]
+  expect: details-2
+- name: scheme, the C sample has no pages section
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample-c}
+  select: [has, pages]
+  expect: null
+- name: scheme, the C sample's structs are children of api
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample-c}
+  select: [path, structcpoint]
+  expect: api/cpoint
+- name: scheme, a brief with Markdown characters as the summary
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [entry, classdemo_1_1Escapes, summary]
+  expect: 'a\*b\_c \[d\] \<e\> `f` \#g \{h\}'
+- name: scheme, a brief with Markdown characters as the description
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample}
+  select: [entry, classdemo_1_1Escapes, description]
+  expect: 'a*b_c [d] &lt;e&gt; `f` #g {h}'
+- name: scheme, pathMap rewrites a generated file's location
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample, pathMap: [{from: build/gen/, to: ""}]}
+  select: [path, version_8hpp]
+  expect: files/cxx/demo/version-hpp
+- name: scheme, pathMap merges the emptied build directory
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample, pathMap: [{from: build/gen/, to: ""}]}
+  select: [paths, merged, dir_c2fcf3be784993bb5c8f7c337d0d625f]
+  expect: files
+- name: scheme, pathMap merges the directory mapped to the root
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample, pathMap: [{from: build/gen/, to: ""}]}
+  select: [paths, merged, dir_7d6d2242aaf802a8458d126c2e1becbd]
+  expect: files
+- name: scheme, the merged block ends the absorbing page
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: sample, pathMap: [{from: build/gen/, to: ""}], key: files}
+  select: [last]
+  expect: merged
+- name: scheme, PDI's directories under files without file pages
+  flavor: docsy
+  partial: test/paths.html
+  context: {model: pdi}
+  select: [has, files]
+  expect: true

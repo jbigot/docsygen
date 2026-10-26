@@ -1,0 +1,21 @@
+{{- /* docsygen/paths.html of .model (a model, or a directory of assets/doxygen) with .pathMap, as {paths,
+       path: {compound refid: its page's path}, entry: {compound refid: its page}, has: {path: true},
+       last: the type of the last block of the plan of page .key}. */ -}}
+{{- $m := .model -}}
+{{- if not (reflect.IsMap $m) -}}{{- $m = partial "docsygen/model.html" (printf "doxygen/%s" $m) -}}{{- end -}}
+{{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" (.pathMap | default slice)) -}}
+{{- $s := newScratch -}}
+{{- range slice "path" "entry" "has" -}}{{- $s.Set . dict -}}{{- end -}}
+{{- $last := "" -}}
+{{- range $paths.pages -}}
+  {{- $page := . -}}
+  {{- $s.SetInMap "has" .path true -}}
+  {{- range .roles -}}
+    {{- if eq .role "compound" -}}{{- $s.SetInMap "path" .id $page.path -}}{{- $s.SetInMap "entry" .id $page -}}{{- end -}}
+  {{- end -}}
+  {{- if and $.key (eq .key $.key) -}}
+    {{- $ctx := dict "model" $m "paths" $paths "anchors" dict "links" dict "page" nil -}}
+    {{- with last 1 (partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx)) -}}{{- $last = (index . 0).type -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "paths" $paths "path" ($s.Get "path") "entry" ($s.Get "entry") "has" ($s.Get "has") "last" $last -}}
