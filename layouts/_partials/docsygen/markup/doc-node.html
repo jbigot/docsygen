@@ -93,6 +93,19 @@
   {{- end -}}
 {{- else if eq $tag "heading" -}}
   {{- printf "<h%s>" $n.attributes.level | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}{{ printf "</h%s>" $n.attributes.level | safeHTML -}}
+{{- else if and (eq $tag "simplesect") (in (slice "warning" "attention" "important" "note" "remark") $n.attributes.kind) -}}
+  {{- /* A Docsy alert; consecutive sections of a kind share one, a part each. */ -}}
+  {{- $kind := $n.attributes.kind -}}
+  {{- if not .continued -}}
+  <div class="alert {{ cond (in (slice "note" "remark") $kind) "alert-info" "alert-warning" }}" role="alert"><div class="h4 alert-heading" role="heading">{{ index $simplesects $kind }}</div>
+  {{- end -}}
+  <div>
+  {{- range $i, $c := $n.children -}}
+    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+    {{- end -}}
+  {{- end -}}
+  </div>{{- if not .continues -}}</div>{{- end -}}
 {{- else if eq $tag "simplesect" -}}
   {{- $kind := $n.attributes.kind -}}
   {{- $title := index $simplesects $kind -}}

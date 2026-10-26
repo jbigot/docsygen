@@ -1,0 +1,14 @@
+- name: docsy markup, a warning is an alert
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><simplesect kind="warning"><para>Be careful.</para></simplesect></para></detaileddescription>'
+  expect: '<div class="alert alert-warning" role="alert"><div class="h4 alert-heading" role="heading">Warning</div><div>Be careful.</div></div>'
+- name: docsy markup, two notes in a row are one alert
+  flavor: docsy
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><simplesect kind="note"><para>One.</para></simplesect><simplesect kind="note"><para>Two.</para></simplesect></para></detaileddescription>'
+  expect: '<div class="alert alert-info" role="alert"><div class="h4 alert-heading" role="heading">Note</div><div>One.</div><div>Two.</div></div>'
