@@ -22,7 +22,7 @@
       {{- range .members -}}
         {{- $v := index $m.ids . -}}
         {{- $p := dict -}}
-        {{- range $v.node.children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
+        {{- range $v.node.children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
         {{- $va := index $ctx.anchors . -}}
 <tr><td class="docsygen-field-type">
 <a id="{{ $va }}" name="{{ $va }}" data-doxygen-id="{{ $v.id }}"></a>{{ with $p.type }}{{ partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $id) }}{{ end }}</td>

@@ -45,7 +45,7 @@
   {{- range .list.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "param") -}}
       {{- $p := dict -}}
-      {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
       {{- $t := "" -}}
       {{- with $p.type -}}{{- $t = partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $scope) -}}{{- end -}}
       {{- with $p.declname -}}{{- $t = printf "%s %s" $t (htmlEscape (partial "docsygen/text/plain.html" .)) -}}{{- end -}}
@@ -73,7 +73,7 @@
         {{- range .children -}}
           {{- if and (reflect.IsMap .) (eq .tag "param") -}}
             {{- $p := dict -}}
-            {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+            {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
             {{- if not $p.defval -}}{{- $names = $names | append ($p.declname | default (replaceRE `^.*[^A-Za-z0-9_]` "" ($p.type | default ""))) -}}{{- end -}}
           {{- end -}}
         {{- end -}}
@@ -94,7 +94,7 @@
   {{- $rows := slice -}}
   {{- range $i, $p := $params -}}
     {{- $pp := dict -}}
-    {{- range $p.children -}}{{- if reflect.IsMap . -}}{{- $pp = merge $pp (dict .tag .) -}}{{- end -}}{{- end -}}
+    {{- range $p.children -}}{{- if and (reflect.IsMap .) (not (isset $pp .tag)) -}}{{- $pp = merge $pp (dict .tag .) -}}{{- end -}}{{- end -}}
     {{- $type := "" -}}
     {{- $name := "" -}}
     {{- with $pp.declname -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}

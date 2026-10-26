@@ -25,7 +25,7 @@
         {{- if and $md $cd (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $cd.kind) (not (hasPrefix (index (split $md.name "::") (sub (len (split $md.name "::")) 1)) "@")) -}}
           {{- $a := $md.node.attributes -}}
           {{- $p := dict -}}
-          {{- range $md.node.children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
+          {{- range $md.node.children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag .) -}}{{- end -}}{{- end -}}
           {{- $short := index (split $md.name "::") (sub (len (split $md.name "::")) 1) -}}
           {{- $name := $short -}}
           {{- with $item.attributes.ambiguityscope -}}{{- $name = printf "%s%s" . $short -}}{{- end -}}

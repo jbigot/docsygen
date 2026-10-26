@@ -14,7 +14,7 @@
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}
     {{- $node := . -}}
-    {{- range .children -}}{{- if reflect.IsMap . -}}{{- $parts = merge $parts (dict $node.tag $node) -}}{{- end -}}{{- end -}}
+    {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $parts $node.tag)) -}}{{- $parts = merge $parts (dict $node.tag $node) -}}{{- end -}}{{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" $id) -}}

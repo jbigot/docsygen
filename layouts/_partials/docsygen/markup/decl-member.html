@@ -21,7 +21,7 @@
 {{- $scope := "" -}}
 {{- if in $classes (index $m.ids .page).kind -}}{{- $scope = cond .inherit $e.home .page -}}{{- end -}}
 {{- $parts := dict -}}
-{{- range $e.node.children -}}{{- if reflect.IsMap . -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
+{{- range $e.node.children -}}{{- if and (reflect.IsMap .) (not (isset $parts .tag)) -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
 {{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
 {{- $link := index $ctx.links $id -}}
 {{- $tparams := slice -}}
@@ -29,7 +29,7 @@
   {{- range .children -}}
     {{- if and (reflect.IsMap .) (eq .tag "param") -}}
       {{- $p := dict -}}
-      {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
       {{- $t := $p.type | default "" -}}
       {{- with $p.declname -}}{{- $t = printf "%s %s" $t . -}}{{- end -}}
       {{- with $p.defval -}}{{- $t = printf "%s = %s" $t . -}}{{- end -}}

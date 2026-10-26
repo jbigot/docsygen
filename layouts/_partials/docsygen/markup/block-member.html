@@ -9,7 +9,7 @@
 {{- $a := $e.node.attributes -}}
 {{- $anchor := index $ctx.anchors $id -}}
 {{- $parts := dict -}}
-{{- range $e.node.children -}}{{- if reflect.IsMap . -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
+{{- range $e.node.children -}}{{- if and (reflect.IsMap .) (not (isset $parts .tag)) -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
 {{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
 {{- $kind := $e.kind -}}
 {{- $isFunction := in (slice "function" "slot" "signal") $kind -}}

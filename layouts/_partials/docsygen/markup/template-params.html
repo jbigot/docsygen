@@ -15,7 +15,7 @@
     {{- range .children -}}
       {{- if and (reflect.IsMap .) (eq .tag "param") -}}
         {{- $p := dict -}}
-        {{- range .children -}}{{- if reflect.IsMap . -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
+        {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (partial "docsygen/text/plain.html" .)) -}}{{- end -}}{{- end -}}
         {{- $text := $p.type | default "" -}}
         {{- with $p.declname -}}{{- $text = printf "%s %s" $text . -}}{{- end -}}
         {{- with $p.defval -}}{{- $text = printf "%s = %s" $text . -}}{{- end -}}
