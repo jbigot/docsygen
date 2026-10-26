@@ -1,7 +1,7 @@
 """Compare a site's pages with Doxygen's HTML for the same XML, as exactly as possible.
 
 Usage: python3 -I exact.py --doxygen HTMLDIR --site PUBLIC --paths PATHS.json --gaps GAPS.yaml
-                           [--oracle NAME] [--scope SCOPE ...]
+                           [--oracle NAME] [--scope SCOPE ...] [--counts-advisory]
   HTMLDIR    Doxygen's html/ directory
   PUBLIC     the built site; PATHS.json is its dump, {pages: {key: {url, roles}}, ...}
   GAPS.yaml  what Doxygen's HTML shows and the XML cannot give, removed from the Doxygen side:
@@ -11,8 +11,10 @@ Usage: python3 -I exact.py --doxygen HTMLDIR --site PUBLIC --paths PATHS.json --
              its children, empty its children only, and replace substitutes with for the
              matches of replace in the element's own text, not in its descendants', and
              selects only an element that has one. count is the exact number of matches over
-             all pages: any other number fails, and so does an entry without matches (stale). An
-             entry with an oracle applies only when --oracle names it. A SELECTOR is TAG,
+             all pages: any other number fails, and so does an entry without matches (stale);
+             the counts are those of Doxygen 1.15.0's HTML, and --counts-advisory, for another
+             version, reports these failures as notes. An entry with an oracle applies only when
+             --oracle names it. A SELECTOR is TAG,
              TAG.CLASS, TAG#ID, .CLASS or #ID, each optionally followed by [ATTR], [ATTR=VALUE]
              or [ATTR^=PREFIX] and by :contains(TEXT) (jQuery's), or those alone; a space selects
              descendants and ~ later siblings, as in CSS.
@@ -358,6 +360,9 @@ def main(argv):
         ap.add_argument(opt, required=True)
     ap.add_argument('--oracle')
     ap.add_argument('--scope', action='append', default=[])
+    ap.add_argument('--counts-advisory', action='store_true',
+                    help='print count mismatches and stale entries as notes: the counts are those of '
+                         "another Doxygen version's HTML")
     args = ap.parse_args(argv)
 
     with open(args.paths) as f:
@@ -375,9 +380,9 @@ def main(argv):
     for line in report:
         print(line)
     for e in errors:
-        print('GAP', e)
+        print('NOTE' if args.counts_advisory else 'GAP', e)
 
-    different = len(errors)
+    different = 0 if args.counts_advisory else len(errors)
     for scope in args.scope:
         compared = failed = 0
         if scope == 'pages':

@@ -265,6 +265,17 @@ class Run(unittest.TestCase):
                                      'contents:class*')
         self.assertEqual(status, 0, out)
 
+    def test_a_gap_count_of_another_doxygen_version_is_a_note_with_counts_advisory(self):
+        self.write(self.gaps, '- pages: "*"\n  select: p\n  count: 2\n')
+        status, out = self.run_exact('pages')
+        self.assertEqual(status, 1, out)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            status = exact.main(['--doxygen', self.html, '--site', self.public, '--paths', self.paths,
+                                 '--gaps', self.gaps, '--scope', 'pages', '--counts-advisory'])
+        self.assertEqual(status, 0, out.getvalue())
+        self.assertIn('NOTE gap 1 (* p): 1 matches, not 2', out.getvalue())
+
     def test_a_missing_page_fails_the_pages_scope(self):
         self.write(os.path.join(self.html, 'extra.html'), '<p>x</p>')
         status, out = self.run_exact('pages')

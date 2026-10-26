@@ -1,7 +1,7 @@
 """Check that a Docsy site shows all the information of Doxygen's HTML for the same XML.
 
 Usage: python3 -I info.py --doxygen HTMLDIR --compat C.json --site PUBLIC --paths D.json
-                          --gaps GAPS.yaml --rules RULES.yaml [--oracle NAME]
+                          --gaps GAPS.yaml --rules RULES.yaml [--oracle NAME] [--counts-advisory]
   HTMLDIR    Doxygen's html/ directory
   C.json     the compat site's paths.json, {pages: {key: {url, roles}}, targets, anchors}, whose
              keys are Doxygen's file stems
@@ -21,10 +21,13 @@ with each other. Each container checks, as multisets:
   1. text: each run of inline text between block boundaries (code left out) is found as a
      substring of the Docsy text, on word boundaries, and that occurrence is consumed;
   2. links: an internal link maps to its page's roles, the id it targets (the targets of C.json
-     or D.json), or its page's roles and anchor key (anchors) or fragment: see accepts();
+     or D.json), or its page's roles and anchor key (anchors) or fragment, or its page's roles
+     only for a Doxygen fragment that its page lacks: see accepts();
   3. code: the text of each div.fragment (its lines joined with newlines) and each pre equals the
      text of a Docsy pre, trailing blanks of each line left out.
 Formulas compare as their TeX (formulas()). What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
+The counts of the gaps and rules are those of Doxygen 1.15.0's HTML: --counts-advisory, for another
+version, reports their errors as notes.
 """
 import argparse, collections, json, os, re, sys
 # python3 -I keeps this script's directory off sys.path.
@@ -96,6 +99,8 @@ class Side:
         self.by_url = {p['url']: k for k, p in self.pages.items()}
         self.ids = {(t['page'], t.get('anchor', '')): i for i, t in (paths.get('targets') or {}).items()}
         self.keys = {page: {a: k for k, a in m.items()} for page, m in (paths.get('anchors') or {}).items()}
+        # {page: its ids}, when known: a link to a fragment that its page lacks reaches the page only.
+        self.present = {}
 
     def roles(self, key):
         return [identity(r) for r in self.pages.get(key, {}).get('roles', [])]
@@ -114,8 +119,9 @@ class Side:
 
     def target(self, href, key):
         """('page', roles) for a page, ('id', I), ('anchor', roles, anchorKey) for a fixed anchor,
-        ('fragment', roles, fragment) for another one, ('file', name), ('external', href) or
-        ('unknown', page, fragment) for a page that paths.json doesn't have."""
+        ('fragment', roles, fragment) for another one (('page', roles) when the page lacks it),
+        ('file', name), ('external', href) or ('unknown', page, fragment) for a page that
+        paths.json doesn't have."""
         if exact.EXTERNAL.match(href):
             return ('external', href)
         path, _, fragment = href.partition('#')
@@ -131,6 +137,8 @@ class Side:
             return ('id', self.ids[(page, fragment)])
         if fragment in self.keys.get(page, {}):
             return ('anchor', roles, self.keys[page][fragment])
+        if page in self.present and fragment not in self.present[page]:
+            return ('page', roles)
         return ('fragment', roles, fragment)
 
 
@@ -297,11 +305,23 @@ def check(name, theirs, ours):
     return missing, ([f'{name}: extra text {rest[:200]!r}'] if rest else [])
 
 
+def ids(node):
+    """The id and name attributes under node."""
+    out = set()
+    for c in node.children:
+        if isinstance(c, exact.Node):
+            out.update(c.attrs[a] for a in ('id', 'name') if a in c.attrs)
+            out |= ids(c)
+    return out
+
+
 def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
     """Compare Doxygen pages {key: tree} (gaps applied) with Docsy pages {key: tree}, through the
     compat and site paths.json; rules apply to the Doxygen side, those of the oracle given if
     they name one. Return a Result."""
     theirs, ours = Side(compat, True), Side(site, False)
+    # Doxygen links some anchors that it doesn't write (1.17's member index letter ~, for one).
+    theirs.present = {key: ids(tree) for key, tree in doxygen_pages.items()}
     errors, report = apply_rules(doxygen_pages, rules, oracle)
     # Connected components of pages through the roles they share.
     parent = {}
@@ -364,6 +384,9 @@ def main(argv):
     for opt in ('--doxygen', '--compat', '--site', '--paths', '--gaps', '--rules'):
         ap.add_argument(opt, required=True)
     ap.add_argument('--oracle')
+    ap.add_argument('--counts-advisory', action='store_true',
+                    help='print count mismatches and stale entries as notes: the counts are those of '
+                         "another Doxygen version's HTML")
     args = ap.parse_args(argv)
 
     def load(path):
@@ -390,7 +413,10 @@ def main(argv):
     for line in result.extra:
         print('info', line)
     for line in errors + result.errors:
-        print('RULE', line)
+        print('NOTE' if args.counts_advisory else 'RULE', line)
+    if args.counts_advisory:
+        errors = []
+        result = result._replace(errors=[])
     for line in result.missing:
         print('missing', line)
     print(f'{len(result.missing)} missing, {len(result.extra)} containers with extra text')

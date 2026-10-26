@@ -11,7 +11,8 @@
 #   NAME   sample, sample-c or pdi (default: all three); pdi needs PDI_SRC the first time
 #          (tests/lib.sh, oracle)
 # The site directory holds layouts/, content/ and config.yaml (its configuration, without the
-# module section); the oracle's xml/ is mounted at assets/doxygen/oracle. Exit 1 on any
+# module section); the oracle's xml/ is mounted at assets/doxygen/oracle. The counts of the gaps
+# and rules are checked only on Doxygen 1.15.0's XML (--counts-advisory otherwise). Exit 1 on any
 # difference, when an oracle cannot be generated, or when the site does not exist yet.
 set -eu
 
@@ -36,6 +37,10 @@ status=0
 for name; do
   printf '== %s\n' "$name"
   if ! dir=$(oracle "$name"); then status=1; continue; fi
+  # The counts of xml-gaps.yaml and info-rules.yaml are those of Doxygen 1.15.0's HTML.
+  advisory=
+  version=$(sed -n 's/.*<doxygenindex [^>]*version="\([^"]*\)".*/\1/p' "$dir/xml/index.xml")
+  if [ "$version" != 1.15.0 ]; then advisory=--counts-advisory; fi
   work=$tmp/$name
   mkdir -p "$work"
   if [ "$mode" = info-docsy ]; then
@@ -70,13 +75,14 @@ for name; do
     if ! "$hugo" --source "$compat" --destination "$compat/public" > "$compat/log" 2>&1; then
       cat "$compat/log" >&2; status=1; continue
     fi
+    # shellcheck disable=SC2086 # advisory is one word or none
     python3 -I "$script" --doxygen "$dir/html" --compat "$compat/public/paths.json" --site "$work/public" \
       --paths "$work/public/paths.json" --gaps "$here/xml-gaps.yaml" --rules "$here/info-rules.yaml" \
-      --oracle "$name" || status=1
+      --oracle "$name" $advisory || status=1
     continue
   fi
-  # shellcheck disable=SC2086 # scopes are words
+  # shellcheck disable=SC2086 # scopes and advisory are words
   python3 -I "$here/$mode.py" --doxygen "$dir/html" --site "$work/public" --paths "$work/public/paths.json" \
-    --gaps "$here/xml-gaps.yaml" --oracle "$name" $scopes || status=1
+    --gaps "$here/xml-gaps.yaml" --oracle "$name" $scopes $advisory || status=1
 done
 exit $status

@@ -97,6 +97,13 @@ class Compare(unittest.TestCase):
         result = self.compare('<p><a href="f_source.html#l00012">12</a></p>', '<p><a href="/ref/x/#l00013">12</a></p>')
         self.assertEqual(len(result.missing), 1)
 
+    def test_a_doxygen_link_to_a_missing_anchor_only_needs_the_page(self):
+        # Doxygen 1.17's member index links its letter ~ as #index_~, its section's id is index__7E.
+        result = self.compare('<p><a href="#index_~">~</a> <a id="index__7E"></a></p>', '<p><a href="#letter-7e">~</a></p>')
+        self.assertEqual(result.missing, [])
+        result = self.compare('<p><a href="#index__7E">~</a> <a id="index__7E"></a></p>', '<p><a href="#letter-7e">~</a></p>')
+        self.assertEqual(len(result.missing), 1)
+
     def test_rules_of_another_oracle_are_ignored(self):
         rule = {'rule': 'drop', 'select': 'p', 'count': 5, 'reason': 'r', 'oracle': 'other'}
         result = info.compare({'classX': doxygen('<p>A.</p>')}, self.compat, {'x': docsy('<p>A.</p>')}, self.site, [rule], 'mine')
@@ -195,6 +202,15 @@ class Run(unittest.TestCase):
             write(f'{d}/site/ref/x/index.html', '<main><div class="td-content"><h1>X</h1><p>A.</p></div></main>')
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(info.main(args), 1)
+            # A count recorded with another Doxygen version is only a note with --counts-advisory.
+            write(f'{d}/site/ref/x/index.html', '<main><div class="td-content"><h1>X</h1><p>A b.</p></div></main>')
+            write(f'{d}/rules.yaml', '- rule: drop\n  select: p\n  count: 2\n  reason: r\n')
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(info.main(args), 1)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(info.main(args + ['--counts-advisory']), 0, out.getvalue())
+            self.assertIn('NOTE rule 1 (drop p): 1 matches, not 2', out.getvalue())
 
 
 if __name__ == '__main__':
