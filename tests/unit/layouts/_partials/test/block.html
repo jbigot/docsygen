@@ -1,0 +1,2 @@
+{{- /* The markup of .block (heading false) with .ctx: context {block, ctx}. */ -}}
+{{- return partial (printf "docsygen/markup/block-%s.html" .block.type) (dict "block" (merge .block (dict "heading" false)) "ctx" .ctx) -}}

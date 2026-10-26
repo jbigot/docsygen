@@ -72,3 +72,10 @@
     xml: '<detaileddescription><para><formula id="2">\begin{aligned} a &amp;= b \end{aligned}</formula></para></detaileddescription>'
     contains: ['katex-display', 'application/x-tex">\begin{aligned} a &amp;= b \end{aligned}</annotation>']
   expect: []
+- name: docsy markup, an inheritance diagram in Mermaid
+  flavor: docsy
+  partial: test/block.html
+  context:
+    ctx: {model: sample}
+    block: {type: diagram, id: classdemo_1_1Button}
+  expect: "<div class=\"docsygen-diagram\"><div class=\"docsygen-diagram-title\">Inheritance diagram for demo::Button:</div><pre class=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre></div>"
