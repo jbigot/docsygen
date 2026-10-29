@@ -33,6 +33,7 @@ run site sh tests/site/run.sh
 run info sh tests/oracle/run.sh info
 run info-docsy sh tests/oracle/run.sh info-docsy
 run check-docsy sh exampleSite/check-docsy.sh
+run check-layout sh exampleSite/check-layout.sh
 run xml-parse sh tests/xml-parse/run.sh
 run reference sh tests/reference.sh
 run reader-diff sh tests/reader-diff.sh

@@ -1,0 +1,48 @@
+{{- /* What a placement holds, as {root, keys}: the page keys of a version's default tree
+       (docsygen/paths.html) that .select names, a page key ("" for the root's), or a name as in
+       doxygen: links,
+       [KIND:]NAME, which gives the page of that compound. keys is the root and every page below
+       it, or the root alone when .children is false. A select that names no page, or names a
+       member, which has no page of its own, stops the build, naming .version.
+       Usage: partial "docsygen/placement/select.html" (dict "model" $m "paths" $paths "select" "api/pdi" "children" true "version" "1.12") */ -}}
+{{- $root := false -}}
+{{- $member := false -}}
+{{- range .paths.pages -}}
+  {{- if or (eq .key $.select) (and (eq $.select "") (eq .path "")) -}}{{- $root = .key -}}{{- end -}}
+{{- end -}}
+{{- if not $root -}}
+  {{- $name := .select -}}
+  {{- $kind := "" -}}
+  {{- with findRESubmatch `^([a-z]+):([^:].*)$` $name 1 -}}{{- $kind = index . 0 1 -}}{{- $name = index . 0 2 -}}{{- end -}}
+  {{- range index .model.names $name -}}
+    {{- $e := index $.model.ids . -}}
+    {{- if or (eq $kind "") (eq $kind $e.kind) -}}
+      {{- if eq $e.what "member" -}}
+        {{- $member = true -}}
+      {{- else if not $root -}}
+        {{- with index $.paths.pageOf (string (jsonify (dict "role" "compound" "id" .))) -}}{{- $root = . -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (not $root) $member -}}
+  {{- errorf "docsygen: version %q: select %q is a member, which has no page: embed it with docsygen/member" .version .select -}}
+  {{- return dict "root" "" "keys" slice -}}
+{{- else if not $root -}}
+  {{- errorf "docsygen: version %q: select %q names no page" .version .select -}}
+  {{- return dict "root" "" "keys" slice -}}
+{{- end -}}
+{{- $keys := slice $root -}}
+{{- if .children -}}
+  {{- /* A level more per pass, until a pass adds nothing. */ -}}
+  {{- $more := true -}}
+  {{- range seq 64 -}}
+    {{- if $more -}}
+      {{- $more = false -}}
+      {{- range $.paths.pages -}}
+        {{- if and (in $keys .parent) (not (in $keys .key)) -}}{{- $keys = $keys | append .key -}}{{- $more = true -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "root" $root "keys" $keys -}}

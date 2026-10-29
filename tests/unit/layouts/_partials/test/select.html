@@ -1,0 +1,5 @@
+{{- /* docsygen/placement/select.html on model .model (test/context.html reads it), its keys
+       sorted. */ -}}
+{{- $paths := partial "docsygen/paths.html" (dict "model" .model "pathMap" slice) -}}
+{{- $r := partial "docsygen/placement/select.html" (dict "model" .model "paths" $paths "select" .select "children" .children "version" "v") -}}
+{{- return dict "root" $r.root "keys" (sort $r.keys) -}}

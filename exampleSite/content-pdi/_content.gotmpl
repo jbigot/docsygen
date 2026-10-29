@@ -1,0 +1,7 @@
+{{- /* PDI's C API, its topics, at /c-api/<version>/, and its namespaces, the plugin API, at
+       /plugin-api/<version>/. */ -}}
+{{- range slice (dict "dir" "doxygen/pdi" "version" "main") (dict "dir" "doxygen/pdi-1.12" "version" "1.12" "latest" true)
+    (dict "dir" "doxygen/pdi-1.7" "version" "1.7") -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "c-api/:version" "select" "topics" "title" "C API Reference")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "plugin-api/:version" "select" "api" "title" "Plugin API reference")) -}}
+{{- end -}}

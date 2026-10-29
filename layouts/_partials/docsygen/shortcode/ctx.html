@@ -19,6 +19,12 @@
 {{- range partial "docsygen/versions.html" . -}}
   {{- if or (eq .version $version) (and .latest (eq $version "latest")) -}}{{- $v = . -}}{{- end -}}
 {{- end -}}
+{{- /* A page under a root of that version takes that root, for its placement's links. */ -}}
+{{- if $v -}}
+  {{- range $p := $page.Ancestors.Reverse | append $page -}}
+    {{- with $p.Params.docsygen -}}{{- if and .root (eq (string .version) $v.version) (not .skipped) -}}{{- $v = merge $v (dict "page" $p) -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- if not $v -}}
   {{- errorf "docsygen: %s: no version %q for %s" $page.Path $version .Name -}}
 {{- else if $v.skipped -}}

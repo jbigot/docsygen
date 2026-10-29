@@ -10,7 +10,7 @@ Links from a hand-written page (tests/site/expected-links.json):
 - [d](doxygen:dir:src)
 - [l](doxygen:latest/demo::Widget)
 - [n](doxygen:1.0/demo::Widget)
-- [o](doxygen:oracle/demo::Widget)
+- [o](doxygen:ref/demo::Widget)
 - [x](https://example.org/a?b&c)
 - [y](other/)
 - [z](other.md)

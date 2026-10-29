@@ -1,0 +1,32 @@
+- name: placement pattern, a version in the middle
+  partial: docsygen/placement/pattern.html
+  context: {path: "docs/:version/api", version: "1.7", latest: false}
+  expect: {numbered: docs/1.7/api, path: docs/1.7/api}
+- name: placement pattern, the latest release at latest/, numbered at its label
+  partial: docsygen/placement/pattern.html
+  context: {path: "docs/:version/api", version: "1.12", latest: true}
+  expect: {numbered: docs/1.12/api, path: docs/latest/api}
+- name: placement pattern, the version alone
+  partial: docsygen/placement/pattern.html
+  context: {path: ":version", version: main, latest: false}
+  expect: {numbered: main, path: main}
+- name: placement select, a key and its subtree
+  partial: test/select.html
+  context: {model: sample, select: api/demo/box, children: true}
+  expect: {keys: [api/demo/box, api/demo/box/iterator], root: api/demo/box}
+- name: placement select, a key alone
+  partial: test/select.html
+  context: {model: sample, select: api/demo/box, children: false}
+  expect: {keys: [api/demo/box], root: api/demo/box}
+- name: placement select, a name
+  partial: test/select.html
+  context: {model: sample, select: "demo::Box", children: true}
+  expect: {keys: [api/demo/box, api/demo/box/iterator], root: api/demo/box}
+- name: placement select, a page by its kind and name
+  partial: test/select.html
+  context: {model: sample, select: "page:details-page", children: true}
+  expect: {keys: [pages/guide/details-page], root: pages/guide/details-page}
+- name: placement select, the whole tree
+  partial: test/select.html
+  context: {model: sample, select: "", children: false}
+  expect: {keys: [index], root: index}

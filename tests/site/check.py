@@ -4,6 +4,8 @@ Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]
   PUBLIC    the built site
   XMLDIR    the Doxygen XML of one version root
   ROOT_URL  that version root's URL (/ref/), where its paths.json is published
+  XMLDIR and ROOT_URL are both - for a site whose placements hold parts of a tree: the checks of
+  the roles are left out.
 Checks:
   - every compound with a role (paths.json), and every memberdef and enumvalue id with a target,
     appears exactly once as data-doxygen-id in the pages under ROOT_URL;
@@ -57,10 +59,12 @@ def main(argv):
         i = argv.index('--links')
         links, argv = argv[i + 1:i + 3], argv[:i] + argv[i + 3:]
     public, xmldir, root_url = argv
-    with open(os.path.join(public, root_url.strip('/'), 'paths.json')) as f:
-        paths = json.load(f)
+    paths = {'pages': {}, 'targets': {}}
+    if root_url != '-':
+        with open(os.path.join(public, root_url.strip('/'), 'paths.json')) as f:
+            paths = json.load(f)
     member_ids = set()
-    for name in glob.glob(os.path.join(xmldir, '*.xml')):
+    for name in glob.glob(os.path.join(xmldir, '*.xml')) if xmldir != '-' else []:
         with open(name, encoding='utf-8') as f:
             member_ids.update(re.findall(r'<(?:memberdef|enumvalue)\b[^>]*\bid="([^"]+)"', f.read()))
     expected = {r['id'] for p in paths['pages'].values() for r in p['roles'] if r.get('role') == 'compound'}
@@ -74,7 +78,7 @@ def main(argv):
             text = f.read()
         rel = os.path.relpath(path, public)
         printed = rel.split(os.sep)[0] == '_print'
-        in_root = ('/' + rel.replace(os.sep, '/')).startswith(root_url)
+        in_root = root_url != '-' and ('/' + rel.replace(os.sep, '/')).startswith(root_url)
         for s in LEFTOVERS:
             if s in text:
                 errors.append(f'{rel}: {s} left')

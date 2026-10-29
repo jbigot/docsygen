@@ -1,0 +1,4 @@
+{{- /* PDI's narrative pages, at /guide/<version>/. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" ":version" "select" "pages") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.12" "version" "1.12" "path" ":version" "select" "pages" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.7" "version" "1.7" "path" ":version" "select" "pages") -}}

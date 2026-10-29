@@ -1,5 +1,5 @@
 {{- /* Three versions of PDI's reference (assets/doxygen/README.md): main at /docs/main/, the latest
        release, 1.12, at /docs/latest/ with redirects from /docs/1.12/, and 1.7 at /docs/1.7/. */ -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" "main") -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.12" "version" "1.12" "path" "1.12" "latest" true) -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.7" "version" "1.7" "path" "1.7") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.12" "version" "1.12" "path" ":version" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.7" "version" "1.7" "path" ":version") -}}

@@ -1,0 +1,21 @@
+{{- /* Where a placement goes: its path pattern .path, with one :version segment, as {path,
+       numbered}: path with the version .version in place of :version, or latest for the latest
+       release (.latest), and numbered with the version in any case. A pattern without exactly
+       one :version segment, or with a segment latest in a call that is not the latest's, stops
+       the build.
+       Usage: partial "docsygen/placement/pattern.html" (dict "path" "docs/:version/api" "version" "1.7" "latest" false) */ -}}
+{{- $segments := split (strings.Trim .path "/") "/" -}}
+{{- $n := 0 -}}
+{{- range $segments -}}{{- if eq . ":version" -}}{{- $n = add $n 1 -}}{{- end -}}{{- end -}}
+{{- if ne $n 1 -}}
+  {{- errorf "docsygen: version %q: the path %q needs one :version segment" .version .path -}}
+{{- else if and (not .latest) (in $segments "latest") -}}
+  {{- errorf "docsygen: version %q: the path %q has a segment latest, which is the latest release" .version .path -}}
+{{- end -}}
+{{- $numbered := slice -}}
+{{- $path := slice -}}
+{{- range $segments -}}
+  {{- $numbered = $numbered | append (cond (eq . ":version") $.version .) -}}
+  {{- $path = $path | append (cond (eq . ":version") (cond $.latest "latest" $.version) .) -}}
+{{- end -}}
+{{- return dict "path" (delimit $path "/") "numbered" (delimit $numbered "/") -}}

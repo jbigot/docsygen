@@ -20,7 +20,7 @@
   partial: docsygen/versions.html
   context: {}
   mounts: {fixtures/versions-two-latest: content, fixtures/versions/layouts: layouts}
-  error: 'docsygen: versions 0.9, 1.0 are all marked latest: mark one'
+  error: 'docsygen: the page "latest" of version "1.0", select "", path ":version" is already that of version "0.9", select "", path ":version"'
 - name: versions, the version menu without a latest release
   partial: docsygen/versions.html
   context: {}
@@ -45,8 +45,8 @@
 - name: adapter, the label latest is the latest release's
   partial: test/adapter.html
   context: {dir: doxygen/sample, version: latest, path: x}
-  error: 'the label latest and a path named latest are the latest release'
+  error: 'docsygen: version "latest": the label latest is the latest release'
 - name: adapter, a path named latest is the latest release's
   partial: test/adapter.html
-  context: {dir: doxygen/sample, version: v, path: a/latest}
-  error: 'the label latest and a path named latest are the latest release'
+  context: {dir: doxygen/sample, version: v, path: "a/latest/:version"}
+  error: 'docsygen: version "v": the path "a/latest/:version" has a segment latest, which is the latest release'

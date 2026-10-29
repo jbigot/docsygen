@@ -1,4 +1,4 @@
-{{- /* Two versions of the oracle's XML: oracle at /ref/, and 1.0, the latest, at /latest/ with
+{{- /* Two versions of the oracle's XML: ref at /ref/, and 1.0, the latest, at /latest/ with
        redirects from /1.0/. */ -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "oracle" "path" "ref") -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "1.0" "path" "1.0" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "ref" "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "1.0" "path" ":version" "latest" true) -}}

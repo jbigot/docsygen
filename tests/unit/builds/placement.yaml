@@ -1,0 +1,50 @@
+- name: placement, a pattern without :version
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-pattern-none: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0": the path "docs/api" needs one :version segment'
+- name: placement, a pattern with :version twice
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-pattern-twice: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0": the path ":version/:version" needs one :version segment'
+- name: placement, latest written in the pattern of another release
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-pattern-latest: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0": the path "latest/:version" has a segment latest, which is the latest release'
+- name: placement, a member selected
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-select-member: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0": select "demo::Widget::width" is a member, which has no page: embed it with docsygen/member'
+- name: placement, a select that names nothing
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-select-unknown: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0": select "api/nope" names no page'
+- name: placement, two placements at one path
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-collide: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: the page "1.0" of version "1.0", select "topics", path ":version" is already that of version "1.0", select "pages", path ":version"'
+- name: placement, a namespace and the classes in it
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-subtree: content, fixtures/placement/layouts: layouts}
+  warning: 'placement-pages: /[] /ref/[Refs] /ref/1.0/[demo] /ref/1.0/box/[demo::Box] /ref/1.0/box/iterator/[demo::Box::Iterator] /ref/1.0/boxable/[demo::Boxable] /ref/1.0/button/[demo::Button] /ref/1.0/circle/[demo::Circle] /ref/1.0/diamond/[demo::Diamond] /ref/1.0/escapes/[demo::Escapes] /ref/1.0/foo-int/[demo::Foo< int >] /ref/1.0/foo/[demo::Foo] /ref/1.0/io/[demo::io] /ref/1.0/labelledcircle/[demo::LabelledCircle] /ref/1.0/left/[demo::Left] /ref/1.0/markup/[demo::markup] /ref/1.0/named/[demo::Named] /ref/1.0/right/[demo::Right] /ref/1.0/shape/[demo::Shape] /ref/1.0/widget-2/[demo::widget] /ref/1.0/widget/[demo::Widget] |'
+- name: placement, a namespace alone
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-alone: content, fixtures/placement/layouts: layouts}
+  warning: 'placement-pages: /[] /ref/[Refs] /ref/1.0/[demo] |'
+- name: placement, a class by its name keeps its title
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-class: content, fixtures/placement/layouts: layouts}
+  warning: 'placement-pages: /[] /ref/[Refs] /ref/1.0/[demo::Widget] |'
+- name: placement, the pages retitled
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-titled: content, fixtures/placement/layouts: layouts}
+  warning: '/guide/1.0/[Guide]'

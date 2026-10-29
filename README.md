@@ -40,13 +40,12 @@ Copy Doxygen's XML directory under `assets/`, for example `assets/doxygen/mylib/
 too, from a directory outside the site (`module.mounts`, with an absolute `source`), but not
 through a symbolic link: Hugo drops symlinked mounts.
 
-Generate the pages from a content adapter in the **parent** directory of the reference, for
-example `content/docs/_content.gotmpl`:
+Generate the pages from a content adapter, for example `content/docs/_content.gotmpl`:
 
 ```go-html-template
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-main" "version" "main" "path" "main") -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.1" "version" "2.1" "path" "2.1" "latest" true) -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.0" "version" "2.0" "path" "2.0") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-main" "version" "main" "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.1" "version" "2.1" "path" ":version" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.0" "version" "2.0" "path" ":version") -}}
 ```
 
 | Option | Required | Meaning |
@@ -54,13 +53,17 @@ example `content/docs/_content.gotmpl`:
 | `store` | yes | the adapter's context, `.` |
 | `dir` | yes | the XML directory, under `assets/` |
 | `version` | yes | the version's label, as `doxygen:` links name it |
-| `path` | yes | where the reference goes, relative to the adapter's directory |
-| `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions). The label `latest`, and a `path` named `latest`, are reserved for it |
+| `path` | yes | where the reference goes, relative to the adapter's directory: a pattern with one `:version` segment, which the label fills (`:version`, `docs/:version/api`) |
+| `select` | no | what to place (default: the whole tree): see [Place parts of the reference](#place-parts-of-the-reference) |
+| `children` | no | whether the pages below the selected one come too (default `true`) |
+| `title`, `linkTitle`, `weight` | no | the placed root's title, menu title and weight (default: see [Place parts of the reference](#place-parts-of-the-reference)) |
+| `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions). The label `latest`, and a segment `latest` in `path`, are reserved for it |
 | `search` | no | whether its pages are in Docsy's search index (default: `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 
-Call the adapter once per version, each with its own `dir` and `path`. A reference's root is
-its own sidebar root (`sidebar_root_for: self`), so set `params.ui.sidebar_root_enabled: true`.
+Call the adapter once per version, each with its own `dir`. The page at the `:version` segment
+is its version's own sidebar root (`sidebar_root_for: self`), so set
+`params.ui.sidebar_root_enabled: true`.
 Keep the reference below a top-level section (`content/docs/main/`, not `content/main/`), or Docsy
 warns about `sidebar_root_for`.
 
@@ -79,9 +82,9 @@ project's name (Doxygen's `PROJECT_NAME`) and its label, and its sidebar entry a
 the label, as the version menu does; the parent's section list and sidebar list the versions in
 the menu's order.
 
-- **The latest release lives at `latest/`.** The call marked `latest` generates its pages at
-  `latest/`, next to its `path` (`/docs/latest/`), and each one gets an alias at its numbered
-  path (`/docs/2.1/…`), a page that redirects there and keeps the URL's `#fragment`. When 2.2
+- **The latest release lives at `latest/`.** The call marked `latest` generates its pages with
+  `latest` for `:version` (`/docs/latest/`), and each one gets an alias at its numbered path
+  (`/docs/2.1/…`), a page that redirects there and keeps the URL's `#fragment`. When 2.2
   comes out, mark it `latest` instead: `/docs/2.1/` becomes an ordinary version, and its links
   keep working.
 - **Canonical links:** a page of `latest/` is its own canonical page. A page of any other version
@@ -176,6 +179,41 @@ your site has its own `render-link.html`, it shadows docsygen's: send
 
 On a multilingual site with a single host, Hugo's embedded link hook takes over (with the default
 `markup.goldmark.renderHooks.link.useEmbedded: auto`): set it to `fallback` to keep docsygen's.
+
+## Place parts of the reference
+
+By default a call places a version's whole tree. With `select`, it places one part of it, so that
+a site can arrange the reference as it likes, with one call per part and version:
+
+```go-html-template
+{{- /* content/_content.gotmpl */ -}}
+{{- range slice (dict "dir" "doxygen/mylib-main" "version" "main") (dict "dir" "doxygen/mylib-2.1" "version" "2.1" "latest" true) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "guide/:version" "select" "pages" "title" "Guide")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "api/:version" "select" "api")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "widget/:version" "select" "mylib::Widget" "children" false)) -}}
+{{- end -}}
+```
+
+- `select` is a page key of the default tree, as the `pages`, `topics`, `api/mylib`,
+  `pages/install` sections and pages of the whole tree name them, or the name of a compound as a
+  `doxygen:` link writes it (`mylib::Widget`, `page:install`, `group:io`). The placement holds
+  that page and every page below it, or the page alone with `children: false`. A member has no
+  page: `select` stops the build, and [embedding](#embed-the-reference) shows a member anywhere.
+- `path` is a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
+  `docs/:version/api`. The placed pages keep their place below the selected one.
+- The placement root keeps the selected page's title ("Pages", `mylib::Widget`) unless `title`
+  or `linkTitle` are given. A root at the `:version` segment (`guide/:version`) is its version's
+  section: its menu title is the version (`latest (2.1)` for the latest), and its weight orders
+  it as the version menu. The whole tree's root is titled with the project's name and the label,
+  and its content starts with the main page's title.
+- The pages between the `:version` segment and a deeper root (`docs/2.1/` for
+  `docs/:version/api`) are sections that docsygen adds, titled with their segment, the
+  `:version` one with the version. The segments above `:version` are your site's own sections
+  (an `_index.md`), or Hugo's top-level ones.
+- Two placements of one adapter file that generate the same page stop the build, naming both.
+  Calls in different adapter files can't see each other: when one adapter file is in a
+  directory below another's (`content/` and `content/guide/`), they must not generate the same
+  paths.
 
 ## Embed the reference
 

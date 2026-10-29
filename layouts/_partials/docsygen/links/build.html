@@ -3,13 +3,15 @@
 {{- $links := newScratch -}}
 {{- $links.Set "m" dict -}}
 {{- range $id, $t := .paths.targets -}}
-  {{- $url := index $urls $t.page -}}
-  {{- $links.SetInMap "m" $id (cond (eq $t.anchor "") $url (printf "%s#%s" $url $t.anchor)) -}}
+  {{- with index $urls $t.page -}}
+    {{- $links.SetInMap "m" $id (cond (eq $t.anchor "") . (printf "%s#%s" . $t.anchor)) -}}
+  {{- end -}}
 {{- end -}}
 {{- /* Doxygen's XML refers to source listings as <file refid>_source, which isn't a model id. */ -}}
 {{- range $role, $key := .paths.pageOf -}}
   {{- with findRESubmatch `^\{"id":"([^"]*)","role":"source"\}$` $role 1 -}}
-    {{- $links.SetInMap "m" (printf "%s_source" (index . 0 1)) (index $urls $key) -}}
+    {{- $file := index . 0 1 -}}
+    {{- with index $urls $key -}}{{- $links.SetInMap "m" (printf "%s_source" $file) . -}}{{- end -}}
   {{- end -}}
 {{- end -}}
 {{- return $links.Get "m" -}}

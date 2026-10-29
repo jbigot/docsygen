@@ -1,0 +1,17 @@
+{
+  "pages": {
+    "/guide/latest/": "Pages",
+    "/guide/main/": "Pages",
+    "/guide/1.7/installation/": "Installation of PDI",
+    "/c-api/latest/": "C API Reference",
+    "/c-api/1.7/annotation/": "Code annotation",
+    "/plugin-api/latest/": "Plugin API reference",
+    "/plugin-api/latest/pdi/datatype/": "PDI::Datatype"
+  },
+  "links": [
+    ["/guide/latest/first_steps/", "/guide/latest/plugins/trace_plugin/"],
+    ["/guide/1.7/installation/", "/guide/1.7/installation/source_installation/"],
+    ["/c-api/latest/annotation/", "/c-api/latest/annotation/#pdi_share"],
+    ["/plugin-api/1.7/pdi/datatype/", "/plugin-api/1.7/pdi/datatype/#datatype"]
+  ]
+}

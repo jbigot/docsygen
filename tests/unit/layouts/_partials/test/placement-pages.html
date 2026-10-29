@@ -1,0 +1,4 @@
+{{- /* The pages of a build case's site, sorted, as one warning: "placement-pages: URL[title] … |". */ -}}
+{{- $pages := slice -}}
+{{- range site.Pages -}}{{- $pages = $pages | append (printf "%s[%s]" .RelPermalink .Title) -}}{{- end -}}
+{{- warnf "placement-pages: %s |" (delimit (sort $pages) " ") -}}

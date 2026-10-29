@@ -21,7 +21,7 @@ mkdir -p "$out/content/docs"
 cat > "$out/content/docs/_content.gotmpl" <<GOTMPL
 {{- range \$k := seq $n -}}
   {{- partial "docsygen/adapter.html" (dict "store" \$ "dir" (printf "doxygen/pdi-%d" \$k) "version" (printf "v%d" \$k)
-      "path" (printf "v%d" \$k) "latest" (eq \$k $n)) -}}
+      "path" ":version" "latest" (eq \$k $n)) -}}
 {{- end -}}
 GOTMPL
 {

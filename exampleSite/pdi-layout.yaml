@@ -1,0 +1,18 @@
+# The example site in PDI's own organization: hugo --config hugo.yaml,pdi-layout.yaml. Three
+# placements per version (content-pdi/): the narrative pages at /guide/<version>/, the C API's
+# topics at /c-api/<version>/ and the namespaces at /plugin-api/<version>/.
+contentDir: content-pdi
+menu:
+  main:
+    - name: Documentation
+      pageRef: /docs/
+      weight: 10
+    - name: Guide
+      pageRef: /guide/latest/
+      weight: 20
+    - name: C API
+      pageRef: /c-api/latest/
+      weight: 30
+    - name: Plugin API
+      pageRef: /plugin-api/latest/
+      weight: 40
