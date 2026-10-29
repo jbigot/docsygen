@@ -16,3 +16,37 @@
   mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts}
   params: {docsygen: {versions: [old]}}
   error: 'the latest version must be built'
+- name: versions, two calls marked latest stop the build
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions-two-latest: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: versions 0.9, 1.0 are all marked latest: mark one'
+- name: versions, the version menu without a latest release
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions-no-latest/content: content, fixtures/versions-no-latest/layouts: layouts}
+  warning: '</a>>main</a>>1.0</a>'
+- name: versions, a link without a version needs a latest release
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions-no-latest/content: content, fixtures/versions/layouts: layouts, fixtures/versions-typo: content}
+  error: '"doxygen:olf/demo::Widget" names no version, and no adapter call is marked latest'
+- name: versions, development mode reads numbers as labels
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts}
+  params: {docsygen: {versions: [latest, 0.5]}}
+  error: 'params.docsygen.versions lists "0.5", which no adapter call has'
+- name: versions, Docsy imported before docsygen
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions/content: content, fixtures/versions-docsy-first: layouts/_partials}
+  error: 'import github.com/jbigot/docsygen before github.com/docsy/docsy/theme'
+- name: adapter, the label latest is the latest release's
+  partial: test/adapter.html
+  context: {dir: doxygen/sample, version: latest, path: x}
+  error: 'the label latest and a path named latest are the latest release'
+- name: adapter, a path named latest is the latest release's
+  partial: test/adapter.html
+  context: {dir: doxygen/sample, version: v, path: a/latest}
+  error: 'the label latest and a path named latest are the latest release'

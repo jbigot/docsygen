@@ -9,7 +9,10 @@
                   gets an alias at the same place under path, which redirects to it
          search   whether the pages are in the site's search index (default: latest)
          pathMap  rewrites of file locations, [{from, to}] (default [])
-       store, dir, version and path are required.
+       store, dir, version and path are required; the label latest and a path named latest are
+       reserved for the latest release.
+       A call marked latest also adds a headless page at its numbered path, under its aliases,
+       so that docsygen/versions.html sees it even when another call marked latest wins latest/.
        Development mode: when the site sets params.docsygen.versions (a list of labels, latest
        allowed), a call whose label is not in it, unless it is the latest and latest is, adds
        only a headless root page, so that links to that version can tell it from a misspelt
@@ -29,7 +32,17 @@
     {{- $ok = false -}}
   {{- end -}}
 {{- end -}}
+{{- if and $ok (not .latest) (or (eq .version "latest") (eq (path.Base .path) "latest")) -}}
+  {{- errorf "docsygen: version %q: the label latest and a path named latest are the latest release's" .version -}}
+  {{- $ok = false -}}
+{{- end -}}
 {{- if $ok -}}
+  {{- /* Docsy's own partials win over docsygen's when Docsy is imported first: the version menu,
+         the notices and the canonical links would then be missing. docsygen's menu renders
+         nothing for a context that is not a page of a version root; Docsy's always renders. */ -}}
+  {{- if partial "navbar-version-selector.html" (dict "Site" site) -}}
+    {{- errorf "docsygen: Docsy's partials replace docsygen's: import github.com/jbigot/docsygen before github.com/docsy/docsy/theme in module.imports" -}}
+  {{- end -}}
   {{- $store := .store -}}
   {{- $dir := .dir -}}
   {{- $latest := .latest | default false -}}
@@ -44,7 +57,10 @@
   {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
   {{- $built := true -}}
   {{- with site.Params.docsygen -}}{{- with .versions -}}
-    {{- $built = or (in . $.version) (and $latest (in . "latest")) -}}
+    {{- /* As strings: YAML reads 1.7 as a number. docsygen/versions.html rejects the labels that
+           no call has. */ -}}
+    {{- $built = false -}}
+    {{- range . -}}{{- if or (eq (string .) $.version) (and $latest (eq (string .) "latest")) -}}{{- $built = true -}}{{- end -}}{{- end -}}
     {{- if and $latest (not $built) -}}
       {{- errorf "docsygen: the latest version must be built: neither %q nor latest is in params.docsygen.versions" $.version -}}
     {{- end -}}
@@ -54,11 +70,17 @@
       {{- warnidf "docsygen-chrome-shared" "docsygen: Docsy's shared chrome mode (params.td.chrome) copies the home page's navbar into every page, which drops docsygen's version menu: use the full mode" -}}
     {{- end -}}{{- end -}}
   {{- end -}}
+  {{- $headless := dict "render" "never" "list" "local" -}}
   {{- if not $built -}}
-    {{- $store.AddPage (dict "path" $root "kind" "section" "title" .version "build" (dict "render" "never" "list" "local")
+    {{- $store.AddPage (dict "path" $root "kind" "section" "title" .version "build" $headless
         "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version "path" $numbered "root" true
         "skipped" true "release" $release "call" $call))) -}}
   {{- else -}}
+    {{- if $latest -}}
+      {{- $store.AddPage (dict "path" $numbered "kind" "section" "title" .version "build" $headless
+          "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version "path" $numbered
+          "latestMark" true "call" $call))) -}}
+    {{- end -}}
     {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $numbered
         "release" $release "search" $search "call" $call -}}
     {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}

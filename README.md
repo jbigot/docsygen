@@ -19,7 +19,7 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
 
 Import the module next to Docsy, and **before** it, in `hugo.yaml`: docsygen replaces some of
 Docsy's partials (the version menu and banner, its `head-end` hook), which only works when it
-comes first.
+comes first. The build stops otherwise.
 
 ```yaml
 module:
@@ -53,7 +53,7 @@ example `content/docs/_content.gotmpl`:
 | `dir` | yes | the XML directory, under `assets/` |
 | `version` | yes | the version's label, as `doxygen:` links name it |
 | `path` | yes | where the reference goes, relative to the adapter's directory |
-| `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions) |
+| `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions). The label `latest`, and a `path` named `latest`, are reserved for it |
 | `search` | no | whether its pages are in Docsy's search index (default: `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 
@@ -120,7 +120,8 @@ params:
 
 `hugo`, whose environment is `production`, still builds every version. The versions left out
 are missing from the version menu, and a `doxygen:` link to one of them renders as its text,
-with a warning. The latest version must be built.
+with a warning. The latest version must be built. A label that no adapter call has stops the
+build: quote version numbers, since YAML reads an unquoted `1.10` as the number 1.1.
 
 ## Link to the reference
 

@@ -1,4 +1,5 @@
 - name: a doxygen link that resolves to nothing
   partial: test/link.html
   context: {destination: "doxygen:nope"}
+  mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts}
   error: 'cannot resolve "doxygen:nope"'
