@@ -333,7 +333,15 @@ summary tables:
 ## The example site
 
 `exampleSite/` renders [PDI](https://pdi.dev)'s reference from its committed XML, in three
-versions: `main`, the latest release, 1.12, and an older one, 1.7 (`exampleSite/assets/doxygen/README.md`
-says how each was made). From that directory, `npx npm@11 install` then `npm run serve`, which
-builds `main` and `latest` only (`config/development/hugo.yaml`). `exampleSite/check-docsy.sh`
-builds it and checks its output.
+versions: `main`, the latest release, 1.12, and an older one, 1.7
+(`exampleSite/assets/doxygen/README.md` says how each was made), in two organizations:
+
+- the whole Doxygen tree per version, under `/docs/` (`content/`): `npm run serve`;
+- PDI's own organization (`content-pdi/`), with the narrative pages at `/guide/<version>/`, the
+  C API's topics at `/c-api/<version>/`, the namespaces at `/plugin-api/<version>/`, and a
+  hand-written page that claims `PDI::Array_datatype`:
+  `npx hugo server --config hugo.yaml,pdi-layout.yaml`.
+
+From that directory, run `npx npm@11 install` first. `hugo server` builds `main` and `latest`
+only (`config/development/hugo.yaml`). `exampleSite/check-docsy.sh` and
+`exampleSite/check-layout.sh` build them and check their output.
