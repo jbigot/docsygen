@@ -57,6 +57,7 @@ Generate the pages from a content adapter, for example `content/docs/_content.go
 | `select` | no | what to place (default: the whole tree): see [Place parts of the reference](#place-parts-of-the-reference) |
 | `children` | no | whether the pages below the selected one come too (default `true`) |
 | `title`, `linkTitle`, `weight` | no | the placed root's title, menu title and weight (default: see [Place parts of the reference](#place-parts-of-the-reference)) |
+| `duplicate` | no | `true`, or the page keys and names whose pages are duplicates: see [Hand a page over](#hand-a-page-over) |
 | `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions). The label `latest`, and a segment `latest` in `path`, are reserved for it |
 | `search` | no | whether its pages are in Docsy's search index (default: `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
@@ -220,6 +221,40 @@ a site can arrange the reference as it likes, with one call per part and version
   Calls in different adapter files can't see each other: when one adapter file is in a
   directory below another's (`content/` and `content/guide/`), they must not generate the same
   paths.
+
+## Hand a page over
+
+A hand-written page can be the page of an item in one version, in place of the generated one:
+links to the item, and to its members, then go to it. It claims the item in its front matter:
+
+```yaml
+---
+title: Array datatype
+params:
+  docsygen:
+    version: "1.12"
+    claims: ["PDI::Array_datatype"]
+---
+```
+
+Each claim is a page key or a name, as `select` takes them. Write the page with the
+[shortcodes](#embed-the-reference), which take its version: a full member carries its anchor,
+so that links to the member land on it, and an `{#details}` heading takes the links to the
+class's detailed description.
+
+Every item has at most one canonical page per version: two placements that generate one page, or
+a placement and a hand-written page, stop the build, naming both. Mark the generated one as a
+duplicate with the call's `duplicate` option: `true` for all its pages, or a list of page keys
+and names for those pages and the pages below them:
+
+```go-html-template
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi-1.12" "version" "1.12" "latest" true
+    "path" "plugin-api/:version" "select" "api" "duplicate" (slice "PDI::Array_datatype")) -}}
+```
+
+A duplicate is still a page of the site, but no link goes to it, it is out of the search index
+and the sitemap, and its canonical link is that of the page that holds its item. The example
+site's PDI layout does this with `content-pdi/guide/latest/array-datatype.md`.
 
 ## Embed the reference
 

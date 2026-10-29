@@ -1,0 +1,25 @@
+- name: claims, two placements that hold one page stop the build
+  partial: test/claims.html
+  context: {}
+  mounts: {fixtures/claims-nested: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: version 1.0: api/demo is claimed by /latest/api/demo and /ref/latest; mark one as a duplicate'
+- name: claims, a duplicate placement hands its page over
+  partial: test/claims.html
+  context: {key: api/demo, id: classdemo_1_1Widget, dup: /latest/api/demo}
+  mounts: {fixtures/claims-duplicate: content, fixtures/versions/layouts: layouts}
+  warning: 'claims: url=/ref/latest/ link=/ref/latest/widget/ dup=true canonical=https://example.org/ref/latest/ anchor='
+- name: claims, a hand-written page holds a class and its members
+  partial: test/claims.html
+  context: {key: api/demo/widget, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88, dup: /latest/api/demo/widget, claim: /claim, anchor: width}
+  mounts: {fixtures/claims-page: content, fixtures/versions/layouts: layouts}
+  warning: 'claims: url=/claim/ link=/claim/#width dup=true canonical=https://example.org/claim/ anchor=true'
+- name: claims, a hand-written page holds a namespace and its members
+  partial: test/claims.html
+  context: {key: api/demo, dup: /latest/api/demo, claim: /claim, anchor: version}
+  mounts: {fixtures/claims-page-ns: content, fixtures/versions/layouts: layouts}
+  warning: 'claims: url=/claim/ link= dup=true canonical=https://example.org/claim/ anchor=true'
+- name: claims, a hand-written page and a placement that hold one page stop the build
+  partial: test/claims.html
+  context: {}
+  mounts: {fixtures/claims-conflict: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: version 1.0: api/demo/widget is claimed by /claim and /latest/api/demo/widget; mark one as a duplicate'

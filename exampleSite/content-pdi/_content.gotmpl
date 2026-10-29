@@ -3,5 +3,8 @@
 {{- range slice (dict "dir" "doxygen/pdi" "version" "main") (dict "dir" "doxygen/pdi-1.12" "version" "1.12" "latest" true)
     (dict "dir" "doxygen/pdi-1.7" "version" "1.7") -}}
   {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "c-api/:version" "select" "topics" "title" "C API Reference")) -}}
-  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "plugin-api/:version" "select" "api" "title" "Plugin API reference")) -}}
+  {{- $api := dict "store" $ "path" "plugin-api/:version" "select" "api" "title" "Plugin API reference" -}}
+  {{- /* In 1.12, a hand-written page holds PDI::Array_datatype (guide/latest/array-datatype.md). */ -}}
+  {{- if eq .version "1.12" -}}{{- $api = merge $api (dict "duplicate" (slice "PDI::Array_datatype")) -}}{{- end -}}
+  {{- partial "docsygen/adapter.html" (merge . $api) -}}
 {{- end -}}

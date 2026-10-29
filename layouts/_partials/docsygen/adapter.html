@@ -13,6 +13,12 @@
                    the whole tree, the project's name and the label as its title; for a root at
                    the :version segment, the version menu's entry and order as its linkTitle and
                    weight)
+         duplicate whether the placement's pages are duplicates (default false): true for all of
+                   them, or a list of page keys and names (as select) for those pages and the pages
+                   below them. A
+                   duplicate is never a link's target, is left out of search and the sitemap,
+                   and its canonical link is that of the page that holds its key (another
+                   placement, or a hand-written page that claims it, docsygen/claims.html)
          latest    whether this is the latest release, which unversioned links go to (default
                    false): its pages are generated with latest for :version, and each one gets an
                    alias at the same place with its label, which redirects to it
@@ -63,7 +69,7 @@
 {{- end -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
-  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "latest" "search" "pathMap") $k) -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap") $k) -}}
     {{- errorf "docsygen: unknown adapter option %q" $k -}}
     {{- $ok = false -}}
   {{- end -}}
@@ -130,6 +136,17 @@
     {{- $paths := partial "docsygen/paths.html" (dict "model" $model "pathMap" $pathMap) -}}
     {{- $selected := partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" (.select | default "")
         "children" $children "version" .version) -}}
+    {{- /* The duplicate pages' keys, or true for all. */ -}}
+    {{- $duplicate := .duplicate | default false -}}
+    {{- if reflect.IsSlice $duplicate -}}
+      {{- $keys := slice -}}
+      {{- range $duplicate -}}
+        {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" . "children" true "version" $.version)).keys -}}
+          {{- $keys = $keys | append . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $duplicate = $keys -}}
+    {{- end -}}
     {{- $rootEntry := dict "path" "" -}}
     {{- range $paths.pages -}}{{- if eq .key $selected.root -}}{{- $rootEntry = . -}}{{- end -}}{{- end -}}
     {{- /* The pages from :version down to the placement root, the root excluded. */ -}}
@@ -155,7 +172,9 @@
         {{- $rel := strings.TrimPrefix "/" (strings.TrimPrefix $rootEntry.path .path) -}}
         {{- $placed := path.Join $pattern.path $rel -}}
         {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
-        {{- if not $search -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
+        {{- $isDuplicate := or (eq $duplicate true) (and (reflect.IsSlice $duplicate) (in $duplicate .key)) -}}
+        {{- if $isDuplicate -}}{{- $params = merge $params (dict "docsygen" (dict "duplicate" true)) -}}{{- end -}}
+        {{- if or (not $search) $isDuplicate -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
         {{- $title := .title -}}
         {{- $linkTitle := .linkTitle -}}
         {{- $pageWeight := .weight -}}
@@ -185,7 +204,7 @@
         {{- $page := dict "path" $placed "kind" .kind "title" $title "linkTitle" $linkTitle
             "weight" $pageWeight "type" "docs" "description" .description "params" $params
             "content" (dict "mediaType" "text/markdown" "value" $content) -}}
-        {{- if not $latest -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}
+        {{- if or (not $latest) $isDuplicate -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}
         {{- if $latest -}}
           {{- $page = merge $page (dict "aliases" (partial "docsygen/adapter/alias.html" (dict "path" $placed "numbered" (path.Join $pattern.numbered $rel)))) -}}
         {{- end -}}

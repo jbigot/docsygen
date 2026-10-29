@@ -1,12 +1,29 @@
-{{- /* The body of docsygen/versions/pages.html. */ -}}
+{{- /* The body of docsygen/versions/pages.html. A page key's canonical holder is the generated
+       page that has it, unless that page is a duplicate, or the hand-written page that claims it
+       (docsygen/claims.html). Two holders stop the build. */ -}}
 {{- $label := string . -}}
-{{- $pages := newScratch -}}
-{{- $pages.Set "m" dict -}}
+{{- $holders := newScratch -}}
+{{- $holders.Set "m" dict -}}
 {{- range $p := site.Pages -}}
   {{- with $p.Params.docsygen -}}
-    {{- if and (eq (string .version) $label) (isset . "key") -}}
-      {{- $pages.SetInMap "m" .key (dict "url" $p.RelPermalink "page" $p "canonical" (not (.duplicate | default false))) -}}
+    {{- if and (eq (string .version) $label) (isset . "key") (not .duplicate) -}}
+      {{- $holders.SetInMap "m" .key ((index ($holders.Get "m") .key | default slice) | append $p) -}}
     {{- end -}}
   {{- end -}}
+{{- end -}}
+{{- range $key, $ps := partial "docsygen/claims.html" $label -}}
+  {{- $holders.SetInMap "m" $key ((index ($holders.Get "m") $key | default slice) | append $ps) -}}
+{{- end -}}
+{{- $pages := newScratch -}}
+{{- $pages.Set "m" dict -}}
+{{- range $key, $ps := $holders.Get "m" -}}
+  {{- if gt (len $ps) 1 -}}
+    {{- $names := slice -}}
+    {{- range $ps -}}{{- $names = $names | append .Path -}}{{- end -}}
+    {{- $names = sort $names -}}
+    {{- errorf "docsygen: version %s: %s is claimed by %s and %s; mark one as a duplicate" $label $key (index $names 0) (index $names 1) -}}
+  {{- end -}}
+  {{- $p := index $ps 0 -}}
+  {{- $pages.SetInMap "m" $key (dict "url" $p.RelPermalink "page" $p "canonical" true) -}}
 {{- end -}}
 {{- return $pages.Get "m" -}}

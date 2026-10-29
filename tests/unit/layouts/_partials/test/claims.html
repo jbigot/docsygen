@@ -1,0 +1,18 @@
+{{- /* Facts about the pages of version 1.0 of a build case's site, as one warning:
+       "claims: url=<URL of page key .key> link=<link of id .id> dup=<.dup's exclude_search>
+       canonical=<.dup's canonical URL> anchor=<whether the page .claim has id .anchor>". */ -}}
+{{- $pages := partial "docsygen/versions/pages.html" "1.0" -}}
+{{- $url := "" -}}
+{{- with .key -}}{{- with index $pages . -}}{{- $url = .url -}}{{- end -}}{{- end -}}
+{{- $link := "" -}}
+{{- with .id -}}
+  {{- $m := partial "docsygen/model.html" "doxygen/sample" -}}
+  {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
+  {{- $link = index (partial "docsygen/links.html" (dict "version" "1.0" "paths" $paths)) . -}}
+{{- end -}}
+{{- $dup := "" -}}
+{{- $canonical := "" -}}
+{{- with .dup -}}{{- with site.GetPage . -}}{{- $dup = .Params.exclude_search -}}{{- $canonical = partial "docsygen/canonical.html" . -}}{{- end -}}{{- end -}}
+{{- $anchor := "" -}}
+{{- with .claim -}}{{- with site.GetPage . -}}{{- $anchor = strings.Contains (string .Content) (printf `id="%s"` $.anchor) -}}{{- end -}}{{- end -}}
+{{- warnf "claims: url=%v link=%v dup=%v canonical=%v anchor=%v" $url $link $dup $canonical $anchor -}}

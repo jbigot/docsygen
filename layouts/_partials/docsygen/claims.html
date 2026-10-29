@@ -1,0 +1,27 @@
+{{- /* The hand-written pages that claim items of a version, as {page key: [page…]}: a page with
+       params.docsygen.version the label and params.docsygen.claims a list of items, each a page
+       key of the version's default tree or a name as in doxygen: links
+       (docsygen/placement/select.html), holds those items' pages as their canonical target.
+       Usage: partial "docsygen/claims.html" "1.12" */ -}}
+{{- $label := string . -}}
+{{- $out := newScratch -}}
+{{- $out.Set "m" dict -}}
+{{- $v := false -}}
+{{- range partial "docsygen/versions.html" . -}}{{- if eq .version $label -}}{{- $v = . -}}{{- end -}}{{- end -}}
+{{- range $p := site.Pages -}}
+  {{- with $p.Params.docsygen -}}
+    {{- if and .claims (eq (string .version) $label) -}}
+      {{- if not $v -}}
+        {{- errorf "docsygen: %s claims items of version %q, which no adapter call has" $p.Path $label -}}
+      {{- else -}}
+        {{- $m := partial "docsygen/model.html" $v.dir -}}
+        {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" $v.pathMap) -}}
+        {{- range .claims -}}
+          {{- $key := (partial "docsygen/placement/select.html" (dict "model" $m "paths" $paths "select" . "children" false "version" $label)).root -}}
+          {{- $out.SetInMap "m" $key ((index ($out.Get "m") $key | default slice) | append $p) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out.Get "m" -}}

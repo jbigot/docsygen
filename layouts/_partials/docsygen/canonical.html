@@ -1,11 +1,16 @@
 {{- /* The canonical URL of a page, absolute: a page of the latest version is its own; a page of
        another version has its twin in the latest version (docsygen/versions/twin.html), or
-       itself when it has none. "" for a page outside every version root.
+       itself when it has none; a duplicate has that of the page that holds its key. "" for a
+       page outside every version.
        Usage: partial "docsygen/canonical.html" .Page */ -}}
 {{- $page := . -}}
 {{- $out := "" -}}
 {{- with .Params.docsygen -}}
   {{- $label := .version -}}
+  {{- if .duplicate -}}
+    {{- /* A duplicate's canonical page is that of the page that holds its key. */ -}}
+    {{- with index (partial "docsygen/versions/pages.html" (string $label)) .key -}}{{- $page = .page -}}{{- end -}}
+  {{- end -}}
   {{- range partial "docsygen/versions.html" $page -}}
     {{- if .latest -}}
       {{- if eq .version $label -}}

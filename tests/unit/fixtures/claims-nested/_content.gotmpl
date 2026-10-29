@@ -1,0 +1,3 @@
+{{- /* The whole tree and the namespace demo again, neither a duplicate. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "latest" true "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "latest" true "path" "ref/:version" "select" "api/demo") -}}

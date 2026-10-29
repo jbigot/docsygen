@@ -6,7 +6,8 @@
     "/c-api/latest/": "C API Reference",
     "/c-api/1.7/annotation/": "Code annotation",
     "/plugin-api/latest/": "Plugin API reference",
-    "/plugin-api/latest/pdi/datatype/": "PDI::Datatype"
+    "/plugin-api/latest/pdi/datatype/": "PDI::Datatype",
+    "/guide/latest/array-datatype/": "Array datatype"
   },
   "links": [
     [
@@ -32,6 +33,10 @@
     [
       "/guide/latest/concepts/",
       "/c-api/latest/annotation/#pdi_event"
+    ],
+    [
+      "/plugin-api/latest/pdi/datatype/",
+      "/guide/latest/array-datatype/#datasize"
     ]
   ]
 }
