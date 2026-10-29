@@ -91,15 +91,21 @@ the menu's order.
 - **Canonical links:** a page of `latest/` is its own canonical page. A page of any other version
   points its canonical link at the same page in `latest/`, or at itself when the latest release
   has no such page. The redirects point at their target. Only `latest/` is in the sitemap.
-- **Order:** the versions whose label is not a release number (`main`) come first, in the order
-  of the calls, then the latest release, then the older releases, newest first (`2.10` before
-  `2.9`).
+- **Order:** the versions whose label is not a release number (`main`) come first, by the
+  smallest `weight` of their calls, then by name, with the releases newer than the latest one (a
+  release documented ahead of it); then the latest release; then the older releases, newest
+  first (`2.10` before `2.9`). A version's calls may sit in several adapter files: the order
+  doesn't depend on which one runs first.
 - **Version menu:** on a generated page, Docsy's navbar menu lists the versions, `latest (2.1)`
-  for the latest one, and each entry leads to the same page in that version, or to its root when
-  it has none. Hand-written pages show no menu. docsygen sets a placeholder `params.versions`
+  for the latest one, and each entry leads to the same page in that version, wherever it is
+  placed. When that version has no such page, the entry leads to the nearest page there: the same
+  path with that version, without its last segments, until a page exists (`/guide/1.7/new/` is
+  missing, so `/guide/1.7/`). A page that [claims an item](#hand-a-page-over) is a page of its
+  version: it has the menu, the notice and the canonical link of the item's page. Hand-written pages show no menu. docsygen sets a placeholder `params.versions`
   for Docsy to call its menu, doesn't read the site's own, and its stylesheet hides the navbar
   item that Docsy leaves empty on hand-written pages.
-- **Notice:** the pages of `main` and of older releases say so above their content, with a link
+- **Notice:** the pages of `main`, of releases newer than the latest, and of older releases say
+  so above their content, with a link
   to the same page in the latest release. It replaces Docsy's version banner
   (`params.archived_version` is not used), and heads the print page of a section too. Reword or
   translate it in your `i18n/<lang>.yaml`, with the keys `docsygen-notice-older` and

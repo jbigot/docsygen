@@ -1,18 +1,45 @@
-{{- /* The version labels of a site (a list) in the order of its version menu: the labels that
-       are not releases first, in the order given; then the releases, labels made of
-       dot-separated integers, newest first, compared number by number (1.10 before 1.9).
-       Usage: partial "docsygen/versions/order.html" (slice "main" "1.9" "1.10") */ -}}
-{{- $out := slice -}}
-{{- $releases := slice -}}
+{{- /* The version labels of a site in the order of its version menu, from the versions of its
+       calls, [{version, latest, weight}] (a label may come several times): first the labels that
+       are not releases, by their smallest weight (default 1), then by name, and the releases
+       newer than the latest one, newest first; then the latest release; then the older
+       releases, newest first. A release is a label of dot-separated integers, compared number
+       by number (1.10 before 1.9). Provisional (versions with placements).
+       Usage: partial "docsygen/versions/order.html" (slice (dict "version" "main") (dict "version" "1.12" "latest" true)) */ -}}
+{{- $weights := newScratch -}}
+{{- $latest := "" -}}
 {{- range . -}}
-  {{- if findRE `^[0-9]+(\.[0-9]+)*$` . 1 -}}
-    {{- /* Each number right-aligned, so that keys compare as the numbers do. */ -}}
-    {{- $key := slice -}}
-    {{- range split . "." -}}{{- $key = $key | append (printf "%20s" .) -}}{{- end -}}
-    {{- $releases = $releases | append (dict "label" . "key" (delimit $key ".")) -}}
+  {{- $w := .weight | default 1 -}}
+  {{- with $weights.Get .version -}}{{- if lt . $w -}}{{- $w = . -}}{{- end -}}{{- end -}}
+  {{- $weights.Set .version $w -}}
+  {{- if .latest -}}{{- $latest = .version -}}{{- end -}}
+{{- end -}}
+{{- /* Each number right-aligned, so that keys compare as the numbers do. */ -}}
+{{- define "_partials/docsygen/versions/order/key.html" -}}
+  {{- $key := slice -}}
+  {{- range split . "." -}}{{- $key = $key | append (printf "%20s" .) -}}{{- end -}}
+  {{- return delimit $key "." -}}
+{{- end -}}
+{{- $latestKey := "" -}}
+{{- with $latest -}}{{- $latestKey = partial "docsygen/versions/order/key.html" . -}}{{- end -}}
+{{- $others := slice -}}
+{{- $newer := slice -}}
+{{- $older := slice -}}
+{{- range $label, $w := $weights.Values -}}
+  {{- if eq $label $latest -}}
+  {{- else if findRE `^[0-9]+(\.[0-9]+)*$` $label 1 -}}
+    {{- $key := partial "docsygen/versions/order/key.html" $label -}}
+    {{- if and $latestKey (gt $key $latestKey) -}}
+      {{- $newer = $newer | append (dict "label" $label "key" $key) -}}
+    {{- else -}}
+      {{- $older = $older | append (dict "label" $label "key" $key) -}}
+    {{- end -}}
   {{- else -}}
-    {{- $out = $out | append . -}}
+    {{- $others = $others | append (dict "label" $label "key" (printf "%020d\x00%s" (int $w) $label)) -}}
   {{- end -}}
 {{- end -}}
-{{- range sort $releases "key" "desc" -}}{{- $out = $out | append .label -}}{{- end -}}
+{{- $out := slice -}}
+{{- range sort $others "key" -}}{{- $out = $out | append .label -}}{{- end -}}
+{{- range sort $newer "key" "desc" -}}{{- $out = $out | append .label -}}{{- end -}}
+{{- with $latest -}}{{- $out = $out | append . -}}{{- end -}}
+{{- range sort $older "key" "desc" -}}{{- $out = $out | append .label -}}{{- end -}}
 {{- return $out -}}

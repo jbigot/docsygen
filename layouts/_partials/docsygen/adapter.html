@@ -99,12 +99,8 @@
   {{- $pattern := partial "docsygen/placement/pattern.html" (dict "path" .path "version" .version "latest" $latest) -}}
   {{- $pathMap := .pathMap | default slice -}}
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
-  {{- /* The calls' order, for the order of the versions that are not releases
-         (docsygen/versions/order.html). The store outlives a rebuild, so it only grows. */ -}}
-  {{- $count := add ($store.Store.Get "docsygen-calls" | default 0) 1 -}}
-  {{- $store.Store.Set "docsygen-calls" $count -}}
   {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
-  {{- $menuWeight := partial "docsygen/versions/weight.html" (dict "version" .version "latest" $latest "call" $count) -}}
+  {{- $menuWeight := partial "docsygen/versions/weight.html" (dict "version" .version "latest" $latest "weight" .weight) -}}
   {{- /* The segments from :version down, and whether the placement root is the :version one. */ -}}
   {{- $segments := split $pattern.path "/" -}}
   {{- $numberedSegments := split $pattern.numbered "/" -}}
@@ -125,12 +121,12 @@
   {{- if not $built -}}
     {{- $_ := partial "docsygen/adapter/add.html" (dict "store" $store "call" $call "page" (dict "path" $pattern.path "kind" "section"
         "title" .version "build" $headless "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version
-        "path" $pattern.numbered "root" true "skipped" true "release" $release "call" $count)))) -}}
+        "path" $pattern.numbered "root" true "skipped" true "release" $release)))) -}}
   {{- else -}}
     {{- if $latest -}}
       {{- $_ := partial "docsygen/adapter/add.html" (dict "store" $store "call" $call "page" (dict "path" $pattern.numbered "kind" "section"
           "title" .version "build" $headless "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version
-          "path" $pattern.numbered "latestMark" true "call" $count)))) -}}
+          "path" $pattern.numbered "latestMark" true)))) -}}
     {{- end -}}
     {{- $model := partial "docsygen/model.html" $dir -}}
     {{- $paths := partial "docsygen/paths.html" (dict "model" $model "pathMap" $pathMap) -}}
@@ -166,7 +162,8 @@
       {{- end -}}
     {{- end -}}
     {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $pattern.numbered
-        "release" $release "search" $search "call" $count -}}
+        "release" $release "search" $search -}}
+    {{- with .weight -}}{{- $docsygen = merge $docsygen (dict "weight" .) -}}{{- end -}}
     {{- range $paths.pages -}}
       {{- if in $selected.keys .key -}}
         {{- $rel := strings.TrimPrefix "/" (strings.TrimPrefix $rootEntry.path .path) -}}

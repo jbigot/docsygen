@@ -1,14 +1,22 @@
-- name: versions order, other labels first in call order, then releases newest first
+- name: versions order, other labels and newer releases, then the latest, then older releases
   partial: docsygen/versions/order.html
-  context: [main, "1.7", "1.12", "1.10", dev]
-  expect: [main, dev, "1.12", "1.10", "1.7"]
+  context: [{version: main}, {version: "1.13"}, {version: "1.12", latest: true}, {version: "1.7"}]
+  expect: [main, "1.13", "1.12", "1.7"]
+- name: versions order, other labels by their smallest weight
+  partial: docsygen/versions/order.html
+  context: [{version: dev, weight: 2}, {version: main, weight: 1}]
+  expect: [main, dev]
+- name: versions order, other labels by name without weights
+  partial: docsygen/versions/order.html
+  context: [{version: main}, {version: dev}]
+  expect: [dev, main]
 - name: versions order, releases compare by number, not as strings
   partial: docsygen/versions/order.html
-  context: ["1.9", "1.10"]
-  expect: ["1.10", "1.9"]
+  context: [{version: "1.9"}, {version: "1.10", latest: true}, {version: "1.8"}]
+  expect: ["1.10", "1.9", "1.8"]
 - name: versions order, a single label
   partial: docsygen/versions/order.html
-  context: [a]
+  context: [{version: a}]
   expect: [a]
 - name: notice of an older release, its arguments escaped
   partial: docsygen/notice.html
@@ -18,8 +26,12 @@
   partial: docsygen/notice.html
   context: {project: PDI, version: main, release: false, latest: "1.12", url: /docs/latest/}
   expect: '<div class="pageinfo pageinfo-primary docsygen-notice"><p>This is the documentation of PDI&rsquo;s development version (main), which is not released yet. See <a href="/docs/latest/">this page in the latest release, 1.12</a>.</p></div>'
-- name: versions weight, other labels in call order, then the latest, then releases newest first
+- name: versions weight, other labels by their weight, then the latest, then releases newest first
   partial: test/weights.html
-  context: [{version: main, latest: false, call: 1}, {version: dev, latest: false, call: 3}, {version: "1.12", latest: true, call: 2},
-    {version: "1.10", latest: false, call: 4}, {version: "1.9.3", latest: false, call: 5}, {version: "1.09", latest: false, call: 6}]
+  context: [{version: main, latest: false}, {version: dev, latest: false, weight: 3}, {version: "1.12", latest: true},
+    {version: "1.10", latest: false}, {version: "1.9.3", latest: false}, {version: "1.09", latest: false}]
   expect: [1, 3, 1000000000, 1998990000, 1998990997, 1998991000]
+- name: notice of a release newer than the latest, as for main
+  partial: docsygen/notice.html
+  context: {project: PDI, version: "1.13", release: true, latest: "1.12", url: /docs/latest/}
+  expect: '<div class="pageinfo pageinfo-primary docsygen-notice"><p>This is the documentation of PDI&rsquo;s development version (1.13), which is not released yet. See <a href="/docs/latest/">this page in the latest release, 1.12</a>.</p></div>'

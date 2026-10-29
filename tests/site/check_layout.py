@@ -1,18 +1,27 @@
 """Check the example site in PDI's organization (exampleSite/check-layout.sh).
 
-Usage: python3 -I check_layout.py PUBLIC EXPECTED.json
-EXPECTED.json is {"pages": {URL: TITLE}, "links": [[URL, HREF]]}:
+Usage: python3 -I check_layout.py PUBLIC EXPECTED.json [--development]
+EXPECTED.json is {"pages": {URL: TITLE}, "links": [[URL, HREF]], "menu": {URL: MENU},
+"development": {"links": …, "menu": …}}; with --development, its development part is checked:
   - each page exists, and its <title> is TITLE, before Docsy's " | <site title>";
-  - each page's main content links HREF (tests/site/check.py checks that every link resolves).
+  - each page's main content links HREF (tests/site/check.py checks that every link resolves);
+  - each page's version menu is MENU, as tests/site/check_versions.py reads it.
 Exit 1 on any failure.
 """
 import json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'oracle'))
+import htmltree
+from check_versions import menu
 
 
 def main(argv):
-    public, expected = argv
+    development = '--development' in argv
+    public, expected = [a for a in argv if a != '--development']
     with open(expected) as f:
         want = json.load(f)
+    if development:
+        want = want['development']
     errors = []
     texts = {}
 
@@ -36,9 +45,15 @@ def main(argv):
             errors.append(f'{url}: no page')
         elif not main or f'href="{href}"' not in main.group(0):
             errors.append(f'{url}: no link to {href}')
+    for url, entries in want.get('menu', {}).items():
+        text = page(url)
+        got = menu(htmltree.parse(text)) if text is not None else None
+        if got != entries:
+            errors.append(f'{url}: menu {got}, not {entries}')
     for e in errors:
         print(e)
-    print(f'check_layout.py: {len(want.get("pages", {}))} pages, {len(want.get("links", []))} links, {len(errors)} errors')
+    print(f'check_layout.py: {len(want.get("pages", {}))} pages, {len(want.get("links", []))} links, '
+          f'{len(want.get("menu", {}))} menus, {len(errors)} errors')
     return 1 if errors else 0
 
 

@@ -1,9 +1,12 @@
-{{- /* The page of a version that has the page key (params.docsygen.key) of a page, as {url,
-       exists}: its RelPermalink, or, when that version has no page with that key, the version
-       root's, with exists false.
-         page     a page of a version root
+{{- /* A page's twin in another version, as {url, exists}: the canonical page that has the page's
+       key (docsygen/versions/key.html) in that version (docsygen/versions/pages.html), or, when
+       there is none, the nearest page there (docsygen/versions/fallback.html) with exists
+       false. Provisional (versions with placements).
+         page     a page of a version: generated, or claiming items
          version  a version, an entry of docsygen/versions.html
        Usage: partial "docsygen/versions/twin.html" (dict "page" .Page "version" $version) */ -}}
-{{- $v := .version -}}
-{{- $url := index (partial "docsygen/urls.html" (string $v.version)) (.page.Params.docsygen.key | default "") -}}
-{{- return cond (ne $url nil) (dict "url" $url "exists" true) (dict "url" $v.page.RelPermalink "exists" false) -}}
+{{- $key := partial "docsygen/versions/key.html" .page -}}
+{{- with and $key (index (partial "docsygen/versions/pages.html" (string .version.version)) $key) -}}
+  {{- return dict "url" .url "exists" true -}}
+{{- end -}}
+{{- return dict "url" (partial "docsygen/versions/fallback.html" (dict "page" .page "version" .version)) "exists" false -}}

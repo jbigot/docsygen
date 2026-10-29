@@ -1,0 +1,29 @@
+{{- /* Where a page goes in a version that lacks its twin: its own path with that version in the
+       place of its placement's :version segment (its nearest placement root's pattern), then
+       without its last segments, one at a time, down to the :version segment, until a page
+       exists there; else that version's first root (docsygen/versions.html). As a URL.
+       Provisional (versions with placements): /guide/1.7/new-feature/ is missing, so
+       /guide/1.7/.
+         page     a page of a version, under a placement root
+         version  a version, an entry of docsygen/versions.html
+       Usage: partial "docsygen/versions/fallback.html" (dict "page" .Page "version" $version) */ -}}
+{{- $root := false -}}
+{{- range $p := .page.Ancestors.Reverse | append .page -}}{{- if $p.Params.docsygen.root -}}{{- $root = $p -}}{{- end -}}{{- end -}}
+{{- $url := .version.page.RelPermalink -}}
+{{- with $root -}}
+  {{- $pattern := split (strings.Trim (.Params.docsygen.pattern | default ":version") "/") "/" -}}
+  {{- $after := 0 -}}
+  {{- range $i, $s := $pattern -}}{{- if eq $s ":version" -}}{{- $after = sub (len $pattern) (add $i 1) -}}{{- end -}}{{- end -}}
+  {{- $at := sub (len (split (strings.Trim .Path "/") "/")) (add $after 1) -}}
+  {{- $segments := split (strings.Trim $.page.Path "/") "/" -}}
+  {{- $label := cond $.version.latest "latest" $.version.version -}}
+  {{- $found := false -}}
+  {{- range $n := seq (len $segments) (add $at 1) -}}
+    {{- if not $found -}}
+      {{- $try := slice -}}
+      {{- range $i, $s := first $n $segments -}}{{- $try = $try | append (cond (eq $i $at) $label $s) -}}{{- end -}}
+      {{- with site.GetPage (printf "/%s" (delimit $try "/")) -}}{{- $found = true -}}{{- $url = .RelPermalink -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $url -}}

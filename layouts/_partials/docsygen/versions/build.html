@@ -1,39 +1,54 @@
-{{- /* The body of docsygen/versions.html. The roots of the versions that development mode skips,
-       and the pages that mark the calls marked latest (docsygen/adapter.html), are in no page
-       collection but their parent section's, which holds the other roots too. Two calls marked
-       latest both generate latest/, where one root wins: their marks tell them apart. */ -}}
+{{- /* The body of docsygen/versions.html: the versions of the placement roots
+       (params.docsygen.root), one entry per label, whichever adapter file adds them. The roots
+       that development mode skips, and the pages that mark the calls marked latest
+       (docsygen/adapter.html), are in no page collection but their parent's, an ancestor of a
+       built root: every ancestor of each root is searched. A label's entry takes the dir, path
+       map and numbered path of its first root by path, and its page; its calls must agree on
+       latest. Two labels marked latest stop the build. Provisional (versions with placements). */ -}}
 {{- $roots := where site.Pages "Params.docsygen.root" true -}}
 {{- $marks := slice -}}
+{{- $seen := newScratch -}}
 {{- range $roots -}}
-  {{- with .Parent -}}
-    {{- $roots = $roots | append (where (where .Pages "Params.docsygen.root" true) "Params.docsygen.skipped" true) -}}
-    {{- $marks = $marks | append (where .Pages "Params.docsygen.latestMark" true) -}}
+  {{- range .Ancestors -}}
+    {{- if not ($seen.Get .Path) -}}
+      {{- $seen.Set .Path true -}}
+      {{- $roots = $roots | append (where (where .Pages "Params.docsygen.root" true) "Params.docsygen.skipped" true) -}}
+      {{- $marks = $marks | append (where .Pages "Params.docsygen.latestMark" true) -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $latestLabels := slice -}}
-{{- range $marks -}}{{- $latestLabels = $latestLabels | append .Params.docsygen.version -}}{{- end -}}
+{{- range $marks -}}{{- $latestLabels = $latestLabels | append (string .Params.docsygen.version) -}}{{- end -}}
+{{- range $roots -}}{{- if .Params.docsygen.latest -}}{{- $latestLabels = $latestLabels | append (string .Params.docsygen.version) -}}{{- end -}}{{- end -}}
 {{- $latestLabels = uniq $latestLabels -}}
 {{- if gt (len $latestLabels) 1 -}}
   {{- errorf "docsygen: versions %s are all marked latest: mark one" (delimit (sort $latestLabels) ", ") -}}
 {{- end -}}
 {{- $byLabel := newScratch -}}
-{{- $labels := slice -}}
-{{- range sort $roots "Params.docsygen.call" -}}
-  {{- $p := .Params.docsygen -}}
-  {{- if not ($byLabel.Get $p.version) -}}
-    {{- $labels = $labels | append $p.version -}}
-    {{- $byLabel.Set $p.version (dict "version" $p.version "dir" $p.dir "latest" ($p.latest | default false)
-        "release" ($p.release | default false) "path" $p.path "page" . "pathMap" ($p.pathMap | default slice)
+{{- $calls := slice -}}
+{{- range $r := sort $roots "Path" -}}
+  {{- $p := $r.Params.docsygen -}}
+  {{- $label := string $p.version -}}
+  {{- $latest := $p.latest | default false -}}
+  {{- if and (not $latest) (in $latestLabels $label) (not $p.skipped) -}}
+    {{- errorf "docsygen: version %q is marked latest by some of its calls only (%s is not)" $label $r.Path -}}
+  {{- end -}}
+  {{- $calls = $calls | append (dict "version" $label "latest" (in $latestLabels $label) "weight" ($p.weight | default 1)) -}}
+  {{- with $byLabel.Get $label -}}
+    {{- if and .skipped (not $p.skipped) -}}{{- $byLabel.Set $label (merge . (dict "skipped" false "page" $r "dir" $p.dir "pathMap" ($p.pathMap | default slice) "path" $p.path)) -}}{{- end -}}
+  {{- else -}}
+    {{- $byLabel.Set $label (dict "version" $label "dir" $p.dir "latest" (in $latestLabels $label)
+        "release" ($p.release | default false) "path" $p.path "page" $r "pathMap" ($p.pathMap | default slice)
         "search" ($p.search | default false) "skipped" ($p.skipped | default false)) -}}
   {{- end -}}
 {{- end -}}
 {{- with site.Params.docsygen -}}{{- with .versions -}}
   {{- range . -}}
-    {{- if not (or (eq (string .) "latest") (in $labels (string .))) -}}
+    {{- if not (or (eq (string .) "latest") ($byLabel.Get (string .))) -}}
       {{- errorf "docsygen: params.docsygen.versions lists %q, which no adapter call has (YAML reads an unquoted 1.10 as 1.1: quote version numbers)" (string .) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}{{- end -}}
 {{- $out := slice -}}
-{{- range partial "docsygen/versions/order.html" $labels -}}{{- $out = $out | append ($byLabel.Get .) -}}{{- end -}}
+{{- range partial "docsygen/versions/order.html" $calls -}}{{- $out = $out | append ($byLabel.Get .) -}}{{- end -}}
 {{- return $out -}}

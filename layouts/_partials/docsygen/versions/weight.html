@@ -1,12 +1,14 @@
-{{- /* The weight of a version root, which orders the roots as the version menu
-       (docsygen/versions/order.html) does: the labels that are not releases first, in call order,
-       then the latest release, then the other releases, newest first, by their first three
-       numbers (each up to 999).
+{{- /* The weight of a version's section, which orders the sections as the version menu
+       (docsygen/versions/order.html) does, as far as a call can tell: the labels that are not
+       releases first, by their weight (default 1, then Hugo orders them by title), then the latest
+       release, then the other releases, newest first, by their first three numbers (each up to
+       999). A release newer than the latest one comes after it here, since a call can't tell
+       which release is the latest. Provisional (versions with placements).
          version  the label
          latest   whether it is the latest release
-         call     the adapter call's number
-       Usage: partial "docsygen/versions/weight.html" (dict "version" "1.7" "latest" false "call" 3) */ -}}
-{{- $out := .call -}}
+         weight   the call's weight option, if any
+       Usage: partial "docsygen/versions/weight.html" (dict "version" "1.7" "latest" false) */ -}}
+{{- $out := .weight | default 1 -}}
 {{- if .latest -}}
   {{- $out = 1000000000 -}}
 {{- else if findRE `^[0-9]+(\.[0-9]+)*$` .version 1 -}}

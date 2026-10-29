@@ -1,0 +1,16 @@
+{{- /* The page key of a page of a version, by which other versions find its twin: a generated
+       page's own (params.docsygen.key), or the first item that a hand-written page claims
+       (docsygen/claims.html); "" for neither. Provisional (versions with placements).
+       Usage: partial "docsygen/versions/key.html" .Page */ -}}
+{{- $page := . -}}
+{{- $key := "" -}}
+{{- with .Params.docsygen -}}
+  {{- if isset . "key" -}}
+    {{- $key = .key -}}
+  {{- else if .claims -}}
+    {{- range $k, $ps := partial "docsygen/claims.html" (string .version) -}}
+      {{- if and (not $key) (in $ps $page) -}}{{- $key = $k -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $key -}}

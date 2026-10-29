@@ -37,6 +37,109 @@
     [
       "/plugin-api/latest/pdi/datatype/",
       "/guide/latest/array-datatype/#datasize"
+    ],
+    [
+      "/docs/",
+      "/guide/latest/installation/"
+    ],
+    [
+      "/docs/",
+      "/guide/latest/array-datatype/"
+    ],
+    [
+      "/docs/",
+      "/c-api/latest/annotation/#pdi_share"
+    ],
+    [
+      "/docs/",
+      "/c-api/1.7/annotation/#pdi_share"
     ]
-  ]
+  ],
+  "menu": {
+    "/guide/main/plugins/serialize_plugin/": [
+      [
+        "main",
+        "/guide/main/plugins/serialize_plugin/",
+        "active"
+      ],
+      [
+        "latest (1.12)",
+        "/guide/latest/plugins/"
+      ],
+      [
+        "1.7",
+        "/guide/1.7/plugins/"
+      ]
+    ],
+    "/guide/latest/array-datatype/": [
+      [
+        "main",
+        "/plugin-api/main/pdi/array_datatype/"
+      ],
+      [
+        "latest (1.12)",
+        "/guide/latest/array-datatype/",
+        "active"
+      ],
+      [
+        "1.7",
+        "/plugin-api/1.7/pdi/array_datatype/"
+      ]
+    ],
+    "/plugin-api/1.7/pdi/datatype/": [
+      [
+        "main",
+        "/plugin-api/main/pdi/datatype/"
+      ],
+      [
+        "latest (1.12)",
+        "/plugin-api/latest/pdi/datatype/"
+      ],
+      [
+        "1.7",
+        "/plugin-api/1.7/pdi/datatype/",
+        "active"
+      ]
+    ],
+    "/c-api/main/": [
+      [
+        "main",
+        "/c-api/main/",
+        "active"
+      ],
+      [
+        "latest (1.12)",
+        "/c-api/latest/"
+      ],
+      [
+        "1.7",
+        "/c-api/1.7/"
+      ]
+    ]
+  },
+  "development": {
+    "links": [
+      [
+        "/docs/",
+        "/guide/latest/installation/"
+      ],
+      [
+        "/docs/",
+        "/c-api/latest/annotation/#pdi_share"
+      ]
+    ],
+    "menu": {
+      "/guide/main/plugins/serialize_plugin/": [
+        [
+          "main",
+          "/guide/main/plugins/serialize_plugin/",
+          "active"
+        ],
+        [
+          "latest (1.12)",
+          "/guide/latest/plugins/"
+        ]
+      ]
+    }
+  }
 }
