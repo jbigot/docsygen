@@ -17,7 +17,9 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
 
 ## Set up a site
 
-Import the module next to Docsy, in `hugo.yaml`:
+Import the module next to Docsy, and **before** it, in `hugo.yaml`: docsygen replaces some of
+Docsy's partials (the version menu and banner, its `head-end` hook), which only works when it
+comes first.
 
 ```yaml
 module:
@@ -40,7 +42,9 @@ Generate the pages from a content adapter in the **parent** directory of the ref
 example `content/docs/_content.gotmpl`:
 
 ```go-html-template
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib" "version" "main" "path" "main" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-main" "version" "main" "path" "main") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.1" "version" "2.1" "path" "2.1" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib-2.0" "version" "2.0" "path" "2.0") -}}
 ```
 
 | Option | Required | Meaning |
@@ -49,7 +53,8 @@ example `content/docs/_content.gotmpl`:
 | `dir` | yes | the XML directory, under `assets/` |
 | `version` | yes | the version's label, as `doxygen:` links name it |
 | `path` | yes | where the reference goes, relative to the adapter's directory |
-| `latest` | no | whether links without a version go to this one (default `false`; one version at most) |
+| `latest` | no | whether this is the latest release (default `false`; one version at most, which links without a version need): see [Versions](#versions) |
+| `search` | no | whether its pages are in Docsy's search index (default: `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 
 Call the adapter once per version, each with its own `dir` and `path`. A reference's root is
@@ -64,6 +69,59 @@ headers next to the sources. A directory left without files joins its parent's p
 The reference holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections,
 each only when Doxygen has something for it.
 
+## Versions
+
+Each adapter call adds one version of the reference. They share the content adapter, and so the
+parent directory: `/docs/main/`, `/docs/2.0/`, and so on.
+
+- **The latest release lives at `latest/`.** The call marked `latest` generates its pages at
+  `latest/`, next to its `path` (`/docs/latest/`), and each one gets an alias at its numbered
+  path (`/docs/2.1/…`), a page that redirects there and keeps the URL's `#fragment`. When 2.2
+  comes out, mark it `latest` instead: `/docs/2.1/` becomes an ordinary version, and its links
+  keep working.
+- **Canonical links:** a page of `latest/` is its own canonical page. A page of any other version
+  points its canonical link at the same page in `latest/`, or at itself when the latest release
+  has no such page. The redirects point at their target.
+- **Order:** the versions whose label is not a release number (`main`) come first, in the order
+  of the calls, then the latest release, then the older releases, newest first (`2.10` before
+  `2.9`).
+- **Version menu:** on a generated page, Docsy's navbar menu lists the versions, `latest (2.1)`
+  for the latest one, and each entry leads to the same page in that version, or to its root when
+  it has none. Hand-written pages show no menu. docsygen sets a placeholder `params.versions`
+  for Docsy to call its menu, and doesn't read the site's own.
+- **Notice:** the pages of `main` and of older releases say so above their content, with a link
+  to the same page in the latest release. It replaces Docsy's version banner
+  (`params.archived_version` is not used). Reword or translate it in your `i18n/<lang>.yaml`,
+  with the keys `docsygen-notice-older` and `docsygen-notice-main` of docsygen's `i18n/en.yaml`.
+  The project's name comes from Doxygen's `PROJECT_NAME`.
+- **Search:** only the latest release's pages are in the search index, unless a call sets
+  `search`.
+- **Canonical links go through Docsy's `hooks/head-end.html`.** If your site has its own
+  `layouts/_partials/hooks/head-end.html`, it shadows docsygen's: call docsygen from it:
+
+  ```go-html-template
+  {{- partial "docsygen/canonical-link.html" . -}}
+  ```
+
+- Docsy's `shared` chrome mode (`params.td.chrome`) copies one navbar into every page, which
+  drops the version menu: docsygen warns when it is on, and needs the default, `full`.
+
+### Development mode
+
+Building every version takes time. To build only some of them while you edit, list their labels
+in `params.docsygen.versions`, `latest` allowed, in the configuration of `hugo server`'s
+environment, `config/development/hugo.yaml`:
+
+```yaml
+params:
+  docsygen:
+    versions: [main, latest]
+```
+
+`hugo`, whose environment is `production`, still builds every version. The versions left out
+are missing from the version menu, and a `doxygen:` link to one of them renders as its text,
+with a warning. The latest version must be built.
+
 ## Link to the reference
 
 From any Markdown page, link with a `doxygen:` destination:
@@ -72,14 +130,17 @@ From any Markdown page, link with a `doxygen:` destination:
 [the widget](doxygen:demo::Widget)
 [](doxygen:demo::Widget)          <!-- empty text: `demo::Widget` as code, a page's title -->
 [a section](doxygen:guide#first-section)
-[an older version](doxygen:1.9/demo::Widget)
+[an older version](doxygen:2.0/demo::Widget)
+[the latest release, always](doxygen:latest/demo::Widget)
 [a directory](doxygen:dir:src)
 [one overload](<doxygen:demo::Widget::resize(int, int) const>)
 ```
 
 The destination is `[VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT]`:
 
-- `VERSION`, a version's label, else the `latest` one;
+- `VERSION`, a version's label, or `latest`; without it, the latest release. Naming the latest
+  release by its number (`doxygen:2.1/…`) links to its redirect, `/docs/2.1/…`, so that the link
+  stays on 2.1 after the next release;
 - `KIND`, a compound kind (`class`, `file`, `dir`, `page`, …), a member kind, or `member`; without
   it, symbols win, then pages, groups, files and directories;
 - `NAME`, as Doxygen writes it: `PDI::Datatype`, `PDI_share`, a `\page` name;
@@ -124,6 +185,8 @@ styles with Bootstrap's `--bs-*` variables.
 
 ## The example site
 
-`exampleSite/` renders [PDI](https://pdi.dev)'s reference from its committed XML. From that
-directory, `npx npm@11 install` then `npm run serve`. `exampleSite/check-docsy.sh` builds it and
-checks its output.
+`exampleSite/` renders [PDI](https://pdi.dev)'s reference from its committed XML, in three
+versions: `main`, the latest release, 1.12, and an older one, 1.7 (`exampleSite/assets/doxygen/README.md`
+says how each was made). From that directory, `npx npm@11 install` then `npm run serve`, which
+builds `main` and `latest` only (`config/development/hugo.yaml`). `exampleSite/check-docsy.sh`
+builds it and checks its output.

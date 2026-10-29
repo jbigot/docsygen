@@ -26,7 +26,8 @@ cat > "$out/content/docs/_content.gotmpl" <<GOTMPL
 GOTMPL
 {
   printf 'module:\n  mounts:\n'
-  printf '    - {source: content, target: content, files: ["! docs/_content.gotmpl"]}\n'
+  # Not docs/_index.md either: it links to versions of the example site that bench.sh replaces.
+  printf '    - {source: content, target: content, files: ["! docs/_content.gotmpl", "! docs/_index.md"]}\n'
   printf '    - {source: "%s", target: content}\n' "$out/content"
   printf '    - {source: assets, target: assets, files: ["! doxygen/**"]}\n'
   k=1
