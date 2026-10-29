@@ -52,7 +52,7 @@
 <dd><a href="{{ index $ctx.links .id }}">{{ .name }}</a>
         {{- with .ns }} (
           {{- $nsName := (index $m.ids .).name -}}
-          {{- with index $ctx.links . -}}<a href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}
+          {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .) -}}{{- with $u -}}<a href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}
         ){{- end -}}
 </dd>
       {{- end -}}
@@ -109,12 +109,16 @@
       {{- $prevScope = "" -}}
       {{- $sep := "&#160;:&#160;" -}}
       {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
-      {{- $html = printf "%s%s<a href=\"%s\">%s</a>" $html $sep (index $ctx.links .id) (htmlEscape $scope) -}}
+      {{- $a := htmlEscape $scope -}}
+      {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id) -}}{{- with $u -}}{{- $a = printf "<a href=\"%s\">%s</a>" . $a -}}{{- end -}}
+      {{- $html = printf "%s%s%s" $html $sep $a -}}
       {{- $prevScope = $scope -}}
     {{- else -}}
       {{- $scope := cond (eq $b.name "class-members") (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) (index $m.ids .home).name -}}
       {{- if ne $scope $prevScope -}}
-        {{- $html = printf "%s, <a href=\"%s\">%s</a>" $html (index $ctx.links .id) (htmlEscape $scope) -}}
+        {{- $a := htmlEscape $scope -}}
+        {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id) -}}{{- with $u -}}{{- $a = printf "<a href=\"%s\">%s</a>" . $a -}}{{- end -}}
+        {{- $html = printf "%s, %s" $html $a -}}
         {{- $prevScope = $scope -}}
       {{- end -}}
     {{- end -}}

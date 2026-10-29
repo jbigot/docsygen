@@ -7,7 +7,8 @@
   {{- $n := len . -}}
   {{- $list := "" -}}
   {{- range $i, $u := . -}}
-    {{- $link := printf `<a href="%s#%s">%s</a>` (htmlEscape (index $ctx.links $u.example)) $u.anchor (htmlEscape (index $m.ids $u.example).name) -}}
+    {{- $link := htmlEscape (index $m.ids $u.example).name -}}
+    {{- $href := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $u.example) -}}{{- with $href -}}{{- $link = printf `<a href="%s#%s">%s</a>` (htmlEscape .) $u.anchor $link -}}{{- end -}}
     {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) ", and " ", ")) $link -}}
   {{- end -}}
 <dl class="docsygen-examples"><dt>Examples</dt><dd>{{ $list | safeHTML }}.</dd>

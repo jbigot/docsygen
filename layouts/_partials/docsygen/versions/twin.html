@@ -5,6 +5,5 @@
          version  a version, an entry of docsygen/versions.html
        Usage: partial "docsygen/versions/twin.html" (dict "page" .Page "version" $version) */ -}}
 {{- $v := .version -}}
-{{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $v.dir) "pathMap" $v.pathMap) -}}
-{{- $url := index (partial "docsygen/urls.html" (dict "root" $v.page "paths" $paths)) .page.Params.docsygen.key -}}
+{{- $url := index (partial "docsygen/urls.html" (string $v.version)) .page.Params.docsygen.key -}}
 {{- return cond (ne $url nil) (dict "url" $url "exists" true) (dict "url" $v.page.RelPermalink "exists" false) -}}

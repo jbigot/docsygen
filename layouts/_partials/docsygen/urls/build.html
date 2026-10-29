@@ -1,21 +1,5 @@
-{{- /* The body of docsygen/urls.html. The root places the subtree of its select key: a page of
-       that subtree that doesn't exist stops the build, unless the root was placed alone
-       (children false); pages outside it have no URL here. */ -}}
-{{- $root := .root -}}
-{{- $p := $root.Params.docsygen -}}
-{{- $base := "" -}}
-{{- range .paths.pages -}}{{- if eq .key ($p.select | default "") -}}{{- $base = .path -}}{{- end -}}{{- end -}}
+{{- /* The body of docsygen/urls.html. */ -}}
 {{- $urls := newScratch -}}
 {{- $urls.Set "m" dict -}}
-{{- range .paths.pages -}}
-  {{- if or (eq $base "") (eq .path $base) (hasPrefix .path (printf "%s/" $base)) -}}
-    {{- $rel := strings.TrimPrefix "/" (strings.TrimPrefix $base .path) -}}
-    {{- $page := cond (eq $rel "") $root ($root.GetPage $rel) -}}
-    {{- if $page -}}
-      {{- $urls.SetInMap "m" .key $page.RelPermalink -}}
-    {{- else if ne $p.children false -}}
-      {{- errorf "docsygen: no page %q under %s" $rel $root.Path -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- range $key, $p := partial "docsygen/versions/pages.html" . -}}{{- $urls.SetInMap "m" $key $p.url -}}{{- end -}}
 {{- return $urls.Get "m" -}}

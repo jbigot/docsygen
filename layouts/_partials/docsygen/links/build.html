@@ -1,17 +1,15 @@
 {{- /* The body of docsygen/links.html. */ -}}
-{{- $urls := partial "docsygen/urls.html" . -}}
+{{- $urls := partial "docsygen/urls.html" (string .version) -}}
 {{- $links := newScratch -}}
 {{- $links.Set "m" dict -}}
 {{- range $id, $t := .paths.targets -}}
-  {{- with index $urls $t.page -}}
-    {{- $links.SetInMap "m" $id (cond (eq $t.anchor "") . (printf "%s#%s" . $t.anchor)) -}}
-  {{- end -}}
+  {{- $url := index $urls $t.page | default "" -}}
+  {{- $links.SetInMap "m" $id (cond (or (eq $t.anchor "") (eq $url "")) $url (printf "%s#%s" $url $t.anchor)) -}}
 {{- end -}}
 {{- /* Doxygen's XML refers to source listings as <file refid>_source, which isn't a model id. */ -}}
 {{- range $role, $key := .paths.pageOf -}}
   {{- with findRESubmatch `^\{"id":"([^"]*)","role":"source"\}$` $role 1 -}}
-    {{- $file := index . 0 1 -}}
-    {{- with index $urls $key -}}{{- $links.SetInMap "m" (printf "%s_source" $file) . -}}{{- end -}}
+    {{- $links.SetInMap "m" (printf "%s_source" (index . 0 1)) (index $urls $key | default "") -}}
   {{- end -}}
 {{- end -}}
 {{- return $links.Get "m" -}}

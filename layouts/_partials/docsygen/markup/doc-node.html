@@ -35,7 +35,7 @@
 {{- else if eq $tag "computeroutput" -}}
   <code>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</code>
 {{- else if eq $tag "ref" -}}
-  {{- with index $ctx.links $n.attributes.refid -}}
+  {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $n.attributes.refid) -}}{{- with $u -}}
     <a href="{{ . }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
   {{- else -}}
     {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) -}}
@@ -131,7 +131,7 @@
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "xreftitle") -}}
       {{- $title := partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}
-      {{- with index $ctx.links $n.attributes.id -}}<a href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
+      {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $n.attributes.id) -}}{{- with $u -}}<a href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
     {{- end -}}
   {{- end -}}
   </dt><dd>
@@ -211,7 +211,8 @@
   <div><ul class="docsygen-multicol">
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "tocitem") -}}
-      <li><a href="{{ index $ctx.links .attributes.id }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</a></li>
+      {{- $item := partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}
+      <li>{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .attributes.id) }}{{ with $u }}<a href="{{ . }}">{{ $item }}</a>{{ else }}{{ $item }}{{ end }}</li>
     {{- end -}}
   {{- end -}}
   </ul></div>

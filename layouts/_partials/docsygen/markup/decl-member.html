@@ -23,7 +23,7 @@
 {{- $parts := dict -}}
 {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (not (isset $parts .tag)) -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
 {{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
-{{- $link := index $ctx.links $id -}}
+{{- $link := (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $id)) -}}
 {{- $tparams := slice -}}
 {{- with $parts.templateparamlist -}}
   {{- range .children -}}
@@ -82,7 +82,7 @@
 {{- /* A file's page names the namespace members it lists by their qualified name. */ -}}
 {{- $qualify := and (eq (index $m.ids .page).kind "file") (eq (index $m.ids $e.home).kind "namespace") -}}
 {{- if $qualify -}}{{- $short = $e.name -}}{{- end -}}
-{{- $name := printf "<a href=\"%s\">%s</a>" ($link | htmlEscape) ($short | htmlEscape) | safeHTML -}}
+{{- $name := cond (ne $link "") (printf "<a href=\"%s\">%s</a>" ($link | htmlEscape) ($short | htmlEscape)) ($short | htmlEscape) | safeHTML -}}
 {{- $kind := $e.kind -}}
 {{- if eq $kind "enum" -}}
   {{- $left = printf "enum %s" (cond (eq $a.strong "yes") "class " "") -}}
@@ -93,7 +93,8 @@
       {{- $vname := "" -}}
       {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $vname = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
       {{- if $qualify -}}{{- $vname = printf "%s::%s" (index $m.ids $e.home).name $vname -}}{{- end -}}
-      {{- $v := printf "<a href=\"%s\">%s</a>" (index $ctx.links .attributes.id | htmlEscape) ($vname | htmlEscape) -}}
+      {{- $v := $vname | htmlEscape -}}
+      {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .attributes.id) -}}{{- with $u -}}{{- $v = printf "<a href=\"%s\">%s</a>" (htmlEscape .) $v -}}{{- end -}}
       {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $v = printf "%s %s" $v (partial "docsygen/text/plain.html" . | htmlEscape) -}}{{- end -}}{{- end -}}
       {{- $values = $values | append $v -}}
     {{- end -}}
@@ -149,6 +150,6 @@
   {{- $text := false -}}
   {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
   {{- if $text -}}
-<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }} <a href="{{ $link }}">More...</a>{{ end }}</td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }}{{ with $link }} <a href="{{ . }}">More...</a>{{ end }}{{ end }}</td></tr>
   {{- end -}}
 {{- end -}}

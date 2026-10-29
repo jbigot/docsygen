@@ -19,8 +19,8 @@
   {{- $out := slice -}}
   {{- range .nodes -}}
     {{- $src := "" -}}
-    {{- if eq .kind "file" -}}{{- with index $.ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- $src = index $.ctx.urls . -}}{{- end -}}{{- end -}}
-    {{- $out = $out | append (dict "id" .id "name" (htmlEscape .name) "url" (index $.ctx.links (.link | default .id) | default "") "src" $src "kind" .kind
+    {{- if eq .kind "file" -}}{{- with index $.ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- $src = index $.ctx.urls . | default "" -}}{{- end -}}{{- end -}}
+    {{- $out = $out | append (dict "id" .id "name" (htmlEscape .name) "url" (partial "docsygen/markup/url.html" (dict "ctx" $.ctx "id" (.link | default .id))) "src" $src "kind" .kind
         "children" (partial "docsygen/markup/inline/tree-nodes.html" (dict "ctx" $.ctx "nodes" .children))) -}}
   {{- end -}}
   {{- return $out -}}

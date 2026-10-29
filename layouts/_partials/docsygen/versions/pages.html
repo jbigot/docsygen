@@ -1,0 +1,5 @@
+{{- /* The pages of a version, wherever they are placed, as {page key: {url, page, canonical}}:
+       every page whose params.docsygen.version is the label and that has a key (placements),
+       canonical false for a duplicate. Cached per version.
+       Usage: partial "docsygen/versions/pages.html" "1.12" */ -}}
+{{- return partialCached "docsygen/versions/pages/build.html" . . -}}

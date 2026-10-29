@@ -51,7 +51,9 @@
   {{- range .refs -}}
     {{- $other := index $m.ids .attributes.refid -}}
     {{- with $other -}}
-      {{- $links = $links | append (printf `<a href="%s">%s</a>` (htmlEscape (index $ctx.links .id)) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)))) -}}
+      {{- $name := htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .home)) -}}
+      {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id) -}}{{- with $u -}}{{- $name = printf `<a href="%s">%s</a>` (htmlEscape .) $name -}}{{- end -}}
+      {{- $links = $links | append $name -}}
     {{- end -}}
   {{- end -}}
   {{- $n := len $links -}}

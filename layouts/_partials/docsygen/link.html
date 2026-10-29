@@ -1,6 +1,7 @@
 {{- /* A link of the link render hook whose destination is doxygen:…, resolved by
        docsygen/resolve.html: an empty text becomes the symbol's name as code, or the page's or
-       group's title. A destination that resolves to nothing, or that names no version while no
+       group's title. A destination whose target no page of its version holds renders its text, and
+       warns. A destination that resolves to nothing, or that names no version while no
        call is marked latest, stops the build. A link to a version that development mode skips
        renders its text, or the name as code, without a link, and warns.
        Usage: partial "docsygen/link.html" . (the render hook's context) */ -}}
@@ -12,6 +13,9 @@
   {{- errorf "docsygen: %s: %q names no version, and no adapter call is marked latest" .Page.Path .Destination -}}
 {{- else if not $r.ok -}}
   {{- errorf "docsygen: %s: cannot resolve %q" .Page.Path .Destination -}}
+{{- else if $r.unplaced -}}
+  {{- warnidf "docsygen-unplaced" "docsygen: %s links to %s, which no page of version %s holds: rendered as text" .Page.Path $r.name $r.version -}}
+  {{- .Text | default (cond (ne $r.title "") (htmlEscape $r.title) (printf "<code>%s</code>" (htmlEscape $r.name)) | safeHTML) -}}
 {{- else -}}
   {{- $text := .Text -}}
   {{- if not $text -}}

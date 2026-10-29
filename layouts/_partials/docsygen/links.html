@@ -1,5 +1,7 @@
-{{- /* {id: URL} for every target of a version: the RelPermalink of its page, with #anchor when it
-       has one, and <file refid>_source for each source listing, as the XML refers to them. Pages are found from the version root, by their path relative to it; a page that
-       doesn't exist stops the build. Cached per version root.
-       Usage: partial "docsygen/links.html" (dict "root" $rootPage "paths" $paths) */ -}}
-{{- return partialCached "docsygen/links/build.html" . .root.Path -}}
+{{- /* {id: URL} for every target of a version: the RelPermalink of the page that holds it in
+       that version, wherever it is placed (docsygen/versions/pages.html), with #anchor when it has
+       one, and <file refid>_source for each source listing, as the XML refers to them. A target
+       that no page of the version holds maps to "": renderers write its text alone
+       (docsygen/markup/url.html). Cached per version.
+       Usage: partial "docsygen/links.html" (dict "version" "1.12" "paths" $paths) */ -}}
+{{- return partialCached "docsygen/links/build.html" . (string .version) -}}

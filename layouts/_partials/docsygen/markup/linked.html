@@ -12,7 +12,7 @@
       {{- with $constructor -}}{{- $target = . -}}{{- end -}}
     {{- end -}}
     {{- $text := partial "docsygen/text/plain.html" . -}}
-    {{- with index $ctx.links $target -}}<a href="{{ . }}">{{ $text }}</a>{{- else -}}{{ $text }}{{- end -}}
+    {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $target) -}}{{- with $u -}}<a href="{{ . }}">{{ $text }}</a>{{- else -}}{{ $text }}{{- end -}}
   {{- else -}}{{ partial "docsygen/text/plain.html" (dict "children" (slice .)) }}
   {{- end -}}
 {{- end -}}

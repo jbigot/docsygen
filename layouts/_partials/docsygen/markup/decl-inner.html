@@ -24,7 +24,7 @@
 {{- else if eq $e.kind "file" -}}
   {{- $icon := "file" -}}
   {{- $left = $icon -}}
-  {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- $left = printf "<a href=\"%s\">%s</a>" (index $ctx.urls .) $icon -}}{{- end -}}
+  {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- with index $ctx.urls . -}}{{- $left = printf "<a href=\"%s\">%s</a>" . $icon -}}{{- end -}}{{- end -}}
 {{- else if and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}
   {{- /* A class embedded in its scope (INLINE_SIMPLE_STRUCTS) is keyed by its name and refid. */ -}}
   {{- $key = printf "%s_%s" $name .id -}}
@@ -33,7 +33,7 @@
 {{- range split $key "" -}}
   {{- $escaped = add $escaped (cond (findRE `^[A-Za-z0-9-]$` . 1) . (printf "_%X" .)) -}}
 {{- end -}}
-<tr id="r_{{ $escaped }}"><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := index $ctx.links .id -}}
+<tr id="r_{{ $escaped }}"><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id)) -}}
 {{- if and (eq $e.kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}{{- $url = "" -}}{{- end -}}
 {{ with $url }}<a href="{{ . }}">{{ $label }}</a>{{ else }}<b>{{ $label }}</b>{{ end }}</td></tr>
 {{- range $e.node.children -}}
@@ -42,7 +42,7 @@
     {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
     {{- if $text -}}
 {{- $embedded := and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $e.id))))) -}}
-<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if $classLike }} <a href="{{ index $ctx.links $e.id }}{{ if not $embedded }}#details{{ end }}">More...</a>{{ end }}</td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if $classLike }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $e.id) }}{{ with $u }} <a href="{{ . }}{{ if not $embedded }}#details{{ end }}">More...</a>{{ end }}{{ end }}</td></tr>
     {{- end -}}
   {{- end -}}
 {{- end -}}

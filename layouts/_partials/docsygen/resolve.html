@@ -1,6 +1,7 @@
 {{- /* What a doxygen: link names, [VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT], as
-       {url, id, name, title, ok, skipped, noLatest}: id the target's Doxygen id, name the symbol's
-       qualified name, title a page's or group's title.
+       {url, id, name, title, ok, skipped, noLatest, unplaced}: id the target's Doxygen id, name the
+       symbol's qualified name, title a page's or group's title, unplaced true (and url "") when
+       no page of the version holds the target.
          VERSION    a version's label (docsygen/versions.html), or latest; without it, the
                     latest version. Naming the latest version by its label gives the URL at its
                     numbered path (/docs/1.12/…), which redirects to latest/ for now and stays
@@ -75,20 +76,23 @@
       {{- warnf "docsygen: %s: doxygen:%s is ambiguous (%s), taking the first" $.page.Path $name (delimit $list ", ") -}}
     {{- end -}}
     {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" $v.pathMap) -}}
-    {{- with index (partial "docsygen/links.html" (dict "root" $v.page "paths" $paths)) $first.id -}}
-      {{- $url := . -}}
-      {{- with $fragment -}}{{- $url = printf "%s#%s" (index (split $url "#") 0) . -}}{{- end -}}
-      {{- if $numbered -}}
-        {{- /* The same page under the numbered path, a sibling of latest/. */ -}}
-        {{- $rootURL := $v.page.RelPermalink -}}
-        {{- $numberedURL := printf "%s/" (path.Join (path.Dir (strings.TrimSuffix "/" $rootURL)) (path.Base $v.path)) -}}
-        {{- $url = printf "%s%s" $numberedURL (strings.TrimPrefix $rootURL $url) -}}
+    {{- $links := partial "docsygen/links.html" (dict "version" $v.version "paths" $paths) -}}
+    {{- if isset $links $first.id -}}
+      {{- $url := index $links $first.id -}}
+      {{- if $url -}}
+        {{- with $fragment -}}{{- $url = printf "%s#%s" (index (split $url "#") 0) . -}}{{- end -}}
+        {{- if $numbered -}}
+          {{- with index (partial "docsygen/versions/pages.html" $v.version) (index $paths.targets $first.id).page -}}
+            {{- $url = partial "docsygen/versions/numbered.html" (dict "url" $url "page" .page "version" $v.version) -}}
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
       {{- $title := "" -}}
       {{- if in (slice "page" "group") $first.kind -}}
         {{- range $first.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
       {{- end -}}
-      {{- $out = dict "url" $url "id" $first.id "name" $first.name "title" $title "ok" true "skipped" "" "noLatest" false -}}
+      {{- $out = dict "url" $url "id" $first.id "name" $first.name "title" $title "ok" true "skipped" "" "noLatest" false
+          "unplaced" (eq $url "") "version" $v.version -}}
     {{- end -}}
   {{- end -}}
   {{- end -}}

@@ -1,5 +1,4 @@
-{{- /* {page key: URL} for the pages of a version: their RelPermalink, found from the version root
-       by their path relative to it; a page that doesn't exist stops the build. Cached per
-       version root.
-       Usage: partial "docsygen/urls.html" (dict "root" $rootPage "paths" $paths) */ -}}
-{{- return partialCached "docsygen/urls/build.html" . .root.Path -}}
+{{- /* {page key: URL} for the pages of a version, wherever they are placed
+       (docsygen/versions/pages.html); a key that no page of the version holds is absent.
+       Usage: partial "docsygen/urls.html" "1.12" */ -}}
+{{- return partialCached "docsygen/urls/build.html" . . -}}

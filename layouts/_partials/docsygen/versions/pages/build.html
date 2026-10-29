@@ -1,0 +1,12 @@
+{{- /* The body of docsygen/versions/pages.html. */ -}}
+{{- $label := string . -}}
+{{- $pages := newScratch -}}
+{{- $pages.Set "m" dict -}}
+{{- range $p := site.Pages -}}
+  {{- with $p.Params.docsygen -}}
+    {{- if and (eq (string .version) $label) (isset . "key") -}}
+      {{- $pages.SetInMap "m" .key (dict "url" $p.RelPermalink "page" $p "canonical" (not (.duplicate | default false))) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $pages.Get "m" -}}

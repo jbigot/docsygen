@@ -9,7 +9,7 @@
 {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "includes") -}}{{- $includes = $includes | append . -}}{{- end -}}{{- end -}}
 {{- define "_partials/docsygen/markup/inline/include.html" -}}
   {{- $url := "" -}}
-  {{- with .node.attributes.refid -}}{{- with index $.ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $.ctx.urls . -}}{{- end -}}{{- end -}}
+  {{- with .node.attributes.refid -}}{{- with index $.ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $.ctx.urls . | default "" -}}{{- end -}}{{- end -}}
   {{- $name := delimit .node.children "" -}}
   {{- $open := cond (eq .node.attributes.local "yes") "\"" "<" -}}
   {{- $close := cond (eq .node.attributes.local "yes") "\"" ">" -}}
@@ -24,7 +24,7 @@
     <div class="docsygen-text">{{ range $includes }}{{ partial "docsygen/markup/inline/include.html" (dict "node" . "ctx" $ctx) }}<br />{{ end }}</div>
   {{- end -}}
   {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $id))) -}}
-    <p><a href="{{ index $ctx.urls . }}">Go to the source code of this file.</a></p>
+    {{- with index $ctx.urls . -}}<p><a href="{{ . }}">Go to the source code of this file.</a></p>{{- end -}}
   {{- end -}}
 {{- else if and ($yes.Get "SHOW_HEADERFILE") $includes -}}
   <p>{{ range $includes }}{{ partial "docsygen/markup/inline/include.html" (dict "node" . "ctx" $ctx) }}{{ end }}</p>

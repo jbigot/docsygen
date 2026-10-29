@@ -18,7 +18,7 @@
     {{- with $constructor -}}{{- $target = . -}}{{- end -}}
   {{- end -}}
   {{- $word := partial "docsygen/text/plain.html" . -}}
-  {{- $url := index $ctx.links $target -}}
+  {{- $url := (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $target)) -}}
   {{- /* The word where it first appears as a whole word. */ -}}
   {{- $quoted := replaceRE `([.*+?^${}()|\[\]\\])` `\$1` $word -}}
   {{- $marked := replaceRE (printf `(^|[^A-Za-z0-9_:])%s([^A-Za-z0-9_:]|$)` $quoted) "${1}\x00${2}" $text 1 -}}

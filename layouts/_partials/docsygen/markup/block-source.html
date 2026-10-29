@@ -5,7 +5,7 @@
 {{- $id := .block.id -}}
 {{- $e := index $m.ids $id -}}
 {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $id))) -}}
-<a href="{{ index $ctx.urls . }}">Go to the documentation of this file.</a>
+{{- with index $ctx.urls . -}}<a href="{{ . }}">Go to the documentation of this file.</a>{{- end -}}
 {{- end -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}

@@ -2,9 +2,10 @@
        source listing (definition.cpp, writeSourceDef; filedef.cpp). */ -}}
 {{- $d := .definition -}}
 {{- $ctx := .ctx -}}
-{{- $url := index $ctx.urls (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $d.file)))) -}}
+{{- $url := index $ctx.urls (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $d.file)))) | default "" -}}
+{{- $file := (index $ctx.model.ids $d.file).name -}}
 {{- if $d.line -}}
-<p class="docsygen-definition">Definition at line <a href="{{ $url }}#{{ printf "l%05d" $d.line }}">{{ $d.line }}</a> of file <a href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
+<p class="docsygen-definition">Definition at line {{ with $url }}<a href="{{ . }}#{{ printf "l%05d" $d.line }}">{{ $d.line }}</a>{{ else }}{{ $d.line }}{{ end }} of file {{ with $url }}<a href="{{ . }}">{{ $file }}</a>{{ else }}{{ $file }}{{ end }}.</p>
 {{- else -}}
-<p class="docsygen-definition">Definition in file <a href="{{ $url }}">{{ (index $ctx.model.ids $d.file).name }}</a>.</p>
+<p class="docsygen-definition">Definition in file {{ with $url }}<a href="{{ . }}">{{ $file }}</a>{{ else }}{{ $file }}{{ end }}.</p>
 {{- end -}}

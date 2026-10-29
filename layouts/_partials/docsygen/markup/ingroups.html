@@ -3,5 +3,6 @@
 {{- range $i, $g := .groups -}}
   {{- if $i }} &#124; {{ end -}}
   {{- with $g.groups -}}{{- partial "docsygen/markup/ingroups.html" (dict "groups" . "ctx" $ctx) }} &raquo; {{ end -}}
-  <a href="{{ index $ctx.links $g.id }}">{{ (partial "docsygen/plan/title.html" (dict "model" $ctx.model "id" $g.id)).text }}</a>
+  {{- $title := (partial "docsygen/plan/title.html" (dict "model" $ctx.model "id" $g.id)).text -}}
+  {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $g.id) -}}{{- with $u -}}<a href="{{ . }}">{{ $title }}</a>{{- else -}}{{ $title }}{{- end -}}
 {{- end -}}

@@ -31,7 +31,7 @@
         {{- $constructor := partial "docsygen/markup/first-constructor.html" (dict "ctx" $ctx "id" $scope) -}}
         {{- with $constructor -}}{{- $target = . -}}{{- end -}}
       {{- end -}}
-      {{- $url = index $ctx.links $target | default "" -}}
+      {{- $url = (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $target)) -}}
     {{- end -}}
   {{- end -}}
   {{- $out = cond (ne $url "") (printf `%s<a href="%s">%s</a>` $out (htmlEscape $url) (htmlEscape $w)) (printf "%s%s" $out (htmlEscape $w)) -}}

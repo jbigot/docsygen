@@ -56,7 +56,7 @@
   {{- range $inherited -}}
     {{- $class := printf "%s_%s" (replace (partial "docsygen/markup/section-label.html" .key) "-" "_") .base -}}
     {{- $heading := partial "docsygen/plan/section-heading.html" (dict "model" $m "key" .key "kind" $e.kind) -}}
-<tr class="docsygen-summary-inherited"><th colspan="2">{{ $heading }} inherited from <a href="{{ index $ctx.links .base }}">{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}</a></th></tr>
+<tr class="docsygen-summary-inherited"><th colspan="2">{{ $heading }} inherited from {{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .base) }}{{ with $u }}<a href="{{ . }}">{{ end }}{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .base) }}{{ with $u }}</a>{{ end }}</th></tr>
     {{- $base := .base -}}
     {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id "inherit" $class) -}}{{- end -}}
   {{- end -}}

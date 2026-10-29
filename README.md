@@ -164,6 +164,12 @@ The destination is `[VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT]`:
 
 A destination that resolves to nothing stops the build.
 
+Links go to the page that holds their target in that version, whichever placement it is in
+([Place parts of the reference](#place-parts-of-the-reference)). A target that no page of the
+version holds, because no placement selects it, renders as its text without a link, with a
+warning (`docsygen-unplaced`, which `ignoreLogs` can silence) naming the linking page: links
+from `doxygen:` destinations and links in the generated pages alike.
+
 The links go through docsygen's `layouts/_markup/render-link.html`, which renders other links as
 Hugo's embedded link hook does: a destination that names a page or a resource links to it. If
 your site has its own `render-link.html`, it shadows docsygen's: send

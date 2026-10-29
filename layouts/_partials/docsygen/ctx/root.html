@@ -1,6 +1,6 @@
 {{- /* What the renderers need on page .page, for the version of root page .root:
-       {model, paths, anchors: {id: anchor}, links: {id: url}, urls: {page key: url}, page,
-       version, key}: version is the root's label, key the page's own key when it is a page of
+       {model, paths, anchors: {id: anchor}, links: {id: url} (docsygen/links.html),
+       urls: {page key: url} (docsygen/urls.html), page, version, key}: version is the root's label, key the page's own key when it is a page of
        that version (docsygen/part.html looks there first), else "".
        Usage: partial "docsygen/ctx/root.html" (dict "root" $root "page" .Page) */ -}}
 {{- $root := .root -}}
@@ -11,5 +11,5 @@
 {{- with .page -}}{{- with .Params.docsygen -}}{{- if eq (string .version) (string $p.version) -}}{{- $key = .key | default "" -}}{{- end -}}{{- end -}}{{- end -}}
 {{- return dict "model" $model "paths" $paths "page" .page "version" $p.version "key" $key
     "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $p.dir (jsonify ($p.pathMap | default slice))))
-    "links" (partial "docsygen/links.html" (dict "root" $root "paths" $paths))
-    "urls" (partial "docsygen/urls.html" (dict "root" $root "paths" $paths)) -}}
+    "links" (partial "docsygen/links.html" (dict "version" $p.version "paths" $paths))
+    "urls" (partial "docsygen/urls.html" (string $p.version)) -}}

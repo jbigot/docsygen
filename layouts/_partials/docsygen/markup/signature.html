@@ -130,7 +130,9 @@
 {{- else if eq $kind "enum" -}}
   {{- $base := "" -}}
   {{- with $parts.type -}}{{- with .children -}}{{- $base = printf " : %s" (partial "docsygen/markup/linked.html" (dict "node" $parts.type "ctx" $ctx "scope" $scope)) -}}{{- end -}}{{- end -}}
-  {{- $proto = printf `enum %s<a href="%s">%s</a>%s` (cond (eq $a.strong "yes") "class " "") (htmlEscape (index $ctx.links $id)) (htmlEscape $e.name) $base -}}
+  {{- $name := htmlEscape $e.name -}}
+  {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $id) -}}{{- with $u -}}{{- $name = printf `<a href="%s">%s</a>` (htmlEscape .) $name -}}{{- end -}}
+  {{- $proto = printf `enum %s%s%s` (cond (eq $a.strong "yes") "class " "") $name $base -}}
 {{- else -}}
   {{- $rest := "" -}}
   {{- if ne $kind "typedef" -}}

@@ -38,7 +38,7 @@
   {{- range $n := $nodes -}}{{- range .bases -}}{{- $lines = $lines | append (printf "  n%s --> n%s" $n.id .) -}}{{- end -}}{{- end -}}
   {{- range $n := $nodes -}}
     {{- if eq $n.link $id -}}{{- $lines = $lines | append (printf "  class n%s docsygen-current" $n.id) -}}
-    {{- else -}}{{- with and $n.link (index $ctx.links $n.link) -}}{{- $lines = $lines | append (printf "  click n%s \"%s\"" $n.id .) -}}{{- end -}}
+    {{- else -}}{{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $n.link) -}}{{- with $u -}}{{- $lines = $lines | append (printf "  click n%s \"%s\"" $n.id .) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
   {{- with $ctx.page -}}{{- .Store.Set "hasmermaid" true -}}{{- end -}}

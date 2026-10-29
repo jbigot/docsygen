@@ -17,8 +17,8 @@
     {{- range $f.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $path = .attributes.file -}}{{- end -}}{{- end -}}
     {{- $dir := replaceRE `[^/]*$` "" $path -}}
     {{- $url := "" -}}
-    {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $ctx.urls . -}}
-    {{- else -}}{{- $url = index $ctx.links . | default "" -}}{{- end -}}
+    {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .))) -}}{{- $url = index $ctx.urls . | default "" -}}
+    {{- else -}}{{- $url = (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .)) -}}{{- end -}}
 <li>{{ if $full }}{{ $dir }}{{ end }}{{ if $url }}<a href="{{ $url }}">{{ $f.name }}</a>{{ else }}<b>{{ $f.name }}</b>{{ end }}</li>
   {{- end -}}
 </ul>

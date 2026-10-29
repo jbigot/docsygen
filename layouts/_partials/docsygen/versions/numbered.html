@@ -1,0 +1,16 @@
+{{- /* A URL of the latest release under its numbered path: .url, of page .page (or below it) of
+       version .version, with the segment of its placement's root that latest fills (the pattern's
+       :version) replaced by the label. That URL is an alias, which redirects to latest for now
+       and stays on that release after the next one. Provisional (versions with placements).
+       Usage: partial "docsygen/versions/numbered.html" (dict "url" $url "page" $page "version" "1.12") */ -}}
+{{- $root := false -}}
+{{- range $p := .page.Ancestors.Reverse | append .page -}}{{- if $p.Params.docsygen.root -}}{{- $root = $p -}}{{- end -}}{{- end -}}
+{{- if not $root -}}{{- return .url -}}{{- end -}}
+{{- $pattern := split (strings.Trim ($root.Params.docsygen.pattern | default ":version") "/") "/" -}}
+{{- $after := 0 -}}
+{{- range $i, $s := $pattern -}}{{- if eq $s ":version" -}}{{- $after = sub (len $pattern) (add $i 1) -}}{{- end -}}{{- end -}}
+{{- $rootURL := $root.RelPermalink -}}
+{{- $segments := split (strings.Trim $rootURL "/") "/" -}}
+{{- $out := slice -}}
+{{- range $i, $s := $segments -}}{{- $out = $out | append (cond (eq $i (sub (len $segments) (add $after 1))) $.version $s) -}}{{- end -}}
+{{- return printf "/%s/%s" (delimit $out "/") (strings.TrimPrefix $rootURL .url) -}}

@@ -1,0 +1,10 @@
+- name: links, a generated page's link to an item that no page holds is text
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/placement-unplaced: content, fixtures/placement/layouts: layouts}
+  warning: 'docsygen: /guide/latest/guide links to demo::Widget, which no page of version 1.0 holds: rendered as text'
+- name: links, a doxygen link to an item that no page holds is text
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/placement-unplaced: content, fixtures/placement/layouts: layouts}
+  warning: 'docsygen: /linked links to demo::Widget, which no page of version 1.0 holds: rendered as text'
