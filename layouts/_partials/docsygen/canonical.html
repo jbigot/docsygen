@@ -1,0 +1,20 @@
+{{- /* The canonical URL of a page, absolute: a page of the latest version is its own; a page of
+       another version has its twin in the latest version (docsygen/versions/twin.html), or
+       itself when it has none. "" for a page outside every version root.
+       Usage: partial "docsygen/canonical.html" .Page */ -}}
+{{- $page := . -}}
+{{- $out := "" -}}
+{{- with .Params.docsygen -}}
+  {{- $label := .version -}}
+  {{- range partial "docsygen/versions.html" $page -}}
+    {{- if .latest -}}
+      {{- if eq .version $label -}}
+        {{- $out = $page.Permalink -}}
+      {{- else -}}
+        {{- $twin := partial "docsygen/versions/twin.html" (dict "page" $page "version" .) -}}
+        {{- $out = cond $twin.exists (absURL $twin.url) $page.Permalink -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

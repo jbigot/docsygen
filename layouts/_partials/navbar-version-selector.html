@@ -1,2 +1,43 @@
-{{- /* Docsy's version menu (called by its navbar.html when params.versions is set, which the
-       module's hugo.yaml does). It renders nothing for now. */ -}}
+{{- /* Docsy's version menu, called by its navbar.html (params.versions is set by the module's
+       hugo.yaml). On a page of a version root, it lists the versions of docsygen/versions.html,
+       with Docsy's markup: the versions that are not releases, the latest one as "latest
+       (LABEL)", then the other releases; each entry links to the page's twin in that version
+       (docsygen/versions/twin.html), or to that version's root. A script carries the URL's
+       fragment over when an entry is followed. Elsewhere, it renders nothing: hand-written
+       pages have no version. A site's own params.versions is not used. */ -}}
+{{- $page := . -}}
+{{- $label := "" -}}
+{{- with .Params.docsygen -}}{{- $label = .version -}}{{- end -}}
+{{- if $label -}}
+  {{- $first := slice -}}
+  {{- $latest := slice -}}
+  {{- $releases := slice -}}
+  {{- range partial "docsygen/versions.html" $page -}}
+    {{- if .skipped -}}
+    {{- else if .latest -}}{{- $latest = $latest | append . -}}
+    {{- else if .release -}}{{- $releases = $releases | append . -}}
+    {{- else -}}{{- $first = $first | append . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $title := $label -}}
+  {{- range $latest -}}{{- if eq .version $label -}}{{- $title = printf "latest (%s)" .version -}}{{- end -}}{{- end -}}
+<div class="td-version-menu dropdown">
+  <a class="nav-link dropdown-toggle td-version-menu__title" href="#" role="button"
+    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="td-version-menu__title-text">{{ $title }}</span>
+  </a>
+  <ul class="dropdown-menu">
+    {{- range $first | append $latest | append $releases }}
+      {{- $active := eq .version $label }}
+    <li><a class="dropdown-item{{ if $active }} active{{ end }}"{{ if $active }} aria-current="page"{{ end }} href="{{ (partial "docsygen/versions/twin.html" (dict "page" $page "version" .)).url }}">
+      {{- if .latest }}latest ({{ .version }}){{ else }}{{ .version }}{{ end -}}
+    </a></li>
+    {{- end }}
+  </ul>
+</div>
+<script>
+  document.currentScript.previousElementSibling.querySelectorAll('.dropdown-item').forEach((a) => {
+    a.addEventListener('click', () => { a.hash = location.hash; });
+  });
+</script>
+{{- end -}}

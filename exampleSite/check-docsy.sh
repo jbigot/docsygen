@@ -6,6 +6,8 @@
 #   - tests/site/check.py on the three version roots, /docs/main/, /docs/latest/ and /docs/1.7/ (a
 #     test-only Docsy hook, tests/site/hooks, publishes the paths.json it reads);
 #   - each page of /docs/latest/ has a redirect at /docs/1.12/ (tests/site/check_redirects.py);
+#   - the version menu and the canonical link of the pages of tests/site/versions-expected.json
+#     (tests/site/check_versions.py);
 #   - the offline search index holds PDI_share's brief, from /docs/latest/ only;
 #   - the print page of the reference holds a member's signature;
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/.
@@ -35,6 +37,7 @@ python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi" 
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.12" /docs/latest/ || status=1
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.7" /docs/1.7/ || status=1
 python3 -I "$root/tests/site/check_redirects.py" "$out/public" /docs/latest/ /docs/1.12/ || status=1
+python3 -I "$root/tests/site/check_versions.py" "$out/public" "$root/tests/site/versions-expected.json" || status=1
 # Only the latest release is indexed: PDI_share's brief comes from /docs/latest/ alone.
 python3 -I - "$out"/public/offline-search-index.*.json <<'EOF' || status=1
 import json, sys

@@ -1,0 +1,10 @@
+[
+  {"page": "/docs/latest/", "menu": [["main", "/docs/main/"], ["latest (1.12)", "/docs/latest/", "active"], ["1.7", "/docs/1.7/"]], "canonical": "https://example.org/docs/latest/"},
+  {"page": "/docs/main/", "menu": [["main", "/docs/main/", "active"], ["latest (1.12)", "/docs/latest/"], ["1.7", "/docs/1.7/"]], "canonical": "https://example.org/docs/latest/"},
+  {"page": "/docs/latest/api/pdi/datatype/", "menu": [["main", "/docs/main/api/pdi/datatype/"], ["latest (1.12)", "/docs/latest/api/pdi/datatype/", "active"], ["1.7", "/docs/1.7/api/pdi/datatype/"]], "canonical": "https://example.org/docs/latest/api/pdi/datatype/"},
+  {"page": "/docs/main/api/pdi/datatype/", "menu": [["main", "/docs/main/api/pdi/datatype/", "active"], ["latest (1.12)", "/docs/latest/api/pdi/datatype/"], ["1.7", "/docs/1.7/api/pdi/datatype/"]], "canonical": "https://example.org/docs/latest/api/pdi/datatype/"},
+  {"page": "/docs/main/pages/plugins/serialize_plugin/", "menu": [["main", "/docs/main/pages/plugins/serialize_plugin/", "active"], ["latest (1.12)", "/docs/latest/"], ["1.7", "/docs/1.7/"]], "canonical": "https://example.org/docs/main/pages/plugins/serialize_plugin/"},
+  {"page": "/docs/1.7/api/pdi/datatype/", "menu": [["main", "/docs/main/api/pdi/datatype/"], ["latest (1.12)", "/docs/latest/api/pdi/datatype/"], ["1.7", "/docs/1.7/api/pdi/datatype/", "active"]], "canonical": "https://example.org/docs/latest/api/pdi/datatype/"},
+  {"page": "/docs/1.7/api/pdi/config_error/", "menu": [["main", "/docs/main/"], ["latest (1.12)", "/docs/latest/"], ["1.7", "/docs/1.7/api/pdi/config_error/", "active"]], "canonical": "https://example.org/docs/1.7/api/pdi/config_error/"},
+  {"page": "/docs/", "menu": [], "canonical": null}
+]
