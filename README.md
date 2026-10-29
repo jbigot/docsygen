@@ -9,7 +9,9 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
 
 ## Requirements
 
-- Hugo extended 0.160.1 or later (Docsy 0.18's floor; the module itself needs 0.153.0).
+- Hugo 0.169.0 or later. docsygen reads the XML with Hugo's own decoder when Hugo has its
+  document layout (gohugoio/hugo#15485, not released yet), and with its own reader otherwise,
+  with the same result.
 - Docsy 0.18 (module `github.com/docsy/docsy/theme`), with its usual requirements: the `sass`
   CLI on `PATH`, and Bootstrap and Font Awesome from npm.
 - Doxygen's XML output, `GENERATE_XML = YES`, from Doxygen 1.15 to 1.18 (`tests/matrix.sh`
@@ -36,7 +38,7 @@ Import its styles from your `assets/scss/_styles_project.scss`:
 
 Copy Doxygen's XML directory under `assets/`, for example `assets/doxygen/mylib/`. A mount works
 too, from a directory outside the site (`module.mounts`, with an absolute `source`), but not
-through a symbolic link: Hugo 0.166 drops symlinked mounts.
+through a symbolic link: Hugo drops symlinked mounts.
 
 Generate the pages from a content adapter in the **parent** directory of the reference, for
 example `content/docs/_content.gotmpl`:

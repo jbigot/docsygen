@@ -1,0 +1,11 @@
+{{- /* Read the asset named by the context through docsygen/xml/unmarshal.html and through the
+       native decoder, and warn "reader-same: identical trees" when they agree (errorf
+       otherwise). For tests/reader-template, which forces the template reader. */ -}}
+{{- $r := resources.Get . -}}
+{{- $a := partial "docsygen/xml/unmarshal.html" $r -}}
+{{- $b := transform.Unmarshal (dict "format" "xml" "targetType" "document") $r -}}
+{{- if eq (jsonify $a) (jsonify $b) -}}
+  {{- warnf "reader-same: identical trees" -}}
+{{- else -}}
+  {{- errorf "reader-same: the trees differ: %s and %s" (jsonify $a) (jsonify $b) -}}
+{{- end -}}

@@ -3,11 +3,10 @@
 # binary for both readers, so that a difference can only come from the reader.
 #
 # Usage: sh tests/reader-diff.sh
-#   HUGO_SRC  the Hugo fork (default: the hugo directory next to this repository). Its branch
-#             docsygen-native (the native decoder merged with the fix of merge) is built into
-#             /tmp/docsygen-hugo-doc/<commit>/hugo when that is missing, then Go's build cache
-#             is cleaned: building Hugo fills it.
-# With each reader (DOCSYGEN_READER=native mounts tests/reader-native, tests/lib.sh):
+# The binary is the Hugo fork's docsygen-native (tests/lib.sh, native_hugo), whatever HUGO says:
+# docsygen picks the native decoder there by itself (docsygen/xml/native.html), and
+# DOCSYGEN_READER=template mounts tests/reader-template to force the template reader.
+# With each reader:
 #   1. tests/xml-parse/run.sh, then the two trees of every corpus file compared with each other;
 #   2. tests/unit/run.sh, which must pass with both;
 #   3. the Docsy test site on the sample, sample-c and pdi oracles, and the example site, whose
@@ -18,25 +17,12 @@ set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
-src=${HUGO_SRC:-$(dirname "$root")/hugo}
-commit=$(git -C "$src" rev-parse --short=9 docsygen-native)
-bin=/tmp/docsygen-hugo-doc/$commit/hugo
-if [ ! -x "$bin" ]; then
-  echo "reader-diff.sh: building docsygen-native ($commit) into $bin" >&2
-  git -C "$src" worktree add -q -d "$tmp/hugo-src" "$commit"
-  mkdir -p "$(dirname "$bin")"
-  built=0
-  (cd "$tmp/hugo-src" && CGO_ENABLED=1 go build -tags extended -o "$bin.new" .) && built=1
-  git -C "$src" worktree remove --force "$tmp/hugo-src"
-  go clean -cache
-  [ $built -eq 1 ] || { echo "reader-diff.sh: the build failed" >&2; exit 1; }
-  mv "$bin.new" "$bin"
-fi
-HUGO=$bin
+HUGO=$(native_hugo)
+DOCSYGEN_HUGO_KIND=native
 # The same sample XML for every run: Doxygen writes its output directory into Doxyfile.xml.
 DOCSYGEN_ORACLES=$tmp/oracle
-export HUGO DOCSYGEN_ORACLES
-hugo=$bin
+export HUGO DOCSYGEN_HUGO_KIND DOCSYGEN_ORACLES
+hugo=$HUGO
 "$hugo" version
 status=0
 fail() { echo "reader-diff.sh: FAILED: $*" >&2; status=1; }
@@ -94,18 +80,18 @@ for name in sample sample-c pdi; do
       cat "$work/log" >&2; fail "site $name with the $reader reader"; ok=0
     fi
   done
-  DOCSYGEN_READER=template
+  DOCSYGEN_READER=
   [ $ok -eq 0 ] || compare "site-$name"
 done
 
-# The example site as it is, with the reader's layouts mounted before its own for native.
+# The example site as it is, with the template reader's layouts mounted before its own.
 example=$root/exampleSite
 for reader in template native; do
   work=$tmp/example-$reader
   mkdir -p "$work"
   {
     printf 'module:\n  mounts:\n'
-    if [ "$reader" = native ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-native/layouts"; fi
+    if [ "$reader" = template ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-template/layouts"; fi
     for d in content assets static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
   } > "$work/mounts.yaml"
   if ! PATH="$example/node_modules/.bin:$PATH" "$hugo" --source "$example" --config "$example/hugo.yaml,$work/mounts.yaml" \

@@ -1,7 +1,10 @@
 {{- /* Read an XML resource into its root element, as {tag, attributes, children}; an empty
        resource gives an empty map. The one entry point to the XML: templates never call the
        reader directly. Cached per resource, as transform.Unmarshal is.
+       It uses the native decoder of gohugoio/hugo#15485 when this Hugo has it
+       (docsygen/xml/native.html), and the template reader otherwise, with the same result.
        Usage: partial "docsygen/xml/unmarshal.html" (resources.Get "doxygen/pdi/index.xml") */ -}}
-{{- /* Once a Hugo release has the document layout (gohugoio/hugo#15485), switch here on
-       hugo.Version to transform.Unmarshal (dict "format" "xml" "targetType" "document") . */ -}}
+{{- if partialCached "docsygen/xml/native.html" "" "" -}}
+  {{- return transform.Unmarshal (dict "format" "xml" "targetType" "document") . -}}
+{{- end -}}
 {{- return partial "docsygen/xml/read.html" . -}}

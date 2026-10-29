@@ -2,7 +2,8 @@
 # Check an XML reader against expat: every corpus file must give the same tree, in the document
 # layout ({tag, attributes, children}), and every file in edge/bad must fail the build. READER
 # selects the reader: `template` (the default) is the template reader, through
-# layouts/_partials/docsygen/xml/unmarshal.html, and `unmarshal` is transform.Unmarshal's document
+# layouts/_partials/docsygen/xml/unmarshal.html with tests/reader-template mounted over it, and
+# `unmarshal` is transform.Unmarshal's document
 # layout (targetType: document). With `unmarshal`, the bad files that the template reader rejects
 # only by being stricter are accepted by design. The files in edge/lenient are known differences
 # from expat, inherited from encoding/xml: each one is either accepted with the tree encoding/xml
@@ -20,7 +21,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 . "$here/../lib.sh"
 reader=${READER:-template}
 case $reader in
-  template) layouts=$here/layouts ;;
+  template) layouts=$here/layouts; DOCSYGEN_READER=template ;;
   unmarshal) layouts=$here/layouts-unmarshal ;;
   *) echo "READER must be template or unmarshal, not $reader" >&2; exit 2 ;;
 esac

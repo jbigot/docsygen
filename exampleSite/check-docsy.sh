@@ -13,13 +13,13 @@
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/;
 #   - where the versions meet Docsy's own pages, tests/site/check_example.py, on this build and
 #     on another one with a baseURL that has a path, as GitHub Pages gives a project site.
-# Hugo needs go for its modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
+# HUGO selects the Hugo binary (tests/lib.sh: the Hugo fork by default). Hugo needs go for its
+# modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
-root=$(dirname "$here")
-out=$(mktemp -d)
-trap 'rm -rf "$out"' EXIT
+. "$here/../tests/lib.sh"
+out=$tmp
 {
   printf 'module:\n  mounts:\n'
   for dir in content assets static layouts data i18n archetypes; do
@@ -29,7 +29,7 @@ trap 'rm -rf "$out"' EXIT
 } > "$out/checks.yaml"
 export PATH="$here/node_modules/.bin:$PATH"
 # Not --quiet: it would hide the ERROR line that errorf logs.
-if ! hugo --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --printPathWarnings \
+if ! "$hugo" --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --printPathWarnings \
     --destination "$out/public" > "$out/log" 2>&1; then
   cat "$out/log" >&2; exit 1
 fi
@@ -53,7 +53,7 @@ fi
 if [ -f "$out/public/llms.txt" ] && ! grep -qF '/docs/main/' "$out/public/llms.txt"; then
   echo "check-docsy.sh: llms.txt lists no page of /docs/main/" >&2; status=1
 fi
-if ! hugo --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --baseURL https://example.org/pdi/ \
+if ! "$hugo" --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --baseURL https://example.org/pdi/ \
     --destination "$out/based" > "$out/based.log" 2>&1; then
   cat "$out/based.log" >&2; exit 1
 fi

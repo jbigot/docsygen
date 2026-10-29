@@ -1,19 +1,49 @@
 # Shared by the test scripts, which source it: . "$(dirname "$0")/../lib.sh"
 # It sets:
 #   root  the repository root
-#   hugo  the Hugo binary: HUGO, else the example site's npm-installed one, else hugo from PATH
+#   hugo  the Hugo binary: HUGO, else the Hugo fork's docsygen-native (native_hugo)
 #   tmp   a scratch directory, removed on exit unless DOCSYGEN_KEEP is set (a script that sets its
 #         own EXIT trap removes it)
-# and defines oracle and site_config, below.
+# and exports DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
+# for a released Hugo), which picks the unit cases that have a hugo key.
+# It defines native_hugo, oracle and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
-# The npm package's .bin/hugo is a Node.js wrapper around this binary: a test that kills
-# hugo server must kill the binary itself.
-hugo=${HUGO:-$root/exampleSite/node_modules/hugo-extended/bin/hugo}
-[ -x "$hugo" ] || hugo=hugo
 tmp=$(mktemp -d)
 if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
+
+# native_hugo: print the path of the Hugo fork's binary, the primary Hugo of the tests. HUGO_SRC
+# is the fork (default: the hugo directory next to the main checkout of this repository, so that
+# a linked worktree elsewhere finds it too). Its branch docsygen-native (the native decoder of
+# gohugoio/hugo#15485 merged with the fix of merge) is built into
+# /tmp/docsygen-hugo-doc/<commit>/hugo when that is missing, then Go's build cache is cleaned:
+# building Hugo fills it. Upstream has no extended build any more: Docsy needs only Dart Sass.
+native_hugo() {
+  src=${HUGO_SRC:-$(dirname "$(dirname "$(cd "$root" && cd "$(git rev-parse --git-common-dir)" && pwd)")")/hugo}
+  commit=$(git -C "$src" rev-parse --short=9 docsygen-native) || return 1
+  bin=/tmp/docsygen-hugo-doc/$commit/hugo
+  if [ ! -x "$bin" ]; then
+    echo "lib.sh: building docsygen-native ($commit) into $bin" >&2
+    git -C "$src" worktree add -q -d "$tmp/hugo-src" "$commit" >&2 || return 1
+    mkdir -p "$(dirname "$bin")"
+    built=0
+    (cd "$tmp/hugo-src" && CGO_ENABLED=1 go build -o "$bin.new" .) >&2 && built=1
+    git -C "$src" worktree remove --force "$tmp/hugo-src"
+    go clean -cache >&2
+    [ $built -eq 1 ] || { echo "lib.sh: the build of docsygen-native failed" >&2; return 1; }
+    mv "$bin.new" "$bin"
+  fi
+  printf '%s\n' "$bin"
+}
+if [ -n "${HUGO:-}" ]; then
+  hugo=$HUGO
+else
+  hugo=$(native_hugo) || exit 1
+  DOCSYGEN_HUGO_KIND=${DOCSYGEN_HUGO_KIND:-native}
+fi
+DOCSYGEN_HUGO_KIND=${DOCSYGEN_HUGO_KIND:-}
+export DOCSYGEN_HUGO_KIND
 
 # oracle NAME: print the directory that holds Doxygen's xml/ and html/ for NAME (sample,
 # sample-c or pdi), generating them if needed (tests/oracle/generate.sh).
@@ -46,11 +76,11 @@ oracle() {
 # the module's files of the same name. Append the rest of the configuration to FILE.
 # DOCSYGEN_MODULE, when set, is the docsygen tree imported in place of this repository's
 # (tests/reference.sh).
-# With DOCSYGEN_READER=native, tests/reader-native is mounted first, so that docsygen reads the
-# XML with the native decoder (tests/reader-diff.sh).
+# With DOCSYGEN_READER=template, tests/reader-template is mounted first, so that docsygen reads
+# the XML with the template reader even when Hugo has the native decoder (tests/reader-diff.sh).
 site_config() {
   config=$1; shift
-  if [ "${DOCSYGEN_READER:-template}" = native ]; then set -- "$root/tests/reader-native/layouts=layouts" "$@"; fi
+  if [ "${DOCSYGEN_READER:-}" = template ]; then set -- "$root/tests/reader-template/layouts=layouts" "$@"; fi
   {
     printf 'module:\n'
     printf '  replacements: "github.com/jbigot/docsygen -> %s"\n' "${DOCSYGEN_MODULE:-$root}"

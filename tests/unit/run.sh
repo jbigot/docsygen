@@ -10,6 +10,8 @@
 # mounts maps directories of tests/unit to assets/ paths, or to layouts or content paths when the
 # target starts with layouts or content; a site with content builds its pages too. params is
 # added to the site's params.
+# A case or build case with a hugo key (native or release) runs only when DOCSYGEN_HUGO_KIND
+# (tests/lib.sh) is that value.
 # Every site mounts the XML of the sample and sample-c oracles, the example site's committed PDI
 # XML and fixtures/doxygen-1.17 at assets/doxygen/{sample,sample-c,pdi,doxygen-1.17}.
 set -eu
@@ -43,14 +45,16 @@ build() {
 status=0
 unit_site "$tmp/unit" "$@"
 printf '  test: %s\n' "$(printf '%s' "$filter" | sed 's/["\\]/\\&/g; s/.*/"&"/')" >> "$tmp/unit/hugo.yaml"
+printf '  hugo: "%s"\n' "$DOCSYGEN_HUGO_KIND" >> "$tmp/unit/hugo.yaml"
 if ! build "$tmp/unit"; then cat "$tmp/unit/log" >&2; exit 1; fi
 grep WARN "$tmp/unit/log" >&2 || true
 
 # A build case's mounts, as SOURCE=TARGET lines, and whether it expects an error or a warning.
-python3 -I - "$tmp/unit/public/builds.json" "$filter" > "$tmp/builds" <<'EOF'
+python3 -I - "$tmp/unit/public/builds.json" "$filter" "$DOCSYGEN_HUGO_KIND" > "$tmp/builds" <<'EOF'
 import json, re, sys
 for case in json.load(open(sys.argv[1])):
     if sys.argv[2] and not re.search(sys.argv[2], case['name']): continue
+    if case.get('hugo', sys.argv[3]) != sys.argv[3]: continue
     want = 'error' if 'error' in case else 'warning'
     mounts = ' '.join(f'{k}={v}' if v.split('/')[0] in ('layouts', 'content') else f'{k}=assets/{v}'
                       for k, v in (case.get('mounts') or {}).items())

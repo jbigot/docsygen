@@ -1,0 +1,10 @@
+- name: native decoder detected
+  partial: docsygen/xml/native.html
+  context: ""
+  hugo: native
+  expect: true
+- name: native decoder not detected in a release
+  partial: docsygen/xml/native.html
+  context: ""
+  hugo: release
+  expect: false

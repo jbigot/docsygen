@@ -1,0 +1,12 @@
+- name: the forced template reader gives the native tree
+  partial: test/reader-same.html
+  context: reader-template/merge.xml
+  hugo: native
+  mounts: {../reader-template/layouts: layouts, fixtures/reader-template: reader-template}
+  warning: 'reader-same: identical trees'
+- name: the forced template reader rejects a second root, which the native decoder ignores
+  partial: test/reader-same.html
+  context: reader-template/second-root.xml
+  hugo: native
+  mounts: {../reader-template/layouts: layouts, fixtures/reader-template: reader-template}
+  error: 'xml/parse: a second root element <s>'

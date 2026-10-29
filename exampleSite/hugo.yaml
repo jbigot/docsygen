@@ -5,8 +5,7 @@ locale: en
 module:
   proxy: direct
   hugoVersion:
-    extended: true
-    min: 0.160.1
+    min: 0.169.0
   imports:
     - path: github.com/jbigot/docsygen
     - path: github.com/docsy/docsy/theme

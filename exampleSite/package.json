@@ -8,14 +8,14 @@
     "serve": "hugo server"
   },
   "devDependencies": {
-    "hugo-extended": "0.166.0",
+    "hugo-extended": "0.169.0",
     "sass-embedded": "1.105.0"
   },
   "engines": {
     "npm": ">=11.18.0"
   },
   "allowScripts": {
-    "hugo-extended@0.166.0": true
+    "hugo-extended@0.169.0": true
   },
   "workspaces": [
     "packages/hugoautogen"

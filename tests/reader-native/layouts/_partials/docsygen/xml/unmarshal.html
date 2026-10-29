@@ -1,4 +1,0 @@
-{{- /* Test-only: docsygen/xml/unmarshal.html through the native decoder of gohugoio/hugo#15485,
-       mounted over the module's by tests/lib.sh (site_config) when DOCSYGEN_READER is native.
-       Needs a Hugo that has it (tests/reader-diff.sh). */ -}}
-{{- return transform.Unmarshal (dict "format" "xml" "targetType" "document") . -}}

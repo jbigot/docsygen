@@ -1,0 +1,17 @@
+{{- /* Whether this Hugo's transform.Unmarshal has the document layout of gohugoio/hugo#15485,
+       told by the shape of its result rather than by hugo.Version: no release has it yet, and a
+       fork that claimed a version number would skew Hugo's deprecation levels. A Hugo without
+       it ignores targetType and gives the data layout, {a: ""} here. The probe has a child
+       because such a Hugo rejects a root without one (gohugoio/hugo#13513), and goes through
+       try so that a Hugo that rejects the option falls back too.
+       Usage: partialCached "docsygen/xml/native.html" "" "" */ -}}
+{{- $native := false -}}
+{{- $r := try (transform.Unmarshal (dict "format" "xml" "targetType" "document") "<r><a/></r>") -}}
+{{- if not $r.Err -}}
+  {{- with $r.Value -}}
+    {{- if and (reflect.IsMap .) (isset . "attributes") (isset . "children") -}}
+      {{- $native = eq .tag "r" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $native -}}

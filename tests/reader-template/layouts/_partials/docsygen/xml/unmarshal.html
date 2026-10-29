@@ -1,0 +1,4 @@
+{{- /* Test-only: docsygen/xml/unmarshal.html with the template reader, even on a Hugo that has
+       the native decoder of gohugoio/hugo#15485. Mounted over the module's by tests/lib.sh
+       (site_config) when DOCSYGEN_READER is template (tests/reader-diff.sh). */ -}}
+{{- return partial "docsygen/xml/read.html" . -}}

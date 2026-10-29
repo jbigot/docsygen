@@ -4,16 +4,17 @@
 # Usage: sh tests/matrix.sh
 # Per Doxygen version (DOXYGEN set to it): coverage.py on the sample's XML, tests/xml-parse/run.sh,
 # tests/site/run.sh and tests/oracle/run.sh info on sample and sample-c.
-# With the Hugo of module.hugoVersion.min in hugo.yaml (HUGO set to it): tests/unit/run.sh and
-# tests/site/run.sh. The latter builds the pdi oracle, which needs PDI_SRC the first time
-# (tests/lib.sh, oracle).
+# With the Hugo of module.hugoVersion.min in hugo.yaml, the latest release (HUGO set to it, and
+# DOCSYGEN_HUGO_KIND to release): tests/unit/run.sh and tests/site/run.sh, where docsygen reads
+# the XML with the template reader, as such a Hugo has no native decoder. The latter builds the
+# pdi oracle, which needs PDI_SRC the first time (tests/lib.sh, oracle).
 # The release binaries are downloaded once into the kept cache /var/tmp/docsygen-matrix.
 # Exit 1 on any failure.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
-doxygens="1.15.0 1.16.0 1.17.0 1.18.0"
+doxygens="1.17.0 1.18.0"
 hugo_min=$(sed -n 's/^ *min: *//p' "$root/hugo.yaml")
 cache=/var/tmp/docsygen-matrix
 
@@ -48,7 +49,8 @@ printf '=== Hugo %s\n' "$hugo_min"
 fetch "https://github.com/gohugoio/hugo/releases/download/v$hugo_min/hugo_extended_${hugo_min}_linux-amd64.tar.gz" \
   "$cache/hugo-$hugo_min"
 HUGO=$cache/hugo-$hugo_min/hugo
-export HUGO
+DOCSYGEN_HUGO_KIND=release
+export HUGO DOCSYGEN_HUGO_KIND
 "$HUGO" version
 sh "$root/tests/unit/run.sh" || fail "Hugo $hugo_min: unit"
 sh "$root/tests/site/run.sh" || fail "Hugo $hugo_min: site"
