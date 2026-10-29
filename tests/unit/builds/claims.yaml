@@ -23,3 +23,8 @@
   context: {}
   mounts: {fixtures/claims-conflict: content, fixtures/versions/layouts: layouts}
   error: 'docsygen: version 1.0: api/demo/widget is claimed by /claim and /latest/api/demo/widget; mark one as a duplicate'
+- name: claims, a link naming the latest release by number to a hand-written page goes to the page
+  partial: test/content.html
+  context: {page: /linked}
+  mounts: {fixtures/claims-numbered: content, fixtures/versions/layouts: layouts}
+  warning: 'content: <p><a href="/latest/claim/">w</a></p>'

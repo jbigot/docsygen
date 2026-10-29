@@ -1,0 +1,2 @@
+{{- /* The content of page .page of a build case's site, as one warning: "content: …". */ -}}
+{{- with site.GetPage .page -}}{{- warnf "content: %s" (strings.TrimSpace (string .Content)) -}}{{- end -}}

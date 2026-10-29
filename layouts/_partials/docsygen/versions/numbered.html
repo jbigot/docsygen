@@ -1,8 +1,11 @@
 {{- /* A URL of the latest release under its numbered path: .url, of page .page (or below it) of
        version .version, with the segment of its placement's root that latest fills (the pattern's
        :version) replaced by the label. That URL is an alias, which redirects to latest for now
-       and stays on that release after the next one. Provisional (versions with placements).
+       and stays on that release after the next one; a hand-written page (a claim) has no such
+       alias and keeps .url. Provisional (versions with placements).
        Usage: partial "docsygen/versions/numbered.html" (dict "url" $url "page" $page "version" "1.12") */ -}}
+{{- /* Only a generated page has an alias at its numbered path; a hand-written one keeps its URL. */ -}}
+{{- if not (isset (.page.Params.docsygen | default dict) "key") -}}{{- return .url -}}{{- end -}}
 {{- $root := false -}}
 {{- range $p := .page.Ancestors.Reverse | append .page -}}{{- if $p.Params.docsygen.root -}}{{- $root = $p -}}{{- end -}}{{- end -}}
 {{- if not $root -}}{{- return .url -}}{{- end -}}
