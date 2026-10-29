@@ -1,0 +1,7 @@
+{{- /* The heading of a printed section of type docs, Docsy's hook in print/page-heading.html:
+       Docsy's own heading, preceded by docsygen's notice (version-banner.html) when the section
+       belongs to a version other than the latest. A site with its own
+       print/page-heading-docs.html replaces this one, and calls version-banner.html there. */ -}}
+{{ partial "version-banner.html" .Page }}
+<h1 class="title">{{ .Title }}</h1>
+{{ with .Page.Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}

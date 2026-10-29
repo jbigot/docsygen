@@ -1,7 +1,11 @@
 {{- /* The <link rel="canonical"> of a page (docsygen/canonical.html), or nothing outside the
-       version roots. docsygen's hooks/head-end.html calls it; a site with its own
+       version roots, and nothing in an output format other than HTML (where HTML is one of the
+       alternatives): Docsy already links those (print) to their HTML page as canonical.
+       docsygen's hooks/head-end.html calls it; a site with its own
        layouts/_partials/hooks/head-end.html calls it there.
        Usage: partial "docsygen/canonical-link.html" . */ -}}
-{{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
-{{- $url := partial "docsygen/canonical.html" . -}}
-{{- with $url }}<link rel="canonical" href="{{ . }}">{{ end -}}
+{{- if not (.AlternativeOutputFormats.Get "html") -}}
+  {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
+  {{- $url := partial "docsygen/canonical.html" . -}}
+  {{- with $url }}<link rel="canonical" href="{{ . }}">{{ end -}}
+{{- end -}}

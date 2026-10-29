@@ -18,8 +18,8 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
 ## Set up a site
 
 Import the module next to Docsy, and **before** it, in `hugo.yaml`: docsygen replaces some of
-Docsy's partials (the version menu and banner, its `head-end` hook), which only works when it
-comes first. The build stops otherwise.
+Docsy's partials (the version menu and banner, the `head-end` hook and the print heading of
+docs pages), which only works when it comes first. The build stops otherwise.
 
 ```yaml
 module:
@@ -91,12 +91,14 @@ the menu's order.
 - **Version menu:** on a generated page, Docsy's navbar menu lists the versions, `latest (2.1)`
   for the latest one, and each entry leads to the same page in that version, or to its root when
   it has none. Hand-written pages show no menu. docsygen sets a placeholder `params.versions`
-  for Docsy to call its menu, and doesn't read the site's own.
+  for Docsy to call its menu, doesn't read the site's own, and its stylesheet hides the navbar
+  item that Docsy leaves empty on hand-written pages.
 - **Notice:** the pages of `main` and of older releases say so above their content, with a link
   to the same page in the latest release. It replaces Docsy's version banner
-  (`params.archived_version` is not used). Reword or translate it in your `i18n/<lang>.yaml`,
-  with the keys `docsygen-notice-older` and `docsygen-notice-main` of docsygen's `i18n/en.yaml`.
-  The project's name comes from Doxygen's `PROJECT_NAME`.
+  (`params.archived_version` is not used), and heads the print page of a section too. Reword or
+  translate it in your `i18n/<lang>.yaml`, with the keys `docsygen-notice-older` and
+  `docsygen-notice-main` of docsygen's `i18n/en.yaml`. The project's name comes from Doxygen's
+  `PROJECT_NAME`.
 - **Search:** only the latest release's pages are in the search index, unless a call sets
   `search`.
 - **Canonical links go through Docsy's `hooks/head-end.html`.** If your site has its own
@@ -106,8 +108,11 @@ the menu's order.
   {{- partial "docsygen/canonical-link.html" . -}}
   ```
 
-- Docsy's `shared` chrome mode (`params.td.chrome`) copies one navbar into every page, which
-  drops the version menu: docsygen warns when it is on, and needs the default, `full`.
+  Likewise, a site's own `layouts/_partials/print/page-heading-docs.html` calls
+  `{{ partial "version-banner.html" .Page }}` for the notice of print pages.
+- Docsy's `shared` chrome mode (`td.chrome`) copies one navbar into every page, which drops the
+  version menu: docsygen warns when a page of the reference is in it, and needs the default,
+  `full`.
 
 ### Development mode
 

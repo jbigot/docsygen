@@ -1,8 +1,13 @@
 {{- /* Docsy's version banner, rendered above the content of docs pages (docs/baseof.html). On a
        page of a version root other than the latest, docsygen's notice (docsygen/notice.html),
        linked to the same page in the latest release; elsewhere, nothing. Docsy's own banner
-       (params.archived_version) is not used. */ -}}
+       (params.archived_version) is not used. docsygen's print/page-heading-docs.html calls it
+       too. Warns when Docsy's shared chrome mode (td.chrome, a page parameter) applies to the
+       page, since it drops the version menu. */ -}}
 {{- $page := . -}}
+{{- if and .Params.docsygen (eq (.Param "td.chrome") "shared") -}}
+  {{- warnidf "docsygen-chrome-shared" "docsygen: Docsy's shared chrome mode (td.chrome) copies the home page's navbar into the reference's pages, which drops docsygen's version menu: use the full mode there" -}}
+{{- end -}}
 {{- with .Params.docsygen -}}
   {{- $label := .version -}}
   {{- $mine := false -}}

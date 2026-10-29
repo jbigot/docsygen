@@ -1,7 +1,7 @@
 // docsygen's styles for the reference pages, imported by a site's _styles_project.scss:
 //   @import 'docsygen';
 // Only docsygen-* classes are styled, through Bootstrap's --bs-* variables, so that Docsy's light
-// and dark modes apply.
+// and dark modes apply, but for Docsy's version menu item at the end.
 
 // Members: the signature, the labels, the documentation.
 .docsygen-member {
@@ -200,4 +200,11 @@ dl[class^="docsygen-"] {
 
 .docsygen-multicol {
   column-width: 14rem;
+}
+
+// Docsy's navbar writes the version menu's item whenever params.versions is set, which
+// docsygen's hugo.yaml does for every page; on hand-written pages, docsygen's menu renders
+// nothing in it. Hide that empty item, and its padding, until Docsy leaves it out.
+.td-navbar__version-menu:not(:has(*)) {
+  display: none;
 }

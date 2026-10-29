@@ -70,11 +70,6 @@
       {{- errorf "docsygen: the latest version must be built: neither %q nor latest is in params.docsygen.versions" $.version -}}
     {{- end -}}
   {{- end -}}{{- end -}}
-  {{- if $latest -}}
-    {{- with site.Params.td -}}{{- if eq .chrome "shared" -}}
-      {{- warnidf "docsygen-chrome-shared" "docsygen: Docsy's shared chrome mode (params.td.chrome) copies the home page's navbar into every page, which drops docsygen's version menu: use the full mode" -}}
-    {{- end -}}{{- end -}}
-  {{- end -}}
   {{- $headless := dict "render" "never" "list" "local" -}}
   {{- if not $built -}}
     {{- $store.AddPage (dict "path" $root "kind" "section" "title" .version "build" $headless
