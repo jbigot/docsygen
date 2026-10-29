@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="Plugins" kind="page">
     <compoundname>Plugins</compoundname>
     <title>Plugins</title>
@@ -8,6 +8,7 @@
     <innerpage refid="mpi_plugin">The MPI plugin</innerpage>
     <innerpage refid="pycall_plugin">Pycall plugin</innerpage>
     <innerpage refid="JSON_plugin">JSON plugin</innerpage>
+    <innerpage refid="serialize_plugin">Serialize plugin</innerpage>
     <innerpage refid="set_value_plugin">Set_value plugin</innerpage>
     <innerpage refid="timer_plugin">Timer plugin</innerpage>
     <innerpage refid="trace_plugin">Trace plugin</innerpage>
@@ -16,7 +17,7 @@
     </briefdescription>
     <detaileddescription>
 <para><anchor id="Plugins_1md_pdi_2docs_2Plugins"/></para>
-<para><table rows="10" cols="2"><row>
+<para><table rows="11" cols="2"><row>
 <entry thead="yes" align='left'><para>Plugin  </para>
 </entry><entry thead="yes" align='left'><para>Description  </para>
 </entry></row>
@@ -39,6 +40,10 @@
 <row>
 <entry thead="no" align='left'><para><ref refid="JSON_plugin" kindref="compound">JSON plugin</ref>  </para>
 </entry><entry thead="no" align='left'><para>Export data in JSON format.  </para>
+</entry></row>
+<row>
+<entry thead="no" align='left'><para><ref refid="serialize_plugin" kindref="compound">Serialize plugin</ref>  </para>
+</entry><entry thead="no" align='left'><para>Serializes and deserializes shared data.  </para>
 </entry></row>
 <row>
 <entry thead="no" align='left'><para><ref refid="set_value_plugin" kindref="compound">Set Value plugin</ref>  </para>

@@ -9,7 +9,7 @@
 #        checkout of 9645c141 with its build tree, and PDI_DOXYFILE (default: the one that
 #        CMake configures in PDI_SRC/.build/ClangDevel/PDI/src/PDI-build/pdi/docs/) its
 #        configured Doxyfile.
-# DOXYGEN selects the Doxygen binary (default: doxygen).
+# DOXYGEN selects the Doxygen binary (default: doxygen; the test scripts set it, tests/lib.sh).
 set -eu
 
 root=$(cd "$(dirname "$0")/../.." && pwd)

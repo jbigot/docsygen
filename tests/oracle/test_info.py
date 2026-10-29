@@ -113,6 +113,14 @@ class Compare(unittest.TestCase):
         theirs = '<div class="fragment"><div class="line">a();</div>\n<div class="line"> </div>\n<div class="line">b();</div>\n</div>'
         self.assertEqual(self.compare(theirs, '<pre><code>a();\n\nb();</code></pre>').missing, [])
 
+    def test_a_newline_right_after_a_pre_start_tag_is_not_text(self):
+        theirs = '<pre class="mermaid">\ngraph LR\n  A --&gt; B</pre>'
+        self.assertEqual(self.compare(theirs, '<pre class="mermaid">graph LR\n  A --&gt; B</pre>').missing, [])
+
+    def test_a_newline_after_a_code_start_tag_is_text(self):
+        theirs = '<div class="fragment"><div class="line"></div>\n<div class="line">a();</div>\n</div>'
+        self.assertEqual(self.compare(theirs, '<pre><code>\na();</code></pre>').missing, [])
+
     def test_an_unwrap_rule_keeps_the_text(self):
         theirs = '<div class="fragment"><div class="line"><a class="code" href="classX.html">X</a> x;</div>\n</div>'
         rule = {'rule': 'unwrap', 'select': 'div.fragment a.code', 'count': 1, 'reason': 'r'}

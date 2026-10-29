@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="logger_8h" kind="file" language="C++">
     <compoundname>logger.h</compoundname>
     <includes local="no">functional</includes>
@@ -14,14 +14,6 @@
     <includedby refid="context__proxy_8h" local="no">context_proxy.h</includedby>
     <includedby refid="plugin_8h" local="no">plugin.h</includedby>
     <incdepgraph>
-      <node id="12">
-        <label>pdi/export.h</label>
-        <link refid="export_8h_source"/>
-      </node>
-      <node id="13">
-        <label>pdi/version.h</label>
-        <link refid="version_8h_source"/>
-      </node>
       <node id="10">
         <label>pdi.h</label>
         <link refid="pdi_8h_source"/>
@@ -90,6 +82,12 @@
       </node>
       <node id="11">
         <label>paraconf.h</label>
+      </node>
+      <node id="12">
+        <label>pdi/export.h</label>
+      </node>
+      <node id="13">
+        <label>pdi/version.h</label>
       </node>
       <node id="6">
         <label>spdlog/logger.h</label>

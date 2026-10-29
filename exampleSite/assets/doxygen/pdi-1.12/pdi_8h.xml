@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="pdi_8h" kind="file" language="C++">
     <compoundname>pdi.h</compoundname>
     <includes local="no">paraconf.h</includes>
@@ -258,7 +258,7 @@
       <member refid="group__annotation_1ga7c857647f7a8077648c28db634eeb805" kind="enum"><name>PDI_inout_t</name></member>
     </sectiondef>
     <sectiondef kind="typedef">
-      <member refid="group__error_1ga9e635248278d0dda3d5df7142a720f81" kind="typedef"><name>PDI_errfunc_f</name></member>
+      <member refid="group__error_1gae8347165262ad1c45f6b88013483e503" kind="typedef"><name>PDI_errfunc_f</name></member>
     </sectiondef>
     <sectiondef kind="var">
       <member refid="group__error_1ga2de43c6a3671d081a828c6442e6214a0" kind="variable"><name>PDI_STATUS_MSG</name></member>

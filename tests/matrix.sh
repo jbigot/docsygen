@@ -18,15 +18,6 @@ doxygens="1.17.0 1.18.0"
 hugo_min=$(sed -n 's/^ *min: *//p' "$root/hugo.yaml")
 cache=/var/tmp/docsygen-matrix
 
-# fetch URL DIR: download and unpack the tarball at URL into DIR, unless DIR exists.
-fetch() {
-  [ -d "$2" ] && return 0
-  rm -rf "$2.new"
-  mkdir -p "$2.new"
-  curl -fsSL "$1" | tar -xz -C "$2.new"
-  mv "$2.new" "$2"
-}
-
 status=0
 fail() { echo "matrix.sh: FAILED: $*" >&2; status=1; }
 

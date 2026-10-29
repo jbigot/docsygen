@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="plugin_8h" kind="file" language="C++">
     <compoundname>plugin.h</compoundname>
     <includes local="no">memory</includes>
@@ -10,14 +10,6 @@
     <includes refid="pdi__fwd_8h" local="no">pdi/pdi_fwd.h</includes>
     <includes refid="logger_8h" local="no">pdi/logger.h</includes>
     <incdepgraph>
-      <node id="11">
-        <label>pdi/export.h</label>
-        <link refid="export_8h_source"/>
-      </node>
-      <node id="12">
-        <label>pdi/version.h</label>
-        <link refid="version_8h_source"/>
-      </node>
       <node id="9">
         <label>pdi.h</label>
         <link refid="pdi_8h_source"/>
@@ -105,6 +97,12 @@
       <node id="10">
         <label>paraconf.h</label>
       </node>
+      <node id="11">
+        <label>pdi/export.h</label>
+      </node>
+      <node id="12">
+        <label>pdi/version.h</label>
+      </node>
       <node id="16">
         <label>spdlog/logger.h</label>
       </node>
@@ -180,7 +178,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><xrefsect id="deprecated_1_deprecated000003"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_MAJOR instead </para>
+<para><xrefsect id="deprecated_1_deprecated000005"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_MAJOR instead </para>
 </xrefdescription></xrefsect></para>
         </detaileddescription>
         <inbodydescription>
@@ -193,7 +191,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><xrefsect id="deprecated_1_deprecated000004"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_MINOR instead </para>
+<para><xrefsect id="deprecated_1_deprecated000006"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_MINOR instead </para>
 </xrefdescription></xrefsect></para>
         </detaileddescription>
         <inbodydescription>
@@ -206,7 +204,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><xrefsect id="deprecated_1_deprecated000005"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_PATCH instead </para>
+<para><xrefsect id="deprecated_1_deprecated000007"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION_PATCH instead </para>
 </xrefdescription></xrefsect></para>
         </detaileddescription>
         <inbodydescription>
@@ -219,7 +217,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para><xrefsect id="deprecated_1_deprecated000006"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION instead </para>
+<para><xrefsect id="deprecated_1_deprecated000008"><xreftitle>Deprecated</xreftitle><xrefdescription><para>use PDI_PLUGIN_API_VERSION instead </para>
 </xrefdescription></xrefsect></para>
         </detaileddescription>
         <inbodydescription>
@@ -229,23 +227,23 @@
       <memberdef kind="define" id="plugin_8h_1a7e4dfd8f6c67e3c1ba6fe7322b01f274" prot="public" static="no">
         <name>PDI_PLUGIN</name>
         <param><defname>name</defname></param>
-        <initializer>    _Pragma(&quot;clang diagnostic push&quot;) _Pragma(&quot;clang diagnostic ignored \&quot;-Wmissing-prototypes\&quot;&quot;)                                                    \
-        _Pragma(&quot;clang diagnostic ignored \&quot;-Wreturn-type-c-linkage\&quot;&quot;                                                                               \
-        ) extern &quot;C&quot; ::std::unique_ptr&lt;<ref refid="classPDI_1_1Plugin" kindref="compound">::PDI::Plugin</ref>&gt; PDI_EXPORT PDI_plugin_##name##_loader(<ref refid="classPDI_1_1Context" kindref="compound">::PDI::Context</ref>&amp; ctx, PC_tree_t conf)                     \
-    {                                                                                                                                                \
-        auto plugin = ::std::unique_ptr&lt;name##_plugin&gt;{new name##_plugin{ctx, conf}};                                                                \
-        <ref refid="namespacePDI_1a597784fcd3cb355d817d3d4e28dd3ce6" kindref="member">::PDI::plugin_api_version</ref>(PDI_PLUGIN_API_VERSION);                                                                                           \
-        return plugin;                                                                                                                               \
-    }                                                                                                                                                \
-    extern &quot;C&quot; ::std::pair&lt;::std::unordered_set&lt;::std::string&gt;, ::std::unordered_set&lt;::std::string&gt;&gt; PDI_EXPORT PDI_plugin_##name##_dependencies()   \
-    {                                                                                                                                                \
-        return ::plugin_dependencies&lt;name##_plugin&gt;();                                                                                               \
-    }                                                                                                                                                \
-    extern &quot;C&quot; ::std::string PDI_EXPORT PDI_plugin_##name##_pretty_name()                                                                            \
-    {                                                                                                                                                \
-        return ::plugin_pretty_name&lt;name##_plugin&gt;(#name);                                                                                           \
-    }                                                                                                                                                \
-    _Pragma(&quot;clang diagnostic pop&quot;)</initializer>
+        <initializer>_Pragma(&quot;clang diagnostic push&quot;) _Pragma(&quot;clang diagnostic ignored \&quot;-Wmissing-prototypes\&quot;&quot;)                                                    \
+    _Pragma(&quot;clang diagnostic ignored \&quot;-Wreturn-type-c-linkage\&quot;&quot;                                                                               \
+    ) extern &quot;C&quot; ::std::unique_ptr&lt;<ref refid="classPDI_1_1Plugin" kindref="compound">::PDI::Plugin</ref>&gt; PDI_EXPORT PDI_plugin_##name##_loader(<ref refid="classPDI_1_1Context" kindref="compound">::PDI::Context</ref>&amp; ctx, PC_tree_t conf)                     \
+{                                                                                                                                                \
+    auto plugin = ::std::unique_ptr&lt;name##_plugin&gt;{new name##_plugin{ctx, conf}};                                                                \
+    <ref refid="namespacePDI_1a597784fcd3cb355d817d3d4e28dd3ce6" kindref="member">::PDI::plugin_api_version</ref>(PDI_PLUGIN_API_VERSION);                                                                                           \
+    return plugin;                                                                                                                               \
+}                                                                                                                                                \
+extern &quot;C&quot; ::std::pair&lt;::std::unordered_set&lt;::std::string&gt;, ::std::unordered_set&lt;::std::string&gt;&gt; PDI_EXPORT PDI_plugin_##name##_dependencies()   \
+{                                                                                                                                                \
+    return ::plugin_dependencies&lt;name##_plugin&gt;();                                                                                               \
+}                                                                                                                                                \
+extern &quot;C&quot; ::std::string PDI_EXPORT PDI_plugin_##name##_pretty_name()                                                                            \
+{                                                                                                                                                \
+    return ::plugin_pretty_name&lt;name##_plugin&gt;(#name);                                                                                           \
+}                                                                                                                                                \
+_Pragma(&quot;clang diagnostic pop&quot;)</initializer>
         <briefdescription>
 <para>Declares a plugin to be used with PDI and its dependencies. </para>
         </briefdescription>

@@ -23,10 +23,8 @@ ALLOWED = {
     'plantumlfile': 'needs PlantUML at Doxygen time; out of scope',
     'dotfile': 'needs a .dot file and dot at Doxygen time',
     'dot': 'the oracle runs with HAVE_DOT=NO, as PDI does, and Doxygen then drops \\dot',
-    'language': 'Doxygen 1.15 never writes it: \\~ is resolved while scanning comments',
-    'copydoc': 'Doxygen 1.15 never writes it: \\copydoc is expanded while scanning comments',
-    'mermaid': 'Doxygen 1.17+ only, and the sample serves 1.15 too: tests/unit/cases/doxygen-1.17.yaml',
-    'mermaidfile': 'Doxygen 1.17+ only, and the sample serves 1.15 too: tests/unit/cases/doxygen-1.17.yaml',
+    'language': 'Doxygen never writes it: \\~ is resolved while scanning comments',
+    'copydoc': 'Doxygen never writes it: \\copydoc is expanded while scanning comments',
 }
 
 

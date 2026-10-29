@@ -12,7 +12,7 @@ attribute only, unwrap the element but not its children, empty its children only
 substitutes with for the matches of replace in the element's own text, not in its descendants',
 and selects only an element that has one. count is the exact number of matches over all pages:
 any other number is an error, and so is an entry without matches (stale); the counts are those of
-Doxygen 1.15.0's HTML. An entry with an oracle applies only when that oracle is named.
+Doxygen 1.18.0's HTML. An entry with an oracle applies only when that oracle is named.
 """
 import fnmatch, html.parser, re
 

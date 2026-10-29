@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="group__error" kind="group">
     <compoundname>error</compoundname>
     <title>Error handling</title>
@@ -143,10 +143,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="group__error_1ga9e635248278d0dda3d5df7142a720f81" prot="public" static="no">
-        <type>void(*</type>
-        <definition>typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)</definition>
-        <argsstring>)(PDI_status_t status, const char *message, void *context)</argsstring>
+      <memberdef kind="typedef" id="group__error_1gae8347165262ad1c45f6b88013483e503" prot="public" static="no">
+        <type>void(*)</type>
+        <definition>typedef void(*) PDI_errfunc_f(PDI_status_t status, const char *message, void *context)</definition>
+        <argsstring>(PDI_status_t status, const char *message, void *context)</argsstring>
         <name>PDI_errfunc_f</name>
         <briefdescription>
 <para>Type of a callback function used when an error occurs. </para>
@@ -191,17 +191,17 @@
         <argsstring>[]</argsstring>
         <name>PDI_STATUS_MSG</name>
         <initializer>= {&quot;Not an error&quot;,
-       &quot;Data unavailable&quot;,
-       &quot;Invalid entry in specification tree&quot;,
-       &quot;Invalid value expression&quot;,
-       &quot;Invalid plugin&quot;,
-       &quot;Missing feature&quot;,
-       &quot;System error&quot;,
-       &quot;Precondition not respected&quot;,
-       &quot;Permission issue&quot;,
-       &quot;Incorrect type&quot;,
-       &quot;Invalid action requested&quot;,
-       &quot;Multiple errors&quot;}</initializer>
+      &quot;Data unavailable&quot;,
+      &quot;Invalid entry in specification tree&quot;,
+      &quot;Invalid value expression&quot;,
+      &quot;Invalid plugin&quot;,
+      &quot;Missing feature&quot;,
+      &quot;System error&quot;,
+      &quot;Precondition not respected&quot;,
+      &quot;Permission issue&quot;,
+      &quot;Incorrect type&quot;,
+      &quot;Invalid action requested&quot;,
+      &quot;Multiple errors&quot;}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

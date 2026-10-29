@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="conceptPDI_1_1initializable__from" kind="concept">
     <compoundname>PDI::initializable_from</compoundname>
     <includes refid="testing_8h" local="no">testing.h</includes>
@@ -16,7 +16,18 @@ concept <ref refid="conceptPDI_1_1initializable__from" kindref="compound">PDI::i
 	{
 		t.init_from(gen)
 	};
-}    </initializer>
+}</initializer>
+    <conceptparts>
+      <codepart line="83">    <programlisting>
+<codeline><highlight class="keyword">template</highlight><highlight class="normal">&lt;<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>G<sp/>&gt;</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">concept<sp/></highlight><highlight class="normal">initializable_from<sp/>=<sp/></highlight><highlight class="keyword">requires</highlight><highlight class="normal">(T<sp/>t,<sp/>G&amp;<sp/>gen)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.init_from(gen)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+</codepart>
+    </conceptparts>
     <briefdescription>
 <para>An object is initializable_from&lt;G&gt; if it can be initalized using the init_from member function from a reference of G. </para>
     </briefdescription>

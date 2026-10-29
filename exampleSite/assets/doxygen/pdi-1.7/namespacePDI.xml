@@ -1,34 +1,34 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="namespacePDI" kind="namespace" language="C++">
     <compoundname>PDI</compoundname>
     <innerclass refid="classPDI_1_1Array__datatype" prot="public">PDI::Array_datatype</innerclass>
     <innerclass refid="classPDI_1_1Callbacks" prot="public">PDI::Callbacks</innerclass>
+    <innerclass refid="classPDI_1_1Config__error" prot="public">PDI::Config_error</innerclass>
     <innerclass refid="classPDI_1_1Context" prot="public">PDI::Context</innerclass>
     <innerclass refid="classPDI_1_1Context__proxy" prot="public">PDI::Context_proxy</innerclass>
     <innerclass refid="classPDI_1_1Data__descriptor" prot="public">PDI::Data_descriptor</innerclass>
     <innerclass refid="classPDI_1_1Datatype" prot="public">PDI::Datatype</innerclass>
     <innerclass refid="classPDI_1_1Datatype__template" prot="public">PDI::Datatype_template</innerclass>
     <innerclass refid="classPDI_1_1Error" prot="public">PDI::Error</innerclass>
-    <innerclass refid="classPDI_1_1Unavailable__error" prot="public">PDI::Unavailable_error</innerclass>
-    <innerclass refid="classPDI_1_1Config__error" prot="public">PDI::Config_error</innerclass>
-    <innerclass refid="classPDI_1_1Value__error" prot="public">PDI::Value_error</innerclass>
-    <innerclass refid="classPDI_1_1Plugin__error" prot="public">PDI::Plugin_error</innerclass>
-    <innerclass refid="classPDI_1_1Impl__error" prot="public">PDI::Impl_error</innerclass>
-    <innerclass refid="classPDI_1_1System__error" prot="public">PDI::System_error</innerclass>
-    <innerclass refid="classPDI_1_1State__error" prot="public">PDI::State_error</innerclass>
-    <innerclass refid="classPDI_1_1Right__error" prot="public">PDI::Right_error</innerclass>
-    <innerclass refid="classPDI_1_1Type__error" prot="public">PDI::Type_error</innerclass>
     <innerclass refid="classPDI_1_1Expression" prot="public">PDI::Expression</innerclass>
+    <innerclass refid="classPDI_1_1Impl__error" prot="public">PDI::Impl_error</innerclass>
     <innerclass refid="classPDI_1_1Logger" prot="public">PDI::Logger</innerclass>
     <innerclass refid="structPDI_1_1Paraconf__wrapper" prot="public">PDI::Paraconf_wrapper</innerclass>
-    <innerclass refid="classPDI_1_1Ref__any" prot="public">PDI::Ref_any</innerclass>
     <innerclass refid="classPDI_1_1Plugin" prot="public">PDI::Plugin</innerclass>
+    <innerclass refid="classPDI_1_1Plugin__error" prot="public">PDI::Plugin_error</innerclass>
     <innerclass refid="classPDI_1_1Pointer__datatype" prot="public">PDI::Pointer_datatype</innerclass>
     <innerclass refid="classPDI_1_1Record__datatype" prot="public">PDI::Record_datatype</innerclass>
+    <innerclass refid="classPDI_1_1Ref__any" prot="public">PDI::Ref_any</innerclass>
     <innerclass refid="classPDI_1_1Reference__base" prot="public">PDI::Reference_base</innerclass>
+    <innerclass refid="classPDI_1_1Right__error" prot="public">PDI::Right_error</innerclass>
     <innerclass refid="classPDI_1_1Scalar__datatype" prot="public">PDI::Scalar_datatype</innerclass>
+    <innerclass refid="classPDI_1_1State__error" prot="public">PDI::State_error</innerclass>
+    <innerclass refid="classPDI_1_1System__error" prot="public">PDI::System_error</innerclass>
     <innerclass refid="classPDI_1_1Tuple__datatype" prot="public">PDI::Tuple_datatype</innerclass>
+    <innerclass refid="classPDI_1_1Type__error" prot="public">PDI::Type_error</innerclass>
+    <innerclass refid="classPDI_1_1Unavailable__error" prot="public">PDI::Unavailable_error</innerclass>
+    <innerclass refid="classPDI_1_1Value__error" prot="public">PDI::Value_error</innerclass>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="namespacePDI_1aaeb021e0fbcb2477836bd770c3c473c7" prot="public" static="no" strong="yes">
         <type>uint8_t</type>
@@ -75,7 +75,7 @@
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespacePDI_1a03d9edc0d87688f72c6e11e4a6860023" prot="public" static="no">
         <type>std::unordered_map&lt; std::string, <ref refid="classPDI_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
-        <definition>using PDI::Attributes_map =  std::unordered_map&lt;std::string, Expression&gt;</definition>
+        <definition>using PDI::Attributes_map = std::unordered_map&lt;std::string, Expression&gt;</definition>
         <argsstring></argsstring>
         <name>Attributes_map</name>
         <qualifiedname>PDI::Attributes_map</qualifiedname>
@@ -89,7 +89,7 @@
       </memberdef>
       <memberdef kind="typedef" id="namespacePDI_1a5c8cefcc288662fc3c44db315e97ff67" prot="public" static="no">
         <type>std::shared_ptr&lt; const <ref refid="classPDI_1_1Datatype__template" kindref="compound">Datatype_template</ref> &gt;</type>
-        <definition>using PDI::Datatype_template_ptr =  std::shared_ptr&lt;const Datatype_template&gt;</definition>
+        <definition>using PDI::Datatype_template_ptr = std::shared_ptr&lt;const Datatype_template&gt;</definition>
         <argsstring></argsstring>
         <name>Datatype_template_ptr</name>
         <qualifiedname>PDI::Datatype_template_ptr</qualifiedname>
@@ -103,7 +103,7 @@
       </memberdef>
       <memberdef kind="typedef" id="namespacePDI_1aad4d6c91036390acf42b8cee31f8289c" prot="public" static="no">
         <type>std::shared_ptr&lt; const <ref refid="classPDI_1_1Datatype" kindref="compound">Datatype</ref> &gt;</type>
-        <definition>using PDI::Datatype_sptr =  std::shared_ptr&lt;const Datatype&gt;</definition>
+        <definition>using PDI::Datatype_sptr = std::shared_ptr&lt;const Datatype&gt;</definition>
         <argsstring></argsstring>
         <name>Datatype_sptr</name>
         <qualifiedname>PDI::Datatype_sptr</qualifiedname>

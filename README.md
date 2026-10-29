@@ -14,7 +14,7 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
   with the same result.
 - Docsy 0.18 (module `github.com/docsy/docsy/theme`), with its usual requirements: the `sass`
   CLI on `PATH`, and Bootstrap and Font Awesome from npm.
-- Doxygen's XML output, `GENERATE_XML = YES`, from Doxygen 1.15 to 1.18 (`tests/matrix.sh`
+- Doxygen's XML output, `GENERATE_XML = YES`, from Doxygen 1.17 to 1.18 (`tests/matrix.sh`
   tests each one).
 
 ## Set up a site

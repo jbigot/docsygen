@@ -27,7 +27,7 @@ with each other. Each container checks, as multisets:
   3. code: the text of each div.fragment (its lines joined with newlines) and each pre equals the
      text of a Docsy pre, trailing blanks of each line left out.
 Formulas compare as their TeX (formulas()). What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
-The counts of the gaps and rules are those of Doxygen 1.15.0's HTML: --counts-advisory, for another
+The counts of the gaps and rules are those of Doxygen 1.18.0's HTML: --counts-advisory, for another
 version, reports their errors as notes.
 --gap-usage also prints, for each gap that applies to the oracle, `gap N SELECTOR: needed` when the
 comparison without it reports more missing items, `unused` otherwise (gap_usage()).
@@ -59,6 +59,9 @@ def code_text(node):
         return ''.join(c if isinstance(c, str) else raw(c) for c in n.children)
     if node.tag == 'pre':
         text = raw(node)
+        # HTML drops a newline right after <pre>'s start tag, which html.parser keeps.
+        if node.children and isinstance(node.children[0], str) and node.children[0].startswith('\n'):
+            text = text[1:]
     else:
         text = '\n'.join(raw(line) for line in htmltree.find(node, 'div.line'))
     text = text[:-1] if text.endswith('\n') else text

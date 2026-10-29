@@ -11,6 +11,7 @@
 #   - the offline search index holds PDI_share's brief, from /docs/latest/ only;
 #   - the print page of the reference holds a member's signature;
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/;
+#   - each committed XML tree comes from Doxygen 1.18.0, the oracle's version;
 #   - where the versions meet Docsy's own pages, tests/site/check_example.py, on this build and
 #     on another one with a baseURL that has a path, as GitHub Pages gives a project site.
 # HUGO selects the Hugo binary (tests/lib.sh: the Hugo fork by default). Hugo needs go for its
@@ -35,6 +36,11 @@ if ! "$hugo" --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --prin
 fi
 status=0
 if grep -E 'WARN|ERROR' "$out/log" >&2; then status=1; fi
+for xml in "$here"/assets/doxygen/*/index.xml; do
+  if ! grep -q '<doxygenindex [^>]*version="1\.18\.0"' "$xml"; then
+    echo "check-docsy.sh: $xml is not Doxygen 1.18.0's: regenerate it (assets/doxygen/README.md)" >&2; status=1
+  fi
+done
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi" /docs/main/ || status=1
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.12" /docs/latest/ || status=1
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.7" /docs/1.7/ || status=1

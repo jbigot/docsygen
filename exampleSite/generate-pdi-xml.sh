@@ -8,12 +8,15 @@
 #
 # Usage: sh generate-pdi-xml.sh PDI_SOURCE_DIR CONFIGURED_DOXYFILE [NAME]
 #   NAME  the directory under assets/doxygen/ (default: pdi)
+# DOXYGEN selects the Doxygen binary (default: the oracle's, Doxygen 1.18.0, as tests/lib.sh
+# downloads it).
 set -eu
 
 site=$(cd "$(dirname "$0")" && pwd)
 pdi_source=$1
 doxyfile=$(cd "$(dirname "$2")" && pwd)/$(basename "$2")
 name=${3:-pdi}
+doxygen=${DOXYGEN:-/var/tmp/docsygen-matrix/doxygen-1.18.0/doxygen-1.18.0/bin/doxygen}
 out=$site/assets/doxygen
 
 rm -rf "${out:?}/$name"
@@ -24,4 +27,4 @@ cd "$pdi_source"  # PDI's doc target runs doxygen from the source root
   printf '%s\n' GENERATE_HTML=NO GENERATE_XML=YES "OUTPUT_DIRECTORY=$out" "XML_OUTPUT=$name" \
     XML_PROGRAMLISTING=NO QUIET=YES WARNINGS=NO WARN_IF_UNDOCUMENTED=NO WARN_IF_INCOMPLETE_DOC=NO \
     WARN_IF_DOC_ERROR=NO
-} | doxygen -
+} | "$doxygen" -

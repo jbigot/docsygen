@@ -2,7 +2,7 @@
   partial: docsygen/model.html
   context: doxygen/pdi
   select: [doxygen]
-  expect: 1.15.0
+  expect: 1.18.0
 - name: model of PDI, compound order
   partial: docsygen/model.html
   context: doxygen/pdi

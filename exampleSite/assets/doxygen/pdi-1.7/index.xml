@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.15.0" xml:lang="en-US">
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.18.0" xml:lang="en-US">
   <compound refid="classPDI_1_1Array__datatype" kind="class"><name>PDI::Array_datatype</name>
     <member refid="classPDI_1_1Array__datatype_1aa4b5d57ffcab0d7d6076a9020de3920b" kind="variable"><name>m_subtype</name></member>
     <member refid="classPDI_1_1Array__datatype_1a271c3b574d671710ea562b216df69ce9" kind="variable"><name>m_size</name></member>
@@ -571,7 +571,7 @@
   <compound refid="pdi_8h" kind="file"><name>pdi.h</name>
     <member refid="group__error_1ga838ed1a4a5ca21c0d3ef790afbf61b74" kind="enum"><name>PDI_status_t</name></member>
     <member refid="group__annotation_1ga7c857647f7a8077648c28db634eeb805" kind="enum"><name>PDI_inout_t</name></member>
-    <member refid="group__error_1ga9e635248278d0dda3d5df7142a720f81" kind="typedef"><name>PDI_errfunc_f</name></member>
+    <member refid="group__error_1gae8347165262ad1c45f6b88013483e503" kind="typedef"><name>PDI_errfunc_f</name></member>
     <member refid="group__error_1ga071fa4de35e77bd21db91b92659c7341" kind="variable"><name>PDI_ASSERT_HANDLER</name></member>
     <member refid="group__error_1ga9807c58ccf192137c930993273a31cf9" kind="variable"><name>PDI_WARN_HANDLER</name></member>
     <member refid="group__error_1ga5d883a6c102ceeb7d3527201df2ab877" kind="variable"><name>PDI_NULL_HANDLER</name></member>
@@ -660,7 +660,7 @@
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74a501534fa48095e939e2d553cc72640b7" kind="enumvalue"><name>PDI_ERR_STATE</name></member>
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74ae573fb10e871f40c2b37182ff415f454" kind="enumvalue"><name>PDI_ERR_RIGHT</name></member>
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74a7eb3671f2fe468efe6b23291d3a11ade" kind="enumvalue"><name>PDI_ERR_TYPE</name></member>
-    <member refid="group__error_1ga9e635248278d0dda3d5df7142a720f81" kind="typedef"><name>PDI_errfunc_f</name></member>
+    <member refid="group__error_1gae8347165262ad1c45f6b88013483e503" kind="typedef"><name>PDI_errfunc_f</name></member>
     <member refid="group__error_1ga071fa4de35e77bd21db91b92659c7341" kind="variable"><name>PDI_ASSERT_HANDLER</name></member>
     <member refid="group__error_1ga9807c58ccf192137c930993273a31cf9" kind="variable"><name>PDI_WARN_HANDLER</name></member>
     <member refid="group__error_1ga5d883a6c102ceeb7d3527201df2ab877" kind="variable"><name>PDI_NULL_HANDLER</name></member>

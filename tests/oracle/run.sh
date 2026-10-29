@@ -14,7 +14,7 @@
 #          (tests/lib.sh, oracle)
 # The site directory holds layouts/, content/ and config.yaml (its configuration, without the
 # module section); the oracle's xml/ is mounted at assets/doxygen/oracle. The counts of the gaps
-# and rules are checked only on Doxygen 1.15.0's XML (--counts-advisory otherwise). Exit 1 on any
+# and rules are checked only on Doxygen 1.18.0's XML (--counts-advisory otherwise). Exit 1 on any
 # difference, when an oracle cannot be generated, or when the site does not exist yet.
 set -eu
 
@@ -36,10 +36,10 @@ status=0
 for name; do
   printf '== %s\n' "$name"
   if ! dir=$(oracle "$name"); then status=1; continue; fi
-  # The counts of xml-gaps.yaml and info-rules.yaml are those of Doxygen 1.15.0's HTML.
+  # The counts of xml-gaps.yaml and info-rules.yaml are those of Doxygen 1.18.0's HTML.
   advisory=
   version=$(sed -n 's/.*<doxygenindex [^>]*version="\([^"]*\)".*/\1/p' "$dir/xml/index.xml")
-  if [ "$version" != 1.15.0 ]; then advisory=--counts-advisory; fi
+  if [ "$version" != 1.18.0 ]; then advisory=--counts-advisory; fi
   work=$tmp/$name
   mkdir -p "$work"
   if [ "$mode" = info-docsy ]; then

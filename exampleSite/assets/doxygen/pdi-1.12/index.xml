@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.15.0" xml:lang="en-US">
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.18.0" xml:lang="en-US">
   <compound refid="classPDI_1_1Array__datatype" kind="class"><name>PDI::Array_datatype</name>
     <member refid="classPDI_1_1Array__datatype_1aa4b5d57ffcab0d7d6076a9020de3920b" kind="variable"><name>m_subtype</name></member>
     <member refid="classPDI_1_1Array__datatype_1a271c3b574d671710ea562b216df69ce9" kind="variable"><name>m_size</name></member>
@@ -517,6 +517,7 @@
     <member refid="namespacePDI_1a9c2ef01d13eae0c33892650132712ed2" kind="typedef"><name>System_error</name></member>
     <member refid="namespacePDI_1a676f6b1acee6b404b31f42677bb57a57" kind="typedef"><name>Type_error</name></member>
     <member refid="namespacePDI_1a11ed4781aa57c2e8d8f9ec22a471189d" kind="typedef"><name>Invalid_action_error</name></member>
+    <member refid="namespacePDI_1a5c8cefcc288662fc3c44db315e97ff67" kind="typedef"><name>Datatype_template_ptr</name></member>
     <member refid="namespacePDI_1a70c4ec61a266eda8bc1eb7859823b0ab" kind="typedef"><name>Datatype_template_sptr</name></member>
     <member refid="namespacePDI_1aad4d6c91036390acf42b8cee31f8289c" kind="typedef"><name>Datatype_sptr</name></member>
     <member refid="namespacePDI_1adc363df268e6e68e68947a4fc799ca00" kind="typedef"><name>Ref</name></member>
@@ -627,7 +628,7 @@
     <member refid="pdi_8h_1abb59b736efab8fa66c3576a762fc5fee" kind="define"><name>PDI_ERR_RIGHT_DEPRECATED</name></member>
     <member refid="group__error_1ga838ed1a4a5ca21c0d3ef790afbf61b74" kind="enum"><name>PDI_status_t</name></member>
     <member refid="group__annotation_1ga7c857647f7a8077648c28db634eeb805" kind="enum"><name>PDI_inout_t</name></member>
-    <member refid="group__error_1ga9e635248278d0dda3d5df7142a720f81" kind="typedef"><name>PDI_errfunc_f</name></member>
+    <member refid="group__error_1gae8347165262ad1c45f6b88013483e503" kind="typedef"><name>PDI_errfunc_f</name></member>
     <member refid="group__error_1ga2de43c6a3671d081a828c6442e6214a0" kind="variable"><name>PDI_STATUS_MSG</name></member>
     <member refid="group__error_1ga071fa4de35e77bd21db91b92659c7341" kind="variable"><name>PDI_ASSERT_HANDLER</name></member>
     <member refid="group__error_1ga9807c58ccf192137c930993273a31cf9" kind="variable"><name>PDI_WARN_HANDLER</name></member>
@@ -730,7 +731,7 @@
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74aa5b5506a7ae9fb5426441cc52d31291f" kind="enumvalue"><name>PDI_ERR_INVALIDACTION</name></member>
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74aa8e3d27891d971ec5e2e2d88d5f72a35" kind="enumvalue"><name>PDI_ERR_MULTIPLE</name></member>
     <member refid="group__error_1gga838ed1a4a5ca21c0d3ef790afbf61b74ac956600ae48474c73bd782b77503fcd7" kind="enumvalue"><name>PDI_NB_STATUSES_DEFINED</name></member>
-    <member refid="group__error_1ga9e635248278d0dda3d5df7142a720f81" kind="typedef"><name>PDI_errfunc_f</name></member>
+    <member refid="group__error_1gae8347165262ad1c45f6b88013483e503" kind="typedef"><name>PDI_errfunc_f</name></member>
     <member refid="group__error_1ga2de43c6a3671d081a828c6442e6214a0" kind="variable"><name>PDI_STATUS_MSG</name></member>
     <member refid="group__error_1ga071fa4de35e77bd21db91b92659c7341" kind="variable"><name>PDI_ASSERT_HANDLER</name></member>
     <member refid="group__error_1ga9807c58ccf192137c930993273a31cf9" kind="variable"><name>PDI_WARN_HANDLER</name></member>
@@ -775,6 +776,8 @@
   <compound refid="user_code_plugin" kind="page"><name>user_code_plugin</name>
   </compound>
   <compound refid="pycall_plugin" kind="page"><name>pycall_plugin</name>
+  </compound>
+  <compound refid="serialize_plugin" kind="page"><name>serialize_plugin</name>
   </compound>
   <compound refid="set_value_plugin" kind="page"><name>set_value_plugin</name>
   </compound>

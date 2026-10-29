@@ -4,14 +4,30 @@
 #   hugo  the Hugo binary: HUGO, else the Hugo fork's docsygen-native (native_hugo)
 #   tmp   a scratch directory, removed on exit unless DOCSYGEN_KEEP is set (a script that sets its
 #         own EXIT trap removes it)
-# and exports DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
+# and exports DOXYGEN, the Doxygen binary of the oracles: DOXYGEN, else Doxygen 1.18.0, downloaded
+# once into /var/tmp/docsygen-matrix (fetch); and DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
 # for a released Hugo), which picks the unit cases that have a hugo key.
-# It defines native_hugo, oracle and site_config, below.
+# It defines fetch, native_hugo, oracle and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
 tmp=$(mktemp -d)
 if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
+
+# fetch URL DIR: download and unpack the tarball at URL into DIR, unless DIR exists.
+fetch() {
+  [ -d "$2" ] && return 0
+  rm -rf "$2.new"
+  mkdir -p "$2.new"
+  curl -fsSL "$1" | tar -xz -C "$2.new"
+  mv "$2.new" "$2"
+}
+if [ -z "${DOXYGEN:-}" ]; then
+  fetch https://github.com/doxygen/doxygen/releases/download/Release_1_18_0/doxygen-1.18.0.linux.bin.tar.gz \
+    /var/tmp/docsygen-matrix/doxygen-1.18.0
+  DOXYGEN=/var/tmp/docsygen-matrix/doxygen-1.18.0/doxygen-1.18.0/bin/doxygen
+fi
+export DOXYGEN
 
 # native_hugo: print the path of the Hugo fork's binary, the primary Hugo of the tests. HUGO_SRC
 # is the fork (default: the hugo directory next to the main checkout of this repository, so that
@@ -48,12 +64,13 @@ export DOCSYGEN_HUGO_KIND
 # oracle NAME: print the directory that holds Doxygen's xml/ and html/ for NAME (sample,
 # sample-c or pdi), generating them if needed (tests/oracle/generate.sh).
 # The samples are generated once per test run, in $tmp, or in DOCSYGEN_ORACLES when it is set
-# (shared by the scripts a script runs: tests/reader-diff.sh). pdi is generated once into the kept
-# cache /var/tmp/docsygen-oracle/pdi-9645c141, and needs PDI_SRC the first time.
+# (shared by the scripts a script runs: tests/reader-diff.sh). pdi is generated once per Doxygen
+# version into the kept cache /var/tmp/docsygen-oracle/pdi-9645c141-doxygen-<version>, and needs
+# PDI_SRC the first time.
 oracle() {
   case $1 in
     sample | sample-c) dir=${DOCSYGEN_ORACLES:-$tmp/oracle}/$1 ;;
-    pdi) dir=/var/tmp/docsygen-oracle/pdi-9645c141 ;;
+    pdi) dir=/var/tmp/docsygen-oracle/pdi-9645c141-doxygen-$("$DOXYGEN" --version | cut -d ' ' -f 1) ;;
     *) echo "oracle: unknown oracle $1 (sample, sample-c or pdi)" >&2; return 2 ;;
   esac
   if [ ! -d "$dir/xml" ] || [ ! -d "$dir/html" ]; then

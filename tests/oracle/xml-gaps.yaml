@@ -15,7 +15,7 @@
 - oracle: pdi
   pages: "*"
   select: div.ttc
-  count: 548
+  count: 550
   reason: "The tooltips that follow a code fragment repeat a symbol's name, declaration, brief and definition, but which fragments get them depends on the state of Doxygen's code parser (once per output file, yet missing on some pages that link the symbol), and an enum value's line isn't in the XML"
   evidence: "First_steps.xml links PDI_expose (group__annotation_1gae809befdb9bde9abad07a9e0eab894d7) in code, and First_steps.html links it without its tooltip, which how_to_create_plugin.html has; <enumvalue> has no <location>"
 - oracle: pdi
@@ -53,9 +53,9 @@
 - oracle: pdi
   pages: "*"
   select: td.memname a.el
-  text: '^(PDI::Ref_any|PDI::Context::Datatype_template_parser|PDI::(Attributes_map|Value_error|Plugin_error|Impl_error|State_error|Permission_error|System_error|Type_error|Invalid_action_error|Datatype_template_sptr|Datatype_sptr|Ref|Ref_r|Ref_w|Ref_rw))$'
+  text: '^(PDI::Ref_any|PDI::Context::Datatype_template_parser|PDI::(Attributes_map|Value_error|Plugin_error|Impl_error|State_error|Permission_error|System_error|Type_error|Invalid_action_error|TimerEventHandler|Datatype_template_ptr|Datatype_template_sptr|Datatype_sptr|Ref|Ref_r|Ref_w|Ref_rw))$'
   unwrap: true
-  count: 50
+  count: 52
   reason: "See the sample entry"
   evidence: "see the sample entry"
 - oracle: pdi
@@ -66,14 +66,6 @@
   count: 1
   reason: "See the sample entry: an argument of a function pointer type"
   evidence: "group__error.xml: <definition>typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)</definition>, without a ref"
-- oracle: pdi
-  pages: "*"
-  select: td.memItemRight a.el ~ a.el
-  text: '^(attributes|subtype|size|start|subsize|ref|level|pattern|members|displacement|type|name|kind|elements|buffersize|offset)$'
-  unwrap: true
-  count: 49
-  reason: "Doxygen links the parameter names of a declaration that name a member of the class or of a class around it; the XML doesn't link parameter names"
-  evidence: "classPDI_1_1Array__datatype.xml, a constructor: <param><type><ref …>Datatype_sptr</ref></type><declname>subtype</declname>, and subtype is a member of the class"
 - oracle: pdi
   pages: "*"
   select: td.memItemRight:contains(PDI_errfunc_f) a.el ~ a.el

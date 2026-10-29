@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="classPDI_1_1Python__ref__wrapper" kind="class" language="C++" prot="public">
     <compoundname>PDI::Python_ref_wrapper</compoundname>
     <includes refid="python__ref__wrapper_8h" local="no">python_ref_wrapper.h</includes>

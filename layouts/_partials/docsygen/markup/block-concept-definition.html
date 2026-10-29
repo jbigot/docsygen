@@ -1,16 +1,11 @@
-{{- /* A concept's definition, Doxygen's "Concept definition" (conceptdef.cpp, writeDefinition):
-       since Doxygen 1.16, its parts (conceptparts): code parts as code fragments, and the
-       descriptions written inside the definition, indented to their comment's column. Before,
-       its initializer as a code fragment, leading tabs expanded to TAB_SIZE. Doxygen runs its
-       code parser on it, which highlights keywords that the XML's plain text doesn't mark (an
-       XML gap). */ -}}
+{{- /* A concept's definition, Doxygen's "Concept definition" (conceptdef.cpp, writeDefinition),
+       from its parts (conceptparts): code parts as code fragments, and the descriptions written
+       inside the definition, indented to their comment's column. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $e := index $m.ids .block.id -}}
-{{- $init := false -}}
 {{- $parts := false -}}
 {{- range $e.node.children -}}
-  {{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $init = . -}}{{- end -}}
   {{- if and (reflect.IsMap .) (eq .tag "conceptparts") -}}{{- $parts = . -}}{{- end -}}
 {{- end -}}
 {{- with $parts -}}
@@ -21,29 +16,4 @@
 <div class="docsygen-embeddoc" style="margin-left:{{ .attributes.col }}ch">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) }}</div>
     {{- end -}}
   {{- end -}}
-{{- else with $init -}}
-  {{- $tab := strings.Repeat (int (index ((index $m.options "TAB_SIZE") | default (slice "4")) 0)) " " -}}
-  {{- /* The fragment as HTML, line breaks kept. */ -}}
-  {{- $html := "" -}}
-  {{- range .children -}}
-    {{- if reflect.IsMap . -}}
-      {{- $text := partial "docsygen/text/plain.html" . -}}
-      {{- $url := "" -}}
-      {{- $kind := "" -}}
-      {{- if eq .tag "ref" -}}
-        {{- $url = index $ctx.links .attributes.refid | default "" -}}
-        {{- with index $m.ids .attributes.refid -}}{{- $kind = .kind -}}{{- end -}}
-      {{- end -}}
-      {{- if $url -}}{{- $html = printf `%s<a href="%s">%s</a>` $html (htmlEscape $url) (htmlEscape $text) -}}
-      {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape $text) -}}{{- end -}}
-    {{- else -}}{{- $html = printf "%s%s" $html (htmlEscape .) -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $lines := slice -}}
-  {{- range split (strings.TrimRight " \t\n" $html) "\n" -}}
-    {{- $line := . -}}
-    {{- with findRE `^\t+` $line 1 -}}{{- $line = printf "%s%s" (strings.Repeat (len (index . 0)) $tab) (strings.TrimLeft "\t" $line) -}}{{- end -}}
-    {{- $lines = $lines | append $line -}}
-  {{- end -}}
-<pre class="docsygen-concept"><code>{{ delimit $lines "\n" | safeHTML }}</code></pre>
 {{- end -}}

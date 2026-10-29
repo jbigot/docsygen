@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="classPDI_1_1Scalar__datatype" kind="class" language="C++" prot="public">
     <compoundname>PDI::Scalar_datatype</compoundname>
     <basecompoundref refid="classPDI_1_1Datatype" prot="public" virt="non-virtual">PDI::Datatype</basecompoundref>
