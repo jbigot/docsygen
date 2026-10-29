@@ -33,4 +33,10 @@ It writes the Doxyfile and the generated headers that it lists as inputs
 
 Regenerating a directory drops these edits: make them again, each in its own commit.
 
-None yet.
+- `pdi-1.12/`: the page `serialize_plugin` (the Serialize plugin) is removed, so that a page of
+  `main` has no twin in the latest release. Its file, its `index.xml` entry, its `innerpage` in
+  `Plugins.xml`, and its row of the plugin table in `Plugins.xml` (whose `rows` goes from 11 to
+  10) are gone. Every other version has the page, since `main` was 14 commits past 1.12.0 and
+  no page of `main` was missing from 1.12.
+- None for classes: nine classes of `pdi-1.7/` (`PDI::Config_error` and the other error
+  classes) are gone from 1.12, so 1.7 has pages without a twin as it is.
