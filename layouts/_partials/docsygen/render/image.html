@@ -1,5 +1,5 @@
 {{- /* The source of an image of a description, as {src, ok}: a URL as is; otherwise the file of
-       that name in the XML directory, published next to the version root. A missing file warns,
+       that name in the XML directory, published next to the version root (whatever baseURL's path). A missing file warns,
        naming the image and the page, and gives ok false.
        Usage: partial "docsygen/render/image.html" (dict "node" $image "ctx" $ctx) */ -}}
 {{- $name := .node.attributes.name -}}
@@ -10,6 +10,9 @@
   {{- with resources.Get (path.Join $ctx.model.dir $name) -}}
     {{- $root := "" -}}
     {{- range $ctx.paths.pages -}}{{- if eq .path "" -}}{{- $root = index $ctx.urls .key -}}{{- end -}}{{- end -}}
+    {{- /* A resource's target path is relative to the site's root, and Hugo puts baseURL's path in
+           front of it: so does RelPermalink. */ -}}
+    {{- $root = strings.TrimPrefix (urls.Parse site.BaseURL).Path $root -}}
     {{- $src = (resources.Copy (path.Join $root $name) .).RelPermalink -}}
   {{- else -}}
     {{- $page := "" -}}
