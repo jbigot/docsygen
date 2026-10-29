@@ -4,3 +4,8 @@
 module:
   hugoVersion:
     min: 0.153.0
+# Docsy's navbar calls navbar-version-selector.html only when params.versions is set. This
+# placeholder makes it call docsygen's selector on every site; the selector reads the versions
+# from the adapter calls and ignores this list. A site's own params.versions replaces it.
+params:
+  versions: [{name: docsygen}]
