@@ -1,17 +1,25 @@
-{{- /* The body of docsygen/versions.html. */ -}}
+{{- /* The body of docsygen/versions.html. The roots of the versions that development mode skips
+       (docsygen/adapter.html) are in no page collection but their parent section's, which
+       holds the other roots too. */ -}}
+{{- $roots := where site.Pages "Params.docsygen.root" true -}}
+{{- range $roots -}}
+  {{- with .Parent -}}{{- $roots = $roots | append (where (where .Pages "Params.docsygen.root" true) "Params.docsygen.skipped" true) -}}{{- end -}}
+{{- end -}}
 {{- $byLabel := newScratch -}}
 {{- $labels := slice -}}
 {{- $latest := "" -}}
-{{- range sort (where site.Pages "Params.docsygen.root" true) "Params.docsygen.call" -}}
+{{- range sort $roots "Params.docsygen.call" -}}
   {{- $p := .Params.docsygen -}}
-  {{- if $p.latest -}}
-    {{- with $latest -}}{{- errorf "docsygen: versions %q and %q are both latest" . $p.version -}}{{- end -}}
-    {{- $latest = $p.version -}}
+  {{- if not ($byLabel.Get $p.version) -}}
+    {{- if $p.latest -}}
+      {{- with $latest -}}{{- errorf "docsygen: versions %q and %q are both latest" . $p.version -}}{{- end -}}
+      {{- $latest = $p.version -}}
+    {{- end -}}
+    {{- $labels = $labels | append $p.version -}}
+    {{- $byLabel.Set $p.version (dict "version" $p.version "dir" $p.dir "latest" ($p.latest | default false)
+        "release" ($p.release | default false) "path" $p.path "page" . "pathMap" ($p.pathMap | default slice)
+        "search" ($p.search | default false) "skipped" ($p.skipped | default false)) -}}
   {{- end -}}
-  {{- $labels = $labels | append $p.version -}}
-  {{- $byLabel.Set $p.version (dict "version" $p.version "dir" $p.dir "latest" ($p.latest | default false)
-      "release" ($p.release | default false) "path" $p.path "page" . "pathMap" ($p.pathMap | default slice)
-      "search" ($p.search | default false) "skipped" false) -}}
 {{- end -}}
 {{- $out := slice -}}
 {{- range partial "docsygen/versions/order.html" $labels -}}{{- $out = $out | append ($byLabel.Get .) -}}{{- end -}}

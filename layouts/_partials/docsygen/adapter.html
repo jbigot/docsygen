@@ -10,6 +10,10 @@
          search   whether the pages are in the site's search index (default: latest)
          pathMap  rewrites of file locations, [{from, to}] (default [])
        store, dir, version and path are required.
+       Development mode: when the site sets params.docsygen.versions (a list of labels, latest
+       allowed), a call whose label is not in it, unless it is the latest and latest is, adds
+       only a headless root page, so that links to that version can tell it from a misspelt
+       one. The latest version must be built.
        Usage, in content/docs/_content.gotmpl:
          {{ partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" "main") }} */ -}}
 {{- $ok := true -}}
@@ -37,24 +41,43 @@
          (docsygen/versions/order.html). The store outlives a rebuild, so it only grows. */ -}}
   {{- $call := add ($store.Store.Get "docsygen-calls" | default 0) 1 -}}
   {{- $store.Store.Set "docsygen-calls" $call -}}
-  {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $numbered
-      "release" (gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0) "search" $search "call" $call -}}
-  {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}
-  {{- range $paths.pages -}}
-    {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
-    {{- if not $search -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
-    {{- if eq .path "" -}}
-      {{- $params = merge $params (dict "sidebar_root_for" "self" "docsygen" (merge $docsygen (dict "key" .key "root" true))) -}}
+  {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
+  {{- $built := true -}}
+  {{- with site.Params.docsygen -}}{{- with .versions -}}
+    {{- $built = or (in . $.version) (and $latest (in . "latest")) -}}
+    {{- if and $latest (not $built) -}}
+      {{- errorf "docsygen: the latest version must be built: neither %q nor latest is in params.docsygen.versions" $.version -}}
     {{- end -}}
-    {{- $page := dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
-        "weight" .weight "type" "docs" "description" .description "params" $params
-        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap))) -}}
-    {{- if $latest -}}
-      {{- /* Relative to the parent of the page's directory (Hugo's rule): up to the adapter's
-             directory, then down the numbered path. */ -}}
-      {{- $up := cond (eq .path "") 0 (len (split .path "/")) -}}
-      {{- $page = merge $page (dict "aliases" (slice (printf "%s%s" (strings.Repeat $up "../") (path.Join (path.Base $numbered) .path)))) -}}
+  {{- end -}}{{- end -}}
+  {{- if $latest -}}
+    {{- with site.Params.td -}}{{- if eq .chrome "shared" -}}
+      {{- warnidf "docsygen-chrome-shared" "docsygen: Docsy's shared chrome mode (params.td.chrome) copies the home page's navbar into every page, which drops docsygen's version menu: use the full mode" -}}
+    {{- end -}}{{- end -}}
+  {{- end -}}
+  {{- if not $built -}}
+    {{- $store.AddPage (dict "path" $root "kind" "section" "title" .version "build" (dict "render" "never" "list" "local")
+        "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version "path" $numbered "root" true
+        "skipped" true "release" $release "call" $call))) -}}
+  {{- else -}}
+    {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $numbered
+        "release" $release "search" $search "call" $call -}}
+    {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}
+    {{- range $paths.pages -}}
+      {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
+      {{- if not $search -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
+      {{- if eq .path "" -}}
+        {{- $params = merge $params (dict "sidebar_root_for" "self" "docsygen" (merge $docsygen (dict "key" .key "root" true))) -}}
+      {{- end -}}
+      {{- $page := dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
+          "weight" .weight "type" "docs" "description" .description "params" $params
+          "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap))) -}}
+      {{- if $latest -}}
+        {{- /* Relative to the parent of the page's directory (Hugo's rule): up to the adapter's
+               directory, then down the numbered path. */ -}}
+        {{- $up := cond (eq .path "") 0 (len (split .path "/")) -}}
+        {{- $page = merge $page (dict "aliases" (slice (printf "%s%s" (strings.Repeat $up "../") (path.Join (path.Base $numbered) .path)))) -}}
+      {{- end -}}
+      {{- $store.AddPage $page -}}
     {{- end -}}
-    {{- $store.AddPage $page -}}
   {{- end -}}
 {{- end -}}

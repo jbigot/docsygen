@@ -1,0 +1,5 @@
+# hugo server's environment, development: build only the versions being edited, which keeps
+# rebuilds fast. hugo builds every version (docsygen's adapter.html, development mode).
+params:
+  docsygen:
+    versions: [main, latest]

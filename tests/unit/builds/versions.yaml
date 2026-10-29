@@ -1,0 +1,18 @@
+- name: versions, a link to a version that development mode skips is text
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts, fixtures/versions-skipped: content}
+  params: {docsygen: {versions: [latest]}}
+  warning: 'docsygen: version "old" is not built here: /linked links to it as text'
+- name: versions, a misspelt version stops the build in development mode
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts, fixtures/versions-typo: content}
+  params: {docsygen: {versions: [latest]}}
+  error: 'cannot resolve "doxygen:olf/demo::Widget"'
+- name: versions, the latest version must be built
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions/content: content, fixtures/versions/layouts: layouts}
+  params: {docsygen: {versions: [old]}}
+  error: 'the latest version must be built'

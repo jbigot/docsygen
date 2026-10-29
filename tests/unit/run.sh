@@ -5,10 +5,11 @@
 #   REGEX (or DOCSYGEN_TEST) keeps the cases whose name matches it.
 # A unit case is {name, partial, context, expect, select?, len?}: see
 # layouts/_partials/test/{context,run}.html. All of them run in one build.
-# A build case is {name, partial, context, mounts?, error | warning}, one build each: the build
-# must fail with an error, or succeed with a warning, that contains the given text. mounts maps
-# directories of tests/unit to assets/ paths, or to layouts paths when the target starts with
-# layouts.
+# A build case is {name, partial, context, mounts?, params?, error | warning}, one build each:
+# the build must fail with an error, or succeed with a warning, that contains the given text.
+# mounts maps directories of tests/unit to assets/ paths, or to layouts or content paths when the
+# target starts with layouts or content; a site with content builds its pages too. params is
+# added to the site's params.
 # Every site mounts the XML of the sample and sample-c oracles, the example site's committed PDI
 # XML and fixtures/doxygen-1.17 at assets/doxygen/{sample,sample-c,pdi,doxygen-1.17}.
 set -eu
@@ -27,8 +28,10 @@ unit_site() {
   for data in builds cases; do
     if [ -d "$here/$data" ]; then set -- "$here/$data=assets/$data" "$@"; fi
   done
+  kinds='taxonomy, term, rss, sitemap, page, section'
+  case " $* " in *=content\ *) kinds='taxonomy, term, rss, sitemap' ;; esac
   site_config "$dir/hugo.yaml" "$here/layouts=layouts" "$@"
-  printf 'disableKinds: [taxonomy, term, rss, sitemap, page, section]\nparams:\n' >> "$dir/hugo.yaml"
+  printf 'disableKinds: [%s]\nparams:\n' "$kinds" >> "$dir/hugo.yaml"
 }
 
 # build DIR: build the site in DIR, keeping its output in DIR/log.
@@ -49,17 +52,20 @@ import json, re, sys
 for case in json.load(open(sys.argv[1])):
     if sys.argv[2] and not re.search(sys.argv[2], case['name']): continue
     want = 'error' if 'error' in case else 'warning'
-    mounts = ' '.join(f'{k}={v}' if v.split('/')[0] == 'layouts' else f'{k}=assets/{v}'
+    mounts = ' '.join(f'{k}={v}' if v.split('/')[0] in ('layouts', 'content') else f'{k}=assets/{v}'
                       for k, v in (case.get('mounts') or {}).items())
-    print('\t'.join([case['name'], want, case[want], mounts]))
+    # mounts last: read merges consecutive tabs, so an empty field must not come before another.
+    print('\t'.join([case['name'], want, case[want], json.dumps(case.get('params') or {}), mounts]))
 EOF
 builds=0
-while IFS="$(printf '\t')" read -r name want text mounts; do
+while IFS="$(printf '\t')" read -r name want text params mounts; do
   builds=$((builds + 1))
   dir=$tmp/build-$builds
   # shellcheck disable=SC2086 # mounts are paths of tests/unit, without spaces
   unit_site "$dir" $(for m in $mounts; do printf '%s ' "$here/$m"; done) "$@"
   printf '  build: "%s"\n' "$name" >> "$dir/hugo.yaml"
+  printf '%s' "$params" | python3 -I -c 'import json, sys
+for k, v in json.load(sys.stdin).items(): print(f"  {k}: {json.dumps(v)}")' >> "$dir/hugo.yaml"
   if build "$dir"; then outcome=built; else outcome=failed; fi
   case $want/$outcome in
     error/failed | warning/built)

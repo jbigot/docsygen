@@ -11,9 +11,11 @@
          SIGNATURE  the overload whose parameter types and const match, blanks ignored:
                     (int, int) const; without it, the first overload
          FRAGMENT   the anchor, instead of the target's
+       A link to a version that development mode skips (docsygen/adapter.html) gives ok false
+       and skipped, that version's label.
        Usage: partial "docsygen/resolve.html" (dict "target" "doxygen:demo::Widget" "page" .Page) */ -}}
 {{- $t := strings.TrimPrefix "doxygen:" .target -}}
-{{- $out := dict "url" "" "name" "" "title" "" "ok" false -}}
+{{- $out := dict "url" "" "name" "" "title" "" "ok" false "skipped" "" -}}
 {{- $fragment := "" -}}
 {{- with findRESubmatch `^([^#]*)#(.*)$` $t 1 -}}{{- $t = index . 0 1 -}}{{- $fragment = index . 0 2 -}}{{- end -}}
 {{- $versions := partial "docsygen/versions.html" . -}}
@@ -34,7 +36,10 @@
 {{- $signature := "" -}}
 {{- with findRESubmatch `^([^(]*)(\(.*)$` $t 1 -}}{{- $t = index . 0 1 -}}{{- $signature = replaceRE `\s+` "" (index . 0 2) -}}{{- end -}}
 {{- $name := strings.TrimSpace $t -}}
-{{- with $v -}}
+{{- if and $v $v.skipped -}}
+  {{- $out = dict "url" "" "name" $name "title" "" "ok" false "skipped" $v.version -}}
+{{- else if $v -}}
+  {{- with $v -}}
   {{- $m := partial "docsygen/model.html" .dir -}}
   {{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
   {{- $groups := newScratch -}}
@@ -77,8 +82,9 @@
       {{- if in (slice "page" "group") $first.kind -}}
         {{- range $first.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
       {{- end -}}
-      {{- $out = dict "url" $url "name" $first.name "title" $title "ok" true -}}
+      {{- $out = dict "url" $url "name" $first.name "title" $title "ok" true "skipped" "" -}}
     {{- end -}}
+  {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- return $out -}}
