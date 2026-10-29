@@ -10,3 +10,11 @@
   partial: docsygen/versions/order.html
   context: [a]
   expect: [a]
+- name: notice of an older release, its arguments escaped
+  partial: docsygen/notice.html
+  context: {project: "A<B", version: "1.7", release: true, latest: "1.12", url: /docs/latest/x/}
+  expect: '<div class="pageinfo pageinfo-primary docsygen-notice"><p>This is the documentation of A&lt;B 1.7, an older release. See <a href="/docs/latest/x/">this page in the latest release, 1.12</a>.</p></div>'
+- name: notice of a version that is not a release
+  partial: docsygen/notice.html
+  context: {project: PDI, version: main, release: false, latest: "1.12", url: /docs/latest/}
+  expect: '<div class="pageinfo pageinfo-primary docsygen-notice"><p>This is the documentation of PDI&rsquo;s development version (main), which is not released yet. See <a href="/docs/latest/">this page in the latest release, 1.12</a>.</p></div>'

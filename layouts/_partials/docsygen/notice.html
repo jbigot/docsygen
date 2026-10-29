@@ -1,0 +1,13 @@
+{{- /* The notice of a page of a version other than the latest, as Docsy renders its own
+       version banner: a pageinfo block, whose text comes from the i18n key
+       docsygen-notice-older for a release, docsygen-notice-main otherwise.
+         project  the project's name
+         version  the page's version
+         release  whether that version is a release
+         latest   the latest release's label
+         url      the same page in the latest release, or that release's root
+       Usage: partial "docsygen/notice.html" (dict "project" "PDI" "version" "1.7" "release" true
+              "latest" "1.12" "url" "/docs/latest/") */ -}}
+{{- $key := cond .release "docsygen-notice-older" "docsygen-notice-main" -}}
+{{- $text := T $key (dict "project" (htmlEscape .project) "version" (htmlEscape .version) "latest" (htmlEscape .latest) "url" .url) -}}
+{{- return safeHTML (printf "<div class=\"pageinfo pageinfo-primary docsygen-notice\"><p>%s</p></div>" ($text | markdownify)) -}}

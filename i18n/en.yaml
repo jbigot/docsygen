@@ -1,0 +1,10 @@
+# The notice above the pages of versions other than the latest (docsygen/notice.html). A site
+# rewords or translates it in its own i18n/<lang>.yaml. The text is Markdown; the arguments are
+# HTML-escaped: project (Doxygen's PROJECT_NAME), version (the page's version), latest (the
+# latest release) and url (the same page in the latest release, or its root).
+docsygen-notice-older: >-
+  This is the documentation of {{ .project }} {{ .version }}, an older release.
+  See [this page in the latest release, {{ .latest }}]({{ .url }}).
+docsygen-notice-main: >-
+  This is the documentation of {{ .project }}'s development version ({{ .version }}), which is
+  not released yet. See [this page in the latest release, {{ .latest }}]({{ .url }}).

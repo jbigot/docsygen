@@ -1,0 +1,21 @@
+{{- /* Docsy's version banner, rendered above the content of docs pages (docs/baseof.html). On a
+       page of a version root other than the latest, docsygen's notice (docsygen/notice.html),
+       linked to the same page in the latest release; elsewhere, nothing. Docsy's own banner
+       (params.archived_version) is not used. */ -}}
+{{- $page := . -}}
+{{- with .Params.docsygen -}}
+  {{- $label := .version -}}
+  {{- $mine := false -}}
+  {{- $latest := false -}}
+  {{- range partial "docsygen/versions.html" $page -}}
+    {{- if eq .version $label -}}{{- $mine = . -}}{{- end -}}
+    {{- if .latest -}}{{- $latest = . -}}{{- end -}}
+  {{- end -}}
+  {{- if and $mine $latest (not $mine.latest) -}}
+    {{- $model := partial "docsygen/model.html" $mine.dir -}}
+    {{- $project := index ((index $model.options "PROJECT_NAME") | default (slice "")) 0 | default $label -}}
+    {{- $twin := partial "docsygen/versions/twin.html" (dict "page" $page "version" $latest) -}}
+    {{- partial "docsygen/notice.html" (dict "project" $project "version" $label "release" $mine.release
+        "latest" $latest.version "url" $twin.url) -}}
+  {{- end -}}
+{{- end -}}
