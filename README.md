@@ -72,7 +72,10 @@ each only when Doxygen has something for it.
 ## Versions
 
 Each adapter call adds one version of the reference. They share the content adapter, and so the
-parent directory: `/docs/main/`, `/docs/2.0/`, and so on.
+parent directory: `/docs/main/`, `/docs/2.0/`, and so on. Each version's root is titled with the
+project's name (Doxygen's `PROJECT_NAME`) and its label, and its sidebar entry and breadcrumb show
+the label, as the version menu does; the parent's section list and sidebar list the versions in
+the menu's order.
 
 - **The latest release lives at `latest/`.** The call marked `latest` generates its pages at
   `latest/`, next to its `path` (`/docs/latest/`), and each one gets an alias at its numbered
@@ -81,7 +84,7 @@ parent directory: `/docs/main/`, `/docs/2.0/`, and so on.
   keep working.
 - **Canonical links:** a page of `latest/` is its own canonical page. A page of any other version
   points its canonical link at the same page in `latest/`, or at itself when the latest release
-  has no such page. The redirects point at their target.
+  has no such page. The redirects point at their target. Only `latest/` is in the sitemap.
 - **Order:** the versions whose label is not a release number (`main`) come first, in the order
   of the calls, then the latest release, then the older releases, newest first (`2.10` before
   `2.9`).

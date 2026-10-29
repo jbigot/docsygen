@@ -10,7 +10,11 @@
          search   whether the pages are in the site's search index (default: latest)
          pathMap  rewrites of file locations, [{from, to}] (default [])
        store, dir, version and path are required; the label latest and a path named latest are
-       reserved for the latest release.
+       reserved for the latest release. The pages of the other versions are left out of the
+       sitemap, since their canonical page is usually in latest/.
+       The version root is titled with the project's name (PROJECT_NAME) and the label, its menu
+       entry is the label (latest (LABEL) for the latest release), and its weight puts the roots
+       in the order of the version menu (docsygen/versions/order.html).
        A call marked latest also adds a headless page at its numbered path, under its aliases,
        so that docsygen/versions.html sees it even when another call marked latest wins latest/.
        Development mode: when the site sets params.docsygen.versions (a list of labels, latest
@@ -55,6 +59,7 @@
   {{- $call := add ($store.Store.Get "docsygen-calls" | default 0) 1 -}}
   {{- $store.Store.Set "docsygen-calls" $call -}}
   {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
+  {{- $weight := partial "docsygen/versions/weight.html" (dict "version" .version "latest" $latest "call" $call) -}}
   {{- $built := true -}}
   {{- with site.Params.docsygen -}}{{- with .versions -}}
     {{- /* As strings: YAML reads 1.7 as a number. docsygen/versions.html rejects the labels that
@@ -83,16 +88,25 @@
     {{- end -}}
     {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $numbered
         "release" $release "search" $search "call" $call -}}
-    {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}
+    {{- $model := partial "docsygen/model.html" $dir -}}
+    {{- $paths := partial "docsygen/paths.html" (dict "model" $model "pathMap" $pathMap) -}}
     {{- range $paths.pages -}}
       {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
       {{- if not $search -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
+      {{- $title := .title -}}
+      {{- $linkTitle := .linkTitle -}}
+      {{- $pageWeight := .weight -}}
       {{- if eq .path "" -}}
         {{- $params = merge $params (dict "sidebar_root_for" "self" "docsygen" (merge $docsygen (dict "key" .key "root" true))) -}}
+        {{- $project := index ((index $model.options "PROJECT_NAME") | default (slice "")) 0 | default .title -}}
+        {{- $title = strings.TrimSpace (printf "%s %s" $project $.version) -}}
+        {{- $linkTitle = cond $latest (printf "latest (%s)" $.version) $.version -}}
+        {{- $pageWeight = $weight -}}
       {{- end -}}
-      {{- $page := dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
-          "weight" .weight "type" "docs" "description" .description "params" $params
+      {{- $page := dict "path" (path.Join $root .path) "kind" .kind "title" $title "linkTitle" $linkTitle
+          "weight" $pageWeight "type" "docs" "description" .description "params" $params
           "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap))) -}}
+      {{- if not $latest -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}
       {{- if $latest -}}
         {{- /* Relative to the parent of the page's directory (Hugo's rule): up to the adapter's
                directory, then down the numbered path. */ -}}

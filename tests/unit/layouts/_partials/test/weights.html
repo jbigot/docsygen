@@ -1,0 +1,4 @@
+{{- /* docsygen/versions/weight.html of each element of a list (cases/versions.yaml). */ -}}
+{{- $out := slice -}}
+{{- range . -}}{{- $out = $out | append (partial "docsygen/versions/weight.html" .) -}}{{- end -}}
+{{- return $out -}}

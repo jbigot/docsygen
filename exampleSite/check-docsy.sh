@@ -11,8 +11,8 @@
 #   - the offline search index holds PDI_share's brief, from /docs/latest/ only;
 #   - the print page of the reference holds a member's signature;
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/;
-#   - built again with a baseURL that has a path, as GitHub Pages gives a project site, the
-#     images of the reference (tests/site/check_example.py).
+#   - where the versions meet Docsy's own pages, tests/site/check_example.py, on this build and
+#     on another one with a baseURL that has a path, as GitHub Pages gives a project site.
 # Hugo needs go for its modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
 set -eu
 
@@ -57,6 +57,6 @@ if ! hugo --source "$here" --config "$here/hugo.yaml,$out/checks.yaml" --baseURL
     --destination "$out/based" > "$out/based.log" 2>&1; then
   cat "$out/based.log" >&2; exit 1
 fi
-python3 -I "$root/tests/site/check_example.py" "$out/based" || status=1
+python3 -I "$root/tests/site/check_example.py" "$out/public" "$out/based" || status=1
 [ $status -eq 0 ] && echo "check-docsy.sh: OK"
 exit $status

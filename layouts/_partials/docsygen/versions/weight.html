@@ -1,0 +1,22 @@
+{{- /* The weight of a version root, which orders the roots as the version menu
+       (docsygen/versions/order.html) does: the labels that are not releases first, in call order,
+       then the latest release, then the other releases, newest first, by their first three
+       numbers (each up to 999).
+         version  the label
+         latest   whether it is the latest release
+         call     the adapter call's number
+       Usage: partial "docsygen/versions/weight.html" (dict "version" "1.7" "latest" false "call" 3) */ -}}
+{{- $out := .call -}}
+{{- if .latest -}}
+  {{- $out = 1000000000 -}}
+{{- else if findRE `^[0-9]+(\.[0-9]+)*$` .version 1 -}}
+  {{- $n := split .version "." -}}
+  {{- $out = 1000000001 -}}
+  {{- range $i, $scale := slice 1000000 1000 1 -}}
+    {{- $k := 0 -}}
+    {{- /* Without leading zeros, which int reads as octal. */ -}}
+    {{- if lt $i (len $n) -}}{{- $k = int (strings.TrimLeft "0" (index $n $i) | default "0") -}}{{- end -}}
+    {{- $out = add $out (mul $scale (sub 999 (math.Min 999 $k))) -}}
+  {{- end -}}
+{{- end -}}
+{{- return int $out -}}
