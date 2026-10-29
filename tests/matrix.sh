@@ -3,9 +3,7 @@
 #
 # Usage: sh tests/matrix.sh
 # Per Doxygen version (DOXYGEN set to it): coverage.py on the sample's XML, tests/xml-parse/run.sh,
-# tests/site/run.sh and tests/oracle/run.sh info on sample and sample-c. The exact oracle must
-# pass on 1.15.0, the version Doxygen-identical output is defined against; for the other
-# versions, its counts are printed only.
+# tests/site/run.sh and tests/oracle/run.sh info on sample and sample-c.
 # With the Hugo of module.hugoVersion.min in hugo.yaml (HUGO set to it): tests/unit/run.sh and
 # tests/site/run.sh. The latter builds the pdi oracle, which needs PDI_SRC the first time
 # (tests/lib.sh, oracle).
@@ -43,11 +41,6 @@ for v in $doxygens; do
   sh "$root/tests/xml-parse/run.sh" || fail "$v: xml-parse"
   sh "$root/tests/site/run.sh" sample sample-c || fail "$v: site"
   sh "$root/tests/oracle/run.sh" info sample sample-c || fail "$v: info oracle"
-  if [ "$v" = 1.15.0 ]; then
-    sh "$root/tests/oracle/run.sh" exact sample sample-c || fail "$v: exact oracle"
-  else
-    sh "$root/tests/oracle/run.sh" exact sample sample-c 2>&1 | grep -E '^(==|scope )' || true
-  fi
 done
 unset DOXYGEN
 

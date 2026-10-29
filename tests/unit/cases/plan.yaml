@@ -2,7 +2,7 @@
   partial: test/plan.html
   context:
     ctx: {model: sample}
-    key: classdemo_1_1Widget
+    key: api/demo/widget
     n: 2
   expect: [{type: title, text: demo::Widget Class Reference}, {type: summary-links, text: ""}]
 - name: sections of a class, summaries before detailed sections

@@ -1,5 +1,5 @@
-{{- /* The compat scheme: Doxygen 1.15's own HTML file names and anchors, so that each page can
-       be compared with Doxygen's (tests/oracle/exact.py). Test-only.
+{{- /* The pairing scheme: Doxygen 1.15's own HTML file names and anchors, so that
+       tests/oracle/info.py can pair each of Doxygen's pages with the Docsy site's. Test-only.
          key     Doxygen's file stem: the compound refid, <refid>-members, <refid>_source, index
                  for the root, and the list and index names of src/index.cpp
          path    the key with each ASCII uppercase letter X written _x, which is Doxygen's own
@@ -105,7 +105,7 @@
       {{- range where (index $entries .name) "filters" "intersect" (slice $filter) -}}
         {{- $letter := printf "letter-%s-%s" $filter .letter -}}
         {{- if not (index ($page.Get "m") $letter) -}}
-          {{- $page.SetInMap "m" $letter (printf "index_%s" (partial "docsygen/markup/inline/index-id.html" .letter)) -}}
+          {{- $page.SetInMap "m" $letter (printf "index_%s" (partial "docsygen/paths/inline/index-id.html" .letter)) -}}
         {{- end -}}
       {{- end -}}
       {{- $anchors.SetInMap "m" $key ($page.Get "m") -}}
@@ -114,7 +114,7 @@
       {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
         {{- $section := .key -}}
         {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
-        {{- $label := partial "docsygen/markup/section-label.html" $section -}}
+        {{- $label := partial "docsygen/paths/inline/section-label.html" $section -}}
         {{- with $label -}}{{- $page = merge $page (dict $section .) -}}{{- end -}}
       {{- end -}}
       {{- $anchors.SetInMap "m" $key $page -}}
@@ -122,3 +122,25 @@
   {{- end -}}
 {{- end -}}
 {{- return dict "pages" $out "anchors" ($anchors.Get "m") "merged" dict "homes" ($homes.Get "m") -}}
+{{- define "_partials/docsygen/paths/inline/index-id.html" -}}
+  {{- /* convertToId (util.cpp) of a string: Doxygen's id of a member index letter. */ -}}
+  {{- $out := "" -}}
+  {{- range $i, $c := split . "" -}}
+    {{- if findRE `^[0-9A-Za-z-]$` $c -}}{{- $out = printf "%s%s%s" $out (cond (and (eq $i 0) (findRE `^[0-9]$` $c)) "a" "") $c -}}
+    {{- else -}}{{- range split (printf "% X" $c) " " -}}{{- $out = printf "%s_%s" $out . -}}{{- end -}}{{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- define "_partials/docsygen/paths/inline/section-label.html" -}}
+  {{- /* Doxygen's anchor for a section key: the label of its member list (types.h, ML_TYPES). */ -}}
+  {{- $labels := dict "inner-class" "nested-classes" "inner-namespace" "namespaces" "inner-concept" "concepts"
+      "inner-group" "groups" "inner-dir" "subdirs" "inner-file" "files" "signal" "signals" "property" "properties"
+      "event" "events" "friend" "friends" "related" "related" "define" "define-members" "typedef" "typedef-members"
+      "enum" "enum-members" "enumvalue" "enumval-members" "func" "func-members" "var" "var-members" -}}
+  {{- $label := index $labels . -}}
+  {{- with findRESubmatch `^(public|protected|package|private)-(.*)$` . 1 -}}
+    {{- $label = printf "%s-%s" (index (dict "public" "pub" "protected" "pro" "package" "pac" "private" "pri") (index . 0 1))
+        (index (dict "type" "types" "slot" "slots" "func" "methods" "static-func" "static-methods" "attrib" "attribs" "static-attrib" "static-attribs") (index . 0 2)) -}}
+  {{- end -}}
+  {{- return (default "" $label) -}}
+{{- end -}}

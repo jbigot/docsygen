@@ -44,6 +44,8 @@ oracle() {
 # or relative to the site) is mounted at TARGET. Project mounts replace the site's default ones,
 # so a site that has its own layouts or content lists them too; a site's own mounts override
 # the module's files of the same name. Append the rest of the configuration to FILE.
+# DOCSYGEN_MODULE, when set, is the docsygen tree imported in place of this repository's
+# (tests/reference.sh).
 # With DOCSYGEN_READER=native, tests/reader-native is mounted first, so that docsygen reads the
 # XML with the native decoder (tests/reader-diff.sh).
 site_config() {
@@ -51,7 +53,7 @@ site_config() {
   if [ "${DOCSYGEN_READER:-template}" = native ]; then set -- "$root/tests/reader-native/layouts=layouts" "$@"; fi
   {
     printf 'module:\n'
-    printf '  replacements: "github.com/jbigot/docsygen -> %s"\n' "$root"
+    printf '  replacements: "github.com/jbigot/docsygen -> %s"\n' "${DOCSYGEN_MODULE:-$root}"
     printf '  imports:\n    - path: github.com/jbigot/docsygen\n'
     if [ $# -gt 0 ]; then
       printf '  mounts:\n'

@@ -10,8 +10,8 @@
 # With each reader (DOCSYGEN_READER=native mounts tests/reader-native, tests/lib.sh):
 #   1. tests/xml-parse/run.sh, then the two trees of every corpus file compared with each other;
 #   2. tests/unit/run.sh, which must pass with both;
-#   3. the Docsy test site and the compat site on the sample, sample-c and pdi oracles, and the
-#      example site, whose public/ directories must be identical.
+#   3. the Docsy test site on the sample, sample-c and pdi oracles, and the example site, whose
+#      public/ directories must be identical.
 # The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go
 # or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
 set -eu
@@ -76,28 +76,26 @@ compare() {
 }
 
 echo "== sites"
-for site in site doxygen-compat; do
-  for name in sample sample-c pdi; do
-    if ! dir=$(oracle "$name"); then fail "no $name oracle"; continue; fi
-    ok=1
-    for reader in template native; do
-      work=$tmp/$site-$name-$reader
-      mkdir -p "$work"
-      extra=
-      if [ "$site" = site ] && [ "$name" = sample ]; then extra="$root/tests/site/handwritten=content"; fi
-      DOCSYGEN_READER=$reader
-      # shellcheck disable=SC2086 # extra is one word or none
-      site_config "$work/hugo.yaml" "$root/tests/$site/layouts=layouts" "$root/tests/$site/content=content" $extra \
-        "$dir/xml=assets/doxygen/oracle"
-      cat "$root/tests/$site/config.yaml" >> "$work/hugo.yaml"
-      # Not --quiet: it would hide the ERROR line that errorf logs.
-      if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
-        cat "$work/log" >&2; fail "$site $name with the $reader reader"; ok=0
-      fi
-    done
-    DOCSYGEN_READER=template
-    [ $ok -eq 0 ] || compare "$site-$name"
+for name in sample sample-c pdi; do
+  if ! dir=$(oracle "$name"); then fail "no $name oracle"; continue; fi
+  ok=1
+  for reader in template native; do
+    work=$tmp/site-$name-$reader
+    mkdir -p "$work"
+    extra=
+    if [ "$name" = sample ]; then extra="$root/tests/site/handwritten=content"; fi
+    DOCSYGEN_READER=$reader
+    # shellcheck disable=SC2086 # extra is one word or none
+    site_config "$work/hugo.yaml" "$root/tests/site/layouts=layouts" "$root/tests/site/content=content" $extra \
+      "$dir/xml=assets/doxygen/oracle"
+    cat "$root/tests/site/config.yaml" >> "$work/hugo.yaml"
+    # Not --quiet: it would hide the ERROR line that errorf logs.
+    if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
+      cat "$work/log" >&2; fail "site $name with the $reader reader"; ok=0
+    fi
   done
+  DOCSYGEN_READER=template
+  [ $ok -eq 0 ] || compare "site-$name"
 done
 
 # The example site as it is, with the reader's layouts mounted before its own for native.

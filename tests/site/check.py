@@ -1,9 +1,9 @@
 """Check the output of the Docsy-flavor test site.
 
 Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]
-  PUBLIC    the built site, with the paths.json of its version root
-  XMLDIR    the Doxygen XML it was built from
-  ROOT_URL  the version root's URL (/ref/)
+  PUBLIC    the built site
+  XMLDIR    the Doxygen XML of one version root
+  ROOT_URL  that version root's URL (/ref/), where its paths.json is published
 Checks:
   - every compound with a role (paths.json), and every memberdef and enumvalue id with a target,
     appears exactly once as data-doxygen-id;
@@ -22,7 +22,7 @@ Exit 1 on any failure.
 """
 import collections, glob, json, os, re, sys, urllib.parse
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'oracle'))
-import exact
+import htmltree
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
 LEFTOVERS = ('{{<', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
@@ -33,9 +33,9 @@ def foreign_classes(node, out):
     """The classes of node and its descendants that ALLOWED rejects, as {class: count}, skipping
     KaTeX's output and the highlighted code of listings."""
     for c in node.children:
-        if not isinstance(c, exact.Node):
+        if not isinstance(c, htmltree.Node):
             continue
-        cls = exact.classes(c)
+        cls = htmltree.classes(c)
         if any(x.startswith('katex') for x in cls) or (c.tag == 'pre' and 'docsygen-listing' in cls):
             continue
         for x in cls:
@@ -46,7 +46,7 @@ def foreign_classes(node, out):
 
 def walk(node):
     for c in node.children:
-        if isinstance(c, exact.Node):
+        if isinstance(c, htmltree.Node):
             yield c
             yield from walk(c)
 
@@ -57,8 +57,7 @@ def main(argv):
         i = argv.index('--links')
         links, argv = argv[i + 1:i + 3], argv[:i] + argv[i + 3:]
     public, xmldir, root_url = argv
-    with open(os.path.join(public, root_url.strip('/'), 'paths.json') if os.path.exists(
-            os.path.join(public, root_url.strip('/'), 'paths.json')) else os.path.join(public, 'paths.json')) as f:
+    with open(os.path.join(public, root_url.strip('/'), 'paths.json')) as f:
         paths = json.load(f)
     member_ids = set()
     for name in glob.glob(os.path.join(xmldir, '*.xml')):
@@ -78,7 +77,7 @@ def main(argv):
         for s in LEFTOVERS:
             if s in text:
                 errors.append(f'{rel}: {s} left')
-        tree = exact.parse(text)
+        tree = htmltree.parse(text)
         trees[rel] = tree
         seen = collections.Counter()
         if printed:
@@ -94,7 +93,7 @@ def main(argv):
                 if inner:
                     errors.append(f'{rel}: a <p> holds a <{inner}>')
         ids[rel] = set(seen)
-        for main in ([] if exact.find(tree, '.td-content') else exact.find(tree, 'main')):
+        for main in ([] if htmltree.find(tree, '.td-content') else htmltree.find(tree, 'main')):
             foreign = collections.Counter()
             foreign_classes(main, foreign)
             errors += [f'{rel}: class {x!r} appears {k} times' for x, k in sorted(foreign.items())]
@@ -110,7 +109,7 @@ def main(argv):
         for n in walk(tree):
             href = n.attrs.get('href') if n.tag == 'a' else None
             # docsygen-ulink: a link its author wrote, which docsygen leaves as is.
-            if not href or exact.EXTERNAL.match(href) or href.startswith('javascript:') or 'docsygen-ulink' in exact.classes(n):
+            if not href or htmltree.EXTERNAL.match(href) or href.startswith('javascript:') or 'docsygen-ulink' in htmltree.classes(n):
                 continue
             url = urllib.parse.urljoin(base, href)
             target, _, fragment = url.partition('#')
@@ -125,7 +124,7 @@ def main(argv):
         page, want_file = links
         with open(want_file) as f:
             want = json.load(f)
-        got = [n.attrs.get('href') for m in exact.find(trees[page], 'main') for n in walk(m) if n.tag == 'a' and 'href' in n.attrs]
+        got = [n.attrs.get('href') for m in htmltree.find(trees[page], 'main') for n in walk(m) if n.tag == 'a' and 'href' in n.attrs]
         if got != want:
             errors.append(f'{page}: links {got} instead of {want}')
     for e in errors:

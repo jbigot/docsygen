@@ -1,0 +1,5 @@
+# The pairing site of tests/oracle/info.py: the docsygen module with Doxygen's own page names
+# (layouts/_partials/docsygen/paths/scheme.html), publishing only the paths.json through which
+# info.py pairs Doxygen's pages with the Docsy site's. tests/oracle/run.sh mounts the oracle's XML
+# at assets/doxygen/oracle.
+disableKinds: [taxonomy, term, rss, sitemap]

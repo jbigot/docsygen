@@ -1,5 +1,5 @@
-{{- /* Publish paths.json, for tests/site/check.py and tests/oracle/info.py: {pages: {key: {url, roles}}, targets,
-       anchors} of the version root. */ -}}
+{{- /* Publish paths.json in each version root (/ref/paths.json), for tests/site/check.py and
+       tests/oracle/info.py: {pages: {key: {url, roles}}, targets, anchors} of that root. */ -}}
 {{- range where site.Pages "Params.docsygen.root" true -}}
   {{- $root := . -}}
   {{- $ctx := partial "docsygen/ctx.html" . -}}
@@ -9,5 +9,5 @@
     {{- $page := cond (eq .path "") $root ($root.GetPage .path) -}}
     {{- $pages.SetInMap "m" .key (dict "url" $page.RelPermalink "roles" .roles) -}}
   {{- end -}}
-  {{- (resources.FromString "paths.json" (jsonify (dict "pages" ($pages.Get "m") "targets" $ctx.paths.targets "anchors" $ctx.paths.anchors))).Publish -}}
+  {{- (resources.FromString (path.Join $root.Path "paths.json") (jsonify (dict "pages" ($pages.Get "m") "targets" $ctx.paths.targets "anchors" $ctx.paths.anchors))).Publish -}}
 {{- end -}}

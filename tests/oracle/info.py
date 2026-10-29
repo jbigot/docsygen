@@ -2,14 +2,15 @@
 
 Usage: python3 -I info.py --doxygen HTMLDIR --compat C.json --site PUBLIC --paths D.json
                           --gaps GAPS.yaml --rules RULES.yaml [--oracle NAME] [--counts-advisory]
+                          [--gap-usage]
   HTMLDIR    Doxygen's html/ directory
-  C.json     the compat site's paths.json, {pages: {key: {url, roles}}, targets, anchors}, whose
-             keys are Doxygen's file stems
+  C.json     the pairing site's paths.json (tests/pairing), {pages: {key: {url, roles}}, targets,
+             anchors}, whose keys are Doxygen's file stems
   PUBLIC     the built Docsy site, and D.json its paths.json, of the same shape
-  GAPS.yaml  xml-gaps.yaml, applied to the Doxygen side as exact.py applies it
+  GAPS.yaml  xml-gaps.yaml, applied to the Doxygen side as htmltree.py applies it
   RULES.yaml the intentional differences, [{rule: drop|tokens|unwrap, select, phrase?, count,
              reason, oracle?}],
-             on the Doxygen side: drop removes the nodes that select (exact.py's selectors)
+             on the Doxygen side: drop removes the nodes that select (htmltree.py's selectors)
              matches, those whose text matches the regex phrase if given; tokens matches the text
              of those nodes word by word; unwrap keeps their children only. count is the exact number of matches, as for the gaps.
 Pairing: a Doxygen page and a Docsy page that hold the same role (role and id or name; filter
@@ -28,14 +29,16 @@ with each other. Each container checks, as multisets:
 Formulas compare as their TeX (formulas()). What is missing makes the exit status 1; the text left over on the Docsy side is reported only.
 The counts of the gaps and rules are those of Doxygen 1.15.0's HTML: --counts-advisory, for another
 version, reports their errors as notes.
+--gap-usage also prints, for each gap that applies to the oracle, `gap N SELECTOR: needed` when the
+comparison without it reports more missing items, `unused` otherwise (gap_usage()).
 """
-import argparse, collections, json, os, re, sys
+import argparse, collections, copy, json, os, re, sys
 # python3 -I keeps this script's directory off sys.path.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import exact, listyaml
+import htmltree, listyaml
 
-SPLIT = exact.BLOCK | {'caption', 'pre', 'blockquote', 'hr', 'br', 'section', 'article', 'nav', 'header',
-                       'footer', 'main', 'details', 'summary', 'figure', 'figcaption', 'img'}
+SPLIT = htmltree.BLOCK | {'caption', 'pre', 'blockquote', 'hr', 'br', 'section', 'article', 'nav', 'header',
+                          'footer', 'main', 'details', 'summary', 'figure', 'figcaption', 'img'}
 Result = collections.namedtuple('Result', 'missing extra errors report')
 
 
@@ -47,8 +50,8 @@ def is_code(node):
     """Whether node is a code block: a div.fragment or a pre, but a member's signature (Docsy's
     pre.docsygen-signature), which is the text of Doxygen's prototype."""
     if node.tag == 'pre':
-        return 'docsygen-signature' not in exact.classes(node)
-    return node.tag == 'div' and 'fragment' in exact.classes(node)
+        return 'docsygen-signature' not in htmltree.classes(node)
+    return node.tag == 'div' and 'fragment' in htmltree.classes(node)
 
 
 def code_text(node):
@@ -57,7 +60,7 @@ def code_text(node):
     if node.tag == 'pre':
         text = raw(node)
     else:
-        text = '\n'.join(raw(line) for line in exact.find(node, 'div.line'))
+        text = '\n'.join(raw(line) for line in htmltree.find(node, 'div.line'))
     text = text[:-1] if text.endswith('\n') else text
     # Doxygen writes a blank on an empty line (htmlgen.cpp, endCodeLine).
     return '\n'.join(line.rstrip() for line in text.split('\n'))
@@ -69,7 +72,7 @@ def units(node, tokens=False):
     out, run = [], []
 
     def flush(tok):
-        text = exact.SPACE.sub(' ', ''.join(run)).strip()
+        text = htmltree.SPACE.sub(' ', ''.join(run)).strip()
         if text:
             out.extend([(t, True) for t in text.split()] if tok else [(text, False)])
         run.clear()
@@ -122,7 +125,7 @@ class Side:
         ('fragment', roles, fragment) for another one (('page', roles) when the page lacks it),
         ('file', name), ('external', href) or ('unknown', page, fragment) for a page that
         paths.json doesn't have."""
-        if exact.EXTERNAL.match(href):
+        if htmltree.EXTERNAL.match(href):
             return ('external', href)
         path, _, fragment = href.partition('#')
         page = self.page_of(path, key)
@@ -160,10 +163,10 @@ class Container:
 
     def add(self, node, side, key):
         self.units.extend(units(node))
-        for a in exact.find(node, 'a'):
+        for a in htmltree.find(node, 'a'):
             if 'href' in a.attrs and not a.attrs['href'].startswith('javascript:'):
                 self.links.append(side.target(a.attrs['href'], key))
-        nodes = [node] + [n for n in exact.find(node, 'pre') + exact.find(node, 'div.fragment')]
+        nodes = [node] + [n for n in htmltree.find(node, 'pre') + htmltree.find(node, 'div.fragment')]
         self.code.extend(code_text(n) for n in nodes if is_code(n) and not any(is_code(p) for p in ancestors(n, node)))
 
 
@@ -185,8 +188,8 @@ def formulas(root, doxygen):
             if isinstance(c, str):
                 if doxygen:
                     node.children[i] = MATHJAX.sub(lambda m: m.group(1) if m.group(1) is not None else m.group(2), c)
-            elif not doxygen and 'katex' in exact.classes(c):
-                tex = next((exact.text(a) for a in exact.find(c, 'annotation')), '')
+            elif not doxygen and 'katex' in htmltree.classes(c):
+                tex = next((htmltree.text(a) for a in htmltree.find(c, 'annotation')), '')
                 node.children[i] = tex
             else:
                 walk(c)
@@ -202,14 +205,14 @@ def doxygen_members(root, key, side):
     """Detach each memitem of a Doxygen page that documents a known id, with its title (when a
     rule left it): {id: [nodes]}. Its anchor is the a[id] before it, the title in between."""
     out = {}
-    for item in exact.find(root, 'div.memitem'):
+    for item in htmltree.find(root, 'div.memitem'):
         if item.parent is None:
             continue
-        siblings = [c for c in item.parent.children if isinstance(c, exact.Node)]
+        siblings = [c for c in item.parent.children if isinstance(c, htmltree.Node)]
         i = siblings.index(item)
         nodes = [item]
         j = i - 1
-        if j >= 0 and siblings[j].tag == 'h2' and 'memtitle' in exact.classes(siblings[j]):
+        if j >= 0 and siblings[j].tag == 'h2' and 'memtitle' in htmltree.classes(siblings[j]):
             nodes.insert(0, siblings[j])
             j -= 1
         anchor = None
@@ -228,7 +231,7 @@ def docsy_members(root, ids):
     """Detach each element that documents one of ids: {id: [nodes]}. The others, such as enum
     values, stay in their container."""
     out = {}
-    for node in reversed(exact.find(root, '[data-doxygen-id]')):
+    for node in reversed(htmltree.find(root, '[data-doxygen-id]')):
         if node.attrs['data-doxygen-id'] not in ids:
             continue
         detach(node)
@@ -243,13 +246,13 @@ def apply_rules(pages, rules, oracle=None):
             continue
         found = []
         for key in sorted(pages):
-            for node in exact.find(pages[key], rule['select']):
-                if 'phrase' in rule and not re.search(rule['phrase'], exact.text(node)):
+            for node in htmltree.find(pages[key], rule['select']):
+                if 'phrase' in rule and not re.search(rule['phrase'], htmltree.text(node)):
                     continue
                 found.append((key, node))
         name = f'rule {n} ({rule["rule"]} {rule["select"]})'
         report.append(f'{name}: {len(found)} matches, {rule.get("reason", "")}')
-        report.extend(f'  {key}: {exact.text(node)[:80]!r}' for key, node in found)
+        report.extend(f'  {key}: {htmltree.text(node)[:80]!r}' for key, node in found)
         if not found:
             errors.append(f'{name}: no matches, the rule is stale')
         elif len(found) != rule['count']:
@@ -265,7 +268,7 @@ def apply_rules(pages, rules, oracle=None):
                     siblings = node.parent.children
                     i = siblings.index(node)
                     for c in node.children:
-                        if isinstance(c, exact.Node):
+                        if isinstance(c, htmltree.Node):
                             c.parent = node.parent
                     siblings[i:i + 1] = node.children
             else:
@@ -301,7 +304,7 @@ def check(name, theirs, ours):
             code[c] -= 1
         else:
             missing.append(f'{name}: code {c[:100]!r}')
-    rest = exact.SPACE.sub(' ', text.replace('\x00', ' ')).strip()
+    rest = htmltree.SPACE.sub(' ', text.replace('\x00', ' ')).strip()
     return missing, ([f'{name}: extra text {rest[:200]!r}'] if rest else [])
 
 
@@ -309,7 +312,7 @@ def ids(node):
     """The id and name attributes under node."""
     out = set()
     for c in node.children:
-        if isinstance(c, exact.Node):
+        if isinstance(c, htmltree.Node):
             out.update(c.attrs[a] for a in ('id', 'name') if a in c.attrs)
             out |= ids(c)
     return out
@@ -355,12 +358,12 @@ def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
             for ident, nodes in doxygen_members(root, key, theirs).items():
                 for n in nodes:
                     dmembers.setdefault(ident, Container()).add(n, theirs, key)
-            for part in exact.find(root, 'div.header')[:1] + exact.find(root, 'div.contents')[:1]:
+            for part in htmltree.find(root, 'div.header')[:1] + htmltree.find(root, 'div.contents')[:1]:
                 drest.add(part, theirs, key)
         smembers, srest = {}, Container()
         for key in sorted(skeys):
             root = docsy_pages[key]
-            main = (exact.find(root, 'main .td-content') or exact.find(root, 'main') or [root])[0]
+            main = (htmltree.find(root, 'main .td-content') or htmltree.find(root, 'main') or [root])[0]
             formulas(main, False)
             for ident, nodes in docsy_members(main, dmembers).items():
                 for n in nodes:
@@ -379,6 +382,19 @@ def compare(doxygen_pages, compat, docsy_pages, site, rules, oracle=None):
     return Result(missing, extra, errors, report)
 
 
+def gap_usage(doxygen_pages, compat, docsy_pages, site, gaps, rules, oracle=None):
+    """Whether each gap that applies to oracle is needed: compare() without it reports more
+    missing items than with every gap. Return [(n, gap, needed)], n counted from 1 in gaps.
+    The trees given are left as they are."""
+    def missing(skip):
+        doxy = copy.deepcopy(doxygen_pages)
+        htmltree.apply_gaps(doxy, [g for n, g in enumerate(gaps, 1) if n != skip], oracle)
+        doxy = {k: v for k, v in doxy.items() if k in compat['pages']}
+        return len(compare(doxy, compat, copy.deepcopy(docsy_pages), site, rules, oracle).missing)
+    base = missing(None)
+    return [(n, g, missing(n) > base) for n, g in enumerate(gaps, 1) if g.get('oracle', oracle) == oracle]
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     for opt in ('--doxygen', '--compat', '--site', '--paths', '--gaps', '--rules'):
@@ -387,6 +403,7 @@ def main(argv):
     ap.add_argument('--counts-advisory', action='store_true',
                     help='print count mismatches and stale entries as notes: the counts are those of '
                          "another Doxygen version's HTML")
+    ap.add_argument('--gap-usage', action='store_true', help='print whether each gap is needed')
     args = ap.parse_args(argv)
 
     def load(path):
@@ -395,19 +412,21 @@ def main(argv):
 
     def read(path):
         with open(path, encoding='utf-8') as f:
-            return exact.parse(f.read())
+            return htmltree.parse(f.read())
     compat, site = load(args.compat), load(args.paths)
     keys = sorted(f[:-5] for f in os.listdir(args.doxygen) if f.endswith('.html') and f != 'doxygen_crawl.html')
     doxy = {k: read(os.path.join(args.doxygen, k + '.html')) for k in keys}
-    errors, report = exact.apply_gaps(doxy, listyaml.load(args.gaps), args.oracle)
-    doxy = {k: v for k, v in doxy.items() if k in compat['pages']}
     docsy = {}
     for key, p in site['pages'].items():
         path = os.path.join(args.site, p['url'].lstrip('/'))
         if p['url'].endswith('/'):
             path = os.path.join(path, 'index.html')
         docsy[key] = read(path)
-    result = compare(doxy, compat, docsy, site, listyaml.load(args.rules), args.oracle)
+    gaps, rules = listyaml.load(args.gaps), listyaml.load(args.rules)
+    usage = gap_usage(doxy, compat, docsy, site, gaps, rules, args.oracle) if args.gap_usage else []
+    errors, report = htmltree.apply_gaps(doxy, gaps, args.oracle)
+    doxy = {k: v for k, v in doxy.items() if k in compat['pages']}
+    result = compare(doxy, compat, docsy, site, rules, args.oracle)
     for line in report + result.report:
         print(line)
     for line in result.extra:
@@ -419,6 +438,8 @@ def main(argv):
         result = result._replace(errors=[])
     for line in result.missing:
         print('missing', line)
+    for n, gap, needed in usage:
+        print(f'gap {n} {gap["select"]}: {"needed" if needed else "unused"}')
     print(f'{len(result.missing)} missing, {len(result.extra)} containers with extra text')
     return 1 if errors or result.errors or result.missing else 0
 

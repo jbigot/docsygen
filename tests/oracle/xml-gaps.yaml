@@ -1,27 +1,5 @@
 # What Doxygen's HTML shows and its XML doesn't give, removed from the Doxygen side before the
-# comparison: see exact.py. The user approves each entry.
-- oracle: sample
-  pages: "*"
-  select: a.el
-  attr: title
-  count: 27
-  reason: "Doxygen gives a word it links by itself the target's brief as a tooltip, but not an explicit \\ref; the XML writes both as <ref>"
-  evidence: "namespacedemo_1_1markup.xml, inline_elements: <ref refid=\"classdemo_1_1Widget\" kindref=\"compound\">demo::Widget</ref> (title in the HTML) and <ref refid=\"classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd\" kindref=\"member\">resize</ref> (none)"
-- oracle: pdi
-  pages: "*"
-  select: a.el
-  attr: title
-  count: 168
-  reason: "Doxygen gives a word it links by itself the target's brief as a tooltip, but not an explicit \\ref; the XML writes both as <ref>"
-  evidence: "see the sample entry"
-- oracle: pdi
-  pages: how_to_create_plugin
-  select: a.code
-  text: "^PDI::Context$"
-  unwrap: true
-  count: 8
-  reason: "Doxygen's HTML links PDI::Context in the code of this page, the XML of the same run never does"
-  evidence: "how_to_create_plugin.xml: <highlight class=\"normal\"><sp/><sp/><sp/><sp/>example_plugin(PDI::Context&amp;<sp/>ctx,<sp/>PC_tree_t<sp/>spec_tree):</highlight> and 7 more lines have no <ref>"
+# comparison: see tests/oracle/htmltree.py. The user approves each entry.
 - oracle: sample
   pages: "*"
   select: div.ttc
@@ -48,76 +26,6 @@
   count: 1
   reason: "The class hierarchy shows the brief of a class outside the XML (PDI::impl::What_impl, in an excluded namespace), which no XML file holds"
   evidence: "What_impl appears only as a <basecompoundref> and an <inheritancegraph> <node> label in classPDI_1_1Multiple__errors.xml and classPDI_1_1Spectree__error.xml; hierarchy.html row 4_1_ has its brief"
-- oracle: sample
-  pages: "*"
-  select: dl.reflist
-  attr: class
-  count: 5
-  reason: "Doxygen writes the list of an xref page (\\todo, \\bug, \\deprecated, \\test, \\xrefitem) as a reflist; the XML writes it as any other variable list"
-  evidence: "todo.xml: <para><variablelist><varlistentry><term>Member <ref …>demo::markup::xrefsects</ref> ()</term>, as a \\par list would be"
-- oracle: pdi
-  pages: "*"
-  select: dl.reflist
-  attr: class
-  count: 1
-  reason: "See the sample entry"
-  evidence: "see the sample entry"
-- oracle: sample
-  pages: "*"
-  select: "[class^=markdownTable]"
-  attr: class
-  count: 17
-  reason: "Doxygen gives a Markdown table, its rows and its cells markdownTable classes, which hold the alignments, and an HTML table the doxtable class; the XML writes both as <table>"
-  evidence: "guide.xml: <table rows=\"3\" cols=\"2\"><row><entry thead=\"yes\"><para>Option  </para> (Markdown) and namespacedemo_1_1markup.xml: <table rows=\"3\" cols=\"2\"><caption>The caption</caption> (HTML); an align attribute appears only on aligned Markdown cells"
-- oracle: sample
-  pages: "*"
-  select: table.doxtable
-  attr: class
-  count: 1
-  reason: "See the markdownTable entry"
-  evidence: "see the markdownTable entry"
-- oracle: pdi
-  pages: "*"
-  select: "[class^=markdownTable]"
-  attr: class
-  count: 1227
-  reason: "See the sample entry"
-  evidence: "see the sample entry"
-- oracle: sample
-  pages: "*"
-  select: "ol[type=1]"
-  attr: type
-  count: 1
-  reason: "Doxygen gives an automatic list (Markdown, -#) a type that follows its depth; the XML writes it as an HTML list without type"
-  evidence: "namespacedemo_1_1markup.xml: <para>two<orderedlist> (a Markdown list) next to <orderedlist type=\"a\" start=\"3\"> (an HTML one)"
-- oracle: pdi
-  pages: "*"
-  select: "ol[type=1]"
-  attr: type
-  count: 17
-  reason: "See the sample entry"
-  evidence: "see the sample entry"
-- oracle: pdi
-  pages: "*"
-  select: li p.startli
-  attr: class
-  count: 4
-  reason: "Doxygen marks every paragraph of an automatic list's item startli, and those of an HTML list's item by their position; the XML doesn't tell the lists apart"
-  evidence: "Decl_NetCDF_plugin.xml: <orderedlist><listitem><para>Just a name of descriptor…</para><para>Configuration examples: …, an HTML list's item would be written the same"
-- oracle: sample
-  pages: "concept*"
-  select: div.fragment span[class^=keyword]
-  unwrap: true
-  count: 4
-  reason: "Doxygen runs its code parser on a concept's definition and highlights its keywords; the XML gives the definition as plain text"
-  evidence: "conceptdemo_1_1Boxable.xml: <initializer>template&lt;typename T&gt;\\nconcept <ref …>demo::Boxable</ref> =  requires(T t) { t; }</initializer>"
-- oracle: pdi
-  pages: "concept*"
-  select: div.fragment span[class^=keyword]
-  unwrap: true
-  count: 13
-  reason: "See the sample entry"
-  evidence: "see the sample entry"
 - oracle: sample
   pages: "*"
   select: td.memname a.el

@@ -1,5 +1,5 @@
-{{- /* Run the unit cases of assets/cases/*.yaml whose flavor is params.flavor and whose name
-       matches params.test, into results.json, and list the build cases of assets/builds/*.yaml
+{{- /* Run the unit cases of assets/cases/*.yaml whose name matches params.test, into
+       results.json, and list the build cases of assets/builds/*.yaml
        in builds.json. With params.build, run that build case only. The cases are read as
        resources: site.Data is deprecated since Hugo 0.156, and hugo.Data is newer than the
        module's minimum Hugo. */ -}}
@@ -15,7 +15,7 @@
   {{- $results := slice -}}
   {{- range resources.Match "cases/*.yaml" -}}{{- $cases := transform.Unmarshal . -}}
     {{- range $cases -}}
-      {{- if and (eq (.flavor | default "compat") site.Params.flavor) (or (not $filter) (findRE $filter .name 1)) -}}
+      {{- if or (not $filter) (findRE $filter .name 1) -}}
         {{- $results = $results | append (partial "test/run.html" .) -}}
       {{- end -}}
     {{- end -}}

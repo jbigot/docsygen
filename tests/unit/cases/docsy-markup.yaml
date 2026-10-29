@@ -1,40 +1,34 @@
 - name: docsy markup, a warning is an alert
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><simplesect kind="warning"><para>Be careful.</para></simplesect></para></detaileddescription>'
   expect: '<div class="alert alert-warning" role="alert"><div class="h4 alert-heading" role="heading">Warning</div><div>Be careful.</div></div>'
 - name: docsy markup, two notes in a row are one alert
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><simplesect kind="note"><para>One.</para></simplesect><simplesect kind="note"><para>Two.</para></simplesect></para></detaileddescription>'
   expect: '<div class="alert alert-info" role="alert"><div class="h4 alert-heading" role="heading">Note</div><div>One.</div><div>Two.</div></div>'
 - name: docsy markup, a parameter list is a definition list
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><parameterlist kind="param"><parameteritem><parameternamelist><parametername direction="in">x</parametername></parameternamelist><parameterdescription><para>The x.</para></parameterdescription></parameteritem></parameterlist></para></detaileddescription>'
   expect: '<dl class="docsygen-params"><dt>Parameters</dt><dd><dl class="docsygen-param-items"><dt><code>x</code> <span class="docsygen-direction">[in]</span></dt><dd>The x.</dd></dl></dd></dl>'
 - name: docsy markup, a returns section is a definition list
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><simplesect kind="return"><para>The result.</para></simplesect></para></detaileddescription>'
   expect: '<dl class="docsygen-return"><dt>Returns</dt><dd>The result.</dd></dl>'
 - name: docsy markup, an xref item is a definition list
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Fix it.</para></xrefdescription></xrefsect></para></detaileddescription>'
   expect: '<dl class="docsygen-xref docsygen-todo"><dt>Todo</dt><dd>Fix it.</dd></dl>'
 - name: docsy markup, a listing is a highlighted pre, a span per line
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
@@ -47,7 +41,6 @@
     xml: '<programlisting><codeline><highlight class="normal">a<sp/><ref refid="x" kindref="member">b</ref></highlight></codeline><codeline><highlight class="normal"><sp value="9"/>c</highlight></codeline></programlisting>'
   expect: "a b\n\tc"
 - name: docsy markup, an inline formula through KaTeX
-  flavor: docsy
   partial: test/doc-contains.html
   context:
     ctx: {}
@@ -56,7 +49,6 @@
     lacks: ['katex-display', '$']
   expect: []
 - name: docsy markup, a display formula through KaTeX
-  flavor: docsy
   partial: test/doc-contains.html
   context:
     ctx: {}
@@ -65,7 +57,6 @@
     lacks: ['\[']
   expect: []
 - name: docsy markup, a formula environment through KaTeX
-  flavor: docsy
   partial: test/doc-contains.html
   context:
     ctx: {}
@@ -73,14 +64,12 @@
     contains: ['katex-display', 'application/x-tex">\begin{aligned} a &amp;= b \end{aligned}</annotation>']
   expect: []
 - name: docsy markup, an inheritance diagram in Mermaid
-  flavor: docsy
   partial: test/block.html
   context:
     ctx: {model: sample}
     block: {type: diagram, id: classdemo_1_1Button}
   expect: "<div class=\"docsygen-diagram\"><div class=\"docsygen-diagram-title\">Inheritance diagram for demo::Button:</div><pre class=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre></div>"
 - name: docsy markup, a member with its signature
-  flavor: docsy
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
@@ -91,7 +80,6 @@
     lacks: [memitem, memname, memtitle, memproto, memdoc]
   expect: []
 - name: docsy markup, a member's template line in its signature
-  flavor: docsy
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
@@ -99,7 +87,6 @@
     contains: ["<pre class=\"docsygen-signature\"><code>template&lt;typename T, int N = 3&gt;\nconst T &amp; demo::Box&lt; T, N &gt;::front("]
   expect: []
 - name: docsy markup, an enum's values
-  flavor: docsy
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
@@ -110,7 +97,6 @@
     lacks: [fieldtable]
   expect: []
 - name: docsy markup, a summary table
-  flavor: docsy
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
@@ -119,21 +105,18 @@
     lacks: [memberdecls, memItemLeft, memItemRight, mdescRight, valign, 'memitem:']
   expect: []
 - name: docsy markup, a block image is a figure
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><image type="html" name="https://example.com/a.png">The caption</image></para></detaileddescription>'
   expect: '<figure class="docsygen-figure"><img src="https://example.com/a.png" alt="The caption"><figcaption>The caption</figcaption></figure>'
 - name: docsy markup, an inline image
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {}
     xml: '<detaileddescription><para>See <image type="html" name="https://example.com/a.png" inline="yes">A</image> here.</para></detaileddescription>'
   expect: '<p>See <img src="https://example.com/a.png" alt="A"> here.</p>'
 - name: docsy markup, a section in a member's documentation
-  flavor: docsy
   partial: test/doc.html
   context:
     ctx: {anchors: {x_1s: s}}

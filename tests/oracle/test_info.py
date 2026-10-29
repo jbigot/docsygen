@@ -3,7 +3,7 @@
 Run: python3 -I -m unittest discover -s tests/oracle -p 'test_info.py'
 """
 import contextlib, io, json, os, tempfile, unittest
-import exact, info
+import htmltree, info
 
 
 def compound(key):
@@ -11,12 +11,12 @@ def compound(key):
 
 
 def doxygen(body, title='X'):
-    return exact.parse(f'<div class="header"><div class="title">{title}</div></div>'
+    return htmltree.parse(f'<div class="header"><div class="title">{title}</div></div>'
                        f'<div class="contents">{body}</div>')
 
 
 def docsy(body, title='X'):
-    return exact.parse(f'<main><div class="td-content"><h1>{title}</h1>{body}</div></main>')
+    return htmltree.parse(f'<main><div class="td-content"><h1>{title}</h1>{body}</div></main>')
 
 
 class Compare(unittest.TestCase):
@@ -173,6 +173,13 @@ class Compare(unittest.TestCase):
         theirs = '<p>Intro.</p><a id="a1"></a><h2 class="memtitle">f()</h2><div class="memitem">Resizes.</div>'
         outside = '<p>Intro. Resizes.</p><div data-doxygen-id="m1"><h3>f()</h3></div>'
         self.assertEqual(len(self.compare(theirs, outside, [rule]).missing), 1)
+
+    def test_gap_usage_reports_a_gap_that_removes_nothing_as_unused(self):
+        gaps = [{'pages': '*', 'select': 'p.only', 'count': 1, 'reason': 'r'},
+                {'pages': '*', 'select': 'p.both', 'count': 1, 'reason': 'r'}]
+        theirs = {'classX': doxygen('<p class="only">Doxygen only.</p><p class="both">Both.</p>')}
+        usage = info.gap_usage(theirs, self.compat, {'x': docsy('<p>Both.</p>')}, self.site, gaps, [])
+        self.assertEqual([(n, needed) for n, _, needed in usage], [(1, True), (2, False)])
 
     def test_extra_text_is_reported_but_passes(self):
         result = self.compare('<p>A.</p>', '<p>A. And more.</p>')

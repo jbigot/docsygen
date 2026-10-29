@@ -1,9 +1,0 @@
-{{- /* An HTML image, in a block with its caption, or inline with the caption as title. */ -}}
-{{- $n := .node -}}
-{{- $img := partial "docsygen/render/image.html" (dict "node" $n "ctx" .ctx) -}}
-{{- $caption := partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}
-{{- if eq $n.attributes.inline "yes" -}}
-  <img src="{{ $img.src }}" alt="" class="inline"{{ with $caption }} title="{{ . }}"{{ end }}/>
-{{- else -}}
-  <div class="image"><img src="{{ $img.src }}" alt=""/>{{ with $caption }}<div class="caption">{{ . }}</div>{{ end }}</div>
-{{- end -}}

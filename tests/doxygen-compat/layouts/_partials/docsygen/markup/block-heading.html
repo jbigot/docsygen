@@ -1,7 +1,0 @@
-{{- /* The heading of a detailed section, with Doxygen's anchor for it (types.h, ML_TYPES): a
-       class's variables are doc-variable-members, others' doc-var-members. */ -}}
-{{- $labels := dict "doc-constructor" "doc-constructors" "doc-function" "doc-func-members" "doc-related" "doc-related-members"
-    "doc-typedef" "doc-typedef-members" "doc-enum" "doc-enum-members" "doc-define" "doc-define-members"
-    "doc-property" "doc-property-members" "doc-event" "doc-event-members" -}}
-{{- $label := index $labels .block.key | default (cond (eq .block.heading.text "Variable Documentation") "doc-var-members" "doc-variable-members") -}}
-<a name="{{ $label }}" id="{{ $label }}"></a><h2 id="header-{{ $label }}" class="groupheader">{{ .block.heading.text }}</h2>

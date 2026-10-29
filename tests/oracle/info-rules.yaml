@@ -68,7 +68,7 @@
 - oracle: pdi
   rule: unwrap
   select: div.fragment a.code
-  count: 1088
+  count: 1096
   reason: "See the sample entry"
 - oracle: sample
   rule: drop
