@@ -1,0 +1,18 @@
+{{- /* The version labels of a site (a list) in the order of its version menu: the labels that
+       are not releases first, in the order given; then the releases, labels made of
+       dot-separated integers, newest first, compared number by number (1.10 before 1.9).
+       Usage: partial "docsygen/versions/order.html" (slice "main" "1.9" "1.10") */ -}}
+{{- $out := slice -}}
+{{- $releases := slice -}}
+{{- range . -}}
+  {{- if findRE `^[0-9]+(\.[0-9]+)*$` . 1 -}}
+    {{- /* Each number right-aligned, so that keys compare as the numbers do. */ -}}
+    {{- $key := slice -}}
+    {{- range split . "." -}}{{- $key = $key | append (printf "%20s" .) -}}{{- end -}}
+    {{- $releases = $releases | append (dict "label" . "key" (delimit $key ".")) -}}
+  {{- else -}}
+    {{- $out = $out | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- range sort $releases "key" "desc" -}}{{- $out = $out | append .label -}}{{- end -}}
+{{- return $out -}}

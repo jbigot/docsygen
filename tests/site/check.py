@@ -6,7 +6,7 @@ Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]
   ROOT_URL  that version root's URL (/ref/), where its paths.json is published
 Checks:
   - every compound with a role (paths.json), and every memberdef and enumvalue id with a target,
-    appears exactly once as data-doxygen-id;
+    appears exactly once as data-doxygen-id in the pages under ROOT_URL;
   - every internal href resolves to a file, and its fragment to an id in that file, but the
     links the documentation's authors wrote (class docsygen-ulink), left as they are;
   - no id appears twice in a file;
@@ -74,6 +74,7 @@ def main(argv):
             text = f.read()
         rel = os.path.relpath(path, public)
         printed = rel.split(os.sep)[0] == '_print'
+        in_root = ('/' + rel.replace(os.sep, '/')).startswith(root_url)
         for s in LEFTOVERS:
             if s in text:
                 errors.append(f'{rel}: {s} left')
@@ -86,7 +87,7 @@ def main(argv):
         for n in walk(tree):
             if 'id' in n.attrs:
                 seen[n.attrs['id']] += 1
-            if 'data-doxygen-id' in n.attrs:
+            if 'data-doxygen-id' in n.attrs and in_root:
                 marks[n.attrs['data-doxygen-id']] += 1
             if n.tag == 'p':
                 inner = next((d.tag for d in walk(n) if d.tag in BLOCKS), None)

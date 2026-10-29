@@ -3,9 +3,10 @@
 #
 # Usage: sh exampleSite/check-docsy.sh
 # The build fails on any WARN or ERROR (--printPathWarnings included). Then:
-#   - tests/site/check.py on the output (a test-only Docsy hook, tests/site/hooks, publishes the
-#     paths.json it reads);
-#   - the offline search index holds PDI_share's brief;
+#   - tests/site/check.py on the three version roots, /docs/main/, /docs/latest/ and /docs/1.7/ (a
+#     test-only Docsy hook, tests/site/hooks, publishes the paths.json it reads);
+#   - each page of /docs/latest/ has a redirect at /docs/1.12/ (tests/site/check_redirects.py);
+#   - the offline search index holds PDI_share's brief, from /docs/latest/ only;
 #   - the print page of the reference holds a member's signature;
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/.
 # Hugo needs go for its modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
@@ -31,9 +32,16 @@ fi
 status=0
 if grep -E 'WARN|ERROR' "$out/log" >&2; then status=1; fi
 python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi" /docs/main/ || status=1
-if ! grep -qF 'Shares some data with PDI.' "$out"/public/offline-search-index.*.json 2>/dev/null; then
-  echo "check-docsy.sh: the offline search index lacks PDI_share's brief" >&2; status=1
-fi
+python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.12" /docs/latest/ || status=1
+python3 -I "$root/tests/site/check.py" "$out/public" "$here/assets/doxygen/pdi-1.7" /docs/1.7/ || status=1
+python3 -I "$root/tests/site/check_redirects.py" "$out/public" /docs/latest/ /docs/1.12/ || status=1
+# Only the latest release is indexed: PDI_share's brief comes from /docs/latest/ alone.
+python3 -I - "$out"/public/offline-search-index.*.json <<'EOF' || status=1
+import json, sys
+refs = sorted({e['ref'] for e in json.load(open(sys.argv[1])) if 'Shares some data with PDI.' in e['body']})
+if not refs or any(not r.startswith('/docs/latest/') for r in refs):
+    sys.exit(f"check-docsy.sh: the offline search index has PDI_share's brief from {refs}, not from /docs/latest/ only")
+EOF
 if ! grep -qF 'docsygen-signature' "$out/public/_print/docs/main/index.html" 2>/dev/null; then
   echo "check-docsy.sh: the print page of /docs/main/ holds no member signature" >&2; status=1
 fi

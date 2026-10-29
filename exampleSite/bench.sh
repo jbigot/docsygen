@@ -3,8 +3,9 @@
 #
 # Usage: sh exampleSite/bench.sh N [HUGO_ARG ...]
 # The site is built as it is, but for its configuration: PDI's XML is copied N times, to
-# assets/doxygen/pdi-1 … pdi-N, and one adapter generates the versions v1 … vN at /docs/vK/ (vN
-# latest). Each copy ends with its own comment: Hugo shares the resources of identical files, which
+# assets/doxygen/pdi-1 … pdi-N, and one adapter generates the versions v1 … vN at /docs/vK/, but
+# vN, the latest, at /docs/latest/ with redirects from /docs/vN/. Each copy ends with its own
+# comment: Hugo shares the resources of identical files, which
 # would build one version's XML only. Prints the wall time of hugo alone, the page count and the
 # size of public/; with HUGO_ARGs (--templateMetrics …), also hugo's output.
 # HUGO selects the Hugo binary (default: the npm-installed one).

@@ -48,7 +48,7 @@ for name; do
     {
       printf 'module:\n  mounts:\n'
       printf '    - {source: "%s", target: "assets/doxygen/pdi"}\n' "$dir/xml"
-      printf '    - {source: assets, target: assets, files: ["! doxygen/**"]}\n'
+      printf '    - {source: assets, target: assets, files: ["! doxygen/pdi/**"]}\n'
       for d in content static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
       printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/site/hooks"
     } > "$work/checks.yaml"

@@ -1,17 +1,20 @@
 {{- /* Add the pages of one Doxygen XML directory to a site. Call it from a content adapter in the
-       parent directory of the version root, once per version:
+       parent directory of the version roots, once per version:
          store    the content adapter's context, .
          dir      the XML directory, under assets/
          version  the version's label
          path     the version root, relative to the adapter's directory
-         latest   whether this is the version unversioned links go to (default false)
+         latest   whether this is the latest release, which unversioned links go to (default
+                  false): its pages are generated at the sibling latest/ of path, and each one
+                  gets an alias at the same place under path, which redirects to it
+         search   whether the pages are in the site's search index (default: latest)
          pathMap  rewrites of file locations, [{from, to}] (default [])
        store, dir, version and path are required.
        Usage, in content/docs/_content.gotmpl:
          {{ partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" "main") }} */ -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
-  {{- if not (in (slice "store" "dir" "version" "path" "latest" "pathMap") $k) -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "latest" "search" "pathMap") $k) -}}
     {{- errorf "docsygen: unknown adapter option %q" $k -}}
     {{- $ok = false -}}
   {{- end -}}
@@ -25,17 +28,33 @@
 {{- if $ok -}}
   {{- $store := .store -}}
   {{- $dir := .dir -}}
-  {{- $root := .path -}}
+  {{- $latest := .latest | default false -}}
+  {{- $search := cond (isset . "search") .search $latest -}}
+  {{- $numbered := .path -}}
+  {{- $root := cond $latest (path.Join (path.Dir .path) "latest") .path -}}
   {{- $pathMap := .pathMap | default slice -}}
-  {{- $docsygen := dict "dir" $dir "version" .version "latest" (.latest | default false) "pathMap" $pathMap -}}
+  {{- /* The calls' order, for the order of the versions that are not releases
+         (docsygen/versions/order.html). The store outlives a rebuild, so it only grows. */ -}}
+  {{- $call := add ($store.Store.Get "docsygen-calls" | default 0) 1 -}}
+  {{- $store.Store.Set "docsygen-calls" $call -}}
+  {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $numbered
+      "release" (gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0) "search" $search "call" $call -}}
   {{- $paths := partial "docsygen/paths.html" (dict "model" (partial "docsygen/model.html" $dir) "pathMap" $pathMap) -}}
   {{- range $paths.pages -}}
     {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
+    {{- if not $search -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}
     {{- if eq .path "" -}}
       {{- $params = merge $params (dict "sidebar_root_for" "self" "docsygen" (merge $docsygen (dict "key" .key "root" true))) -}}
     {{- end -}}
-    {{- $store.AddPage (dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
+    {{- $page := dict "path" (path.Join $root .path) "kind" .kind "title" .title "linkTitle" .linkTitle
         "weight" .weight "type" "docs" "description" .description "params" $params
-        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap)))) -}}
+        "content" (dict "mediaType" "text/markdown" "value" (partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap))) -}}
+    {{- if $latest -}}
+      {{- /* Relative to the parent of the page's directory (Hugo's rule): up to the adapter's
+             directory, then down the numbered path. */ -}}
+      {{- $up := cond (eq .path "") 0 (len (split .path "/")) -}}
+      {{- $page = merge $page (dict "aliases" (slice (printf "%s%s" (strings.Repeat $up "../") (path.Join (path.Base $numbered) .path)))) -}}
+    {{- end -}}
+    {{- $store.AddPage $page -}}
   {{- end -}}
 {{- end -}}

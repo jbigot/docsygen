@@ -1,0 +1,12 @@
+- name: versions order, other labels first in call order, then releases newest first
+  partial: docsygen/versions/order.html
+  context: [main, "1.7", "1.12", "1.10", dev]
+  expect: [main, dev, "1.12", "1.10", "1.7"]
+- name: versions order, releases compare by number, not as strings
+  partial: docsygen/versions/order.html
+  context: ["1.9", "1.10"]
+  expect: ["1.10", "1.9"]
+- name: versions order, a single label
+  partial: docsygen/versions/order.html
+  context: [a]
+  expect: [a]

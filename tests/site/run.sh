@@ -1,5 +1,7 @@
 #!/bin/sh
-# Build the Docsy-flavor test site from each XML directory and check its output (check.py).
+# Build the Docsy-flavor test site from each XML directory and check its output: check.py on its
+# two version roots, /ref/ and /latest/ (tests/site/content/_content.gotmpl), and the redirects
+# from /1.0/ to /latest/ (check_redirects.py).
 #
 # Usage: sh tests/site/run.sh [NAME ...]
 #   NAME   sample, sample-c, pdi (the oracles' XML, tests/lib.sh) or unknown-kind
@@ -41,5 +43,7 @@ for name; do
   if [ "$name" = sample ]; then links="--links handwritten/index.html $here/expected-links.json"; fi
   # shellcheck disable=SC2086 # links is words
   python3 -I "$here/check.py" "$work/public" "$xml" /ref/ $links || status=1
+  python3 -I "$here/check.py" "$work/public" "$xml" /latest/ || status=1
+  python3 -I "$here/check_redirects.py" "$work/public" /latest/ /1.0/ || status=1
 done
 exit $status
