@@ -1,0 +1,29 @@
+{{- /* A member of a version's reference, in any page.
+         item     the member, a name as in doxygen: links (or id, a Doxygen id)
+         form     full (default), the documentation as its compound's page shows it, or summary,
+                  its row of its compound's summary table
+         version  the version (default: the page's, else latest: docsygen/shortcode/ctx.html)
+       The full form carries the member's anchor on its wrapper, so that links to the member can
+       land there, unless the page already has it: its Markdown writes the member's heading
+       ({#anchor}), or an earlier full form of the same member on the page took it.
+       Usage: {{< docsygen/member item="demo::Widget::resize(int)" form="summary" >}} */ -}}
+{{- $s := partial "docsygen/shortcode/ctx.html" . -}}
+{{- if $s.ok -}}
+  {{- $ctx := $s.ctx -}}
+  {{- $id := $s.id -}}
+  {{- $e := index $ctx.model.ids $id -}}
+  {{- if or (not $e) (ne $e.what "member") -}}
+    {{- errorf "docsygen: %s: %q is not a member" .Page.Path (.Get "item" | default $id) -}}
+  {{- else if eq (.Get "form" | default "full") "summary" -}}
+<table class="docsygen-summary">
+{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" $id "page" $e.home) -}}
+</table>
+  {{- else -}}
+    {{- $anchor := index $ctx.anchors $id -}}
+    {{- $taken := printf "docsygen-anchor|%s|%s" $ctx.version $id -}}
+    {{- if not (or (strings.Contains .Page.RawContent (printf "{#%s}" $anchor)) (.Page.Store.Get $taken)) -}}
+      {{- .Page.Store.Set $taken .Ordinal -}}
+    {{- end -}}
+    {{- partial "docsygen/part.html" (dict "address" (dict "type" "member" "id" $id) "ctx" $ctx "anchor" (eq (.Page.Store.Get $taken) .Ordinal)) -}}
+  {{- end -}}
+{{- end -}}

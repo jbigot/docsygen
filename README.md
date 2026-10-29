@@ -177,6 +177,39 @@ your site has its own `render-link.html`, it shadows docsygen's: send
 On a multilingual site with a single host, Hugo's embedded link hook takes over (with the default
 `markup.goldmark.renderHooks.link.useEmbedded: auto`): set it to `fallback` to keep docsygen's.
 
+## Embed the reference
+
+Any page can show a part of a version's reference with two shortcodes. The generated pages are
+built from the same ones, so an embedded part looks as it does on its own page.
+
+```markdown
+{{< docsygen/member item="demo::Widget::width" >}}
+{{< docsygen/member item="demo::Widget::resize(int)" form="summary" >}}
+{{< docsygen/part item="demo::Widget" part="description" >}}
+{{< docsygen/part item="demo::Widget" part="decls" section="public-func" >}}
+{{< docsygen/part part="tree" name="annotated" >}}
+```
+
+- `item` names what to show, as a `doxygen:` link does (`[KIND:]NAME[(SIGNATURE)]`, without the
+  version). `id` names it by its Doxygen id instead. A list or an index takes neither.
+- `docsygen/member` shows a member: `form="full"` (the default), its documentation as its
+  compound's page shows it, or `form="summary"`, its row of the summary table.
+- `docsygen/part` shows one part of a page, `part` being its type: `brief`, `includes`,
+  `diagram`, `concept-definition`, `decls` (a summary table, with `section` its key, such as
+  `public-func`, `func` or `typedef`), `description` (the detailed description, its sections
+  included when embedded elsewhere), `section`, `inline-classes`, `member`, `all-members`,
+  `tree` and `index` (with `name`, and for an index `filter` and `letter`), `source`,
+  `generated-from`.
+- `version` picks the version. Without it, a part comes from the page's own version: that of the
+  version root above the page, or the page's `params.docsygen.version`, else `latest`.
+- Links in an embedded part go to the version's own pages.
+- The full form of a member carries the member's anchor, so that links to the member can land on
+  the page, unless the page already has it: from the member's heading, or from an earlier full
+  form of the same member. Shortcodes can't mix positional and named arguments in Hugo, hence
+  `item=`.
+- A part that the version lacks stops the build. A version that development mode leaves out
+  embeds nothing, with a warning.
+
 ## Doxygen options that matter
 
 - `XML_PROGRAMLISTING`: `YES` gives each file its source listing, which roughly doubles the XML
@@ -190,9 +223,27 @@ On a multilingual site with a single host, Hugo's embedded link hook takes over 
 Each rendered block goes through a partial named `docsygen/markup/block-<type>.html`, and
 descriptions through `docsygen/markup/doc.html` and `docsygen/markup/doc-node.html`. A site
 overrides one by putting a file of the same name in its own `layouts/_partials/docsygen/markup/`.
-The page tree comes from `docsygen/paths/scheme.html`, the Markdown of each page from
-`docsygen/skeleton.html`. The markup only uses `docsygen-*` classes, which `_docsygen.scss`
-styles with Bootstrap's `--bs-*` variables.
+The page tree comes from `docsygen/paths/scheme.html`. The markup only uses `docsygen-*`
+classes, which `_docsygen.scss` styles with Bootstrap's `--bs-*` variables.
+
+The Markdown of a page comes from `docsygen/skeleton/<kind>.html`, which a site overrides to
+redesign every page of a kind, else from `docsygen/skeleton/default.html`. The kind is the
+compound kind of the page (`class`, `struct`, `namespace`, `file`, `group`, `page`, `concept`,
+`dir`, …), or `root`, `tree-<name>`, `index-<name>`, `all-members` or `source`. The template gets
+`{entry, paths, dir, pathMap, blocks}`, `blocks` being the page's parts in Doxygen's order, and
+returns Markdown: headings, text, and a shortcode per part, which
+`partial "docsygen/skeleton/call.html" $block` writes. For example, a class page without its
+summary tables:
+
+```go-html-template
+{{- $out := slice -}}
+{{- range .blocks -}}
+  {{- if not (in (slice "title" "summary-links" "heading" "decls") .type) -}}
+    {{- $out = $out | append (partial "docsygen/skeleton/call.html" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return delimit $out "\n\n" -}}
+```
 
 ## The example site
 

@@ -1,0 +1,54 @@
+{{- /* One part of a version's reference: the block of address .address (docsygen/part/address.html)
+       through its markup, docsygen/markup/block-<type>.html, with .ctx, a context of that version
+       (docsygen/ctx/root.html). The block is looked for in the plan of .ctx.key, the page being
+       rendered, then in that of the page that holds it: the page of its id (paths.targets), or
+       for a list or an index the page with its role. Its heading is left to the caller. With
+       .anchor, a member block carries its member's anchor on its wrapper. A description embedded
+       away from its own page is whole: its sections are in it, not blocks of their own.
+       A part that the version lacks stops the build.
+       Usage: partial "docsygen/part.html" (dict "address" $address "ctx" $ctx "anchor" false) */ -}}
+{{- $ctx := .ctx -}}
+{{- $a := .address -}}
+{{- $paths := $ctx.paths -}}
+{{- $keys := slice -}}
+{{- with $ctx.key -}}{{- $keys = $keys | append . -}}{{- end -}}
+{{- with $a.id -}}
+  {{- with index $paths.targets . -}}{{- $keys = $keys | append .page -}}{{- end -}}
+{{- else -}}
+  {{- range $paths.pages -}}
+    {{- $key := .key -}}
+    {{- range .roles -}}
+      {{- if and (eq .role $a.type) (eq (.name | default "") ($a.name | default "")) (eq (.filter | default "") ($a.filter | default ""))
+          (eq (.letter | default "") ($a.letter | default "")) -}}
+        {{- $keys = $keys | append $key -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $a.key -}}{{- $keys = $keys | append . -}}{{- end -}}
+{{- end -}}
+{{- $found := false -}}
+{{- $holder := "" -}}
+{{- range $keys -}}
+  {{- $key := . -}}
+  {{- if not $found -}}
+    {{- range where $paths.pages "key" $key -}}
+      {{- range partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx) -}}
+        {{- if and (not $found) (eq (partial "docsygen/part/address.html" .) $a) -}}{{- $found = . -}}{{- $holder = $key -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $found -}}
+  {{- errorf "docsygen: no part %s in version %s" (jsonify $a) $ctx.version -}}
+  {{- return "" -}}
+{{- end -}}
+{{- $onPage := false -}}
+{{- with $ctx.page -}}{{- $onPage = true -}}{{- end -}}
+{{- $b := merge $found (dict "heading" false "anchor" (and .anchor (eq $found.type "member") true)
+    "whole" (and $onPage (eq $found.type "description") (ne ($ctx.key | default "") $holder))) -}}
+{{- $markup := printf "docsygen/markup/block-%s.html" $b.type -}}
+{{- if not (templates.Exists (printf "_partials/%s" $markup)) -}}
+  {{- warnidf (printf "docsygen-block-%s" $b.type) "docsygen: no markup for the block type %q" $b.type -}}
+  {{- return "" -}}
+{{- end -}}
+{{- return partial $markup (dict "block" $b "ctx" (merge $ctx (dict "key" $holder))) -}}

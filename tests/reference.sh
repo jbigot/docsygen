@@ -6,7 +6,8 @@
 #   NAME   sample, sample-c, pdi or unknown-kind, as tests/site/run.sh (default: all four)
 # The baseline is the commit in tests/reference-base, checked out in a git worktree that is
 # removed on exit. Both builds use the working tree's tests/site (layouts, content and
-# configuration), so only the module differs. Prints, per site,
+# configuration), so only the module differs, but for the hand-written pages: each build has its
+# own tree's, since newer ones may use what the baseline lacks, and show as added. Prints, per site,
 #   reference.sh: NAME: N files identical, A added
 # and the added files. A changed or removed file fails, with the first 20 lines of diff -r.
 # Moving the baseline: write the new commit into tests/reference-base, in the commit of the
@@ -29,14 +30,15 @@ for name; do
     unknown-kind) xml=$root/tests/unit/fixtures/unknown-kind ;;
     *) if ! dir=$(oracle "$name"); then status=1; continue; fi; xml=$dir/xml ;;
   esac
-  extra=
-  if [ "$name" = sample ]; then extra="$site/handwritten=content"; fi
   ok=1
   for tree in base work; do
     work=$tmp/$name-$tree
     mkdir -p "$work"
     DOCSYGEN_MODULE=$root
     if [ $tree = base ]; then DOCSYGEN_MODULE=$tmp/base; fi
+    # Each tree's own hand-written pages: they may use shortcodes that the baseline lacks.
+    extra=
+    if [ "$name" = sample ]; then extra="$DOCSYGEN_MODULE/tests/site/handwritten=content"; fi
     # shellcheck disable=SC2086 # extra is one word or none
     site_config "$work/hugo.yaml" "$site/layouts=layouts" "$site/content=content" $extra "$xml=assets/doxygen/oracle"
     cat "$site/config.yaml" >> "$work/hugo.yaml"

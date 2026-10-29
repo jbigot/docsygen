@@ -44,6 +44,11 @@ for name; do
   # shellcheck disable=SC2086 # links is words
   python3 -I "$here/check.py" "$work/public" "$xml" /ref/ $links || status=1
   python3 -I "$here/check.py" "$work/public" "$xml" /latest/ || status=1
+  # tests/site/handwritten/handwritten/embed.md embeds demo::Widget::width in full twice: its
+  # anchor once.
+  if [ "$name" = sample ] && [ "$(grep -o 'id="width"' "$work/public/handwritten/embed/index.html" | wc -l)" -ne 1 ]; then
+    echo "run.sh: the anchor of demo::Widget::width is not on the embed page exactly once" >&2; status=1
+  fi
   python3 -I "$here/check_redirects.py" "$work/public" /latest/ /1.0/ || status=1
 done
 exit $status

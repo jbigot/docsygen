@@ -6,3 +6,7 @@
   partial: docsygen/render/entity.html
   context: nosuch
   warning: 'docsygen: unknown Doxygen entity "nosuch"'
+- name: a part that the version lacks
+  partial: test/part.html
+  context: {model: sample, address: {type: brief, id: nope}}
+  error: 'docsygen: no part {"id":"nope","type":"brief"} in version sample'

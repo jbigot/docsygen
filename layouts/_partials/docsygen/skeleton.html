@@ -1,24 +1,19 @@
-{{- /* The Markdown content of a generated page, from its plan: each block becomes a
-       {{< docsygen/block n=K >}} call, after a Markdown heading when the block has one ("#" per
-       level, the text escaped, from the XML node through docsygen/text/markdown.html when the
-       plan gives it, and the anchor as {#…}). The title and summary-links blocks are left out:
-       Docsy shows the title and the page's table of contents. A heading block is its heading
-       only.
+{{- /* The Markdown content of a generated page: docsygen/skeleton/<kind>.html, which a site
+       overrides to redesign every page of a kind, else docsygen/skeleton/default.html. The kind is
+       the compound kind of the page's first role (class, struct, namespace, file, group, page,
+       concept, dir, …), or root, tree-<name>, index-<name>, all-members or source. The template
+       gets {entry, paths, dir, pathMap, blocks}: the page's entry (docsygen/paths.html), the
+       version's paths, XML directory and path map, and the page's plan (docsygen/plan.html).
        Usage: partial "docsygen/skeleton.html" (dict "entry" $page "paths" $paths "dir" $dir "pathMap" $pathMap) */ -}}
 {{- $m := partial "docsygen/model.html" .dir -}}
-{{- $anchors := partialCached "docsygen/ctx/anchors.html" .paths (printf "%s|%s" .dir (jsonify (.pathMap | default slice))) -}}
-{{- $fixed := index .paths.anchors .entry.key | default dict -}}
-{{- $ctx := dict "model" $m "paths" .paths -}}
-{{- $out := slice -}}
-{{- range $k, $b := partial "docsygen/plan.html" (dict "entry" .entry "ctx" $ctx) -}}
-  {{- if not (in (slice "title" "summary-links") $b.type) -}}
-    {{- with $b.heading -}}
-      {{- $text := cond (ne (.node | default false) false) (partial "docsygen/text/markdown.html" (.node | default dict)) (partial "docsygen/text/md-escape.html" .text) -}}
-      {{- $anchor := index $anchors .anchorKey | default (index $fixed .anchorKey) | default "" -}}
-      {{- if not $anchor -}}{{- warnf "docsygen: no anchor for the heading %q of %s" .text $.entry.key -}}{{- end -}}
-      {{- $out = $out | append (printf "%s %s%s" (strings.Repeat .level "#") $text (cond (ne $anchor "") (printf " {#%s}" $anchor) "")) -}}
-    {{- end -}}
-    {{- if ne $b.type "heading" -}}{{- $out = $out | append (printf "{{< docsygen/block n=%d >}}" $k) -}}{{- end -}}
+{{- $blocks := partial "docsygen/plan.html" (dict "entry" .entry "ctx" (dict "model" $m "paths" .paths)) -}}
+{{- $kind := "default" -}}
+{{- range first 1 .entry.roles -}}
+  {{- if eq .role "compound" -}}{{- $kind = (index $m.ids .id).kind -}}
+  {{- else if in (slice "tree" "index") .role -}}{{- $kind = printf "%s-%s" .role .name -}}
+  {{- else -}}{{- $kind = .role -}}
   {{- end -}}
 {{- end -}}
-{{- return printf "%s\n" (delimit $out "\n\n") -}}
+{{- $template := printf "docsygen/skeleton/%s.html" $kind -}}
+{{- if not (templates.Exists (printf "_partials/%s" $template)) -}}{{- $template = "docsygen/skeleton/default.html" -}}{{- end -}}
+{{- return partial $template (merge . (dict "blocks" $blocks)) -}}

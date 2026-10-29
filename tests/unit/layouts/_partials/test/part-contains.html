@@ -1,0 +1,5 @@
+{{- /* The strings of .contains that test/part.html with .part as context lacks. */ -}}
+{{- $html := string (partial "test/part.html" (partial "test/context.html" .part)) -}}
+{{- $out := slice -}}
+{{- range .contains -}}{{- if not (strings.Contains $html .) -}}{{- $out = $out | append (printf "missing %s in %s" . $html) -}}{{- end -}}{{- end -}}
+{{- return $out -}}

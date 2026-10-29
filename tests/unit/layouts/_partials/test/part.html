@@ -1,0 +1,23 @@
+{{- /* docsygen/part.html on model .model (test/context.html reads it), with the context a page of that model gets
+       (docsygen/ctx/root.html, without a root page: no links): .address, .anchor. With .key, the
+       block of .address in the plan of page .key, through its markup partial
+       (docsygen/markup/block-<type>.html), is compared with part.html's output: true when they
+       are the same. Otherwise part.html's output. */ -}}
+{{- $m := .model -}}
+{{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
+{{- $ctx := dict "model" $m "paths" $paths "page" nil "version" (path.Base $m.dir) "links" dict "urls" dict
+    "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $m.dir (jsonify slice))) -}}
+{{- $html := partial "docsygen/part.html" (dict "address" .address "ctx" $ctx "anchor" (.anchor | default false)) -}}
+{{- with .key -}}
+  {{- $key := . -}}
+  {{- $want := "" -}}
+  {{- range where $paths.pages "key" $key -}}
+    {{- range partial "docsygen/plan.html" (dict "entry" . "ctx" (merge $ctx (dict "key" $key))) -}}
+      {{- if and (not $want) (eq (partial "docsygen/part/address.html" .) $.address) -}}
+        {{- $want = partial (printf "docsygen/markup/block-%s.html" .type) (dict "block" (merge . (dict "heading" false)) "ctx" (merge $ctx (dict "key" $key))) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return and (ne (string $want) "") (eq (string $html) (string $want)) -}}
+{{- end -}}
+{{- return $html -}}

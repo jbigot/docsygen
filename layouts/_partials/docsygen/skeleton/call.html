@@ -1,0 +1,15 @@
+{{- /* The shortcode call that renders a block in a page's Markdown: {{< docsygen/member id=… >}}
+       for a member, {{< docsygen/part id=… part=… section=… name=… filter=… letter=… >}} for the
+       rest, with the fields of the block's address (docsygen/part/address.html) that are set.
+       Usage, in a skeleton: partial "docsygen/skeleton/call.html" $block */ -}}
+{{- $a := partial "docsygen/part/address.html" . -}}
+{{- if eq $a.type "member" -}}
+  {{- return printf "{{< docsygen/member id=%q >}}" $a.id -}}
+{{- end -}}
+{{- $args := slice -}}
+{{- range $f := slice "id" "type" "key" "name" "filter" "letter" -}}
+  {{- with index $a $f -}}
+    {{- $args = $args | append (printf "%s=%q" (index (dict "id" "id" "type" "part" "key" "section" "name" "name" "filter" "filter" "letter" "letter") $f) .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return printf "{{< docsygen/part %s >}}" (delimit $args " ") -}}

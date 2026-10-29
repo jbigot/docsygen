@@ -9,8 +9,8 @@
 {{- $ctx := .ctx -}}
 {{- $lang := .lang | default (strings.TrimPrefix "." (path.Ext (.node.attributes.filename | default ""))) | default "text" -}}
 {{- $anchors := slice -}}
-{{- with $ctx.page -}}
-  {{- range where $ctx.paths.pages "key" (.Params.docsygen.key | default "") -}}
+{{- with $ctx.key -}}
+  {{- range where $ctx.paths.pages "key" . -}}
     {{- range .roles -}}
       {{- $page := and (eq .role "compound") (index $ctx.model.ids .id) -}}
       {{- if and $page (eq $page.kind "example") (eq $.node.attributes.filename $page.name) -}}

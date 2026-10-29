@@ -1,7 +1,8 @@
 {{- /* A member's documentation (memberdef.cpp, writeDocumentation), its heading in the page's
        skeleton: its signature, its labels (getLabels), and its documentation:
        brief, details, enum values, what it reimplements or what reimplements it, and where it
-       is defined. */ -}}
+       is defined. With .block.anchor, the wrapper carries the member's anchor, for a page whose
+       skeleton writes no heading for it (docsygen/part.html). */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $id := .block.id -}}
@@ -54,7 +55,7 @@
 {{- $proto := partial "docsygen/markup/signature.html" (dict "ctx" $ctx "id" $id "parts" $parts "scope" $scope "hasParams" $hasParams) -}}
 {{- $templates := $proto.templates -}}
 {{- $proto = $proto.proto -}}
-<div class="docsygen-member" data-doxygen-id="{{ $id }}">
+<div class="docsygen-member"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
 <pre class="docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre>
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="docsygen-label">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}

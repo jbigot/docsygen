@@ -1,0 +1,10 @@
+- name: a site's class skeleton replaces the class page's, and only it
+  partial: test/skeleton-override.html
+  context: {model: sample, reversed: api/demo/widget, same: api/demo}
+  mounts: {fixtures/skeleton-override/class: layouts}
+  warning: 'skeleton-override: ok'
+- name: a site's namespace skeleton replaces the namespace page's, and only it
+  partial: test/skeleton-override.html
+  context: {model: sample, reversed: api/demo, same: api/demo/widget}
+  mounts: {fixtures/skeleton-override/namespace: layouts}
+  warning: 'skeleton-override: ok'

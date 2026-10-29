@@ -1,0 +1,6 @@
+{{- /* Test fixture: a page's parts in reverse order, without headings. */ -}}
+{{- $out := slice -}}
+{{- range collections.Reverse .blocks -}}
+  {{- if not (in (slice "title" "summary-links" "heading") .type) -}}{{- $out = $out | append (partial "docsygen/skeleton/call.html" .) -}}{{- end -}}
+{{- end -}}
+{{- return printf "%s\n" (delimit $out "\n\n") -}}

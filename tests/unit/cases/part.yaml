@@ -1,0 +1,40 @@
+- name: part, the brief of a class is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api/demo/widget, address: {type: brief, id: classdemo_1_1Widget}}
+  expect: true
+- name: part, the description of a class is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api/demo/widget, address: {type: description, id: classdemo_1_1Widget}}
+  expect: true
+- name: part, the inheritance diagram of a class is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api/demo/circle, address: {type: diagram, id: classdemo_1_1Circle}}
+  expect: true
+- name: part, a summary table of a class is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api/demo/widget, address: {type: decls, id: classdemo_1_1Widget, key: public-func}}
+  expect: true
+- name: part, the member of one overload is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api/demo/widget, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}}
+  expect: true
+- name: part, a list is its block's markup
+  partial: test/part.html
+  context: {model: sample, key: api, address: {type: tree, name: annotated}}
+  expect: true
+- name: part, a member with its anchor carries it on its wrapper
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, anchor: true, address: {type: member, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88}}
+    contains: ['<div class="docsygen-member" id="width" data-doxygen-id="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88">']
+  expect: []
+- name: part, a member without its anchor has no id on its wrapper
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88}}
+    contains: ['<div class="docsygen-member" data-doxygen-id="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88">']
+  expect: []
+- name: part, an address is the block's fields but its heading, as strings
+  partial: docsygen/part/address.html
+  context: {type: index, name: class-members, filter: all, letter: "", heading: {level: 2}, ids: [a]}
+  expect: {filter: all, name: class-members, type: index}

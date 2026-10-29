@@ -3,7 +3,7 @@
   context:
     model: sample
     key: pages/guide
-    contains: ["## First section {#first-section}\n\n{{< docsygen/block n="]
+    contains: ["## First section {#first-section}\n\n{{< docsygen/part id=\"guide_1first-section\" part=\"section\" >}}"]
   expect: []
 - name: skeleton of a page, Markdown characters of a section title escaped
   partial: test/skeleton.html
@@ -17,19 +17,33 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["### resize {#resize}\n\n{{< docsygen/block n="]
+    contains: ["### resize {#resize}\n\n{{< docsygen/member id=\"classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd\" >}}"]
   expect: []
 - name: skeleton of a class, no title block
   partial: test/skeleton.html
   context:
     model: sample
     key: api/demo/widget
-    contains: ["{{< docsygen/block n=0 >}}"]
-  expect: ["{{< docsygen/block n=0 >}}"]
+    contains: ["part=\"title\""]
+  expect: ["part=\"title\""]
 - name: skeleton of a class, a heading block is its Markdown heading only
   partial: test/skeleton.html
   context:
     model: sample
     key: api/demo/widget
     contains: ["## Member Function Documentation {#doc-function}\n\n### "]
+  expect: []
+- name: skeleton of a class, a summary table names its section
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/widget
+    contains: ["{{< docsygen/part id=\"classdemo_1_1Widget\" part=\"decls\" section=\"public-func\" >}}"]
+  expect: []
+- name: skeleton of an index, its filter, without an empty letter
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: indexes/class-members
+    contains: ["{{< docsygen/part part=\"index\" name=\"class-members\" filter=\"all\" >}}"]
   expect: []

@@ -1,0 +1,21 @@
+{{- /* The default skeleton of a generated page (docsygen/skeleton.html): each block becomes its
+       shortcode call (docsygen/skeleton/call.html), after a Markdown heading when the block has
+       one ("#" per level, the text escaped, from the XML node through docsygen/text/markdown.html
+       when the plan gives it, and the anchor as {#…}). The title and summary-links blocks are
+       left out: Docsy shows the title and the page's table of contents. A heading block is its
+       heading only. */ -}}
+{{- $anchors := partialCached "docsygen/ctx/anchors.html" .paths (printf "%s|%s" .dir (jsonify (.pathMap | default slice))) -}}
+{{- $fixed := index .paths.anchors .entry.key | default dict -}}
+{{- $out := slice -}}
+{{- range $b := .blocks -}}
+  {{- if not (in (slice "title" "summary-links") $b.type) -}}
+    {{- with $b.heading -}}
+      {{- $text := cond (ne (.node | default false) false) (partial "docsygen/text/markdown.html" (.node | default dict)) (partial "docsygen/text/md-escape.html" .text) -}}
+      {{- $anchor := index $anchors .anchorKey | default (index $fixed .anchorKey) | default "" -}}
+      {{- if not $anchor -}}{{- warnf "docsygen: no anchor for the heading %q of %s" .text $.entry.key -}}{{- end -}}
+      {{- $out = $out | append (printf "%s %s%s" (strings.Repeat .level "#") $text (cond (ne $anchor "") (printf " {#%s}" $anchor) "")) -}}
+    {{- end -}}
+    {{- if ne $b.type "heading" -}}{{- $out = $out | append (partial "docsygen/skeleton/call.html" $b) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return printf "%s\n" (delimit $out "\n\n") -}}

@@ -12,8 +12,9 @@
   {{- end -}}
 {{- end -}}
 {{- $textblock := ne $e.kind "group" -}}
-{{- /* The sections of this description are blocks of their own (docsygen/plan/compound.html). */ -}}
-{{- $sctx := merge $ctx (dict "sectionblocks" true) -}}
+{{- /* The sections of this description are blocks of their own (docsygen/plan/compound.html),
+       but in a whole description, embedded away from its page (docsygen/part.html). */ -}}
+{{- $sctx := merge $ctx (dict "sectionblocks" (not .block.whole)) -}}
 {{- /* The compound's marker for tests/site/check.py and tests/oracle/info.py, but for a compound
        another page absorbed: the merged block marks it there. */ -}}
 {{- if not (index $ctx.paths.merged .block.id) -}}<span hidden data-doxygen-id="{{ .block.id }}"></span>{{- end -}}

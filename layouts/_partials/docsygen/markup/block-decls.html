@@ -12,8 +12,7 @@
 {{- $e := index $m.ids $id -}}
 {{- $isClass := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $e.kind -}}
 {{- $scope := cond $isClass $id "" -}}
-{{- $key := "" -}}
-{{- with $ctx.page -}}{{- $key = .Params.docsygen.key -}}{{- end -}}
+{{- $key := $ctx.key | default "" -}}
 {{- $sections := partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
 {{- $own := dict -}}
 {{- $section := dict "key" "inherited" "heading" "Additional Inherited Members" "subtitle" "" "members" slice "inner" slice -}}

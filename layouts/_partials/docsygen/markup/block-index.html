@@ -13,8 +13,7 @@
 {{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
 {{- /* The letters' anchors are the page's fixed anchors (docsygen/paths/scheme.html): letter-<L>
        on the class index, letter-<filter>-<letter> on a member index. */ -}}
-{{- $fixed := dict -}}
-{{- with $ctx.page -}}{{- $fixed = index $ctx.paths.anchors .Params.docsygen.key | default dict -}}{{- end -}}
+{{- $fixed := index $ctx.paths.anchors ($ctx.key | default "") | default dict -}}
 {{- if eq $b.name "classes" -}}
   {{- $classKinds := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
   {{- $scopes := partial "docsygen/model/scopes.html" $m -}}

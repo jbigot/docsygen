@@ -1,0 +1,24 @@
+{{- /* With a site's override of docsygen/skeleton/<kind>.html (fixtures/skeleton-override), on
+       model .model (test/context.html reads it): the skeleton of page .reversed has its description before its brief, and
+       that of page .same is the default skeleton's. Warns "skeleton-override: ok", errorf
+       otherwise. */ -}}
+{{- $m := .model -}}
+{{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
+{{- $skeleton := dict -}}
+{{- $default := dict -}}
+{{- range $paths.pages -}}
+  {{- $c := dict "entry" . "paths" $paths "dir" $m.dir "pathMap" slice -}}
+  {{- $skeleton = merge $skeleton (dict .key (partial "docsygen/skeleton.html" $c)) -}}
+  {{- if eq .key $.same -}}
+    {{- $plan := partial "docsygen/plan.html" (dict "entry" . "ctx" (dict "model" $m "paths" $paths)) -}}
+    {{- $default = partial "docsygen/skeleton/default.html" (merge $c (dict "blocks" $plan)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $r := index $skeleton .reversed -}}
+{{- if not (findRE `part="description"[\s\S]*part="brief"` $r 1) -}}
+  {{- errorf "skeleton-override: %s is not reversed:\n%s" .reversed $r -}}
+{{- else if ne (index $skeleton .same) $default -}}
+  {{- errorf "skeleton-override: %s is not the default skeleton:\n%s" .same (index $skeleton .same) -}}
+{{- else -}}
+  {{- warnf "skeleton-override: ok" -}}
+{{- end -}}

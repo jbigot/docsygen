@@ -1,0 +1,35 @@
+{{- /* What the docsygen/part and docsygen/member shortcodes share: their version, their item's
+       id and the context of that version on their page, as {ctx, id, ok}. The version is the
+       version argument, else the page's own (params.docsygen.version, or that of the version root
+       above it), else latest. The item is the item argument, a name in the syntax of doxygen:
+       links (docsygen/resolve.html), or the id argument, a Doxygen id. A version that development
+       mode skips gives ok false, with a warning; a name that resolves to nothing stops the build.
+       Usage: partial "docsygen/shortcode/ctx.html" . (the shortcode's context) */ -}}
+{{- $page := .Page -}}
+{{- $version := .Get "version" -}}
+{{- if not $version -}}
+  {{- with $page.Params.docsygen -}}{{- $version = string (.version | default "") -}}{{- end -}}
+{{- end -}}
+{{- if not $version -}}
+  {{- range $page.Ancestors -}}{{- if and (not $version) .Params.docsygen.root -}}{{- $version = string .Params.docsygen.version -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $version = $version | default "latest" -}}
+{{- $out := dict "ok" false -}}
+{{- $v := false -}}
+{{- range partial "docsygen/versions.html" . -}}
+  {{- if or (eq .version $version) (and .latest (eq $version "latest")) -}}{{- $v = . -}}{{- end -}}
+{{- end -}}
+{{- if not $v -}}
+  {{- errorf "docsygen: %s: no version %q for %s" $page.Path $version .Name -}}
+{{- else if $v.skipped -}}
+  {{- warnidf "docsygen-version-skipped" "docsygen: version %q is not built here: %s embeds nothing from it" $v.version $page.Path -}}
+{{- else -}}
+  {{- $id := .Get "id" -}}
+  {{- with .Get "item" -}}
+    {{- $r := partial "docsygen/resolve.html" (dict "target" (printf "doxygen:%s/%s" $v.version .) "page" $page) -}}
+    {{- if not $r.ok -}}{{- errorf "docsygen: %s: cannot resolve %q in version %s" $page.Path . $v.version -}}{{- end -}}
+    {{- $id = $r.id -}}
+  {{- end -}}
+  {{- $out = dict "ok" true "id" $id "ctx" (partial "docsygen/ctx/root.html" (dict "root" $v.page "page" $page)) -}}
+{{- end -}}
+{{- return $out -}}
