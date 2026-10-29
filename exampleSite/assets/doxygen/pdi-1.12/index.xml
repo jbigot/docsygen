@@ -777,8 +777,6 @@
   </compound>
   <compound refid="pycall_plugin" kind="page"><name>pycall_plugin</name>
   </compound>
-  <compound refid="serialize_plugin" kind="page"><name>serialize_plugin</name>
-  </compound>
   <compound refid="set_value_plugin" kind="page"><name>set_value_plugin</name>
   </compound>
   <compound refid="JSON_plugin" kind="page"><name>JSON_plugin</name>
