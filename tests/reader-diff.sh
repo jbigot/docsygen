@@ -9,8 +9,9 @@
 # With each reader:
 #   1. tests/xml-parse/run.sh, then the two trees of every corpus file compared with each other;
 #   2. tests/unit/run.sh, which must pass with both;
-#   3. the Docsy test site on the sample, sample-c and pdi oracles, and the example site, whose
-#      public/ directories must be identical.
+#   3. the Docsy test site on the sample, sample-c and pdi oracles, and the example site in its
+#      two organizations (the whole tree and PDI's layout), whose public/ directories must be
+#      identical.
 # The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go
 # or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
 set -eu
@@ -84,22 +85,29 @@ for name in sample sample-c pdi; do
   [ $ok -eq 0 ] || compare "site-$name"
 done
 
-# The example site as it is, with the template reader's layouts mounted before its own.
+# The example site as it is, in both organizations (the whole tree, and PDI's layout:
+# pdi-layout.yaml, content-pdi/), with the template reader's layouts mounted before its own.
 example=$root/exampleSite
-for reader in template native; do
-  work=$tmp/example-$reader
-  mkdir -p "$work"
-  {
-    printf 'module:\n  mounts:\n'
-    if [ "$reader" = template ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-template/layouts"; fi
-    for d in content assets static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
-  } > "$work/mounts.yaml"
-  if ! PATH="$example/node_modules/.bin:$PATH" "$hugo" --source "$example" --config "$example/hugo.yaml,$work/mounts.yaml" \
-      --destination "$work/public" > "$work/log" 2>&1; then
-    cat "$work/log" >&2; fail "the example site with the $reader reader"
-  fi
+for org in example layout; do
+  config=$example/hugo.yaml
+  content=content
+  if [ $org = layout ]; then config=$config,$example/pdi-layout.yaml; content=content-pdi; fi
+  for reader in template native; do
+    work=$tmp/$org-$reader
+    mkdir -p "$work"
+    {
+      printf 'module:\n  mounts:\n'
+      if [ "$reader" = template ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-template/layouts"; fi
+      printf '    - {source: "%s", target: "content"}\n' "$content"
+      for d in assets static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
+    } > "$work/mounts.yaml"
+    if ! PATH="$example/node_modules/.bin:$PATH" "$hugo" --source "$example" --config "$config,$work/mounts.yaml" \
+        --destination "$work/public" > "$work/log" 2>&1; then
+      cat "$work/log" >&2; fail "the example site ($org) with the $reader reader"
+    fi
+  done
+  compare $org
 done
-compare example
 
 [ $status -eq 0 ] && echo "reader-diff.sh: OK"
 exit $status

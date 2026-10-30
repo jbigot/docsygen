@@ -21,7 +21,7 @@
     {{- $names := slice -}}
     {{- range $ps -}}{{- $names = $names | append .Path -}}{{- end -}}
     {{- $names = sort $names -}}
-    {{- errorf "docsygen: version %s: %s is claimed by %s and %s; mark one as a duplicate" $label $key (index $names 0) (index $names 1) -}}
+    {{- errorf "docsygen: version %s: the page %s is held by both %s and %s: mark the generated one as a duplicate, or claim it once" $label $key (index $names 0) (index $names 1) -}}
   {{- end -}}
   {{- $p := index $ps 0 -}}
   {{- $pages.SetInMap "m" $key (dict "url" $p.RelPermalink "page" $p "canonical" true) -}}

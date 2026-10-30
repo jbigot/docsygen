@@ -1,5 +1,6 @@
 {{- /* An index page (index.cpp). The class index (writeAlphabeticalClassList): the letters, then
-       per letter the classes Doxygen documents, by their name without scope (IGNORE_PREFIX
+       per letter the classes Doxygen documents, each linked to the page that holds it, or as
+       text when none does (docsygen/markup/url.html), by their name without scope (IGNORE_PREFIX
        ignored), each after its namespace. A member index (writeMemberList): the intro
        (translator_en.h), its letters (as Doxygen 1.17 shows them), then the members of the
        filter, those of the page's letter only on a page of one letter, in sections per letter
@@ -20,7 +21,7 @@
   {{- $byLetter := newScratch -}}
   {{- range $m.order -}}
     {{- $e := index $m.ids . -}}
-    {{- if and (in $classKinds $e.kind) (index $ctx.links .) -}}
+    {{- if and (in $classKinds $e.kind) (isset $ctx.links .) -}}
       {{- $base := index (split $e.name "<") 0 -}}
       {{- $class := printf "%s%s" (index (split $base "::") (sub (len (split $base "::")) 1)) (strings.TrimPrefix $base $e.name) -}}
       {{- $class = partial "docsygen/text/ignore-prefix.html" (dict "name" $class "prefixes" $prefixes) -}}
@@ -49,7 +50,7 @@
 <dl class="docsygen-index-letter">
 <dt id="{{ index $fixed (printf "letter-%s" $l) }}">{{ $l }}</dt>
       {{ range partial "docsygen/text/sort-bytes.html" (dict "list" ($byLetter.Get $l) "key" "sort") -}}
-<dd><a href="{{ index $ctx.links .id }}">{{ .name }}</a>
+<dd>{{ $name := .name }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id) }}{{ with $u }}<a href="{{ . }}">{{ $name }}</a>{{ else }}{{ $name }}{{ end }}
         {{- with .ns }} (
           {{- $nsName := (index $m.ids .).name -}}
           {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .) -}}{{- with $u -}}<a href="{{ . }}">{{ $nsName }}</a>{{- else -}}{{ $nsName }}{{- end -}}

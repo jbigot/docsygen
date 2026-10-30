@@ -1,0 +1,25 @@
+{{- /* Every member that a compound's page documents in full, in the page's order, each as
+       docsygen/member shows it (form full, with its anchor: docsygen/shortcode/full.html). A
+       page written by hand for a class, which claims it, so lists them all, and gets the
+       members the class gains in later versions.
+         item     the compound, a name as in doxygen: links (or id, a Doxygen id)
+         version  the version (default: the page's, else latest: docsygen/shortcode/ctx.html)
+       Usage: {{< docsygen/members item="demo::Widget" >}} */ -}}
+{{- $s := partial "docsygen/shortcode/ctx.html" . -}}
+{{- if $s.ok -}}
+  {{- $ctx := $s.ctx -}}
+  {{- $id := $s.id -}}
+  {{- $e := index $ctx.model.ids $id -}}
+  {{- $key := index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $id))) -}}
+  {{- if or (not $e) (ne $e.what "compound") (not $key) -}}
+    {{- errorf "docsygen: %s: %q is not a compound with a page of its own" .Page.Path (.Get "item" | default $id) -}}
+  {{- else -}}
+    {{- range where $ctx.paths.pages "key" $key -}}
+      {{- range partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx) -}}
+        {{- if eq .type "member" -}}
+          {{- partial "docsygen/shortcode/full.html" (dict "shortcode" $ "ctx" $ctx "id" .id) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

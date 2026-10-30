@@ -1,0 +1,3 @@
+{{- /* Two versions in separate subtrees: old's placement is where no other version has one. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" "a/:version" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "old" "path" "b/:version") -}}

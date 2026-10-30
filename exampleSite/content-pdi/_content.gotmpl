@@ -1,7 +1,8 @@
-{{- /* PDI's C API, its topics, at /c-api/<version>/, and its namespaces, the plugin API, at
-       /plugin-api/<version>/. */ -}}
+{{- /* PDI's main page, its About, at /about/<version>/, its C API, its topics, at
+       /c-api/<version>/, and its namespaces, the plugin API, at /plugin-api/<version>/. */ -}}
 {{- range slice (dict "dir" "doxygen/pdi" "version" "main") (dict "dir" "doxygen/pdi-1.12" "version" "1.12" "latest" true)
     (dict "dir" "doxygen/pdi-1.7" "version" "1.7") -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "about/:version" "select" "" "children" false "title" "About")) -}}
   {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "c-api/:version" "select" "topics" "title" "C API Reference")) -}}
   {{- $api := dict "store" $ "path" "plugin-api/:version" "select" "api" "title" "Plugin API reference" -}}
   {{- /* In 1.12, a hand-written page holds PDI::Array_datatype (guide/latest/array-datatype.md). */ -}}

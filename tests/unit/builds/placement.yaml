@@ -48,3 +48,23 @@
   context: {}
   mounts: {fixtures/placement-titled: content, fixtures/placement/layouts: layouts}
   warning: '/guide/1.0/[Guide]'
+- name: placement, a class index without its classes lists them as text
+  partial: test/content.html
+  context: {page: /ix/latest/classes}
+  mounts: {fixtures/placement-indexes: content, fixtures/placement/layouts: layouts}
+  warning: 'docsygen: /ix/latest/classes links to demo::Widget, which no page of version 1.0 holds: rendered as text'
+- name: placement, a title leaves a version root's linkTitle the version
+  partial: test/page-facts.html
+  context: {page: /guide/1.0}
+  mounts: {fixtures/placement-titled: content, fixtures/placement/layouts: layouts}
+  warning: 'page-facts: title=Guide linkTitle=1.0 '
+- name: placement, the version's section above a deeper root is a page of the version
+  partial: test/page-facts.html
+  context: {page: /ref/old}
+  mounts: {fixtures/placement-deeper: content, fixtures/placement/layouts: layouts}
+  warning: 'page-facts: title=docsygen sample old linkTitle=old canonical=https://example.org/ref/old/ menu=/ref/old/ /ref/latest/ notice=/ref/latest/'
+- name: placement, a page below a deeper root falls back to its twin's version section
+  partial: test/page-facts.html
+  context: {page: /ref/latest/api}
+  mounts: {fixtures/placement-deeper: content, fixtures/placement/layouts: layouts}
+  warning: 'page-facts: title=demo linkTitle=demo canonical=https://example.org/ref/latest/api/ menu=/ref/old/api/ /ref/latest/api/ notice='

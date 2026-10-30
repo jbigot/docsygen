@@ -50,3 +50,14 @@
   partial: test/adapter.html
   context: {dir: doxygen/sample, version: v, path: "a/latest/:version"}
   error: 'docsygen: version "v": the path "a/latest/:version" has a segment latest, which is the latest release'
+- name: versions, the calls of one version read one XML directory
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions-mixed-dir: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: version "1.0" reads {"dir":"doxygen/sample-c","pathMap":[]} at /c/latest and {"dir":"doxygen/sample","pathMap":[]} at /latest: the calls of a version name one dir and pathMap'
+- name: versions, a skipped version placed apart from the built ones is still known
+  partial: docsygen/versions.html
+  context: {}
+  mounts: {fixtures/versions-apart: content, fixtures/versions/layouts: layouts, fixtures/versions-skipped: content}
+  params: {docsygen: {versions: [latest]}}
+  warning: 'docsygen: version "old" is not built here: /linked links to it as text'

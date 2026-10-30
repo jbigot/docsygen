@@ -10,13 +10,14 @@
                    (docsygen/placement/select.html)
          children  whether the pages below the selected one come too (default true)
          title, linkTitle, weight  the placement root's (default: the selected page's own; for
-                   the whole tree, the project's name and the label as its title; for a root at
-                   the :version segment, the version menu's entry and order as its linkTitle and
-                   weight)
+                   the whole tree, the project's name and the label as its title, and the main
+                   page's title as the first heading of its content unless title is given; for a
+                   root at the :version segment, the version menu's entry and order as its
+                   linkTitle and weight, which title leaves alone). title is also the linkTitle of
+                   a root below the :version segment
          duplicate whether the placement's pages are duplicates (default false): true for all of
                    them, or a list of page keys and names (as select) for those pages and the pages
-                   below them. A
-                   duplicate is never a link's target, is left out of search and the sitemap,
+                   below them. A duplicate is never a link's target, is left out of search and the sitemap,
                    and its canonical link is that of the page that holds its key (another
                    placement, or a hand-written page that claims it, docsygen/claims.html)
          latest    whether this is the latest release, which unversioned links go to (default
@@ -29,8 +30,10 @@
        the sitemap, since their canonical page is usually under latest.
        The placement root has params.docsygen.root. The pages from the :version segment down to
        the placement root, when the root is below it, are added as sections titled with their
-       segment, once per adapter file; the segment :version carries the version's label and the
-       order of the version menu (docsygen/versions/order.html), and is its sidebar's root.
+       segment, once per adapter file; the segment :version is titled with the project's name and
+       the label, carries the version menu's entry and order (docsygen/versions/order.html), and
+       is its sidebar's root. They are pages of their version (params.docsygen: version and
+       pattern, the path pattern down to them), with its menu, notice and canonical link.
        Two placements that generate one page stop the build. The calls of other adapter files
        can't be seen: two nested adapter files must not generate the same path.
        A call marked latest also adds a headless page at its numbered root, under its aliases, so
@@ -145,14 +148,18 @@
     {{- end -}}
     {{- $rootEntry := dict "path" "" -}}
     {{- range $paths.pages -}}{{- if eq .key $selected.root -}}{{- $rootEntry = . -}}{{- end -}}{{- end -}}
+    {{- $project := index ((index $model.options "PROJECT_NAME") | default (slice "")) 0 -}}
     {{- /* The pages from :version down to the placement root, the root excluded. */ -}}
+    {{- $patternSegments := split (strings.Trim .path "/") "/" -}}
     {{- range $i, $_ := $segments -}}
       {{- if and (ge $i $at) (lt $i (sub (len $segments) 1)) -}}
         {{- $p := delimit (first (add $i 1) $segments) "/" -}}
         {{- $isVersion := eq $i $at -}}
-        {{- $page := dict "path" $p "kind" "section" "type" "docs" "title" (cond $isVersion $.version (index $segments $i))
+        {{- $page := dict "path" $p "kind" "section" "type" "docs"
+            "title" (cond $isVersion (strings.TrimSpace (printf "%s %s" $project $.version)) (index $segments $i))
             "linkTitle" (cond (and $isVersion $latest) (printf "latest (%s)" $.version) (cond $isVersion $.version (index $segments $i)))
-            "params" (dict "exclude_search" (not $search)) -}}
+            "params" (dict "exclude_search" (not $search) "docsygen" (dict "version" $.version "release" $release
+              "pattern" (delimit (first (add $i 1) $patternSegments) "/"))) -}}
         {{- if $isVersion -}}{{- $page = merge $page (dict "weight" $menuWeight "params" (dict "sidebar_root_for" "self" "exclude_search" (not $search))) -}}{{- end -}}
         {{- if not $latest -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}
         {{- if $latest -}}
@@ -187,14 +194,14 @@
           {{- end -}}
           {{- if eq .path "" -}}
             {{- /* The whole tree: its root is the version's, and the main page's title its first
-                   heading. */ -}}
-            {{- $project := index ((index $model.options "PROJECT_NAME") | default (slice "")) 0 | default .title -}}
-            {{- if index $model.ids "indexpage" -}}
+                   heading, unless the call gives a title. */ -}}
+            {{- $name := $project | default .title -}}
+            {{- if and (index $model.ids "indexpage") (not $.title) -}}
               {{- $content = printf "## %s\n\n%s" (partial "docsygen/text/md-escape.html" .title) $content -}}
             {{- end -}}
-            {{- $title = strings.TrimSpace (printf "%s %s" $project $.version) -}}
+            {{- $title = strings.TrimSpace (printf "%s %s" $name $.version) -}}
           {{- end -}}
-          {{- with $.title -}}{{- $title = . -}}{{- $linkTitle = . -}}{{- end -}}
+          {{- with $.title -}}{{- $title = . -}}{{- if not $rootIsVersion -}}{{- $linkTitle = . -}}{{- end -}}{{- end -}}
           {{- with $.linkTitle -}}{{- $linkTitle = . -}}{{- end -}}
           {{- with $.weight -}}{{- $pageWeight = . -}}{{- end -}}
         {{- end -}}

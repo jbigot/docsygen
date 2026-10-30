@@ -1,9 +1,14 @@
-# The example site in PDI's own organization: hugo --config hugo.yaml,pdi-layout.yaml. Three
-# placements per version (content-pdi/): the narrative pages at /guide/<version>/, the C API's
-# topics at /c-api/<version>/ and the namespaces at /plugin-api/<version>/.
+# The example site in PDI's own organization: hugo --config hugo.yaml,pdi-layout.yaml. Four
+# placements per version (content-pdi/): the main page at /about/<version>/, the narrative pages
+# at /guide/<version>/, the C API's topics at /c-api/<version>/ and the namespaces at
+# /plugin-api/<version>/. PDI's own menu lists each narrative page; here they share the Guide
+# entry, and its sidebar.
 contentDir: content-pdi
 menu:
   main:
+    - name: About
+      pageRef: /about/latest/
+      weight: 5
     - name: Documentation
       pageRef: /docs/
       weight: 10

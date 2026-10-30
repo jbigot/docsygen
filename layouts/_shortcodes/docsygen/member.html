@@ -4,8 +4,8 @@
                   its row of its compound's summary table
          version  the version (default: the page's, else latest: docsygen/shortcode/ctx.html)
        The full form carries the member's anchor on its wrapper, so that links to the member can
-       land there, unless the page already has it: its Markdown writes the member's heading
-       ({#anchor}), or an earlier full form of the same member on the page took it.
+       land there, unless the page already has it (docsygen/shortcode/full.html).
+       docsygen/members shows all the members of a compound this way.
        Usage: {{< docsygen/member item="demo::Widget::resize(int)" form="summary" >}} */ -}}
 {{- $s := partial "docsygen/shortcode/ctx.html" . -}}
 {{- if $s.ok -}}
@@ -19,11 +19,6 @@
 {{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" $id "page" $e.home) -}}
 </table>
   {{- else -}}
-    {{- $anchor := index $ctx.anchors $id -}}
-    {{- $taken := printf "docsygen-anchor|%s|%s" $ctx.version $id -}}
-    {{- if not (or (strings.Contains .Page.RawContent (printf "{#%s}" $anchor)) (.Page.Store.Get $taken)) -}}
-      {{- .Page.Store.Set $taken .Ordinal -}}
-    {{- end -}}
-    {{- partial "docsygen/part.html" (dict "address" (dict "type" "member" "id" $id) "ctx" $ctx "anchor" (eq (.Page.Store.Get $taken) .Ordinal)) -}}
+    {{- partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id) -}}
   {{- end -}}
 {{- end -}}

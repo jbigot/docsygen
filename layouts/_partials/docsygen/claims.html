@@ -2,6 +2,9 @@
        params.docsygen.version the label and params.docsygen.claims a list of items, each a page
        key of the version's default tree or a name as in doxygen: links
        (docsygen/placement/select.html), holds those items' pages as their canonical target.
+       The anchors of a page's items, fixed ones and members' (docsygen/paths.html), must differ:
+       two items with one anchor (two classes with a details section, or members of one name)
+       stop the build, since links to one would land on the other.
        Usage: partial "docsygen/claims.html" "1.12" */ -}}
 {{- $label := string . -}}
 {{- $out := newScratch -}}
@@ -16,9 +19,27 @@
       {{- else -}}
         {{- $m := partial "docsygen/model.html" $v.dir -}}
         {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" $v.pathMap) -}}
+        {{- $keys := slice -}}
         {{- range .claims -}}
           {{- $key := (partial "docsygen/placement/select.html" (dict "model" $m "paths" $paths "select" . "children" false "version" $label)).root -}}
           {{- $out.SetInMap "m" $key ((index ($out.Get "m") $key | default slice) | append $p) -}}
+          {{- $keys = $keys | append $key -}}
+        {{- end -}}
+        {{- if gt (len (uniq $keys)) 1 -}}
+          {{- $anchors := newScratch -}}
+          {{- $clash := false -}}
+          {{- range $key := uniq $keys -}}
+            {{- range $_, $a := index $paths.anchors $key | default dict -}}{{- $anchors.Add $a (slice $key) -}}{{- end -}}
+          {{- end -}}
+          {{- range $id, $t := $paths.targets -}}
+            {{- if and $t.anchor (in $keys $t.page) -}}{{- $anchors.Add $t.anchor (slice $t.page) -}}{{- end -}}
+          {{- end -}}
+          {{- range $a, $ks := $anchors.Values -}}
+            {{- if and (not $clash) (gt (len (uniq $ks)) 1) -}}
+              {{- $clash = true -}}
+              {{- errorf "docsygen: %s claims %s and %s, which both have the anchor %q: claim them on separate pages" $p.Path (index (uniq $ks) 0) (index (uniq $ks) 1) $a -}}
+            {{- end -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}

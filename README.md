@@ -62,7 +62,8 @@ Generate the pages from a content adapter, for example `content/docs/_content.go
 | `search` | no | whether its pages are in Docsy's search index (default: `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 
-Call the adapter once per version, each with its own `dir`. The page at the `:version` segment
+Call the adapter once per version, each with its own `dir`: the calls of one version, which may
+place several parts of it, name the same `dir` and `pathMap`, or the build stops. The page at the `:version` segment
 is its version's own sidebar root (`sidebar_root_for: self`), so set
 `params.ui.sidebar_root_enabled: true`.
 Keep the reference below a top-level section (`content/docs/main/`, not `content/main/`), or Docsy
@@ -175,7 +176,8 @@ Links go to the page that holds their target in that version, whichever placemen
 ([Place parts of the reference](#place-parts-of-the-reference)). A target that no page of the
 version holds, because no placement selects it, renders as its text without a link, with a
 warning (`docsygen-unplaced`, which `ignoreLogs` can silence) naming the linking page: links
-from `doxygen:` destinations and links in the generated pages alike.
+from `doxygen:` destinations and links in the generated pages alike, the entries of lists and
+indexes included.
 
 The links go through docsygen's `layouts/_markup/render-link.html`, which renders other links as
 Hugo's embedded link hook does: a destination that names a page or a resource links to it. If
@@ -202,7 +204,7 @@ a site can arrange the reference as it likes, with one call per part and version
 {{- /* content/_content.gotmpl */ -}}
 {{- range slice (dict "dir" "doxygen/mylib-main" "version" "main") (dict "dir" "doxygen/mylib-2.1" "version" "2.1" "latest" true) -}}
   {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "guide/:version" "select" "pages" "title" "Guide")) -}}
-  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "api/:version" "select" "api")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "api/:version" "select" "api" "duplicate" (slice "mylib::Widget"))) -}}
   {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "widget/:version" "select" "mylib::Widget" "children" false)) -}}
 {{- end -}}
 ```
@@ -214,15 +216,20 @@ a site can arrange the reference as it likes, with one call per part and version
   page: `select` stops the build, and [embedding](#embed-the-reference) shows a member anywhere.
 - `path` is a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
   `docs/:version/api`. The placed pages keep their place below the selected one.
+- `mylib::Widget` is in the `api` subtree too: each item has one page per version, so the `api`
+  call marks it as a duplicate ([Hand a page over](#hand-a-page-over)).
 - The placement root keeps the selected page's title ("Pages", `mylib::Widget`) unless `title`
-  or `linkTitle` are given. A root at the `:version` segment (`guide/:version`) is its version's
-  section: its menu title is the version (`latest (2.1)` for the latest), and its weight orders
-  it as the version menu. The whole tree's root is titled with the project's name and the label,
-  and its content starts with the main page's title.
+  or `linkTitle` are given; `title` is its menu title too. A root at the `:version` segment
+  (`guide/:version`) is its version's section: its menu title stays the version (`latest (2.1)`
+  for the latest) unless `linkTitle` is given, and its weight orders it as the version menu. The
+  whole tree's root is titled with the project's name and the label, and its content starts with
+  the main page's title unless `title` is given. `select: ""` with `children: false` places the
+  main page alone.
 - The pages between the `:version` segment and a deeper root (`docs/2.1/` for
   `docs/:version/api`) are sections that docsygen adds, titled with their segment, the
-  `:version` one with the version. The segments above `:version` are your site's own sections
-  (an `_index.md`), or Hugo's top-level ones.
+  `:version` one with the project's name and the version, as a whole tree's root. They are
+  pages of their version, with its menu, notice and canonical link. The segments above
+  `:version` are your site's own sections (an `_index.md`), or Hugo's top-level ones.
 - Two placements of one adapter file that generate the same page stop the build, naming both.
   Calls in different adapter files can't see each other: when one adapter file is in a
   directory below another's (`content/` and `content/guide/`), they must not generate the same
@@ -245,8 +252,10 @@ params:
 
 Each claim is a page key or a name, as `select` takes them. Write the page with the
 [shortcodes](#embed-the-reference), which take its version: a full member carries its anchor,
-so that links to the member land on it, and an `{#details}` heading takes the links to the
-class's detailed description.
+so that links to the member land on it, `docsygen/members` shows them all, and an `{#details}`
+heading takes the links to the class's detailed description. A page can claim several items
+only when their anchors differ: two classes both have `details`, so each needs its own page,
+and the build stops otherwise.
 
 Every item has at most one canonical page per version: two placements that generate one page, or
 a placement and a hand-written page, stop the build, naming both. Mark the generated one as a
@@ -259,7 +268,9 @@ and names for those pages and the pages below them:
 ```
 
 A duplicate is still a page of the site, but no link goes to it, it is out of the search index
-and the sitemap, and its canonical link is that of the page that holds its item. The example
+and the sitemap, and its canonical link is that of the page that holds its item. A duplicate
+takes the pages below it along: the nested classes of a class marked as a duplicate need a
+claim too, or links to them render as text. The example
 site's PDI layout does this with `content-pdi/guide/latest/array-datatype.md`.
 
 ## Embed the reference
@@ -270,6 +281,7 @@ built from the same ones, so an embedded part looks as it does on its own page.
 ```markdown
 {{< docsygen/member item="demo::Widget::width" >}}
 {{< docsygen/member item="demo::Widget::resize(int)" form="summary" >}}
+{{< docsygen/members item="demo::Widget" >}}
 {{< docsygen/part item="demo::Widget" part="description" >}}
 {{< docsygen/part item="demo::Widget" part="decls" section="public-func" >}}
 {{< docsygen/part part="tree" name="annotated" >}}
@@ -279,6 +291,9 @@ built from the same ones, so an embedded part looks as it does on its own page.
   version). `id` names it by its Doxygen id instead. A list or an index takes neither.
 - `docsygen/member` shows a member: `form="full"` (the default), its documentation as its
   compound's page shows it, or `form="summary"`, its row of the summary table.
+- `docsygen/members` shows every member that a compound's page documents, in its order, each in
+  full as `docsygen/member` shows it: a hand-written page for a class lists them all, and keeps
+  up with the members later versions add.
 - `docsygen/part` shows one part of a page, `part` being its type: `brief`, `includes`,
   `diagram`, `concept-definition`, `decls` (a summary table, with `section` its key, such as
   `public-func`, `func` or `typedef`), `description` (the detailed description, its sections
@@ -337,7 +352,8 @@ versions: `main`, the latest release, 1.12, and an older one, 1.7
 (`exampleSite/assets/doxygen/README.md` says how each was made), in two organizations:
 
 - the whole Doxygen tree per version, under `/docs/` (`content/`): `npm run serve`;
-- PDI's own organization (`content-pdi/`), with the narrative pages at `/guide/<version>/`, the
+- PDI's own organization (`content-pdi/`), with the main page at `/about/<version>/`, the
+  narrative pages at `/guide/<version>/` (one menu entry, where PDI's own menu lists each), the
   C API's topics at `/c-api/<version>/`, the namespaces at `/plugin-api/<version>/`, and a
   hand-written page that claims `PDI::Array_datatype`:
   `npx hugo server --config hugo.yaml,pdi-layout.yaml`.

@@ -1,21 +1,16 @@
 {{- /* The body of docsygen/versions.html: the versions of the placement roots
        (params.docsygen.root), one entry per label, whichever adapter file adds them. The roots
        that development mode skips, and the pages that mark the calls marked latest
-       (docsygen/adapter.html), are in no page collection but their parent's, an ancestor of a
-       built root: every ancestor of each root is searched. A label's entry takes the dir, path
-       map and numbered path of its first root by path, and its page; its calls must agree on
-       latest. Two labels marked latest stop the build. Provisional (versions with placements). */ -}}
+       (docsygen/adapter.html), are in no page collection but their parent's: the pages of every
+       section are searched, since a version's calls may all sit where no built version has a
+       root. A label's entry takes the dir, path map and numbered path of its first root by path,
+       and its page; its calls must agree on latest, dir and path map. Two labels marked latest
+       stop the build. Provisional (versions with placements). */ -}}
 {{- $roots := where site.Pages "Params.docsygen.root" true -}}
 {{- $marks := slice -}}
-{{- $seen := newScratch -}}
-{{- range $roots -}}
-  {{- range .Ancestors -}}
-    {{- if not ($seen.Get .Path) -}}
-      {{- $seen.Set .Path true -}}
-      {{- $roots = $roots | append (where (where .Pages "Params.docsygen.root" true) "Params.docsygen.skipped" true) -}}
-      {{- $marks = $marks | append (where .Pages "Params.docsygen.latestMark" true) -}}
-    {{- end -}}
-  {{- end -}}
+{{- range where site.Pages "Kind" "in" (slice "home" "section") -}}
+  {{- $roots = $roots | append (where (where .Pages "Params.docsygen.root" true) "Params.docsygen.skipped" true) -}}
+  {{- $marks = $marks | append (where .Pages "Params.docsygen.latestMark" true) -}}
 {{- end -}}
 {{- $latestLabels := slice -}}
 {{- range $marks -}}{{- $latestLabels = $latestLabels | append (string .Params.docsygen.version) -}}{{- end -}}
@@ -35,6 +30,10 @@
   {{- end -}}
   {{- $calls = $calls | append (dict "version" $label "latest" (in $latestLabels $label) "weight" ($p.weight | default 1)) -}}
   {{- with $byLabel.Get $label -}}
+    {{- if and (not .skipped) (not $p.skipped) (or (ne .dir $p.dir) (ne (jsonify .pathMap) (jsonify ($p.pathMap | default slice)))) -}}
+      {{- errorf "docsygen: version %q reads %s at %s and %s at %s: the calls of a version name one dir and pathMap" $label
+          (jsonify (dict "dir" .dir "pathMap" .pathMap)) .page.Path (jsonify (dict "dir" $p.dir "pathMap" ($p.pathMap | default slice))) $r.Path -}}
+    {{- end -}}
     {{- if and .skipped (not $p.skipped) -}}{{- $byLabel.Set $label (merge . (dict "skipped" false "page" $r "dir" $p.dir "pathMap" ($p.pathMap | default slice) "path" $p.path)) -}}{{- end -}}
   {{- else -}}
     {{- $byLabel.Set $label (dict "version" $label "dir" $p.dir "latest" (in $latestLabels $label)

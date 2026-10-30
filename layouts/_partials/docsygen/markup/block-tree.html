@@ -30,7 +30,7 @@
   {{- /* The example index is a plain list (writeExampleIndex). */ -}}
 <div class="docsygen-text">{{ index $intros $name }}</div><ul>
   {{- range $nodes }}
-<li><a href="{{ .url }}">{{ .name | safeHTML }}</a></li>
+<li>{{ $label := .name | safeHTML }}{{ with .url }}<a href="{{ . }}">{{ $label }}</a>{{ else }}{{ $label }}{{ end }}</li>
   {{- end }}
 </ul>
 {{- else -}}

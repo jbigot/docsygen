@@ -2,7 +2,7 @@
   partial: test/claims.html
   context: {}
   mounts: {fixtures/claims-nested: content, fixtures/versions/layouts: layouts}
-  error: 'docsygen: version 1.0: api/demo is claimed by /latest/api/demo and /ref/latest; mark one as a duplicate'
+  error: 'docsygen: version 1.0: the page api/demo is held by both /latest/api/demo and /ref/latest'
 - name: claims, a duplicate placement hands its page over
   partial: test/claims.html
   context: {key: api/demo, id: classdemo_1_1Widget, dup: /latest/api/demo}
@@ -22,9 +22,19 @@
   partial: test/claims.html
   context: {}
   mounts: {fixtures/claims-conflict: content, fixtures/versions/layouts: layouts}
-  error: 'docsygen: version 1.0: api/demo/widget is claimed by /claim and /latest/api/demo/widget; mark one as a duplicate'
+  error: 'docsygen: version 1.0: the page api/demo/widget is held by both /claim and /latest/api/demo/widget'
 - name: claims, a link naming the latest release by number to a hand-written page goes to the page
   partial: test/content.html
   context: {page: /linked}
   mounts: {fixtures/claims-numbered: content, fixtures/versions/layouts: layouts}
   warning: 'content: <p><a href="/latest/claim/">w</a></p>'
+- name: claims, a page that claims two items with one anchor stops the build
+  partial: test/claims.html
+  context: {}
+  mounts: {fixtures/claims-two: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: /claim claims api/demo/widget and api/demo/box, which both have the anchor "all-members"'
+- name: claims, docsygen/members shows every member with its anchor
+  partial: test/claims.html
+  context: {key: api/demo/widget, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, dup: /latest/api/demo/widget, claim: /claim, anchor: resize}
+  mounts: {fixtures/claims-members: content, fixtures/versions/layouts: layouts}
+  warning: 'claims: url=/claim/ link=/claim/#resize dup=true canonical=https://example.org/claim/ anchor=true'

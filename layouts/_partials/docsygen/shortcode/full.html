@@ -1,0 +1,12 @@
+{{- /* A member's full form in a shortcode (docsygen/member, docsygen/members): its block
+       (docsygen/part.html), with the member's anchor on its wrapper unless the page already has
+       it: its Markdown writes the member's heading ({#anchor}), or an earlier shortcode of the page
+       took it.
+       Usage: partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id) */ -}}
+{{- $page := .shortcode.Page -}}
+{{- $anchor := index .ctx.anchors .id -}}
+{{- $taken := printf "docsygen-anchor|%s|%s" .ctx.version .id -}}
+{{- if not (or (strings.Contains $page.RawContent (printf "{#%s}" $anchor)) ($page.Store.Get $taken)) -}}
+  {{- $page.Store.Set $taken .shortcode.Ordinal -}}
+{{- end -}}
+{{- return partial "docsygen/part.html" (dict "address" (dict "type" "member" "id" .id) "ctx" .ctx "anchor" (eq ($page.Store.Get $taken) .shortcode.Ordinal)) -}}

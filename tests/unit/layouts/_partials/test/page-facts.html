@@ -1,0 +1,10 @@
+{{- /* Facts about page .page of a build case's site, as one warning: "page-facts: title=…
+       linkTitle=… canonical=<its canonical URL> menu=<the links of its version menu>
+       notice=<the link of its notice>". */ -}}
+{{- with site.GetPage .page -}}
+  {{- $menu := findRESubmatch `class="dropdown-item[^"]*"[^>]* href="([^"]*)"` (string (partial "navbar-version-selector.html" .)) -}}
+  {{- $links := slice -}}{{- range $menu -}}{{- $links = $links | append (index . 1) -}}{{- end -}}
+  {{- $notice := "" -}}
+  {{- with findRESubmatch `<a href="([^"]*)"` (string (partial "version-banner.html" .)) 1 -}}{{- $notice = index . 0 1 -}}{{- end -}}
+  {{- warnf "page-facts: title=%s linkTitle=%s canonical=%s menu=%s notice=%s" .Title .LinkTitle (partial "docsygen/canonical.html" .) (delimit $links " ") $notice -}}
+{{- end -}}
