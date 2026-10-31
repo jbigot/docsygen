@@ -15,7 +15,8 @@ Checks:
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
     (.katex*) and the highlighted code of listings (pre.docsygen-listing), on the pages of the
-    test site (those without Docsy's .td-content, whose own classes are Docsy's business);
+    test site (those that Docsy didn't lay out: without .td-content, nor a td-* class on <body>,
+    as Docsy's home and community pages have; Docsy's classes are its business);
   - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left;
   - with --links, the hrefs of PAGE's main element (a path under PUBLIC) are, in order, the list
     of EXPECTED.json.
@@ -98,7 +99,9 @@ def main(argv):
                 if inner:
                     errors.append(f'{rel}: a <p> holds a <{inner}>')
         ids[rel] = set(seen)
-        for main in ([] if htmltree.find(tree, '.td-content') else htmltree.find(tree, 'main')):
+        docsy = htmltree.find(tree, '.td-content') or any(
+            c.startswith('td-') for b in htmltree.find(tree, 'body') for c in htmltree.classes(b))
+        for main in ([] if docsy else htmltree.find(tree, 'main')):
             foreign = collections.Counter()
             foreign_classes(main, foreign)
             errors += [f'{rel}: class {x!r} appears {k} times' for x, k in sorted(foreign.items())]

@@ -34,7 +34,7 @@ if ! "$hugo" --source "$here" --config "$here/hugo.yaml,$here/pdi-layout.yaml" -
     --destination "$tmp/dev" > "$tmp/dev.log" 2>&1; then
   cat "$tmp/dev.log" >&2; exit 1
 fi
-skipped='docsygen: version "1.7" is not built here: /docs links to it as text'
+skipped='docsygen: version "1.7" is not built here: /docs/docsygen links to it as text'
 if grep -E 'WARN|ERROR' "$tmp/dev.log" | grep -vF "$skipped" >&2; then status=1; fi
 if ! grep -qF "$skipped" "$tmp/dev.log"; then echo "check-layout.sh: missing the warning: $skipped" >&2; status=1; fi
 python3 -I "$root/tests/site/check_layout.py" "$tmp/dev" "$here/layout-expected.json" --development || status=1

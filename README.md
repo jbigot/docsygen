@@ -352,10 +352,11 @@ versions: `main`, the latest release, 1.12, and an older one, 1.7
 (`exampleSite/assets/doxygen/README.md` says how each was made), in two organizations:
 
 - the whole Doxygen tree per version, under `/docs/` (`content/`): `npm run serve`;
-- PDI's own organization (`content-pdi/`), with the main page at `/about/<version>/`, the
-  narrative pages at `/guide/<version>/` (one menu entry, where PDI's own menu lists each), the
-  C API's topics at `/c-api/<version>/`, the namespaces at `/plugin-api/<version>/`, and a
-  hand-written page that claims `PDI::Array_datatype`:
+- PDI's own organization (`content-pdi/`), with PDI's home and community pages, the main page at
+  `/docs/<version>/`, which `/docs/` redirects to, the narrative pages at `/guide/<version>/`
+  (one menu entry, where PDI's own menu lists each), the C API's topics at `/c-api/<version>/`,
+  the namespaces at `/plugin-api/<version>/`, a hand-written page that claims
+  `PDI::Array_datatype`, and a page that documents docsygen, `/docs/docsygen/`:
   `npx hugo server --config hugo.yaml,pdi-layout.yaml`.
 
 From that directory, run `npx npm@11 install` first. `hugo server` builds `main` and `latest`

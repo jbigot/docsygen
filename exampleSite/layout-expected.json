@@ -7,7 +7,10 @@
     "/c-api/1.7/annotation/": "Code annotation",
     "/plugin-api/latest/": "Plugin API reference",
     "/plugin-api/latest/pdi/datatype/": "PDI::Datatype",
-    "/guide/latest/array-datatype/": "Array datatype"
+    "/guide/latest/array-datatype/": "Array datatype",
+    "/docs/latest/": "About",
+    "/docs/docsygen/": "docsygen",
+    "/community/": "Community"
   },
   "links": [
     [
@@ -39,19 +42,19 @@
       "/guide/latest/array-datatype/#datasize"
     ],
     [
-      "/docs/",
+      "/docs/docsygen/",
       "/guide/latest/installation/"
     ],
     [
-      "/docs/",
+      "/docs/docsygen/",
       "/guide/latest/array-datatype/"
     ],
     [
-      "/docs/",
+      "/docs/docsygen/",
       "/c-api/latest/annotation/#pdi_share"
     ],
     [
-      "/docs/",
+      "/docs/docsygen/",
       "/c-api/1.7/annotation/#pdi_share"
     ]
   ],
@@ -120,11 +123,11 @@
   "development": {
     "links": [
       [
-        "/docs/",
+        "/docs/docsygen/",
         "/guide/latest/installation/"
       ],
       [
-        "/docs/",
+        "/docs/docsygen/",
         "/c-api/latest/annotation/#pdi_share"
       ]
     ],
