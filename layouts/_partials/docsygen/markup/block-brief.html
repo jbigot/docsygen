@@ -1,6 +1,7 @@
 {{- /* A compound's brief at the top of its page, with its "More..." link to the detailed
        description when there is one (classdef.cpp, writeBriefDescription, writeMoreLink; and their namespacedef.cpp, filedef.cpp,
-       groupdef.cpp, conceptdef.cpp counterparts). */ -}}
+       groupdef.cpp, conceptdef.cpp counterparts). Embedded away from its page (docsygen/part.html),
+       More... links to the details on the page that holds them. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $id := .block.id -}}
@@ -14,6 +15,11 @@
 {{- end -}}
 {{- if and $brief (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception" "concept" "namespace" "file" "group") $e.kind) -}}
 <p>{{ partial "docsygen/markup/doc.html" (dict "node" $brief "ctx" $ctx "single" true) }} {{ "\n" }}
-{{- if partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" $id) }} <a href="#details">More...</a>{{ end -}}
+{{- $more := "#details" -}}
+{{- if .block.away -}}
+  {{- $url := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $id) -}}
+  {{- $more = cond (ne $url "") (printf "%s#details" $url) "" -}}
+{{- end -}}
+{{- if and $more (partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" $id)) }} <a href="{{ $more }}">More...</a>{{ end -}}
 </p>
 {{- end -}}
