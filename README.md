@@ -9,13 +9,13 @@ It reads the XML directly, from a content adapter: no tool runs between `doxygen
 
 ## Requirements
 
-- Hugo 0.169.0 or later. docsygen reads the XML with Hugo's own decoder when Hugo has its
-  document layout (gohugoio/hugo#15485, not released yet), and with its own reader otherwise,
-  with the same result.
+- Hugo branch docsygen-native from https://github.com/jbigot/hugo until its features and fixes
+  land upstream.
 - Docsy 0.18 (module `github.com/docsy/docsy/theme`), with its usual requirements: the `sass`
-  CLI on `PATH`, and Bootstrap and Font Awesome from npm.
-- Doxygen's XML output, `GENERATE_XML = YES`, from Doxygen 1.17 to 1.18 (`tests/matrix.sh`
-  tests each one).
+  CLI on `PATH`, and Bootstrap and Font Awesome from npm. This specific version is required for
+  now, supporting more recent versions as they become available is a work in progress.
+- Doxygen's XML output, `GENERATE_XML = YES`, from Doxygen >= 1.17. 1.18 is also tested, versions
+  above that might break.
 
 ## Set up a site
 
