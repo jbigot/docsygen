@@ -362,3 +362,15 @@ versions: `main`, the latest release, 1.12, and an older one, 1.7
 From that directory, run `npx npm@11 install` first. `hugo server` builds `main` and `latest`
 only (`config/development/hugo.yaml`). `exampleSite/check-docsy.sh` and
 `exampleSite/check-layout.sh` build them and check their output.
+
+## Related projects
+
+No other maintained tool brings Doxygen's XML into Hugo. Elsewhere,
+[Breathe](https://github.com/breathe-doc/breathe) renders it in Sphinx,
+[m.css](https://mcss.mosra.cz/documentation/doxygen/) as HTML, and
+[moxygen](https://github.com/sourcey/moxygen) and the archived
+[doxybook2](https://github.com/matusnovak/doxybook2) as Markdown.
+
+## Contributing
+
+How to build, test and change docsygen is in [CONTRIBUTING.md](CONTRIBUTING.md).

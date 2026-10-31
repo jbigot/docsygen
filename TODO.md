@@ -46,17 +46,40 @@ How versions combine with placements is provisional: rework it as a whole.
 
 ## C. Improve website design
 
+The design of the example site's PDI layout (`--config hugo.yaml,pdi-layout.yaml`), the draft of
+PDI's website. The whole-tree layout (`content/`) stays only as a test that keeps working: its
+pages may change slightly, and the diff of its built site before and after a change to docsygen
+that this design requires measures that change's impact.
+
 1. [ ] see if we can have a nice selector for language instead of examples in multiple language one after the other
-2. [ ] see about the brooken link in the about page
-3. [ ] remove the "Guide" page and pick its content directly
-4. [ ] frame the live examples of the docsygen page (`/docs/docsygen/`), so that what a shortcode
-   renders stands apart from the prose around it
-5. [ ] Make `/c-api/` and `/plugin-api/` docs sections (`type: docs`): they render with Docsy's
-   default layout and no list
-6. [ ] `guide/latest/array-datatype.md` claims PDI 1.12 from `latest/`: it breaks when 1.13 is the
-   latest release
-7. [ ] Check in a browser what the tests can't: the version menu's fallback, an embedded member,
+2. [ ] Organize the site in five top-menu entries, each a Docsy docs section with its own sidebar,
+   in place of Documentation, Guide, C API and Plugin API, followed by Community as today; the
+   current addresses needn't survive
+   1. [ ] "User documentation", per version, whose sidebar lists the pages "Installation", "PDI
+    usage", "Core concepts", "First steps with PDI", "PDI Examples", "Specification tree
+    Reference", "C API Reference" (what `c-api/latest/` holds today) and "FAQ", in that order
+      1. [ ] Replace the page generated from PDI's main page (`/docs/<version>/`, "About") with a
+       hand-written landing page: the main page's "C API reference" is plain text in the XML (its
+       source links Doxygen's `topics.html`), and the sidebar replaces its lists
+      2. [ ] Decide between a hand-written landing page per version and one page placed in every
+       version (with B)
+   2. [ ] "Plugins", per version, PDI's "List of PDI plugins" page, whose sidebar lists its subpages, one per
+    plugin (Decl'HDF5, Decl'NetCDF, MPI, Pycall, JSON, …)
+   3. [ ] "Plugin developer documentation", per version, whose sidebar lists "How to create a
+    plugin" and "Plugin API reference"
+   4. [ ] "Tutorial", a single page, from the latest version
+      1. [ ] Later, build it separately from PDI's tutorial repository: from a Docsy-style
+       `README.md`, or from a Doxygen-style Markdown file (for `\snippet`) whose XML is
+       generated independently of the rest of PDI
+   5. [ ] "Docsygen documentation", outside PDI's documentation, a single page for now
+3. [ ] frame the live examples of docsygen's documentation, so that what a shortcode renders
+   stands apart from the prose around it
+4. [ ] `array-datatype.md` claims PDI 1.12 from `latest/`: it breaks when 1.13 is the latest
+   release
+5. [ ] Check in a browser what the tests can't: the version menu's fallback, an embedded member,
    the claiming page
+6. [ ] Diff the whole-tree layout's built site between a baseline commit and the working tree in
+   one command, as `tests/reference.sh` does for `tests/site` (extend it, or a sibling script)
 
 ## D. Iterate on the layout of the reference
 
