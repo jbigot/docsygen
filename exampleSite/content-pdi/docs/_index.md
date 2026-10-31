@@ -1,5 +1,5 @@
 ---
-title: Documentation
+title: User documentation
 layout: redirect
 outputs: [HTML]
 sitemap:

@@ -149,7 +149,9 @@
     {{- $rootEntry := dict "path" "" -}}
     {{- range $paths.pages -}}{{- if eq .key $selected.root -}}{{- $rootEntry = . -}}{{- end -}}{{- end -}}
     {{- $project := index ((index $model.options "PROJECT_NAME") | default (slice "")) 0 -}}
-    {{- /* The pages from :version down to the placement root, the root excluded. */ -}}
+    {{- /* The pages from :version down to the placement root, the root excluded. Without Docsy's
+           list of subpages, as the placed pages: it tells a section's subpages by their file,
+           which generated pages lack, and lists those of other sections. */ -}}
     {{- $patternSegments := split (strings.Trim .path "/") "/" -}}
     {{- range $i, $_ := $segments -}}
       {{- if and (ge $i $at) (lt $i (sub (len $segments) 1)) -}}
@@ -158,7 +160,7 @@
         {{- $page := dict "path" $p "kind" "section" "type" "docs"
             "title" (cond $isVersion (strings.TrimSpace (printf "%s %s" $project $.version)) (index $segments $i))
             "linkTitle" (cond (and $isVersion $latest) (printf "latest (%s)" $.version) (cond $isVersion $.version (index $segments $i)))
-            "params" (dict "exclude_search" (not $search) "docsygen" (dict "version" $.version "release" $release
+            "params" (dict "exclude_search" (not $search) "no_list" true "docsygen" (dict "version" $.version "release" $release
               "pattern" (delimit (first (add $i 1) $patternSegments) "/"))) -}}
         {{- if $isVersion -}}{{- $page = merge $page (dict "weight" $menuWeight "params" (dict "sidebar_root_for" "self" "exclude_search" (not $search))) -}}{{- end -}}
         {{- if not $latest -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}

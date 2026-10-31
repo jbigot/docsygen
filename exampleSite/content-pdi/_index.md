@@ -24,7 +24,7 @@ inclusion as part of code-coupling, inclusion as part of an ensemble run, etc.
 
 {{% blocks/section color="white" type="row" %}}
 
-{{% blocks/feature icon="fa-lightbulb" title="Easy to use!" url="/docs/latest/" url_text="About PDI" %}}
+{{% blocks/feature icon="fa-lightbulb" title="Easy to use!" url="/docs/latest/" url_text="User documentation" %}}
 Annotate your simulation code, and get access to all libraries from simple YAML.
 {{% /blocks/feature %}}
 

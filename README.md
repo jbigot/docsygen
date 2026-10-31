@@ -228,7 +228,8 @@ a site can arrange the reference as it likes, with one call per part and version
 - The pages between the `:version` segment and a deeper root (`docs/2.1/` for
   `docs/:version/api`) are sections that docsygen adds, titled with their segment, the
   `:version` one with the project's name and the version, as a whole tree's root. They are
-  pages of their version, with its menu, notice and canonical link. The segments above
+  pages of their version, with its menu, notice and canonical link, and with no content: Docsy's
+  list of subpages finds them by their file, which generated pages lack. The segments above
   `:version` are your site's own sections (an `_index.md`), or Hugo's top-level ones.
 - Two placements of one adapter file that generate the same page stop the build, naming both.
   Calls in different adapter files can't see each other: when one adapter file is in a
@@ -270,8 +271,7 @@ and names for those pages and the pages below them:
 A duplicate is still a page of the site, but no link goes to it, it is out of the search index
 and the sitemap, and its canonical link is that of the page that holds its item. A duplicate
 takes the pages below it along: the nested classes of a class marked as a duplicate need a
-claim too, or links to them render as text. The example
-site's PDI layout does this with `content-pdi/guide/latest/array-datatype.md`.
+claim too, or links to them render as text.
 
 ## Embed the reference
 
@@ -352,11 +352,12 @@ versions: `main`, the latest release, 1.12, and an older one, 1.7
 (`exampleSite/assets/doxygen/README.md` says how each was made), in two organizations:
 
 - the whole Doxygen tree per version, under `/docs/` (`content/`): `npm run serve`;
-- PDI's own organization (`content-pdi/`), with PDI's home and community pages, the main page at
-  `/docs/<version>/`, which `/docs/` redirects to, the narrative pages at `/guide/<version>/`
-  (one menu entry, where PDI's own menu lists each), the C API's topics at `/c-api/<version>/`,
-  the namespaces at `/plugin-api/<version>/`, a hand-written page that claims
-  `PDI::Array_datatype`, and a page that documents docsygen, `/docs/docsygen/`:
+- PDI's own organization (`content-pdi/`), with PDI's home and community pages, and one menu
+  entry and sidebar per section: the user documentation at `/docs/<version>/` (the narrative
+  pages one by one and the C API's topics), the plugins at `/plugins/<version>/`, the plugin
+  developer documentation at `/plugin-dev/<version>/` (how to create a plugin, the namespaces
+  and the deprecated list), the tutorial at `/tutorial/<version>/`, from the latest release
+  only, and a page that documents docsygen, `/docs/latest/docsygen/`:
   `npx hugo server --config hugo.yaml,pdi-layout.yaml`.
 
 From that directory, run `npx npm@11 install` first. `hugo server` builds `main` and `latest`

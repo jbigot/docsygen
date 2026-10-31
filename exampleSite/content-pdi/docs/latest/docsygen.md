@@ -3,6 +3,8 @@ title: docsygen
 description: >-
   Generate the C and C++ API reference of a Docsy site from Doxygen's XML: set up, the content
   adapter, versions, links, placements, hand-written pages and shortcodes.
+type: docs
+weight: 75
 ---
 
 docsygen is a [Hugo](https://gohugo.io/) module that turns the XML output of
@@ -268,14 +270,16 @@ arranged that way, from its `content/_content.gotmpl`:
 : a page key of the whole tree (`pages`, `topics`, `api/mylib`, `pages/install`), or a compound's
   name as a `doxygen:` link writes it (`mylib::Widget`, `page:install`, `group:io`). The
   placement holds that page and every page below it, or the page alone with `children: false`.
-  `select: ""` with `children: false` places the main page alone, as [About](/docs/latest/) does
-  here. A member has no page of its own: [embed it](#embed-the-reference) instead.
+  `select: ""` with `children: false` places the main page alone. This site places PDI's pages
+  one by one: [Installation](/docs/latest/installation/) is `page:Installation` at
+  `docs/:version/installation`. A member has no page of its own: [embed it](#embed-the-reference)
+  instead.
 
 `path`
 : a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
   `docs/:version/api`. The placed pages keep their place below the selected one. The pages
-  between the `:version` segment and a deeper root are sections that docsygen adds; the segments
-  above it are your site's own sections.
+  between the `:version` segment and a deeper root are sections that docsygen adds, with no
+  content; the segments above it are your site's own sections.
 
 Titles
 : The placement's root keeps the selected page's title unless `title` or `linkTitle` are given. A
@@ -291,8 +295,7 @@ below another's, they must not generate the same paths.
 ## Hand a page over
 
 A hand-written page can be the page of an item in one version, in place of the generated one:
-links to the item, and to its members, then go to it. It claims the item in its front matter, as
-this site's [Array datatype](/guide/latest/array-datatype/) page does:
+links to the item, and to its members, then go to it. It claims the item in its front matter:
 
 ```yaml
 ---

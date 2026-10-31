@@ -1,146 +1,165 @@
 {
   "pages": {
-    "/guide/latest/": "Pages",
-    "/guide/main/": "Pages",
-    "/guide/1.7/installation/": "Installation of PDI",
-    "/c-api/latest/": "C API Reference",
-    "/c-api/1.7/annotation/": "Code annotation",
-    "/plugin-api/latest/": "Plugin API reference",
-    "/plugin-api/latest/pdi/datatype/": "PDI::Datatype",
-    "/guide/latest/array-datatype/": "Array datatype",
-    "/docs/latest/": "About",
-    "/docs/docsygen/": "docsygen",
-    "/community/": "Community"
+    "/docs/latest/": "PDI 1.12",
+    "/docs/main/": "PDI main",
+    "/docs/1.7/installation/": "Installation of PDI",
+    "/docs/latest/c-api/": "C API Reference",
+    "/docs/1.7/c-api/annotation/": "Code annotation",
+    "/plugins/latest/": "Plugins",
+    "/plugins/latest/trace_plugin/": "Trace plugin",
+    "/plugin-dev/latest/how_to_create_plugin/": "How to create a plugin",
+    "/plugin-dev/latest/api/": "Plugin API reference",
+    "/plugin-dev/latest/api/pdi/datatype/": "PDI::Datatype",
+    "/tutorial/latest/": "Hands-on tutorial",
+    "/docs/latest/docsygen/": "docsygen",
+    "/community/": "Community",
+    "/plugin-dev/latest/api/deprecated/": "Deprecated List"
   },
   "links": [
     [
-      "/guide/latest/first_steps/",
-      "/guide/latest/plugins/trace_plugin/"
+      "/docs/latest/first_steps/",
+      "/plugins/latest/trace_plugin/"
     ],
     [
-      "/guide/1.7/installation/",
-      "/guide/1.7/installation/source_installation/"
+      "/docs/1.7/installation/",
+      "/docs/1.7/installation/source_installation/"
     ],
     [
-      "/c-api/latest/annotation/",
-      "/c-api/latest/annotation/#pdi_share"
+      "/docs/latest/c-api/annotation/",
+      "/docs/latest/c-api/annotation/#pdi_share"
     ],
     [
-      "/plugin-api/1.7/pdi/datatype/",
-      "/plugin-api/1.7/pdi/datatype/#datatype"
+      "/plugin-dev/1.7/api/pdi/datatype/",
+      "/plugin-dev/1.7/api/pdi/datatype/#datatype"
     ],
     [
-      "/guide/latest/deprecated/",
-      "/plugin-api/latest/pdi/#datatype_template_ptr"
+      "/plugin-dev/latest/api/deprecated/",
+      "/plugin-dev/latest/api/pdi/#datatype_template_ptr"
     ],
     [
-      "/guide/latest/concepts/",
-      "/c-api/latest/annotation/#pdi_event"
+      "/docs/latest/c-api/error/",
+      "/plugin-dev/latest/api/deprecated/#_deprecated000001"
     ],
     [
-      "/plugin-api/latest/pdi/datatype/",
-      "/guide/latest/array-datatype/#datasize"
+      "/docs/latest/concepts/",
+      "/docs/latest/c-api/annotation/#pdi_event"
     ],
     [
-      "/docs/docsygen/",
-      "/guide/latest/installation/"
+      "/plugin-dev/latest/api/pdi/datatype/",
+      "/plugin-dev/latest/api/pdi/array_datatype/#datasize"
     ],
     [
-      "/docs/docsygen/",
-      "/guide/latest/array-datatype/"
+      "/plugins/latest/",
+      "/plugin-dev/latest/how_to_create_plugin/"
     ],
     [
-      "/docs/docsygen/",
-      "/c-api/latest/annotation/#pdi_share"
+      "/plugins/1.7/",
+      "/plugin-dev/1.7/how_to_create_plugin/"
     ],
     [
-      "/docs/docsygen/",
-      "/c-api/1.7/annotation/#pdi_share"
+      "/docs/latest/pdi_example/",
+      "/tutorial/latest/"
+    ],
+    [
+      "/docs/latest/docsygen/",
+      "/docs/latest/installation/"
+    ],
+    [
+      "/docs/latest/docsygen/",
+      "/plugin-dev/latest/api/pdi/array_datatype/"
+    ],
+    [
+      "/docs/latest/docsygen/",
+      "/docs/latest/c-api/annotation/#pdi_share"
+    ],
+    [
+      "/docs/latest/docsygen/",
+      "/docs/1.7/c-api/annotation/#pdi_share"
     ]
   ],
   "menu": {
-    "/guide/main/plugins/serialize_plugin/": [
+    "/plugins/main/serialize_plugin/": [
       [
         "main",
-        "/guide/main/plugins/serialize_plugin/",
+        "/plugins/main/serialize_plugin/",
         "active"
       ],
       [
         "latest (1.12)",
-        "/guide/latest/plugins/"
+        "/plugins/latest/"
       ],
       [
         "1.7",
-        "/guide/1.7/plugins/"
+        "/plugins/1.7/"
       ]
     ],
-    "/guide/latest/array-datatype/": [
+    "/plugin-dev/latest/api/pdi/array_datatype/": [
       [
         "main",
-        "/plugin-api/main/pdi/array_datatype/"
+        "/plugin-dev/main/api/pdi/array_datatype/"
       ],
       [
         "latest (1.12)",
-        "/guide/latest/array-datatype/",
+        "/plugin-dev/latest/api/pdi/array_datatype/",
         "active"
       ],
       [
         "1.7",
-        "/plugin-api/1.7/pdi/array_datatype/"
+        "/plugin-dev/1.7/api/pdi/array_datatype/"
       ]
     ],
-    "/plugin-api/1.7/pdi/datatype/": [
+    "/plugin-dev/1.7/api/pdi/datatype/": [
       [
         "main",
-        "/plugin-api/main/pdi/datatype/"
+        "/plugin-dev/main/api/pdi/datatype/"
       ],
       [
         "latest (1.12)",
-        "/plugin-api/latest/pdi/datatype/"
+        "/plugin-dev/latest/api/pdi/datatype/"
       ],
       [
         "1.7",
-        "/plugin-api/1.7/pdi/datatype/",
+        "/plugin-dev/1.7/api/pdi/datatype/",
         "active"
       ]
     ],
-    "/c-api/main/": [
+    "/docs/main/": [
       [
         "main",
-        "/c-api/main/",
+        "/docs/main/",
         "active"
       ],
       [
         "latest (1.12)",
-        "/c-api/latest/"
+        "/docs/latest/"
       ],
       [
         "1.7",
-        "/c-api/1.7/"
+        "/docs/1.7/"
       ]
     ]
   },
   "development": {
     "links": [
       [
-        "/docs/docsygen/",
-        "/guide/latest/installation/"
+        "/docs/latest/docsygen/",
+        "/docs/latest/installation/"
       ],
       [
-        "/docs/docsygen/",
-        "/c-api/latest/annotation/#pdi_share"
+        "/docs/latest/docsygen/",
+        "/docs/latest/c-api/annotation/#pdi_share"
       ]
     ],
     "menu": {
-      "/guide/main/plugins/serialize_plugin/": [
+      "/plugins/main/serialize_plugin/": [
         [
           "main",
-          "/guide/main/plugins/serialize_plugin/",
+          "/plugins/main/serialize_plugin/",
           "active"
         ],
         [
           "latest (1.12)",
-          "/guide/latest/plugins/"
+          "/plugins/latest/"
         ]
       ]
     }

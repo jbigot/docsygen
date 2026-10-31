@@ -1,8 +1,10 @@
 # The example site in PDI's own organization: hugo --config hugo.yaml,pdi-layout.yaml. Four
-# placements per version (content-pdi/): the main page at /docs/<version>/, which /docs/
-# redirects to, the narrative pages at /guide/<version>/, the C API's topics at /c-api/<version>/
-# and the namespaces at /plugin-api/<version>/. PDI's own menu lists each narrative page; here
-# they share the Guide entry, and its sidebar. /docs/docsygen/ documents docsygen. The home and community pages come from PDI's new-site
+# top-menu entries, each a docs section with its own sidebar (content-pdi/): the user
+# documentation at /docs/<version>/ (the guide's pages, the C API, and in the latest version a
+# page that documents docsygen), the plugins at /plugins/<version>/, the plugin developer
+# documentation at /plugin-dev/<version>/ (how to create a plugin, the plugin API and the
+# deprecated list), and the tutorial at /tutorial/<version>/, from the latest release only. Each
+# section redirects to its latest version. The home and community pages come from PDI's new-site
 # (github.com/pdidev/new-site), with the community's links in params.links, which Docsy's footer
 # shows too.
 title: PDI
@@ -15,16 +17,16 @@ markup:
 menu:
   main:
     - name: Documentation
-      pageRef: /docs/
+      pageRef: /docs/latest/
       weight: 10
-    - name: Guide
-      pageRef: /guide/latest/
+    - name: Plugins
+      pageRef: /plugins/latest/
       weight: 20
-    - name: C API
-      pageRef: /c-api/latest/
+    - name: Tutorial
+      pageRef: /tutorial/latest/
       weight: 30
-    - name: Plugin API
-      pageRef: /plugin-api/latest/
+    - name: Plugin dev.
+      pageRef: /plugin-dev/latest/
       weight: 40
     - name: Community
       pageRef: /community/

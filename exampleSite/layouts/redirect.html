@@ -1,5 +1,6 @@
 {{- /* A page that redirects to the page params.redirect names, as Hugo's alias pages do: in
-       content-pdi/, /docs/ redirects to /docs/latest/, the latest version of PDI's main page. */ -}}
+       content-pdi/, each section of PDI's documentation redirects to its latest version: /user/
+       to /user/latest/. */ -}}
 {{- $to := site.GetPage .Params.redirect -}}
 {{- if not $to -}}{{- errorf "%s: params.redirect names no page: %q" .Path .Params.redirect -}}{{- end -}}
 <!DOCTYPE html>
