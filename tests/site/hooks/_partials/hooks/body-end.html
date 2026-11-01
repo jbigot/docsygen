@@ -1,0 +1,18 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Test-only Docsy hook, mounted by tests/site/check_built.sh's callers (doc/check.sh,
+       exampleSite/check.sh, tests/docsy/check.sh): each version root publishes its paths.json
+       (/docs/main/paths.json), as tests/site/layouts/home.html does for the test site. */ -}}
+{{- if .Params.docsygen.root -}}
+  {{- $ctx := partial "docsygen/ctx.html" . -}}
+  {{- $root := . -}}
+  {{- $pages := newScratch -}}
+  {{- $pages.Set "m" dict -}}
+  {{- range $ctx.paths.pages -}}
+    {{- $page := cond (eq .path "") $root ($root.GetPage .path) -}}
+    {{- $pages.SetInMap "m" .key (dict "url" $page.RelPermalink "roles" .roles) -}}
+  {{- end -}}
+  {{- $_ := (resources.FromString (path.Join $root.Path "paths.json") (jsonify (dict "pages" ($pages.Get "m") "targets" $ctx.paths.targets "anchors" $ctx.paths.anchors))).Publish -}}
+{{- end -}}
