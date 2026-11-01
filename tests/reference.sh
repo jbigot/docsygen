@@ -5,7 +5,9 @@
 # the module of a reference revision and with the working tree's, and report what changed.
 #
 # Usage: [REF=REVISION] [REFERENCE_OUT=DIR] sh tests/reference.sh [--strict] [NAME ...]
-#   NAME      sample, sample-c, pdi, unknown-kind or versions (default: all)
+#   NAME      sample, sample-c, pdi, unknown-kind, versions or versions-mixed (default: all), as
+#             tests/site/run.sh; those whose XML doesn't depend on the Doxygen version (pdi,
+#             unknown-kind, versions-mixed) are built with the last one only
 #   REF       the revision whose output is the reference (default HEAD: the working tree against
 #             the last commit; REF=main for a branch)
 #   REFERENCE_OUT  where the reports go (default /var/tmp/docsygen-reference)
@@ -25,7 +27,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
 strict=
 if [ "${1:-}" = --strict ]; then strict=1; shift; fi
-[ $# -gt 0 ] || set -- sample sample-c pdi unknown-kind versions
+[ $# -gt 0 ] || set -- sample sample-c pdi unknown-kind versions versions-mixed
 ref=${REF:-HEAD}
 out=${REFERENCE_OUT:-/var/tmp/docsygen-reference}
 doxygens=${REFERENCE_DOXYGENS:-"1.17.0 1.18.0"}
@@ -36,17 +38,22 @@ mkdir -p "$out"
 site=$root/tests/site
 
 status=0
+last=${doxygens##* }
 for v in $doxygens; do
   DOXYGEN=$(doxygen_bin "$v") || { status=1; continue; }
   export DOXYGEN
   for name; do
+    case $name in pdi | unknown-kind | versions-mixed) [ "$v" = "$last" ] || continue ;; esac
     next= content=content
     case $name in
       unknown-kind) xml=$root/tests/unit/fixtures/unknown-kind ;;
-      versions)
+      versions | versions-mixed)
         content=content-versions
         if ! dir=$(corpus sample-next); then status=1; continue; fi; next=$dir/xml
-        if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml ;;
+        if [ "$name" = versions-mixed ]; then
+          if ! dir=$(DOXYGEN=$(doxygen_bin 1.17.0) && corpus sample); then status=1; continue; fi
+        elif ! dir=$(corpus sample); then status=1; continue; fi
+        xml=$dir/xml ;;
       *) if ! dir=$(corpus "$name"); then status=1; continue; fi; xml=$dir/xml ;;
     esac
     if [ ! -d "$tmp/base/tests/site/$content" ]; then
