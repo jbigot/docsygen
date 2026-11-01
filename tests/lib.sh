@@ -9,7 +9,7 @@
 # and exports DOXYGEN, the Doxygen binary of the corpus: DOXYGEN, else Doxygen 1.18.0, downloaded
 # once into /var/tmp/docsygen-matrix (doxygen_bin); and DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
 # for a released Hugo), which picks the unit cases that have a hugo key.
-# It defines fetch, doxygen_bin, native_hugo, corpus and site_config, below.
+# It defines fetch, doxygen_bin, native_hugo, corpus, reader_version and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
@@ -94,6 +94,11 @@ corpus() {
   printf '%s\n' "$dir"
 }
 
+# reader_version: print the version of github.com/jbigot/hugo-xml-document that go.mod requires.
+reader_version() {
+  sed -n 's#^\(require\)\{0,1\}[[:space:]]*github.com/jbigot/hugo-xml-document \(v[^ ]*\).*#\2#p' "$root/go.mod" | head -n 1
+}
+
 # site_config FILE [SOURCE=TARGET ...]: write to FILE the module configuration of a test site
 # that imports docsygen from this repository, as a site imports a module: its go.mod replaces docsygen
 # by the tree and requires the published reader module (go.sum: the repository's). Each SOURCE (absolute,
@@ -107,9 +112,9 @@ corpus() {
 site_config() {
   config=$1; shift
   # The site's go.mod, like the example site's: docsygen is this repository (or DOCSYGEN_MODULE),
-  # and its reader module the published one.
-  printf 'module test\n\ngo 1.12\n\nrequire (\n\tgithub.com/jbigot/docsygen v0.0.0\n\tgithub.com/jbigot/hugo-xml-document v0.0.1\n)\n\nreplace github.com/jbigot/docsygen => %s\n' \
-    "${DOCSYGEN_MODULE:-$root}" > "$(dirname "$config")/go.mod"
+  # and its reader module the published one that go.mod requires.
+  printf 'module test\n\ngo %s\n\nrequire (\n\tgithub.com/jbigot/docsygen v0.0.0\n\tgithub.com/jbigot/hugo-xml-document %s\n)\n\nreplace github.com/jbigot/docsygen => %s\n' \
+    "$(sed -n 's/^go //p' "$root/go.mod")" "$(reader_version)" "${DOCSYGEN_MODULE:-$root}" > "$(dirname "$config")/go.mod"
   cp "$root/go.sum" "$(dirname "$config")/go.sum"
   if [ "${DOCSYGEN_READER:-}" = template ]; then set -- "$root/tests/reader-template/layouts=layouts" "$@"; fi
   {
