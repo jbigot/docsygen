@@ -1,0 +1,10 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* main and 2.0, the latest release (at /docs/latest/, with redirects from /docs/2.0/), from
+       sample-next, and 1.0 from the sample: io.hpp only in 1.0, demo::Extra only in 2.0 and main.
+       0.9 is placed apart, by another adapter file (archive/_content.gotmpl). */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/next" "version" "main" "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/next" "version" "2.0" "path" ":version" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" ":version") -}}

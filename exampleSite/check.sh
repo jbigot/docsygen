@@ -31,5 +31,5 @@ status=0
 # `if site.IsDefault` of the template in Hugo's documentation that it adapts.
 redirects='WARN  Duplicate target paths: /_redirects (3)'
 if grep -E 'WARN|ERROR' "$tmp/log" | grep -vxF "$redirects" >&2; then status=1; fi
-sh "$root/tests/site/check_built.sh" "$tmp/public" "$here/assets/doxygen/sample" /docs/api/latest/ docs/api || status=1
+sh "$root/tests/site/check_built.sh" "$tmp/public" "$here/assets/doxygen/sample" /docs/api/latest/ --under docs/api || status=1
 exit $status

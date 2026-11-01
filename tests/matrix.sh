@@ -8,7 +8,8 @@
 # Usage: sh tests/matrix.sh
 # For each Doxygen version (DOXYGEN set to it) and each Hugo (HUGO, and DOCSYGEN_HUGO_KIND, native
 # or release): tests/site/run.sh, which builds every corpus entry; coverage.py once per Doxygen
-# version, on the sample's XML, and tests/unit/run.sh once per Hugo, with the latest Doxygen.
+# version, on the sample's XML; and once per Hugo, with the latest Doxygen, tests/unit/run.sh and
+# the Docsy sites: doc/check.sh, exampleSite/check.sh and tests/docsy/check.sh.
 # The release binaries are downloaded once into the kept cache /var/tmp/docsygen-matrix.
 # Exit 1 on any failure.
 set -eu
@@ -46,7 +47,10 @@ for kind in native release; do
   case $kind in native) HUGO=$fork ;; release) HUGO=$hugo_release ;; esac
   DOCSYGEN_HUGO_KIND=$kind
   export HUGO DOCSYGEN_HUGO_KIND
-  printf '=== unit, Hugo %s\n' "$kind"
+  printf '=== unit and Docsy sites, Hugo %s\n' "$kind"
   sh "$root/tests/unit/run.sh" || fail "Hugo $kind: unit"
+  sh "$root/doc/check.sh" || fail "Hugo $kind: doc"
+  sh "$root/exampleSite/check.sh" || fail "Hugo $kind: example"
+  sh "$root/tests/docsy/check.sh" || fail "Hugo $kind: docsy"
 done
 exit $status

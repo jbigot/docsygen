@@ -1,0 +1,15 @@
+[
+  {"page": "/", "menu": [], "canonical": null, "notice": null},
+  {"page": "/docs/", "menu": [], "canonical": null, "notice": null},
+  {"page": "/docs/guide/", "menu": [], "canonical": null, "notice": null},
+  {"page": "/archive/", "menu": [], "canonical": null, "notice": null},
+  {"page": "/docs/latest/", "menu": [["main", "/docs/main/"], ["latest (2.0)", "/docs/latest/", "active"], ["1.0", "/docs/1.0/"], ["0.9", "/archive/0.9/"]], "canonical": "https://example.org/docs/latest/", "notice": null},
+  {"page": "/docs/main/", "menu": [["main", "/docs/main/", "active"], ["latest (2.0)", "/docs/latest/"], ["1.0", "/docs/1.0/"], ["0.9", "/archive/0.9/"]], "canonical": "https://example.org/docs/latest/", "notice": ["main", "/docs/latest/"]},
+  {"page": "/docs/1.0/", "menu": [["main", "/docs/main/"], ["latest (2.0)", "/docs/latest/"], ["1.0", "/docs/1.0/", "active"], ["0.9", "/archive/0.9/"]], "canonical": "https://example.org/docs/latest/", "notice": ["older", "/docs/latest/"]},
+  {"page": "/archive/0.9/", "menu": [["main", "/docs/main/"], ["latest (2.0)", "/docs/latest/"], ["1.0", "/docs/1.0/"], ["0.9", "/archive/0.9/", "active"]], "canonical": "https://example.org/docs/latest/", "notice": ["older", "/docs/latest/"]},
+  {"page": "/docs/latest/api/demo/widget/", "menu": [["main", "/docs/main/api/demo/widget/"], ["latest (2.0)", "/docs/latest/api/demo/widget/", "active"], ["1.0", "/docs/1.0/api/demo/widget/"], ["0.9", "/archive/0.9/api/demo/widget/"]], "canonical": "https://example.org/docs/latest/api/demo/widget/", "notice": null},
+  {"page": "/archive/0.9/api/demo/widget/", "menu": [["main", "/docs/main/api/demo/widget/"], ["latest (2.0)", "/docs/latest/api/demo/widget/"], ["1.0", "/docs/1.0/api/demo/widget/"], ["0.9", "/archive/0.9/api/demo/widget/", "active"]], "canonical": "https://example.org/docs/latest/api/demo/widget/", "notice": ["older", "/docs/latest/api/demo/widget/"]},
+  {"page": "/docs/latest/api/demo/extra/", "menu": [["main", "/docs/main/api/demo/extra/"], ["latest (2.0)", "/docs/latest/api/demo/extra/", "active"], ["1.0", "/docs/1.0/api/demo/"], ["0.9", "/archive/0.9/"]], "canonical": "https://example.org/docs/latest/api/demo/extra/", "notice": null},
+  {"page": "/docs/latest/files/next/extra-hpp/", "menu": [["main", "/docs/main/files/next/extra-hpp/"], ["latest (2.0)", "/docs/latest/files/next/extra-hpp/", "active"], ["1.0", "/docs/1.0/files/"], ["0.9", "/archive/0.9/"]], "canonical": "https://example.org/docs/latest/files/next/extra-hpp/", "notice": null},
+  {"page": "/docs/1.0/files/cxx/demo/io-hpp/", "menu": [["main", "/docs/main/files/"], ["latest (2.0)", "/docs/latest/files/"], ["1.0", "/docs/1.0/files/cxx/demo/io-hpp/", "active"], ["0.9", "/archive/0.9/files/cxx/demo/io-hpp/"]], "canonical": "https://example.org/docs/1.0/files/cxx/demo/io-hpp/", "notice": ["older", "/docs/latest/files/"]}
+]

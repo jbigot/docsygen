@@ -1,0 +1,8 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* 0.9, from the sample, at /archive/0.9/: another adapter file than the other versions', which
+       it can't see (the registry of versions joins them at render time), and another place, where
+       their paths don't lead (docsygen/versions/fallback.html). */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "0.9" "path" ":version") -}}

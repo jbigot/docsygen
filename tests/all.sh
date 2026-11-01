@@ -32,6 +32,7 @@ run unit sh tests/unit/run.sh
 run site sh tests/site/run.sh
 run doc sh doc/check.sh
 run example sh exampleSite/check.sh
+run docsy sh tests/docsy/check.sh
 run reference sh tests/reference.sh
 run reader-diff sh tests/reader-diff.sh
 echo "all.sh: OK"
