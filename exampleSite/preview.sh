@@ -98,7 +98,9 @@ fi
 printf 'params:\n  ui:\n    sidebar_menu_compact: true\n    sidebar_root_enabled: true\n' > "$cfg/preview.yaml"
 
 cd "$site"
-export HUGO_MODULE_REPLACEMENTS="github.com/jbigot/docsygen -> $work,github.com/docsy/docsy/theme -> $cache/docsy-$docsy/theme"
+# hugo-xml-document is not published yet: its sibling checkout (XMLDOC_SRC).
+xmldoc=${XMLDOC_SRC:-$(dirname "$(dirname "$(cd "$repo" && cd "$(git rev-parse --git-common-dir)" && pwd)")")/hugo-xml-document}
+export HUGO_MODULE_REPLACEMENTS="github.com/jbigot/docsygen -> $work,github.com/jbigot/hugo-xml-document -> $xmldoc,github.com/docsy/docsy/theme -> $cache/docsy-$docsy/theme"
 export PATH="$site/node_modules/.bin:$PATH"
 echo "preview.sh: $short, $layout layout, at http://localhost:$port$start" >&2
 exec hugo server --config "$configs" --bind 127.0.0.1 --port "$port" --renderToMemory --disableFastRender

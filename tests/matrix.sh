@@ -4,7 +4,7 @@
 # Run the test suites against each supported Doxygen version and against the module's minimum Hugo.
 #
 # Usage: sh tests/matrix.sh
-# Per Doxygen version (DOXYGEN set to it): coverage.py on the sample's XML, tests/xml-parse/run.sh,
+# Per Doxygen version (DOXYGEN set to it): coverage.py on the sample's XML,
 # tests/site/run.sh and tests/oracle/run.sh info on sample and sample-c.
 # With the Hugo of module.hugoVersion.min in hugo.yaml, the latest release (HUGO set to it, and
 # DOCSYGEN_HUGO_KIND to release): tests/unit/run.sh and tests/site/run.sh, where docsygen reads
@@ -32,7 +32,6 @@ for v in $doxygens; do
   "$DOXYGEN" --version
   sh "$root/tests/oracle/generate.sh" sample "$tmp/$v/sample" || fail "$v: sample oracle"
   python3 -I "$root/tests/sample/coverage.py" "$tmp/$v/sample/xml" || fail "$v: coverage.py"
-  sh "$root/tests/xml-parse/run.sh" || fail "$v: xml-parse"
   sh "$root/tests/site/run.sh" sample sample-c || fail "$v: site"
   sh "$root/tests/oracle/run.sh" info sample sample-c || fail "$v: info oracle"
 done

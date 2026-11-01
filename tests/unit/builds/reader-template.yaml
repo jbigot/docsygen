@@ -11,4 +11,4 @@
   context: reader-template/second-root.xml
   hugo: native
   mounts: {../reader-template/layouts: layouts, fixtures/reader-template: reader-template}
-  error: 'xml/parse: a second root element <s>'
+  error: 'xmldoc/parse: a second root element <s>'

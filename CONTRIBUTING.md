@@ -23,7 +23,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 
 - **Hugo**: docsygen reads the XML with Hugo's native decoder, `transform.Unmarshal` with
   `targetType: document` ([gohugoio/hugo#15485](https://github.com/gohugoio/hugo/issues/15485),
-  not merged yet), when Hugo has it, and with its own template reader otherwise. The tests use the
+  not merged yet), when Hugo has it, and with the template reader of hugo-xml-document otherwise. The tests use the
   Hugo binary in `HUGO`; without it, they build Hugo with the native decoder, from the
   `docsygen-native` branch of the Hugo checkout in `HUGO_SRC` (default: `hugo/` next to this
   repository's main checkout), into `/tmp/docsygen-hugo-doc/<commit>/hugo`, in about 3 minutes.
@@ -74,7 +74,6 @@ source tree, the first time. When a build fails, run it without `--quiet`, which
   pairing Doxygen's pages with docsygen's (`tests/pairing/`). Information that the XML lacks is
   an entry of `xml-gaps.yaml`, never a guess; the rules are in `info-rules.yaml`.
 - `check-docsy`, `check-layout`: the two layouts of the example site.
-- `xml-parse`: the template reader against expat, on the corpus and edge cases.
 - `reference`: the test site against its build at the baseline commit in `tests/reference-base`;
   a change that changes the output moves the baseline.
 - `reader-diff`: everything built with both readers must be identical.
@@ -87,9 +86,10 @@ To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 
 ## Architecture
 
-- **XML reader**: templates read the XML through `partial "docsygen/xml/unmarshal.html"`, which
+- **XML reader**: templates read the XML through `partial "xmldoc/unmarshal.html"`, from the module
+  [hugo-xml-document](https://github.com/jbigot/hugo-xml-document) (tests: its own repository), which
   returns the root element as `{tag, attributes, children}`. It uses Hugo's native decoder when
-  Hugo has it, and the template reader, `docsygen/xml/parse.html`, otherwise. Both give the same
+  Hugo has it, and the template reader, `xmldoc/parse.html`, otherwise. Both give the same
   tree, and what the reader accepts, the native decoder accepts with the same tree. Trees are
   cached in `hugo.Store`, per file and checked against its hash.
 - **Model**: one model per XML directory, built once per build from `index.xml`, with an id→page

@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* Prepare a case's context. A map's keys are kept, except:
-         xml: STRING          becomes node, the string parsed with docsygen/xml/parse.html;
+         xml: STRING          becomes node, the string parsed with xmldoc/parse.html;
          model: NAME          becomes model, the model of assets/doxygen/NAME;
          ctx: {model?, links?, anchors?}  becomes ctx, as docsygen/ctx.html returns it for a
                               page, with page nil, empty maps for what is not given, and
@@ -15,7 +15,7 @@ SPDX-License-Identifier: MIT
   {{- $s.Set "m" dict -}}
   {{- range $k, $v := $c -}}
     {{- if eq $k "xml" -}}
-      {{- $s.SetInMap "m" "node" (partial "docsygen/xml/parse.html" $v) -}}
+      {{- $s.SetInMap "m" "node" (partial "xmldoc/parse.html" $v) -}}
     {{- else if eq $k "model" -}}
       {{- $s.SetInMap "m" "model" (partial "docsygen/model.html" (printf "doxygen/%s" $v)) -}}
     {{- else if eq $k "ctx" -}}

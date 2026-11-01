@@ -9,10 +9,10 @@ SPDX-License-Identifier: MIT
 {{- $s.Set "order" slice -}}
 {{- $version := "" -}}
 {{- with resources.Get (printf "%s/index.xml" $dir) -}}
-  {{- $index := partial "docsygen/xml/unmarshal.html" . -}}
+  {{- $index := partial "xmldoc/unmarshal.html" . -}}
   {{- $version = $index.attributes.version -}}
   {{- with resources.Get (printf "%s/Doxyfile.xml" $dir) -}}
-    {{- range (partial "docsygen/xml/unmarshal.html" .).children -}}
+    {{- range (partial "xmldoc/unmarshal.html" .).children -}}
       {{- if and (reflect.IsMap .) (eq .tag "option") -}}
         {{- $values := slice -}}
         {{- range .children -}}
@@ -42,7 +42,7 @@ SPDX-License-Identifier: MIT
       {{- if not $res -}}
         {{- errorf "docsygen: assets/%s/index.xml lists %s, but %s.xml is missing" $dir $refid $refid -}}
       {{- else -}}
-        {{- range (partial "docsygen/xml/unmarshal.html" $res).children -}}
+        {{- range (partial "xmldoc/unmarshal.html" $res).children -}}
           {{- if and (reflect.IsMap .) (eq .tag "compounddef") -}}
             {{- $cdef := . -}}
             {{- $name := "" -}}

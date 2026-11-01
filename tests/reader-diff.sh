@@ -6,12 +6,11 @@
 #
 # Usage: sh tests/reader-diff.sh
 # The binary is the Hugo fork's docsygen-native (tests/lib.sh, native_hugo), whatever HUGO says:
-# docsygen picks the native decoder there by itself (docsygen/xml/native.html), and
+# docsygen picks the native decoder there by itself (xmldoc/native.html, of hugo-xml-document), and
 # DOCSYGEN_READER=template mounts tests/reader-template to force the template reader.
 # With each reader:
-#   1. tests/xml-parse/run.sh, then the two trees of every corpus file compared with each other;
-#   2. tests/unit/run.sh, which must pass with both;
-#   3. the Docsy test site on the sample, sample-c and pdi oracles, and the example site in its
+#   1. tests/unit/run.sh, which must pass with both;
+#   2. the Docsy test site on the sample, sample-c and pdi oracles, and the example site in its
 #      two organizations (the whole tree and PDI's layout), whose public/ directories must be
 #      identical.
 # The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go
@@ -29,23 +28,6 @@ hugo=$HUGO
 "$hugo" version
 status=0
 fail() { echo "reader-diff.sh: FAILED: $*" >&2; status=1; }
-
-echo "== xml-parse"
-for reader in template unmarshal; do
-  if ! READER=$reader TREES=$tmp/trees-$reader.json sh "$root/tests/xml-parse/run.sh" > "$tmp/xml-$reader.log" 2>&1; then
-    cat "$tmp/xml-$reader.log" >&2; fail "tests/xml-parse/run.sh with READER=$reader"
-  fi
-done
-if [ -f "$tmp/trees-template.json" ] && [ -f "$tmp/trees-unmarshal.json" ]; then
-  python3 -I - "$tmp/trees-template.json" "$tmp/trees-unmarshal.json" <<'EOF' || fail "the two readers' trees differ"
-import json, sys
-a, b = (json.load(open(p)) for p in sys.argv[1:])
-diff = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
-for k in diff: print('DIFF', k)
-print(f'{len(a) - len(diff)} of {len(a)} trees identical')
-sys.exit(1 if diff else 0)
-EOF
-fi
 
 echo "== unit"
 for reader in template native; do

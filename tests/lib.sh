@@ -9,12 +9,19 @@
 # and exports DOXYGEN, the Doxygen binary of the oracles: DOXYGEN, else Doxygen 1.18.0, downloaded
 # once into /var/tmp/docsygen-matrix (fetch); and DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
 # for a released Hugo), which picks the unit cases that have a hugo key.
+# It exports HUGO_MODULE_REPLACEMENTS, which wins over a site's module.replacements: docsygen is
+# this repository, github.com/jbigot/hugo-xml-document the sibling checkout (XMLDOC_SRC), until
+# that module is published and tagged (tests/reference.sh unsets it to import another tree).
 # It defines fetch, native_hugo, oracle and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
 tmp=$(mktemp -d)
 if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
+
+# The module docsygen imports for its XML reader: the sibling checkout of the main checkout.
+xmldoc=${XMLDOC_SRC:-$(dirname "$(dirname "$(cd "$root" && cd "$(git rev-parse --git-common-dir)" && pwd)")")/hugo-xml-document}
+export HUGO_MODULE_REPLACEMENTS="github.com/jbigot/docsygen -> $root,github.com/jbigot/hugo-xml-document -> $xmldoc${HUGO_MODULE_REPLACEMENTS:+,$HUGO_MODULE_REPLACEMENTS}"
 
 # fetch URL DIR: download and unpack the tarball at URL into DIR, unless DIR exists.
 fetch() {
@@ -102,7 +109,7 @@ site_config() {
   if [ "${DOCSYGEN_READER:-}" = template ]; then set -- "$root/tests/reader-template/layouts=layouts" "$@"; fi
   {
     printf 'module:\n'
-    printf '  replacements: "github.com/jbigot/docsygen -> %s"\n' "${DOCSYGEN_MODULE:-$root}"
+    printf '  replacements: "github.com/jbigot/docsygen -> %s,github.com/jbigot/hugo-xml-document -> %s"\n' "${DOCSYGEN_MODULE:-$root}" "$xmldoc"
     printf '  imports:\n    - path: github.com/jbigot/docsygen\n'
     if [ $# -gt 0 ]; then
       printf '  mounts:\n'

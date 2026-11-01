@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
        native decoder, and warn "reader-same: identical trees" when they agree (errorf
        otherwise). For tests/reader-template, which forces the template reader. */ -}}
 {{- $r := resources.Get . -}}
-{{- $a := partial "docsygen/xml/unmarshal.html" $r -}}
+{{- $a := partial "xmldoc/unmarshal.html" $r -}}
 {{- $b := transform.Unmarshal (dict "format" "xml" "targetType" "document") $r -}}
 {{- if eq (jsonify $a) (jsonify $b) -}}
   {{- warnf "reader-same: identical trees" -}}
