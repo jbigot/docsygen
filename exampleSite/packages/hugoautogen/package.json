@@ -3,8 +3,7 @@
     "@fortawesome/fontawesome-free": "7.3.1",
     "bootstrap": "5.3.8"
   },
-  "devDependencies": {},
-  "name": "hugoautogen",
+  "name": "@docsy/hugoautogen",
   "private": true,
   "version": "0.1.0"
 }

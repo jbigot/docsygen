@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="escapes_8md" kind="file" language="Markdown">
+    <compoundname>escapes.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@page<sp/>escapes<sp/>Markdown<sp/>characters<sp/>in<sp/>a<sp/>title:<sp/>a\*b,<sp/>c\_d<sp/>and<sp/>\`e\`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">A<sp/>page<sp/>whose<sp/>title<sp/>holds<sp/>Markdown<sp/>characters.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@section<sp/>escapes-section<sp/>A<sp/>section<sp/>titled<sp/>a\*b,<sp/>[c]<sp/>and<sp/>\#d</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Its<sp/>title<sp/>holds<sp/>Markdown<sp/>characters<sp/>too.</highlight></codeline>
+    </programlisting>
+    <location file="src/pages/escapes.md"/>
+  </compounddef>
+</doxygen>

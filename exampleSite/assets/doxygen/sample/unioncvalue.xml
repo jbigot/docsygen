@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="unioncvalue" kind="union" language="C++" prot="public">
+    <compoundname>cvalue</compoundname>
+    <includes refid="cdemo_8h" local="no">cdemo.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="unioncvalue_1ac0bccc56d50d8fec7014ad033ae49120" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int cvalue::i</definition>
+        <argsstring></argsstring>
+        <name>i</name>
+        <qualifiedname>cvalue::i</qualifiedname>
+        <briefdescription>
+<para>As an integer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="25" column="7" bodyfile="src/c/cdemo.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="unioncvalue_1a893d42687cc754a1a491aaa8988e77a9" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double cvalue::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>cvalue::d</qualifiedname>
+        <briefdescription>
+<para>As a double. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="26" column="10" bodyfile="src/c/cdemo.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A value of one of several kinds. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/c/cdemo.h" line="24" column="1" bodyfile="src/c/cdemo.h" bodystart="24" bodyend="27"/>
+    <listofallmembers>
+      <member refid="unioncvalue_1a893d42687cc754a1a491aaa8988e77a9" prot="public" virt="non-virtual"><scope>cvalue</scope><name>d</name></member>
+      <member refid="unioncvalue_1ac0bccc56d50d8fec7014ad033ae49120" prot="public" virt="non-virtual"><scope>cvalue</scope><name>i</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

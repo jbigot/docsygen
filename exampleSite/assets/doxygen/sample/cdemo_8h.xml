@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="cdemo_8h" kind="file" language="C++">
+    <compoundname>cdemo.h</compoundname>
+    <innerclass refid="structcpoint" prot="public">cpoint</innerclass>
+    <innerclass refid="unioncvalue" prot="public">cvalue</innerclass>
+    <sectiondef kind="user-defined">
+      <header>Lifecycle</header>
+      <description><para>Initialization and finalization, as a member group. </para>
+</description>
+      <member refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" kind="function"><name>cdemo_init</name></member>
+      <member refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kind="function"><name>cdemo_finalize</name></member>
+    </sectiondef>
+    <sectiondef kind="define">
+      <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
+      <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <member refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kind="enum"><name>cstatus</name></member>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <member refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kind="typedef"><name>cpoint_t</name></member>
+      <member refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kind="typedef"><name>ccallback</name></member>
+    </sectiondef>
+    <sectiondef kind="var">
+      <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+    </sectiondef>
+    <briefdescription>
+<para>A C API. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>CDEMO_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CDEMO_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="structcpoint" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structcpoint" kindref="compound">cpoint</ref><sp/>{</highlight></codeline>
+<codeline lineno="19" refid="structcpoint_1afda82065080aad9d4bb3a702054ea782" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structcpoint_1afda82065080aad9d4bb3a702054ea782" kindref="member">x</ref>;<sp/></highlight></codeline>
+<codeline lineno="20" refid="structcpoint_1aad19231f082998c11e3a095cf4f877a9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structcpoint_1aad19231f082998c11e3a095cf4f877a9" kindref="member">y</ref>;<sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="unioncvalue" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">union<sp/></highlight><highlight class="normal"><ref refid="unioncvalue" kindref="compound">cvalue</ref><sp/>{</highlight></codeline>
+<codeline lineno="25" refid="unioncvalue_1ac0bccc56d50d8fec7014ad033ae49120" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="unioncvalue_1ac0bccc56d50d8fec7014ad033ae49120" kindref="member">i</ref>;<sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="26" refid="unioncvalue_1a893d42687cc754a1a491aaa8988e77a9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="unioncvalue_1a893d42687cc754a1a491aaa8988e77a9" kindref="member">d</ref>;<sp/></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kindref="member">cstatus</ref><sp/>{</highlight></codeline>
+<codeline lineno="33" refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9a7e45d0e6f63373dca1185bcda5b5449d" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9a7e45d0e6f63373dca1185bcda5b5449d" kindref="member">CSTATUS_OK</ref>,<sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="34" refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9af71846f3486bcdb644306fe7ff0d5e9e" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9af71846f3486bcdb644306fe7ff0d5e9e" kindref="member">CSTATUS_ERROR</ref>,<sp/></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structcpoint" kindref="compound">cpoint</ref><sp/><ref refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kindref="member">cpoint_t</ref>;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>int<sp/>(*<ref refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kindref="member">ccallback</ref>)(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CMAX(a,<sp/>b)<sp/>((a)<sp/>&gt;<sp/>(b)<sp/>?<sp/>(a)<sp/>:<sp/>(b))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CDEMO_VERSION<sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kindref="member">cdemo_counter</ref>;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" kindref="member">cdemo_init</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="63" refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kindref="member">cdemo_finalize</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/c/cdemo.h"/>
+  </compounddef>
+</doxygen>

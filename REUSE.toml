@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+version = 1
+SPDX-PackageName = "docsygen"
+SPDX-PackageDownloadLocation = "https://github.com/jbigot/docsygen"
+
+# exampleSite/ is docsy-example (https://github.com/docsy/docsy-example, tag v0.18.0) plus the
+# few files and changes that docsygen adds, which carry their own headers or .license files.
+# Its code and configuration are Apache-2.0 and its content CC-BY-4.0, as the site's footer says.
+[[annotations]]
+path = [
+  "exampleSite/.gitignore",
+  "exampleSite/.npmrc",
+  "exampleSite/config.yaml",
+  "exampleSite/hugo.yaml",
+  "exampleSite/package.json",
+  "exampleSite/package-lock.json",
+  "exampleSite/assets/scss/**",
+  "exampleSite/layouts/**",
+  "exampleSite/packages/**",
+  "exampleSite/static/**",
+]
+precedence = "closest"
+SPDX-FileCopyrightText = ["Docsy Authors", "2026 Julien Bigot <julien@julien-bigot.fr>"]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "exampleSite/content/**"
+precedence = "closest"
+SPDX-FileCopyrightText = ["Docsy Authors", "2026 Julien Bigot <julien@julien-bigot.fr>"]
+SPDX-License-Identifier = "CC-BY-4.0"

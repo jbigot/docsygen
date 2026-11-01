@@ -1,0 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The only docsygen call of this site: the API reference of the sample project's Doxygen XML
+       (assets/doxygen/sample), at /docs/api/latest/. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" "api/:version" "latest" true) -}}

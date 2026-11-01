@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="guide_8md" kind="file" language="Markdown">
+    <compoundname>guide.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@page<sp/>guide<sp/>The<sp/>guide</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>guide<sp/>has<sp/>sections,<sp/>an<sp/>image,<sp/>Mermaid<sp/>diagrams,<sp/>a<sp/>table<sp/>and<sp/>code,<sp/>and<sp/>a<sp/>subpage,<sp/>@subpage<sp/>details-page.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@secreflist</highlight></codeline>
+<codeline><highlight class="normal">@refitem<sp/>first-section</highlight></codeline>
+<codeline><highlight class="normal">@refitem<sp/>second-section</highlight></codeline>
+<codeline><highlight class="normal">@endsecreflist</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@section<sp/>first-section<sp/>First<sp/>section</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Some<sp/>text,<sp/>with<sp/>a<sp/>link<sp/>to<sp/>demo::Widget.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@subsection<sp/>a-subsection<sp/>A<sp/>subsection</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@image<sp/>html<sp/>diagram.png<sp/>&quot;The<sp/>diagram,<sp/>in<sp/>a<sp/>page&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@mermaid<sp/>&quot;A<sp/>flow,<sp/>in<sp/>a<sp/>page&quot;</highlight></codeline>
+<codeline><highlight class="normal">graph<sp/>LR</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>A<sp/>--&gt;<sp/>B</highlight></codeline>
+<codeline><highlight class="normal">@endmermaid</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@mermaidfile<sp/>flow.mmd<sp/>&quot;A<sp/>flow,<sp/>from<sp/>a<sp/>file&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@subsubsection<sp/>a-subsubsection<sp/>A<sp/>subsubsection</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">|<sp/>Option<sp/>|<sp/>Meaning<sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|--------|---------|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`-v`<sp/><sp/><sp/>|<sp/>verbose<sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`-q`<sp/><sp/><sp/>|<sp/>quiet<sp/><sp/><sp/>|</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@section<sp/>second-section<sp/>Second<sp/>section</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```cpp</highlight></codeline>
+<codeline><highlight class="normal">demo::Widget*<sp/>w<sp/>=<sp/>demo::make_widget();</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+    </programlisting>
+    <location file="src/pages/guide.md"/>
+  </compounddef>
+</doxygen>

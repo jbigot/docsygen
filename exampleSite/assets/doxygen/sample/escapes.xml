@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="escapes" kind="page">
+    <compoundname>escapes</compoundname>
+    <title>Markdown characters in a title: a*b, c_d and `e`</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A page whose title holds Markdown characters.</para>
+<sect1 id="escapes_1escapes-section">
+<title>A section titled a*b, [c] and #d</title><para>Its title holds Markdown characters too. </para>
+</sect1>
+    </detaileddescription>
+    <location file="src/pages/escapes.md"/>
+  </compounddef>
+</doxygen>

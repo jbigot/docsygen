@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Button" kind="class" language="C++" prot="public">
+    <compoundname>demo::Button</compoundname>
+    <basecompoundref refid="classdemo_1_1Widget" prot="public" virt="non-virtual">demo::Widget</basecompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Button_1a9e807967d37efa951202cace531f3fd6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void demo::Button::draw</definition>
+        <argsstring>() const override</argsstring>
+        <name>draw</name>
+        <qualifiedname>demo::Button::draw</qualifiedname>
+        <reimplements refid="classdemo_1_1Widget_1a431d79300208104754f388e5f57e18d0">draw</reimplements>
+        <briefdescription>
+<para>Draws the button. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="58" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classdemo_1_1Button_1a267fd51369e4aaab067f908989d50cdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::Button::press</definition>
+        <argsstring>()</argsstring>
+        <name>press</name>
+        <qualifiedname>demo::Button::press</qualifiedname>
+        <briefdescription>
+<para>Presses the button. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="60" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A widget that can be pressed. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>demo::Button</label>
+        <link refid="classdemo_1_1Button"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Widget</label>
+        <link refid="classdemo_1_1Widget"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>demo::Button</label>
+        <link refid="classdemo_1_1Button"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Widget</label>
+        <link refid="classdemo_1_1Widget"/>
+      </node>
+    </collaborationgraph>
+    <location file="src/cxx/demo/shapes.hpp" line="55" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="55" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Widget_1add87a4a871c34ce40b2e5e8ca35f9e14" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>count</name></member>
+      <member refid="classdemo_1_1Widget_1a42666e9d461341cec6ea4e1a6e39e5b2" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>default_side</name></member>
+      <member refid="classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>details</name></member>
+      <member refid="classdemo_1_1Button_1a9e807967d37efa951202cace531f3fd6" prot="public" virt="virtual"><scope>demo::Button</scope><name>draw</name></member>
+      <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>make_widget</name></member>
+      <member refid="classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>measure</name></member>
+      <member refid="classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>old_resize</name></member>
+      <member refid="classdemo_1_1Widget_1aa43e271c95527243fd7d425e75f2d089" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>operator new</name></member>
+      <member refid="classdemo_1_1Widget_1a120d0cbef27752545b762c709536b6cb" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>operator()</name></member>
+      <member refid="classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>operator&lt;</name></member>
+      <member refid="classdemo_1_1Button_1a267fd51369e4aaab067f908989d50cdb" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>press</name></member>
+      <member refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>resize</name></member>
+      <member refid="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>resize</name></member>
+      <member refid="classdemo_1_1Widget_1a20de62d183285978e7ca07da74f11fa0" prot="private" virt="non-virtual"><scope>demo::Button</scope><name>secret_</name></member>
+      <member refid="classdemo_1_1Widget_1ace6fb1a73735e7741e9e95a1c8a8bc8c" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>set_width</name></member>
+      <member refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>Widget</name></member>
+      <member refid="classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>Widget</name></member>
+      <member refid="classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>Widget</name></member>
+      <member refid="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88" prot="public" virt="non-virtual"><scope>demo::Button</scope><name>width</name></member>
+      <member refid="classdemo_1_1Widget_1af057dcfc6aca1d4c512eaee69850974c" prot="protected" virt="non-virtual"><scope>demo::Button</scope><name>width_</name></member>
+      <member refid="classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d" prot="public" virt="virtual"><scope>demo::Button</scope><name>~Widget</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

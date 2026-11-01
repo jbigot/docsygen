@@ -1,7 +1,9 @@
-# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
-# SPDX-License-Identifier: MIT
 /public
-/resources
-/node_modules
+/tmp
+resources/
+node_modules/
 .hugo_build.lock
 packages/hugoautogen/hugo_packagemeta.json
+
+# Lychee link-check cache: derived from link-cache.jsonc by lychee-norm-cache
+.lycheecache

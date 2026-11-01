@@ -50,20 +50,21 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 
 ## The example site
 
-In `exampleSite/`, run `npx npm@11 install` once, then `npm run build`; Hugo and Dart Sass come
-from npm. Run `hugo mod npm pack` again after a change to the module's npm dependencies.
+`exampleSite/` is [docsy-example](https://github.com/docsy/docsy-example) at the tag of the pinned
+Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@import
+'docsygen'` in `assets/scss/_styles_project.scss`, the sample's XML in `assets/doxygen/sample`, one
+adapter call, `content/en/docs/_content.gotmpl`, which puts its reference at `/docs/api/latest/`,
+and a link to it from the docs landing page. Besides that, `ignoreLogs` for the sample's
+`eqnarray*` formula, Hugo 0.169 in `package.json`, and Node 22 instead of 24 in `engines`. Run
+`npx npm@11 install` once, then `npm run build`; Hugo and Dart Sass come from npm. The files it
+keeps from docsy-example are Apache-2.0 (`REUSE.toml`).
 
-It renders PDI's reference from its committed XML, in three versions (`main`, 1.12 latest, 1.7),
-in two layouts:
+`sh exampleSite/check.sh` builds it and checks the links and ids of what docsygen made
+(`check.py --under docs/api`); `sh exampleSite/preview.sh [--doc] [REV] [PORT]` serves it, or
+`doc/`, from the checkout or from any revision, with Docsy and npm's packages cached.
 
-- **the whole tree** of each version (`content/`), checked by `check-docsy.sh`;
-- **PDI's layout** (`--config hugo.yaml,pdi-layout.yaml`: `content-pdi/`, `pdi-assets/`,
-  `pdi-static/`, `layouts/redirect.html`), the draft of PDI's website, checked by
-  `check-layout.sh`.
-
-`sh exampleSite/preview.sh [--pdi|--plain] [REV] [PORT]` serves either, from the checkout or
-from any revision, with Docsy and npm's packages cached. `exampleSite/generate-pdi-xml.sh`
-regenerates PDI's XML, and `exampleSite/assets/doxygen/README.md` says how each version was made.
+The draft of PDI's website, which showed the reference in PDI's own layout, lives in
+[pdi-docsygen](https://github.com/jbigot/pdi-docsygen).
 
 ## Tests
 
@@ -82,7 +83,8 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
   (`sample` as 1.0 and `sample-next` as 2.0, the latest), checked by `check.py` (links, ids,
   foreign classes) and for its redirects.
 - `doc`: the documentation site builds, its links and ids are valid (`doc/check.sh`).
-- `check-docsy`, `check-layout`: the two layouts of the example site.
+- `example`: the example site builds, and what docsygen made in it is valid
+  (`exampleSite/check.sh`).
 - `reference`: what changed since the previous commit. It builds the test site of every corpus
   entry and Doxygen version (1.17, 1.18) with the module of `REF` (default `HEAD`: the working
   tree against the last commit; `REF=main` for a branch) and with the working tree's, prints the

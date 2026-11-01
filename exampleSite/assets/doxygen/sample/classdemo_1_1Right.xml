@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Right" kind="class" language="C++" prot="public">
+    <compoundname>demo::Right</compoundname>
+    <basecompoundref refid="classdemo_1_1Shape" prot="public" virt="virtual">demo::Shape</basecompoundref>
+    <derivedcompoundref refid="classdemo_1_1Diamond" prot="public" virt="non-virtual">demo::Diamond</derivedcompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <briefdescription>
+<para>The right side of a diamond, which inherits virtually. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>demo::Diamond</label>
+        <link refid="classdemo_1_1Diamond"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>demo::Right</label>
+        <link refid="classdemo_1_1Right"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>demo::Right</label>
+        <link refid="classdemo_1_1Right"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </collaborationgraph>
+    <location file="src/cxx/demo/shapes.hpp" line="45" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="45" bodyend="45"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Shape_1acd509e4c3cd0ad6efe25e50bb1955815" prot="public" virt="pure-virtual"><scope>demo::Right</scope><name>area</name></member>
+      <member refid="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" prot="public" virt="virtual"><scope>demo::Right</scope><name>~Shape</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

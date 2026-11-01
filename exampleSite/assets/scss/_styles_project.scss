@@ -1,20 +1,25 @@
-// SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
-// SPDX-License-Identifier: MIT
-@import 'docsygen';
+/*
+Project-specific styles. For details, see:
+https://www.docsy.dev/docs/content/lookandfeel/#project-style-files
+*/
 
-// The version menu's navbar item is there only on the pages of a version: first in the navbar,
-// and pushed to its left end, its coming and going moves none of the menu's entries.
-@include media-breakpoint-up(md) {
-  .td-navbar__main {
-    flex-grow: 1;
-  }
+// Dark mode enhancements
+@import 'td/color-adjustments-dark';
+@import 'td/code-dark';
+@import 'td/gcs-search-dark';
+@import 'td/extra/buttons';
+@import 'td/extra/main-container';
 
-  .td-navbar .navbar-nav {
-    justify-content: flex-end;
-  }
+// Example of color tuning
 
-  .td-navbar__version-menu {
-    order: -1;
-    margin-inline-end: auto;
+.td-box--primary {
+  // TODO: rework the td-box--* classes so that they don't override `color`;
+  // otherwise we can't use Bootstrap's CSS variables:
+  // --bs-link-color: $color !important;
+  // --bs-link-color-rgb: red !important;
+  a {
+    color: tint-color($primary, 80%) !important;
   }
 }
+
+@import 'docsygen';

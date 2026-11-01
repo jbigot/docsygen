@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: MIT
 """Check the output of the Docsy-flavor test site.
 
-Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]
+Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json] [--under DIR]
   PUBLIC    the built site
   XMLDIR    the Doxygen XML of one version root
   ROOT_URL  that version root's URL (/ref/), where its paths.json is published
+  --under DIR  report only the errors of the pages below DIR (docs/api/), for a site that has
+  pages of its own
   XMLDIR and ROOT_URL are both - for a site whose placements hold parts of a tree: the checks of
   the roles are left out.
 Checks:
@@ -61,6 +63,10 @@ def main(argv):
     if '--links' in argv:
         i = argv.index('--links')
         links, argv = argv[i + 1:i + 3], argv[:i] + argv[i + 3:]
+    under = None
+    if '--under' in argv:
+        i = argv.index('--under')
+        under, argv = argv[i + 1].strip('/') + '/', argv[:i] + argv[i + 2:]
     public, xmldir, root_url = argv
     paths = {'pages': {}, 'targets': {}}
     if root_url != '-':
@@ -126,6 +132,8 @@ def main(argv):
             target = urllib.parse.unquote(target).lstrip('/')
             if target.endswith('/') or target == '':
                 target += 'index.html'
+            if target not in ids and os.path.isfile(os.path.join(public, target)):
+                continue  # not a page: a Markdown version, an image, a script
             if target not in ids:
                 errors.append(f'{rel}: {href} leads to no file')
             elif fragment and urllib.parse.unquote(fragment) not in ids[target]:
@@ -137,6 +145,10 @@ def main(argv):
         got = [n.attrs.get('href') for m in htmltree.find(trees[page], 'main') for n in walk(m) if n.tag == 'a' and 'href' in n.attrs]
         if got != want:
             errors.append(f'{page}: links {got} instead of {want}')
+    if under:
+        # Errors on pages outside the subtree are the site's own: only what docsygen made counts.
+        errors = [e for e in errors if e.split(': ', 1)[0].replace(os.sep, '/').startswith(under)
+                  or not e.split(': ', 1)[0].endswith('.html')]
     for e in errors:
         print(e)
     print(f'check.py: {len(trees)} files, {len(expected)} ids, {len(errors)} errors')

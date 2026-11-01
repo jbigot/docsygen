@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.18.0" xml:lang="en-US">
+  <compound refid="classdemo_1_1Box" kind="class"><name>demo::Box</name>
+    <member refid="classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2" kind="function"><name>front</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Button" kind="class"><name>demo::Button</name>
+    <member refid="classdemo_1_1Button_1a9e807967d37efa951202cace531f3fd6" kind="function"><name>draw</name></member>
+    <member refid="classdemo_1_1Button_1a267fd51369e4aaab067f908989d50cdb" kind="function"><name>press</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Circle" kind="class"><name>demo::Circle</name>
+    <member refid="classdemo_1_1Circle_1a89c2ed66a404aaee1f612b5442e2d4a4" kind="variable"><name>radius</name></member>
+    <member refid="classdemo_1_1Circle_1a6466feef87f0a41a4852aa8242a9cc91" kind="function"><name>area</name></member>
+  </compound>
+  <compound refid="structcpoint" kind="struct"><name>cpoint</name>
+    <member refid="structcpoint_1afda82065080aad9d4bb3a702054ea782" kind="variable"><name>x</name></member>
+    <member refid="structcpoint_1aad19231f082998c11e3a095cf4f877a9" kind="variable"><name>y</name></member>
+  </compound>
+  <compound refid="unioncvalue" kind="union"><name>cvalue</name>
+    <member refid="unioncvalue_1ac0bccc56d50d8fec7014ad033ae49120" kind="variable"><name>i</name></member>
+    <member refid="unioncvalue_1a893d42687cc754a1a491aaa8988e77a9" kind="variable"><name>d</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Diamond" kind="class"><name>demo::Diamond</name>
+    <member refid="classdemo_1_1Diamond_1a0d75f4129267af1d56f9b78a7bdc1e7c" kind="function"><name>area</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Escapes" kind="class"><name>demo::Escapes</name>
+    <member refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" kind="variable"><name>value</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Foo" kind="class"><name>demo::Foo</name>
+    <member refid="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" kind="variable"><name>value</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Foo_3_01int_01_4" kind="class"><name>demo::Foo&lt; int &gt;</name>
+    <member refid="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" kind="variable"><name>value</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Box_1_1Iterator" kind="class"><name>demo::Box::Iterator</name>
+    <member refid="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" kind="function"><name>operator++</name></member>
+  </compound>
+  <compound refid="classdemo_1_1LabelledCircle" kind="class"><name>demo::LabelledCircle</name>
+    <member refid="classdemo_1_1LabelledCircle_1aeb13f6d7f006ab493d34fed25866521d" kind="function"><name>label</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Left" kind="class"><name>demo::Left</name>
+  </compound>
+  <compound refid="classdemo_1_1Named" kind="class"><name>demo::Named</name>
+    <member refid="classdemo_1_1Named_1ab4419765d9c4381e94af15b5f169b775" kind="function"><name>name</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Right" kind="class"><name>demo::Right</name>
+  </compound>
+  <compound refid="classdemo_1_1Shape" kind="class"><name>demo::Shape</name>
+    <member refid="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" kind="function"><name>~Shape</name></member>
+    <member refid="classdemo_1_1Shape_1acd509e4c3cd0ad6efe25e50bb1955815" kind="function"><name>area</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Widget" kind="class"><name>demo::Widget</name>
+    <member refid="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88" kind="function"><name>width</name></member>
+    <member refid="classdemo_1_1Widget_1ace6fb1a73735e7741e9e95a1c8a8bc8c" kind="function"><name>set_width</name></member>
+    <member refid="classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68" kind="variable"><name>details</name></member>
+    <member refid="classdemo_1_1Widget_1add87a4a871c34ce40b2e5e8ca35f9e14" kind="variable"><name>count</name></member>
+    <member refid="classdemo_1_1Widget_1a42666e9d461341cec6ea4e1a6e39e5b2" kind="variable"><name>default_side</name></member>
+    <member refid="classdemo_1_1Widget_1af057dcfc6aca1d4c512eaee69850974c" kind="variable"><name>width_</name></member>
+    <member refid="classdemo_1_1Widget_1a20de62d183285978e7ca07da74f11fa0" kind="variable"><name>secret_</name></member>
+    <member refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kind="function"><name>Widget</name></member>
+    <member refid="classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788" kind="function"><name>Widget</name></member>
+    <member refid="classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9" kind="function"><name>Widget</name></member>
+    <member refid="classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d" kind="function"><name>~Widget</name></member>
+    <member refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" kind="function"><name>resize</name></member>
+    <member refid="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca" kind="function"><name>resize</name></member>
+    <member refid="classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b" kind="function"><name>operator&lt;</name></member>
+    <member refid="classdemo_1_1Widget_1a120d0cbef27752545b762c709536b6cb" kind="function"><name>operator()</name></member>
+    <member refid="classdemo_1_1Widget_1a431d79300208104754f388e5f57e18d0" kind="function"><name>draw</name></member>
+    <member refid="classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a" kind="function"><name>old_resize</name></member>
+    <member refid="classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb" kind="function"><name>measure</name></member>
+    <member refid="classdemo_1_1Widget_1aa43e271c95527243fd7d425e75f2d089" kind="function"><name>operator new</name></member>
+    <member refid="classdemo_1_1Widget_1a31c573ed6868a386739121fd5f824d4d" kind="friend"><name>peek</name></member>
+    <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kind="function"><name>make_widget</name></member>
+  </compound>
+  <compound refid="classdemo_1_1widget" kind="class"><name>demo::widget</name>
+    <member refid="classdemo_1_1widget_1a32e6a6784bd1aac1d8c78590a1db5678" kind="function"><name>resize</name></member>
+  </compound>
+  <compound refid="conceptdemo_1_1Boxable" kind="concept"><name>demo::Boxable</name>
+  </compound>
+  <compound refid="namespacedemo" kind="namespace"><name>demo</name>
+    <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966d" kind="enum"><name>Color</name></member>
+    <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4" kind="enumvalue"><name>red</name></member>
+    <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da9f27410725ab8cc8854a2769c7a516b8" kind="enumvalue"><name>green</name></member>
+    <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da48d6215903dff56238e52e8891380c8f" kind="enumvalue"><name>blue</name></member>
+    <member refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571" kind="enum"><name>Level</name></member>
+    <member refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571a160440f776dde778afe29811f753ed00" kind="enumvalue"><name>low</name></member>
+    <member refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571af98da2da86c6a46817e8cca52816be43" kind="enumvalue"><name>high</name></member>
+    <member refid="namespacedemo_1ac4647333ca0e72f254fe67592d1aff01" kind="variable"><name>version</name></member>
+    <member refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" kind="function"><name>box</name></member>
+    <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kind="function"><name>make_widget</name></member>
+  </compound>
+  <compound refid="namespacedemo_1_1_0d120023002357274100006257004322307273101100025142" kind="namespace"><name>demo::@120023002357274100006257004322307273101100025142</name>
+  </compound>
+  <compound refid="namespacedemo_1_1io" kind="namespace"><name>demo::io</name>
+    <member refid="namespacedemo_1_1io_1a10e7fd0fabbc12a3b6362af7edbc4bc8" kind="function"><name>read</name></member>
+    <member refid="namespacedemo_1_1io_1a6bffd1ec86aa3182132033cd390e8fb8" kind="function"><name>print</name></member>
+  </compound>
+  <compound refid="namespacedemo_1_1markup" kind="namespace"><name>demo::markup</name>
+    <member refid="namespacedemo_1_1markup_1a885a565860c6cc36e37b85c0d6456180" kind="function"><name>inline_elements</name></member>
+    <member refid="namespacedemo_1_1markup_1ad00395bf8ff99a80b915dcebd2cc1d76" kind="function"><name>entities</name></member>
+    <member refid="namespacedemo_1_1markup_1a2f00250de357ef48222fa010e4e664fb" kind="function"><name>lists</name></member>
+    <member refid="namespacedemo_1_1markup_1a10808638f8e7287f453f38e211f891d7" kind="function"><name>tables</name></member>
+    <member refid="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" kind="function"><name>code</name></member>
+    <member refid="namespacedemo_1_1markup_1a966d7f46b849ca8760818b383cc5ca7f" kind="function"><name>formulas</name></member>
+    <member refid="namespacedemo_1_1markup_1aa085c71b5cfccf60586f240708c6511c" kind="function"><name>images</name></member>
+    <member refid="namespacedemo_1_1markup_1add46a81111ab20fb72debb1050f5e779" kind="function"><name>headings</name></member>
+    <member refid="namespacedemo_1_1markup_1a5649ff84eaebc9119ad162ab6e091401" kind="function"><name>simplesects</name></member>
+    <member refid="namespacedemo_1_1markup_1ab554f7de61beb364bcee53c252d92e55" kind="function"><name>parameters</name></member>
+    <member refid="namespacedemo_1_1markup_1ae5067c725c4a07037b6e4560f31a5aa1" kind="function"><name>blocks</name></member>
+    <member refid="namespacedemo_1_1markup_1a9b35146a2443d942a2f4c80d5aedca8b" kind="function"><name>xrefsects</name></member>
+  </compound>
+  <compound refid="version_8hpp" kind="file"><name>version.hpp</name>
+  </compound>
+  <compound refid="cdemo_8h" kind="file"><name>cdemo.h</name>
+    <member refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" kind="function"><name>cdemo_init</name></member>
+    <member refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kind="function"><name>cdemo_finalize</name></member>
+    <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
+    <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
+    <member refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kind="enum"><name>cstatus</name></member>
+    <member refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kind="typedef"><name>cpoint_t</name></member>
+    <member refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kind="typedef"><name>ccallback</name></member>
+    <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+  </compound>
+  <compound refid="io_8hpp" kind="file"><name>io.hpp</name>
+  </compound>
+  <compound refid="markup_8hpp" kind="file"><name>markup.hpp</name>
+  </compound>
+  <compound refid="print_8hpp" kind="file"><name>print.hpp</name>
+  </compound>
+  <compound refid="shapes_8hpp" kind="file"><name>shapes.hpp</name>
+  </compound>
+  <compound refid="templates_8hpp" kind="file"><name>templates.hpp</name>
+  </compound>
+  <compound refid="widget_8hpp" kind="file"><name>widget.hpp</name>
+  </compound>
+  <compound refid="details_8md" kind="file"><name>details.md</name>
+  </compound>
+  <compound refid="escapes_8md" kind="file"><name>escapes.md</name>
+  </compound>
+  <compound refid="guide_8md" kind="file"><name>guide.md</name>
+  </compound>
+  <compound refid="mainpage_8md" kind="file"><name>mainpage.md</name>
+  </compound>
+  <compound refid="group__cdemo" kind="group"><name>cdemo</name>
+    <member refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" kind="function"><name>cdemo_init</name></member>
+    <member refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kind="function"><name>cdemo_finalize</name></member>
+    <member refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kind="enum"><name>cstatus</name></member>
+    <member refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9a7e45d0e6f63373dca1185bcda5b5449d" kind="enumvalue"><name>CSTATUS_OK</name></member>
+    <member refid="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9af71846f3486bcdb644306fe7ff0d5e9e" kind="enumvalue"><name>CSTATUS_ERROR</name></member>
+    <member refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kind="typedef"><name>cpoint_t</name></member>
+    <member refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kind="typedef"><name>ccallback</name></member>
+    <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+    <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
+    <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
+  </compound>
+  <compound refid="group__cdemo__shapes" kind="group"><name>cdemo_shapes</name>
+  </compound>
+  <compound refid="details-page" kind="page"><name>details-page</name>
+  </compound>
+  <compound refid="escapes" kind="page"><name>escapes</name>
+  </compound>
+  <compound refid="guide" kind="page"><name>guide</name>
+  </compound>
+  <compound refid="todo" kind="page"><name>todo</name>
+  </compound>
+  <compound refid="bug" kind="page"><name>bug</name>
+  </compound>
+  <compound refid="deprecated" kind="page"><name>deprecated</name>
+  </compound>
+  <compound refid="test" kind="page"><name>test</name>
+  </compound>
+  <compound refid="custom" kind="page"><name>custom</name>
+  </compound>
+  <compound refid="dir_c2fcf3be784993bb5c8f7c337d0d625f" kind="dir"><name>src/build</name>
+  </compound>
+  <compound refid="dir_3b19ecf29356981f494745fbef7e56bf" kind="dir"><name>src/c</name>
+  </compound>
+  <compound refid="dir_4d82016188416a895ada3f614aeb5dca" kind="dir"><name>src/build/gen/cxx</name>
+  </compound>
+  <compound refid="dir_52f3a1ea8ee7f72ab58fa94a51bbe91c" kind="dir"><name>src/cxx</name>
+  </compound>
+  <compound refid="dir_de8777506083871ecb05fb6179ecd9f2" kind="dir"><name>src/build/gen/cxx/demo</name>
+  </compound>
+  <compound refid="dir_b985394a626037cf28869e62212e8a28" kind="dir"><name>src/cxx/demo</name>
+  </compound>
+  <compound refid="dir_7d6d2242aaf802a8458d126c2e1becbd" kind="dir"><name>src/build/gen</name>
+  </compound>
+  <compound refid="dir_d1fc3cbd97cb772b87fa57d8dd8469cd" kind="dir"><name>src/pages</name>
+  </compound>
+  <compound refid="dir_68267d1309a1af8e8297ef4c3efbcdba" kind="dir"><name>src</name>
+  </compound>
+  <compound refid="example_8cpp-example" kind="example"><name>example.cpp</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

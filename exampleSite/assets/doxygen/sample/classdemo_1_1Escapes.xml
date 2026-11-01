@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Escapes" kind="class" language="C++" prot="public">
+    <compoundname>demo::Escapes</compoundname>
+    <includes refid="widget_8hpp" local="no">widget.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int demo::Escapes::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>demo::Escapes::value</qualifiedname>
+        <briefdescription>
+<para>A member of a class with a difficult brief. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="102" column="7" bodyfile="src/cxx/demo/widget.hpp" bodystart="102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>a*b_c [d] &lt;e&gt; <computeroutput>f</computeroutput> #g {h} </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/widget.hpp" line="99" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="99" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" prot="public" virt="non-virtual"><scope>demo::Escapes</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

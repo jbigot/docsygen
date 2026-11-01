@@ -1,39 +1,35 @@
 #!/bin/sh
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-# Serve the example site with PDI's reference, as docsygen renders it.
+# Serve the example site, or the documentation site, as docsygen renders them.
 #
-# Usage: sh exampleSite/preview.sh [--pdi|--plain] [REV] [PORT]
-#   --pdi    the example site in PDI's organization (pdi-layout.yaml, content-pdi/): the default
-#   --plain  the whole tree of PDI's reference, at /docs/main/
+# Usage: sh exampleSite/preview.sh [--doc] [REV] [PORT]
+#   --doc    the documentation site (doc/) instead of the example site (exampleSite/)
 #   REV      a revision of this repository (commit, branch, tag), built from a worktree of it;
 #            by default the checkout this script belongs to, as it is, uncommitted changes included
 #   PORT     the port of hugo server, on 127.0.0.1 (default 1313); a lone argument of up to five
 #            digits is a port, not a revision
 #
 # What can be downloaded again is cached in /tmp/docsygen-preview-cache and reused when present:
-# the Docsy release the revision's exampleSite/go.mod requires (git clone), and the example site's
-# node_modules, per package-lock.json. The rest lives in /var/tmp/docsygen-preview/<commit>: a
-# worktree of the revision, with, when it has none, a content adapter (content/docs/_content.gotmpl,
-# untracked) that renders exampleSite/assets/doxygen/pdi at /docs/main/, and the preview
-# configuration (next to the worktree, or in /var/tmp/docsygen-preview/current for the checkout).
+# the Docsy release the revision's go.mod requires (git clone), and the site's node_modules, per
+# package-lock.json. The rest lives in /var/tmp/docsygen-preview/<commit>: a worktree of the
+# revision (for the checkout itself, nothing).
 # Hugo resolves the modules through module.replacements; go downloads the reader module.
 # Remove a preview with: git worktree remove --force /var/tmp/docsygen-preview/<commit>
 set -eu
 
-layout=pdi
+layout=example
 rev=
 port=
 for arg in "$@"; do
   case $arg in
-    --pdi) layout=pdi ;;
-    --plain) layout=plain ;;
-    -*) echo "usage: preview.sh [--pdi|--plain] [REV] [PORT]" >&2; exit 1 ;;
+    --doc) layout=doc ;;
+    -*) echo "usage: preview.sh [--doc] [REV] [PORT]" >&2; exit 1 ;;
     *)
       if [ -z "$port" ] && [ -n "$rev" ]; then port=$arg
       elif [ -z "$rev" ] && [ -z "$port" ] && ! expr "$arg" : '[0-9]\{1,5\}$' > /dev/null; then rev=$arg
       elif [ -z "$port" ]; then port=$arg
-      else echo "usage: preview.sh [--pdi|--plain] [REV] [PORT]" >&2; exit 1
+      else echo "usage: preview.sh [--doc] [REV] [PORT]" >&2; exit 1
       fi ;;
   esac
 done
@@ -46,7 +42,6 @@ if [ -n "$rev" ]; then
   commit=$(git -C "$repo" rev-parse --verify "$rev^{commit}")
   short=$(printf '%s' "$commit" | cut -c1-7)
   work=/var/tmp/docsygen-preview/$short
-  cfg=$work
   # The worktree of the revision.
   git -C "$repo" worktree prune
   if [ ! -d "$work/.git" ] && [ ! -f "$work/.git" ]; then
@@ -56,10 +51,9 @@ if [ -n "$rev" ]; then
 else
   short=checkout
   work=$repo
-  cfg=/var/tmp/docsygen-preview/current
-  mkdir -p "$cfg"
 fi
 site=$work/exampleSite
+if [ "$layout" = doc ]; then site=$work/doc; fi
 
 # Docsy, at the version the example site requires.
 docsy=$(sed -n 's|^[[:space:]]*github.com/docsy/docsy/theme \(v[^ ]*\).*|\1|p' "$site/go.mod" | head -n 1)
@@ -82,31 +76,16 @@ elif [ ! -x "$site/node_modules/.bin/hugo" ]; then
   cp -a "$cache/node_modules-$lock" "$site/node_modules"
 fi
 
-# The plain layout: the reference of PDI under /docs/main/. Both: Docsy's sidebar root for it.
-if [ "$layout" = pdi ]; then
-  [ -f "$site/pdi-layout.yaml" ] || { echo "preview.sh: $short has no exampleSite/pdi-layout.yaml, use --plain" >&2; exit 1; }
-  configs=hugo.yaml,pdi-layout.yaml,$cfg/preview.yaml
-  start=/
-else
-  configs=hugo.yaml,$cfg/preview.yaml
-  start=/docs/main/
-fi
-if [ "$layout" = plain ] && [ ! -f "$site/content/docs/_content.gotmpl" ]; then
-  printf '%s\n' '{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" ":version") -}}' \
-    > "$site/content/docs/_content.gotmpl"
-fi
-printf 'params:\n  ui:\n    sidebar_menu_compact: true\n    sidebar_root_enabled: true\n' > "$cfg/preview.yaml"
-
-cd "$site"
 replacements="github.com/jbigot/docsygen -> $work,github.com/docsy/docsy/theme -> $cache/docsy-$docsy/theme"
 # Hugo wants every module of the graph replaced once one is: the revision's reader module too,
 # from Go's module cache, when it has one.
-xmldoc=$(sed -n 's/^.*github.com\/jbigot\/hugo-xml-document \(v[0-9.]*\).*$/\1/p' "$work/go.mod" | head -n 1)
+xmldoc=$(sed -n 's/^.*github.com\/jbigot\/hugo-xml-document \(v[0-9.]*\).*$/\1/p' "$site/go.mod" | head -n 1)
 if [ -n "$xmldoc" ]; then
-  xmldoc_dir=$(cd "$work" && go mod download -json "github.com/jbigot/hugo-xml-document@$xmldoc" | sed -n 's/^ *"Dir": "\(.*\)",$/\1/p')
+  xmldoc_dir=$(cd "$work" && go mod download -json "github.com/jbigot/hugo-xml-document@$xmldoc" | sed -n 's/^[[:space:]]*"Dir": "\(.*\)",$/\1/p')
   replacements="$replacements,github.com/jbigot/hugo-xml-document -> $xmldoc_dir"
 fi
 export HUGO_MODULE_REPLACEMENTS=$replacements
 export PATH="$site/node_modules/.bin:$PATH"
-echo "preview.sh: $short, $layout layout, at http://localhost:$port$start" >&2
-exec hugo server --config "$configs" --bind 127.0.0.1 --port "$port" --renderToMemory --disableFastRender
+echo "preview.sh: $short, the $layout site, at http://localhost:$port/" >&2
+cd "$site"
+exec hugo server --bind 127.0.0.1 --port "$port" --renderToMemory --disableFastRender

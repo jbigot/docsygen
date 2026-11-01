@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Box_1_1Iterator" kind="class" language="C++" prot="public">
+    <compoundname>demo::Box::Iterator</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classdemo_1_1Box_1_1Iterator" kindref="compound">Iterator</ref> &amp;</type>
+        <definition>Iterator &amp; demo::Box&lt; T, N &gt;::Iterator::operator++</definition>
+        <argsstring>()</argsstring>
+        <name>operator++</name>
+        <qualifiedname>demo::Box::Iterator::operator++</qualifiedname>
+        <briefdescription>
+<para>Moves to the next value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="19" column="14"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A nested class. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="16" column="3" bodyfile="src/cxx/demo/templates.hpp" bodystart="16" bodyend="20"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" prot="public" virt="non-virtual"><scope>demo::Box::Iterator</scope><name>operator++</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

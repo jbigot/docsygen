@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1LabelledCircle" kind="class" language="C++" prot="public">
+    <compoundname>demo::LabelledCircle</compoundname>
+    <basecompoundref refid="classdemo_1_1Circle" prot="public" virt="non-virtual">demo::Circle</basecompoundref>
+    <basecompoundref refid="classdemo_1_1Named" prot="protected" virt="non-virtual">demo::Named</basecompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1LabelledCircle_1aeb13f6d7f006ab493d34fed25866521d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * demo::LabelledCircle::label</definition>
+        <argsstring>() const</argsstring>
+        <name>label</name>
+        <qualifiedname>demo::LabelledCircle::label</qualifiedname>
+        <briefdescription>
+<para>The label. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="38" column="14"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A labelled circle, which inherits from several bases. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>demo::Circle</label>
+        <link refid="classdemo_1_1Circle"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>demo::LabelledCircle</label>
+        <link refid="classdemo_1_1LabelledCircle"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="protected-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>demo::Named</label>
+        <link refid="classdemo_1_1Named"/>
+      </node>
+      <node id="3">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>demo::Circle</label>
+        <link refid="classdemo_1_1Circle"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>demo::LabelledCircle</label>
+        <link refid="classdemo_1_1LabelledCircle"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="protected-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>demo::Named</label>
+        <link refid="classdemo_1_1Named"/>
+      </node>
+      <node id="3">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </collaborationgraph>
+    <location file="src/cxx/demo/shapes.hpp" line="35" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="35" bodyend="39"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Circle_1a6466feef87f0a41a4852aa8242a9cc91" prot="public" virt="virtual"><scope>demo::LabelledCircle</scope><name>area</name></member>
+      <member refid="classdemo_1_1LabelledCircle_1aeb13f6d7f006ab493d34fed25866521d" prot="public" virt="non-virtual"><scope>demo::LabelledCircle</scope><name>label</name></member>
+      <member refid="classdemo_1_1Named_1ab4419765d9c4381e94af15b5f169b775" prot="protected" virt="non-virtual"><scope>demo::LabelledCircle</scope><name>name</name></member>
+      <member refid="classdemo_1_1Circle_1a89c2ed66a404aaee1f612b5442e2d4a4" prot="public" virt="non-virtual"><scope>demo::LabelledCircle</scope><name>radius</name></member>
+      <member refid="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" prot="public" virt="virtual"><scope>demo::LabelledCircle</scope><name>~Shape</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

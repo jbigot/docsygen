@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Foo" kind="class" language="C++" prot="public">
+    <compoundname>demo::Foo</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" prot="public" static="no" mutable="no">
+        <type>T</type>
+        <definition>T demo::Foo&lt; T &gt;::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>demo::Foo::value</qualifiedname>
+        <briefdescription>
+<para>The value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="32" column="5" bodyfile="src/cxx/demo/templates.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class template, specialized below. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="29" column="1" bodyfile="src/cxx/demo/templates.hpp" bodystart="29" bodyend="33"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" prot="public" virt="non-virtual"><scope>demo::Foo</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

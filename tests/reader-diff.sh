@@ -10,9 +10,8 @@
 # DOCSYGEN_READER=template mounts tests/reader-template to force the template reader.
 # With each reader:
 #   1. tests/unit/run.sh, which must pass with both;
-#   2. the Docsy test site on the sample, sample-c and pdi corpus entries, and the example site in its
-#      two organizations (the whole tree and PDI's layout), whose public/ directories must be
-#      identical.
+#   2. the Docsy test site on the sample, sample-c and pdi corpus entries, the example site and the
+#      documentation site, whose public/ directories must be identical.
 # The example site needs go for its modules. Exit 1 on any difference or failure.
 set -eu
 
@@ -34,10 +33,11 @@ for reader in template native; do
   printf '%s: %s\n' "$reader" "$(tail -n 1 "$tmp/unit-$reader.log")"
 done
 
-# compare NAME: the public/ directories of $tmp/NAME-template and $tmp/NAME-native.
+# compare NAME [SUBDIR]: the public/ directories (below SUBDIR) of $tmp/NAME-template and
+# $tmp/NAME-native.
 compare() {
-  if diff -r "$tmp/$1-template/public" "$tmp/$1-native/public" > "$tmp/$1.diff"; then
-    printf '%s: %s files identical\n' "$1" "$(find "$tmp/$1-template/public" -type f | wc -l)"
+  if diff -r "$tmp/$1-template/public/${2:-}" "$tmp/$1-native/public/${2:-}" > "$tmp/$1.diff"; then
+    printf '%s: %s files identical\n' "$1" "$(find "$tmp/$1-template/public/${2:-}" -type f | wc -l)"
   else
     head -n 20 "$tmp/$1.diff" >&2; fail "$1 differs between the readers"
   fi
@@ -66,28 +66,26 @@ for name in sample sample-c pdi; do
   [ $ok -eq 0 ] || compare "site-$name"
 done
 
-# The example site as it is, in both organizations (the whole tree, and PDI's layout:
-# pdi-layout.yaml, content-pdi/), with the template reader's layouts mounted before its own.
-example=$root/exampleSite
-for org in example layout; do
-  config=$example/hugo.yaml
-  content=content
-  if [ $org = layout ]; then config=$config,$example/pdi-layout.yaml; content=content-pdi; fi
+# The example site and the documentation site as they are: a copy of each, whose layouts hold the
+# template reader's, in the template run (a site's own layouts override a module's).
+for site in exampleSite doc; do
   for reader in template native; do
-    work=$tmp/$org-$reader
+    work=$tmp/$site-$reader
     mkdir -p "$work"
-    {
-      printf 'module:\n  mounts:\n'
-      if [ "$reader" = template ]; then printf '    - {source: "%s", target: "layouts"}\n' "$root/tests/reader-template/layouts"; fi
-      printf '    - {source: "%s", target: "content"}\n' "$content"
-      for d in assets static layouts data i18n archetypes; do printf '    - {source: "%s", target: "%s"}\n' "$d" "$d"; done
-    } > "$work/mounts.yaml"
-    if ! PATH="$example/node_modules/.bin:$PATH" "$hugo" --source "$example" --config "$config,$work/mounts.yaml" \
-        --destination "$work/public" > "$work/log" 2>&1; then
-      cat "$work/log" >&2; fail "the example site ($org) with the $reader reader"
+    (cd "$root/$site" && tar -c --exclude=./node_modules --exclude=./public --exclude=./resources .) | tar -x -C "$work"
+    cp -a "$root/$site/node_modules" "$work/node_modules"
+    sed -i "s#=> \.\./\$#=> $root#" "$work/go.mod"
+    if [ "$reader" = template ]; then
+      mkdir -p "$work/layouts"
+      cp -r "$root/tests/reader-template/layouts/." "$work/layouts/"
+    fi
+    if ! PATH="$work/node_modules/.bin:$PATH" "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then
+      cat "$work/log" >&2; fail "the $site site with the $reader reader"
     fi
   done
-  compare $org
+  # The example site's own pages come out differently from one build to the next (the order of
+  # its languages' alternates, the build date): only what docsygen made counts.
+  if [ "$site" = exampleSite ]; then compare "$site" docs/api; else compare "$site"; fi
 done
 
 [ $status -eq 0 ] && echo "reader-diff.sh: OK"
