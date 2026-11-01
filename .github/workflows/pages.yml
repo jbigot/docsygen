@@ -2,22 +2,20 @@
 # SPDX-License-Identifier: MIT
 # Build the documentation site (doc/) and deploy it to GitHub Pages, as gohugo.io's "Host on
 # GitHub Pages" does, with the Hugo release and Dart Sass that npm installs (doc/package.json):
-# a released Hugo, so the site exercises the template reader.
+# a released Hugo, so the site exercises the template reader. A pull request builds the site
+# without deploying it.
 name: Documentation
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 defaults:
   run:
@@ -28,14 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: stable
           cache-dependency-path: doc/go.sum
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
       - name: Install npm dependencies (Hugo, Dart Sass, Bootstrap, Font Awesome)
@@ -44,21 +42,27 @@ jobs:
           npm install --global npm@11
           npm ci
       - name: Set up Pages
+        if: github.event_name != 'pull_request'
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Build
         working-directory: doc
         env:
           HUGO_ENVIRONMENT: production
         run: |
           export PATH="$PWD/node_modules/.bin:$PATH"
-          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url || 'https://jbigot.github.io/docsygen' }}/"
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: doc/public
 
   deploy:
+    if: github.event_name != 'pull_request'
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -67,4 +71,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

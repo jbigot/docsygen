@@ -8,7 +8,6 @@ locale: en
 ignoreLogs: [docsygen-formula]
 
 module:
-  proxy: direct
   hugoVersion:
     min: 0.169.0
   imports:
