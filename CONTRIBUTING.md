@@ -187,7 +187,8 @@ Pitfalls met so far:
 A new file carries its license in a header, as the others do: `SPDX-FileCopyrightText` and
 `SPDX-License-Identifier`, MIT unless the file comes from elsewhere, in which case it keeps its
 own. Where a header can't go (binary and JSON files, Doxygen's generated files, inputs of a test
-whose line numbers or exact bytes matter, such as `tests/sample/src/` and
-`tests/xml-parse/edge/`), a `<file>.license` holds it. In Hugo templates the header is a `{{- /* …
+whose line numbers or exact bytes matter, such as `tests/corpus/sample/src/`),
+a `<file>.license` holds it. The files copied from docsy-example, `exampleSite/`'s, are annotated
+in `REUSE.toml`. In Hugo templates the header is a `{{- /* …
 */ -}}` comment, in Markdown pages with front matter a `#` comment inside it. Check with `reuse
-lint`.
+lint` (on a copy of the tree without `node_modules/`).
