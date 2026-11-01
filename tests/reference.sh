@@ -31,8 +31,6 @@ out=${REFERENCE_OUT:-/var/tmp/docsygen-reference}
 doxygens=${REFERENCE_DOXYGENS:-"1.17.0 1.18.0"}
 git -C "$root" worktree add -q -d "$tmp/base" "$ref"
 trap 'git -C "$root" worktree remove --force "$tmp/base"; rm -rf "$tmp"' EXIT
-# The test sites import docsygen through module.replacements, which this variable overrides.
-unset HUGO_MODULE_REPLACEMENTS
 rm -rf "$out"
 mkdir -p "$out"
 site=$root/tests/site

@@ -17,7 +17,7 @@
 #   - where the versions meet Docsy's own pages, tests/site/check_example.py, on this build and
 #     on another one with a baseURL that has a path, as GitHub Pages gives a project site.
 # HUGO selects the Hugo binary (tests/lib.sh: the Hugo fork by default). Hugo needs go for its
-# modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
+# modules.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)

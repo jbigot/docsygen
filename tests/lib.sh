@@ -9,19 +9,12 @@
 # and exports DOXYGEN, the Doxygen binary of the corpus: DOXYGEN, else Doxygen 1.18.0, downloaded
 # once into /var/tmp/docsygen-matrix (doxygen_bin); and DOCSYGEN_HUGO_KIND, native unless HUGO is set (tests/matrix.sh sets it to release
 # for a released Hugo), which picks the unit cases that have a hugo key.
-# It exports HUGO_MODULE_REPLACEMENTS, which wins over a site's module.replacements: docsygen is
-# this repository, github.com/jbigot/hugo-xml-document the sibling checkout (XMLDOC_SRC), until
-# that module is published and tagged (tests/reference.sh unsets it to import another tree).
 # It defines fetch, doxygen_bin, native_hugo, corpus and site_config, below.
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
 tmp=$(mktemp -d)
 if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
-
-# The module docsygen imports for its XML reader: the sibling checkout of the main checkout.
-xmldoc=${XMLDOC_SRC:-$(dirname "$(dirname "$(cd "$root" && cd "$(git rev-parse --git-common-dir)" && pwd)")")/hugo-xml-document}
-export HUGO_MODULE_REPLACEMENTS="github.com/jbigot/docsygen -> $root,github.com/jbigot/hugo-xml-document -> $xmldoc${HUGO_MODULE_REPLACEMENTS:+,$HUGO_MODULE_REPLACEMENTS}"
 
 # fetch URL DIR: download and unpack the tarball at URL into DIR, unless DIR exists.
 fetch() {
@@ -99,7 +92,8 @@ corpus() {
 }
 
 # site_config FILE [SOURCE=TARGET ...]: write to FILE the module configuration of a test site
-# that imports docsygen from this repository, as a site imports a module. Each SOURCE (absolute,
+# that imports docsygen from this repository, as a site imports a module: its go.mod replaces docsygen
+# by the tree and requires the published reader module (go.sum: the repository's). Each SOURCE (absolute,
 # or relative to the site) is mounted at TARGET. Project mounts replace the site's default ones,
 # so a site that has its own layouts or content lists them too; a site's own mounts override
 # the module's files of the same name. Append the rest of the configuration to FILE.
@@ -109,10 +103,14 @@ corpus() {
 # the XML with the template reader even when Hugo has the native decoder (tests/reader-diff.sh).
 site_config() {
   config=$1; shift
+  # The site's go.mod, like the example site's: docsygen is this repository (or DOCSYGEN_MODULE),
+  # and its reader module the published one.
+  printf 'module test\n\ngo 1.12\n\nrequire (\n\tgithub.com/jbigot/docsygen v0.0.0\n\tgithub.com/jbigot/hugo-xml-document v0.0.1\n)\n\nreplace github.com/jbigot/docsygen => %s\n' \
+    "${DOCSYGEN_MODULE:-$root}" > "$(dirname "$config")/go.mod"
+  cp "$root/go.sum" "$(dirname "$config")/go.sum"
   if [ "${DOCSYGEN_READER:-}" = template ]; then set -- "$root/tests/reader-template/layouts=layouts" "$@"; fi
   {
     printf 'module:\n'
-    printf '  replacements: "github.com/jbigot/docsygen -> %s,github.com/jbigot/hugo-xml-document -> %s"\n' "${DOCSYGEN_MODULE:-$root}" "$xmldoc"
     printf '  imports:\n    - path: github.com/jbigot/docsygen\n'
     if [ $# -gt 0 ]; then
       printf '  mounts:\n'

@@ -17,7 +17,7 @@
 # worktree of the revision, with, when it has none, a content adapter (content/docs/_content.gotmpl,
 # untracked) that renders exampleSite/assets/doxygen/pdi at /docs/main/, and the preview
 # configuration (next to the worktree, or in /var/tmp/docsygen-preview/current for the checkout).
-# Hugo resolves the modules through module.replacements, so no go is needed.
+# Hugo resolves the modules through module.replacements; go downloads the reader module.
 # Remove a preview with: git worktree remove --force /var/tmp/docsygen-preview/<commit>
 set -eu
 
@@ -98,9 +98,15 @@ fi
 printf 'params:\n  ui:\n    sidebar_menu_compact: true\n    sidebar_root_enabled: true\n' > "$cfg/preview.yaml"
 
 cd "$site"
-# hugo-xml-document is not published yet: its sibling checkout (XMLDOC_SRC).
-xmldoc=${XMLDOC_SRC:-$(dirname "$(dirname "$(cd "$repo" && cd "$(git rev-parse --git-common-dir)" && pwd)")")/hugo-xml-document}
-export HUGO_MODULE_REPLACEMENTS="github.com/jbigot/docsygen -> $work,github.com/jbigot/hugo-xml-document -> $xmldoc,github.com/docsy/docsy/theme -> $cache/docsy-$docsy/theme"
+replacements="github.com/jbigot/docsygen -> $work,github.com/docsy/docsy/theme -> $cache/docsy-$docsy/theme"
+# Hugo wants every module of the graph replaced once one is: the revision's reader module too,
+# from Go's module cache, when it has one.
+xmldoc=$(sed -n 's/^.*github.com\/jbigot\/hugo-xml-document \(v[0-9.]*\).*$/\1/p' "$work/go.mod" | head -n 1)
+if [ -n "$xmldoc" ]; then
+  xmldoc_dir=$(cd "$work" && go mod download -json "github.com/jbigot/hugo-xml-document@$xmldoc" | sed -n 's/^ *"Dir": "\(.*\)",$/\1/p')
+  replacements="$replacements,github.com/jbigot/hugo-xml-document -> $xmldoc_dir"
+fi
+export HUGO_MODULE_REPLACEMENTS=$replacements
 export PATH="$site/node_modules/.bin:$PATH"
 echo "preview.sh: $short, $layout layout, at http://localhost:$port$start" >&2
 exec hugo server --config "$configs" --bind 127.0.0.1 --port "$port" --renderToMemory --disableFastRender

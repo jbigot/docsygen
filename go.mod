@@ -3,3 +3,5 @@
 module github.com/jbigot/docsygen
 
 go 1.12
+
+require github.com/jbigot/hugo-xml-document v0.0.1

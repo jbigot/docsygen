@@ -11,7 +11,7 @@
 # would build one version's XML only. Prints the wall time of hugo alone, the page count and the
 # size of public/; with HUGO_ARGs (--templateMetrics …), also hugo's output.
 # HUGO selects the Hugo binary (default: the npm-installed one).
-# Hugo needs go for its modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
+# Hugo needs go for its modules.
 set -eu
 
 n=${1:?usage: bench.sh N [HUGO_ARG ...]}

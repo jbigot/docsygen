@@ -12,7 +12,7 @@
 # no fixed order. A development build (config/development: main and latest) must also warn that
 # 1.7 is not built, and pass check_layout.py --development.
 # HUGO selects the Hugo binary (tests/lib.sh: the Hugo fork by default). Hugo needs go for its
-# modules, unless HUGO_MODULE_REPLACEMENTS points them at local copies.
+# modules.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)

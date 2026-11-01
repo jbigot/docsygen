@@ -13,7 +13,7 @@
 #   2. the Docsy test site on the sample, sample-c and pdi corpus entries, and the example site in its
 #      two organizations (the whole tree and PDI's layout), whose public/ directories must be
 #      identical.
-# The example site needs go or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
+# The example site needs go for its modules. Exit 1 on any difference or failure.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
