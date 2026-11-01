@@ -4,7 +4,7 @@
 # Run every suite of the standard check, in order, and stop at the first failure.
 #
 # Usage: sh tests/all.sh
-# The example site needs go for its modules. Prints one line per suite, its last line of output
+# The sites need go for their modules, and `npx npm@11 install` run in doc/ and exampleSite/. Prints one line per suite, its last line of output
 # after it; a failing suite's output is printed in full. With ALL_LOGS set to a directory, each
 # suite's output is kept there as NAME.log. Exit 1 on the first failure.
 set -eu

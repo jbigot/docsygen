@@ -69,12 +69,15 @@ done
 # The example site and the documentation site as they are: a copy of each, whose layouts hold the
 # template reader's, in the template run (a site's own layouts override a module's).
 for site in exampleSite doc; do
+  if [ ! -d "$root/$site/node_modules" ]; then
+    fail "$site has no node_modules: run npx npm@11 install in it"; continue
+  fi
   for reader in template native; do
     work=$tmp/$site-$reader
     mkdir -p "$work"
     (cd "$root/$site" && tar -c --exclude=./node_modules --exclude=./public --exclude=./resources .) | tar -x -C "$work"
     cp -a "$root/$site/node_modules" "$work/node_modules"
-    sed -i "s#=> \.\./\$#=> $root#" "$work/go.mod"
+    (cd "$work" && go mod edit -replace "github.com/jbigot/docsygen=$root")
     if [ "$reader" = template ]; then
       mkdir -p "$work/layouts"
       cp -r "$root/tests/reader-template/layouts/." "$work/layouts/"
