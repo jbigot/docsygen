@@ -30,6 +30,7 @@ run() {
 cd "$root"
 run unit sh tests/unit/run.sh
 run site sh tests/site/run.sh
+run doc sh doc/check.sh
 run check-docsy sh exampleSite/check-docsy.sh
 run check-layout sh exampleSite/check-layout.sh
 run reference sh tests/reference.sh

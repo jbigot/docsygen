@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Box" kind="class" language="C++" prot="public">
+    <compoundname>demo::Box</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <innerclass refid="classdemo_1_1Box_1_1Iterator" prot="public">demo::Box::Iterator</innerclass>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>N</declname>
+        <defname>N</defname>
+        <defval>3</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const T &amp;</type>
+        <definition>const T &amp; demo::Box&lt; T, N &gt;::front</definition>
+        <argsstring>() const</argsstring>
+        <name>front</name>
+        <qualifiedname>demo::Box::front</qualifiedname>
+        <briefdescription>
+<para>The first value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="22" column="11"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A box holding values. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the value type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>N</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the capacity </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="13" column="1" bodyfile="src/cxx/demo/templates.hpp" bodystart="13" bodyend="23"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2" prot="public" virt="non-virtual"><scope>demo::Box</scope><name>front</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

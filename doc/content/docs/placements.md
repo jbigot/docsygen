@@ -1,0 +1,46 @@
+---
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+title: Placements
+description: >-
+  Place parts of the reference anywhere in the site.
+weight: 40
+---
+
+By default a call places a version's whole tree. With `select`, it places one part of it, so that
+a site can arrange the reference as it likes, with one call per part and version. [PDI's
+website](https://pdi.dev/) is arranged that way, from its `content/_content.gotmpl`:
+
+```go-html-template
+{{- range slice (dict "dir" "doxygen/pdi" "version" "main") (dict "dir" "doxygen/pdi-1.12" "version" "1.12" "latest" true)
+    (dict "dir" "doxygen/pdi-1.7" "version" "1.7") -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "docs/:version" "select" "" "children" false "title" "About")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "c-api/:version" "select" "topics" "title" "C API Reference")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "path" "plugin-api/:version" "select" "api" "title" "Plugin API reference")) -}}
+{{- end -}}
+```
+
+`select`
+: a page key of the whole tree (`pages`, `topics`, `api/mylib`, `pages/install`), or a compound's
+  name as a `doxygen:` link writes it (`mylib::Widget`, `page:install`, `group:io`). The
+  placement holds that page and every page below it, or the page alone with `children: false`.
+  `select: ""` with `children: false` places the main page alone. PDI's website places its pages
+  one by one: its installation page is `page:Installation` at `docs/:version/installation`. A member has no page of its own: [embed it]({{< relref "embedding" >}})
+  instead.
+
+`path`
+: a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
+  `docs/:version/api`. The placed pages keep their place below the selected one. The pages
+  between the `:version` segment and a deeper root are sections that docsygen adds, with no
+  content; the segments above it are your site's own sections.
+
+Titles
+: The placement's root keeps the selected page's title unless `title` or `linkTitle` are given. A
+  root at the `:version` segment is its version's section: its menu title stays the version
+  unless `linkTitle` is given, and its weight orders it as the version menu does.
+
+{{% alert title="One page per item" color="warning" %}}
+Two placements of one adapter file that generate the same page stop the build, naming both.
+Calls in different adapter files can't see each other: when one adapter file is in a directory
+below another's, they must not generate the same paths.
+{{% /alert %}}

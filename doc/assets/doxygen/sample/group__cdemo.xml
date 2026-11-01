@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="group__cdemo" kind="group">
+    <compoundname>cdemo</compoundname>
+    <title>The C demo</title>
+    <innergroup refid="group__cdemo__shapes">Shapes</innergroup>
+    <sectiondef kind="user-defined">
+      <header>Lifecycle</header>
+      <description><para>Initialization and finalization, as a member group. </para>
+</description>
+      <memberdef kind="function" id="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int cdemo_init</definition>
+        <argsstring>(void)</argsstring>
+        <name>cdemo_init</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Initializes the library. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="61" column="5" declfile="src/c/cdemo.h" declline="61" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="group__cdemo_1ga9b34ff196787489aa77570d392fee501" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void cdemo_finalize</definition>
+        <argsstring>(void)</argsstring>
+        <name>cdemo_finalize</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Finalizes the library. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="63" column="6" declfile="src/c/cdemo.h" declline="63" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" prot="public" static="no" strong="no">
+        <type></type>
+        <name>cstatus</name>
+        <enumvalue id="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9a7e45d0e6f63373dca1185bcda5b5449d" prot="public">
+          <name>CSTATUS_OK</name>
+          <briefdescription>
+<para>Success. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="group__cdemo_1gga317deb2e01c0d6b3eae5679de58590c9af71846f3486bcdb644306fe7ff0d5e9e" prot="public">
+          <name>CSTATUS_ERROR</name>
+          <briefdescription>
+<para>Failure. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Status codes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="32" column="1" bodyfile="src/c/cdemo.h" bodystart="32" bodyend="35"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" prot="public" static="no">
+        <type>struct <ref refid="structcpoint" kindref="compound">cpoint</ref></type>
+        <definition>typedef struct cpoint cpoint_t</definition>
+        <argsstring></argsstring>
+        <name>cpoint_t</name>
+        <briefdescription>
+<para>A point, as a typedef. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="38" column="21" bodyfile="src/c/cdemo.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" prot="public" static="no">
+        <type>int(*)</type>
+        <definition>typedef int(*) ccallback(void *data, int code)</definition>
+        <argsstring>(void *data, int code)</argsstring>
+        <name>ccallback</name>
+        <briefdescription>
+<para>A callback. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the user data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the event code </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 to continue </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="45" column="9" bodyfile="src/c/cdemo.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" prot="public" static="no" extern="yes" mutable="no">
+        <type>int</type>
+        <definition>int cdemo_counter</definition>
+        <argsstring></argsstring>
+        <name>cdemo_counter</name>
+        <briefdescription>
+<para>A global counter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="54" column="12" declfile="src/c/cdemo.h" declline="54" declcolumn="12"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" prot="public" static="no">
+        <name>CMAX</name>
+        <param><defname>a</defname></param>
+        <param><defname>b</defname></param>
+        <initializer>((a) &gt; (b) ? (a) : (b))</initializer>
+        <briefdescription>
+<para>The larger of two values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="48" column="9" bodyfile="src/c/cdemo.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" prot="public" static="no">
+        <name>CDEMO_VERSION</name>
+        <initializer>3</initializer>
+        <briefdescription>
+<para>The version of the C demo. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="51" column="9" bodyfile="src/c/cdemo.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The C demo API, as a group. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

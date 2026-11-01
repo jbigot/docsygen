@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="deprecated" kind="page">
+    <compoundname>deprecated</compoundname>
+    <title>Deprecated List</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><variablelist>
+<varlistentry><term>Member <ref refid="namespacedemo_1_1markup_1a9b35146a2443d942a2f4c80d5aedca8b" kindref="member">demo::markup::xrefsects</ref>  ()</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000001"/>Deprecated. </para>
+<para></para>
+</listitem>
+<varlistentry><term>Member <ref refid="classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a" kindref="member">demo::Widget::old_resize</ref>  (int side)</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000002"/>Use <ref refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" kindref="member">resize()</ref> instead. </para>
+</listitem>
+</variablelist>
+</para>
+    </detaileddescription>
+    <location file="deprecated"/>
+  </compounddef>
+</doxygen>

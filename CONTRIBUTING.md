@@ -41,6 +41,11 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
   `layouts/_partials/docsygen/`), `assets/scss/`, `i18n/`.
 - `exampleSite/` imports Docsy and docsygen as Hugo modules, docsygen through
   `replace github.com/jbigot/docsygen => ../` in its `go.mod`.
+- `doc/`: docsygen's documentation, a Docsy site published on GitHub Pages by
+  `.github/workflows/pages.yml` (<https://jbigot.github.io/docsygen/>). It imports docsygen
+  through `replace github.com/jbigot/docsygen => ../` and renders the `sample` corpus entry's
+  committed XML (`doc/assets/doxygen/sample`, regenerated with `tests/corpus/generate.sh sample`
+  and Doxygen 1.18) as its API reference. Run `npx npm@11 install` once, then `npm run build`.
 - `tests/`: the test suites, below.
 
 ## The example site
@@ -76,6 +81,7 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
 - `site` (`tests/site/`): a test site without Docsy on each corpus entry, and on `versions`
   (`sample` as 1.0 and `sample-next` as 2.0, the latest), checked by `check.py` (links, ids,
   foreign classes) and for its redirects.
+- `doc`: the documentation site builds, its links and ids are valid (`doc/check.sh`).
 - `check-docsy`, `check-layout`: the two layouts of the example site.
 - `reference`: what changed since the previous commit. It builds the test site of every corpus
   entry and Doxygen version (1.17, 1.18) with the module of `REF` (default `HEAD`: the working

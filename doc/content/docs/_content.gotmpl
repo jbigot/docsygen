@@ -1,0 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The API reference of the sample project (tests/corpus/sample in the repository), as an
+       example of what docsygen generates, at /docs/reference/latest/. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" "reference/:version" "latest" true "linkTitle" "API reference") -}}

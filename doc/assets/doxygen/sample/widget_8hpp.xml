@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="widget_8hpp" kind="file" language="C++">
+    <compoundname>widget.hpp</compoundname>
+    <includes local="no">cstddef</includes>
+    <includedby refid="shapes_8hpp" local="yes">src/cxx/demo/shapes.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>src/cxx/demo/widget.hpp</label>
+        <link refid="widget_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>src/cxx/demo/shapes.hpp</label>
+        <link refid="shapes_8hpp"/>
+      </node>
+      <node id="1">
+        <label>src/cxx/demo/widget.hpp</label>
+        <link refid="widget_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classdemo_1_1Widget" prot="public">demo::Widget</innerclass>
+    <innerclass refid="classdemo_1_1widget" prot="public">demo::widget</innerclass>
+    <innerclass refid="classdemo_1_1Escapes" prot="public">demo::Escapes</innerclass>
+    <innernamespace refid="namespacedemo">demo</innernamespace>
+    <briefdescription>
+<para>Widgets, spelled in two cases. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacedemo" kindref="compound">demo</ref><sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="classdemo_1_1Widget" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref><sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="17" refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref>();</highlight></codeline>
+<codeline lineno="19" refid="classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788" kindref="member">Widget</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>side);</highlight></codeline>
+<codeline lineno="21" refid="classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9" kindref="member">Widget</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="23" refid="classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d" kindref="member">~Widget</ref>();</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" kindref="member">resize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>side);</highlight></codeline>
+<codeline lineno="34" refid="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca" kindref="member">resize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>w,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>h)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b" kindref="member">operator&lt;</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39" refid="classdemo_1_1Widget_1a120d0cbef27752545b762c709536b6cb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a120d0cbef27752545b762c709536b6cb" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>scale)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41" refid="classdemo_1_1Widget_1aa43e271c95527243fd7d425e75f2d089" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/></highlight><highlight class="keyword">operator</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal">(std::size_t<sp/>size);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classdemo_1_1Widget_1a431d79300208104754f388e5f57e18d0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a431d79300208104754f388e5f57e18d0" kindref="member">draw</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88" kindref="member">width</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53" refid="classdemo_1_1Widget_1ace6fb1a73735e7741e9e95a1c8a8bc8c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ace6fb1a73735e7741e9e95a1c8a8bc8c" kindref="member">set_width</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>w);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a" kindref="member">old_resize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>side);</highlight></codeline>
+<codeline lineno="64" refid="classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb" kindref="member">measure</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68" kindref="member">details</ref>;</highlight></codeline>
+<codeline lineno="69" refid="classdemo_1_1Widget_1add87a4a871c34ce40b2e5e8ca35f9e14" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1add87a4a871c34ce40b2e5e8ca35f9e14" kindref="member">count</ref>;</highlight></codeline>
+<codeline lineno="71" refid="classdemo_1_1Widget_1a42666e9d461341cec6ea4e1a6e39e5b2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a42666e9d461341cec6ea4e1a6e39e5b2" kindref="member">default_side</ref><sp/>=<sp/>10;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="75" refid="classdemo_1_1Widget_1af057dcfc6aca1d4c512eaee69850974c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1af057dcfc6aca1d4c512eaee69850974c" kindref="member">width_</ref>;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="79" refid="classdemo_1_1Widget_1a20de62d183285978e7ca07da74f11fa0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a20de62d183285978e7ca07da74f11fa0" kindref="member">secret_</ref>;</highlight></codeline>
+<codeline lineno="81" refid="classdemo_1_1Widget_1a31c573ed6868a386739121fd5f824d4d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1a31c573ed6868a386739121fd5f824d4d" kindref="member">peek</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref>&amp;<sp/>w);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="classdemo_1_1widget" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1widget" kindref="compound">widget</ref><sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="89" refid="classdemo_1_1widget_1a32e6a6784bd1aac1d8c78590a1db5678" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1widget_1a32e6a6784bd1aac1d8c78590a1db5678" kindref="member">resize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>side);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" refkind="member"><highlight class="normal"><ref refid="classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8" kindref="member">Widget</ref>*<sp/><ref refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kindref="member">make_widget</ref>();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classdemo_1_1Escapes" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Escapes" kindref="compound">Escapes</ref><sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="102" refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" kindref="member">value</ref>;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/cxx/demo/widget.hpp"/>
+  </compounddef>
+</doxygen>

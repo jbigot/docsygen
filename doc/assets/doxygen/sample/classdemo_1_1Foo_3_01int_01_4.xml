@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Foo_3_01int_01_4" kind="class" language="C++" prot="public">
+    <compoundname>demo::Foo&lt; int &gt;</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int demo::Foo&lt; int &gt;::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>demo::Foo&lt; int &gt;::value</qualifiedname>
+        <briefdescription>
+<para>The value, as an int. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="40" column="7" bodyfile="src/cxx/demo/templates.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The specialization of <ref refid="classdemo_1_1Foo" kindref="compound">Foo</ref> for int. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="37" column="1" bodyfile="src/cxx/demo/templates.hpp" bodystart="37" bodyend="41"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" prot="public" virt="non-virtual"><scope>demo::Foo&lt; int &gt;</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Shape" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>demo::Shape</compoundname>
+    <derivedcompoundref refid="classdemo_1_1Circle" prot="public" virt="non-virtual">demo::Circle</derivedcompoundref>
+    <derivedcompoundref refid="classdemo_1_1Left" prot="public" virt="virtual">demo::Left</derivedcompoundref>
+    <derivedcompoundref refid="classdemo_1_1Right" prot="public" virt="virtual">demo::Right</derivedcompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual demo::Shape::~Shape</definition>
+        <argsstring>()</argsstring>
+        <name>~Shape</name>
+        <qualifiedname>demo::Shape::~Shape</qualifiedname>
+        <briefdescription>
+<para>Destroys the shape. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="13" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classdemo_1_1Shape_1acd509e4c3cd0ad6efe25e50bb1955815" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>double</type>
+        <definition>virtual double demo::Shape::area</definition>
+        <argsstring>() const =0</argsstring>
+        <name>area</name>
+        <qualifiedname>demo::Shape::area</qualifiedname>
+        <reimplementedby refid="classdemo_1_1Circle_1a6466feef87f0a41a4852aa8242a9cc91">area</reimplementedby>
+        <reimplementedby refid="classdemo_1_1Diamond_1a0d75f4129267af1d56f9b78a7bdc1e7c">area</reimplementedby>
+        <briefdescription>
+<para>The area of the shape. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="15" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The base of all shapes. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>demo::Circle</label>
+        <link refid="classdemo_1_1Circle"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>demo::Diamond</label>
+        <link refid="classdemo_1_1Diamond"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>demo::LabelledCircle</label>
+        <link refid="classdemo_1_1LabelledCircle"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>demo::Left</label>
+        <link refid="classdemo_1_1Left"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>demo::Right</label>
+        <link refid="classdemo_1_1Right"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </inheritancegraph>
+    <location file="src/cxx/demo/shapes.hpp" line="10" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="10" bodyend="16"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Shape_1acd509e4c3cd0ad6efe25e50bb1955815" prot="public" virt="pure-virtual"><scope>demo::Shape</scope><name>area</name></member>
+      <member refid="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" prot="public" virt="virtual"><scope>demo::Shape</scope><name>~Shape</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

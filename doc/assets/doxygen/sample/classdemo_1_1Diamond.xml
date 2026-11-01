@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Diamond" kind="class" language="C++" prot="public">
+    <compoundname>demo::Diamond</compoundname>
+    <basecompoundref refid="classdemo_1_1Left" prot="public" virt="non-virtual">demo::Left</basecompoundref>
+    <basecompoundref refid="classdemo_1_1Right" prot="public" virt="non-virtual">demo::Right</basecompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Diamond_1a0d75f4129267af1d56f9b78a7bdc1e7c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>double</type>
+        <definition>double demo::Diamond::area</definition>
+        <argsstring>() const override</argsstring>
+        <name>area</name>
+        <qualifiedname>demo::Diamond::area</qualifiedname>
+        <reimplements refid="classdemo_1_1Shape_1acd509e4c3cd0ad6efe25e50bb1955815">area</reimplements>
+        <briefdescription>
+<para>The area of the diamond. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="51" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The bottom of a diamond. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>demo::Diamond</label>
+        <link refid="classdemo_1_1Diamond"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Left</label>
+        <link refid="classdemo_1_1Left"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>demo::Right</label>
+        <link refid="classdemo_1_1Right"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>demo::Diamond</label>
+        <link refid="classdemo_1_1Diamond"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>demo::Left</label>
+        <link refid="classdemo_1_1Left"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>demo::Right</label>
+        <link refid="classdemo_1_1Right"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>demo::Shape</label>
+        <link refid="classdemo_1_1Shape"/>
+      </node>
+    </collaborationgraph>
+    <location file="src/cxx/demo/shapes.hpp" line="48" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="48" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Diamond_1a0d75f4129267af1d56f9b78a7bdc1e7c" prot="public" virt="virtual"><scope>demo::Diamond</scope><name>area</name></member>
+      <member refid="classdemo_1_1Shape_1a34e76ffcc3b620d93955de72df655dff" prot="public" virt="virtual"><scope>demo::Diamond</scope><name>~Shape</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

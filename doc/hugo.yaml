@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+baseURL: https://jbigot.github.io/docsygen/
+title: docsygen
+locale: en
+
+# The sample demonstrates a formula that KaTeX lacks an environment for (its source is shown).
+ignoreLogs: [docsygen-formula]
+
+module:
+  proxy: direct
+  hugoVersion:
+    min: 0.169.0
+  imports:
+    # docsygen comes before Docsy: it replaces some of Docsy's partials.
+    - path: github.com/jbigot/docsygen
+    - path: github.com/docsy/docsy/theme
+
+markup:
+  goldmark:
+    renderer:
+      # Docsy's blocks and alert shortcode write HTML.
+      unsafe: true
+
+menu:
+  main:
+    - name: Documentation
+      pageRef: /docs/
+      weight: 10
+    - name: GitHub
+      url: https://github.com/jbigot/docsygen
+      weight: 90
+
+outputs:
+  section: [HTML, RSS, print]
+
+params:
+  offlineSearch: true
+  github_repo: https://github.com/jbigot/docsygen
+  github_branch: main
+  github_subdir: doc
+  ui:
+    showLightDarkModeMenu: true
+    sidebar_menu_compact: true
+    # docsygen makes each version root its own sidebar root (sidebar_root_for).
+    sidebar_root_enabled: true

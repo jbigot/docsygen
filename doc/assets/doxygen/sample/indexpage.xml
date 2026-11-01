@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>The docsygen sample</title>
+    <innerpage refid="guide">The guide</innerpage>
+    <innerpage refid="escapes">Markdown characters in a title: a*b, c_d and `e`</innerpage>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This sample covers every construct that docsygen renders. Start with the <ref refid="guide" kindref="compound">The guide</ref>.</para>
+<para><itemizedlist>
+<listitem><para><ref refid="guide" kindref="compound">The guide</ref></para>
+</listitem><listitem><para><ref refid="escapes" kindref="compound">Markdown characters in a title: a*b, c_d and `e`</ref> </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="src/pages/mainpage.md"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="structcpoint" kind="struct" language="C++" prot="public">
+    <compoundname>cpoint</compoundname>
+    <includes refid="cdemo_8h" local="no">cdemo.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structcpoint_1afda82065080aad9d4bb3a702054ea782" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int cpoint::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>cpoint::x</qualifiedname>
+        <briefdescription>
+<para>The abscissa. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="19" column="7" bodyfile="src/c/cdemo.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcpoint_1aad19231f082998c11e3a095cf4f877a9" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int cpoint::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>cpoint::y</qualifiedname>
+        <briefdescription>
+<para>The ordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="20" column="7" bodyfile="src/c/cdemo.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A point. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/c/cdemo.h" line="18" column="1" bodyfile="src/c/cdemo.h" bodystart="18" bodyend="21"/>
+    <listofallmembers>
+      <member refid="structcpoint_1afda82065080aad9d4bb3a702054ea782" prot="public" virt="non-virtual"><scope>cpoint</scope><name>x</name></member>
+      <member refid="structcpoint_1aad19231f082998c11e3a095cf4f877a9" prot="public" virt="non-virtual"><scope>cpoint</scope><name>y</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

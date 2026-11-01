@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="templates_8hpp" kind="file" language="C++">
+    <compoundname>templates.hpp</compoundname>
+    <innerclass refid="classdemo_1_1Box" prot="public">demo::Box</innerclass>
+    <innerclass refid="classdemo_1_1Box_1_1Iterator" prot="public">demo::Box::Iterator</innerclass>
+    <innerclass refid="classdemo_1_1Foo" prot="public">demo::Foo</innerclass>
+    <innerclass refid="classdemo_1_1Foo_3_01int_01_4" prot="public">demo::Foo&lt; int &gt;</innerclass>
+    <innerconcept refid="conceptdemo_1_1Boxable">demo::Boxable</innerconcept>
+    <innernamespace refid="namespacedemo">demo</innernamespace>
+    <briefdescription>
+<para>Templates, enums and concepts. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacedemo" kindref="compound">demo</ref><sp/>{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>N<sp/>=<sp/>3&gt;</highlight></codeline>
+<codeline lineno="13" refid="classdemo_1_1Box" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Box" kindref="compound">Box</ref><sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="16" refid="classdemo_1_1Box_1_1Iterator" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Box_1_1Iterator" kindref="compound">Iterator</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="19" refid="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classdemo_1_1Box_1_1Iterator" kindref="compound">Iterator</ref>&amp;<sp/><ref refid="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" kindref="member">operator++</ref>();</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="22" refid="classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T&amp;<sp/><ref refid="classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2" kindref="member">front</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="29" refid="classdemo_1_1Foo" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Foo" kindref="compound">Foo</ref><sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="32" refid="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" refkind="member"><highlight class="normal"><sp/><sp/>T<sp/><ref refid="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" kindref="member">value</ref>;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
+<codeline lineno="37" refid="classdemo_1_1Foo_3_01int_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Foo" kindref="compound">Foo</ref>&lt;int&gt;<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="40" refid="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" kindref="member">value</ref>;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966d" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966d" kindref="member">Color</ref><sp/>{</highlight></codeline>
+<codeline lineno="46" refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4" kindref="member">red</ref>,<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="47" refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da9f27410725ab8cc8854a2769c7a516b8" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da9f27410725ab8cc8854a2769c7a516b8" kindref="member">green</ref>,<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="48" refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da48d6215903dff56238e52e8891380c8f" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da48d6215903dff56238e52e8891380c8f" kindref="member">blue</ref><sp/>=<sp/>4,<sp/><sp/></highlight></codeline>
+<codeline lineno="49"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571" kindref="member">Level</ref><sp/>{</highlight></codeline>
+<codeline lineno="53" refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571a160440f776dde778afe29811f753ed00" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571a160440f776dde778afe29811f753ed00" kindref="member">low</ref>,<sp/><sp/></highlight></codeline>
+<codeline lineno="54" refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571af98da2da86c6a46817e8cca52816be43" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571af98da2da86c6a46817e8cca52816be43" kindref="member">high</ref>,<sp/></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="61" refid="conceptdemo_1_1Boxable" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">concept<sp/></highlight><highlight class="normal"><ref refid="conceptdemo_1_1Boxable" kindref="compound">Boxable</ref><sp/>=<sp/></highlight><highlight class="keyword">requires</highlight><highlight class="normal">(T<sp/>t)<sp/>{<sp/>t;<sp/>};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;Boxable<sp/>T&gt;</highlight></codeline>
+<codeline lineno="69" refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" refkind="member"><highlight class="normal"><ref refid="classdemo_1_1Box" kindref="compound">Box&lt;T&gt;</ref><sp/><ref refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" kindref="member">box</ref>(T<sp/>v);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>helper();</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/cxx/demo/templates.hpp"/>
+  </compounddef>
+</doxygen>

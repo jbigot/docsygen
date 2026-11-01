@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="guide" kind="page">
+    <compoundname>guide</compoundname>
+    <title>The guide</title>
+    <innerpage refid="details-page">Details</innerpage>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>The guide has sections, an image, Mermaid diagrams, a table and code, and a subpage, <ref refid="details-page" kindref="compound">Details</ref>.</para>
+<para><toclist>
+<tocitem id="guide_1first-section"></tocitem>
+<tocitem id="guide_1second-section"></tocitem>
+</toclist>
+</para>
+<sect1 id="guide_1first-section">
+<title>First section</title><para>Some text, with a link to <ref refid="classdemo_1_1Widget" kindref="compound">demo::Widget</ref>.</para>
+<sect2 id="guide_1a-subsection">
+<title>A subsection</title><para><image type="html" name="diagram.png">The diagram, in a page</image>
+</para>
+<para><mermaid caption="A flow, in a page">graph LR
+  A --&gt; B</mermaid>
+</para>
+<para><mermaidfile name="flow.mmd">A flow, from a file</mermaidfile>
+</para>
+<sect3 id="guide_1a-subsubsection">
+<title>A subsubsection</title><para><table rows="3" cols="2"><row>
+<entry thead="yes"><para>Option  </para>
+</entry><entry thead="yes"><para>Meaning  </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>-v</computeroutput>  </para>
+</entry><entry thead="no"><para>verbose  </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>-q</computeroutput>  </para>
+</entry><entry thead="no"><para>quiet  </para>
+</entry></row>
+</table>
+</para>
+</sect3>
+</sect2>
+</sect1>
+<sect1 id="guide_1second-section">
+<title>Second section</title><para><programlisting filename=".cpp"><codeline><highlight class="normal"><ref refid="classdemo_1_1Widget" kindref="compound">demo::Widget</ref>*<sp/>w<sp/>=<sp/><ref refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kindref="member">demo::make_widget</ref>();</highlight></codeline>
+</programlisting> </para>
+</sect1>
+    </detaileddescription>
+    <location file="src/pages/guide.md"/>
+  </compounddef>
+</doxygen>

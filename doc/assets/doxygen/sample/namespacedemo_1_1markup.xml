@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="namespacedemo_1_1markup" kind="namespace" language="C++">
+    <compoundname>demo::markup</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a885a565860c6cc36e37b85c0d6456180" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::inline_elements</definition>
+        <argsstring>()</argsstring>
+        <name>inline_elements</name>
+        <qualifiedname>demo::markup::inline_elements</qualifiedname>
+        <briefdescription>
+<para>Inline elements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><bold>bold</bold>, <bold>b</bold>, <s>s</s>, <strike>strike</strike>, <underline>underline</underline>, <emphasis>emphasis</emphasis>, <emphasis>em</emphasis>, <computeroutput><ref refid="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" kindref="member">code</ref></computeroutput>, <computeroutput>tt</computeroutput>, H<subscript>2</subscript>O, x<superscript>2</superscript>, <small>small</small>, <cite>cite</cite>, <del>del</del>, <ins>ins</ins>, <ulink url="https://example.org/">a link</ulink>, <ulink url="https://example.org/auto">https://example.org/auto</ulink>, a reference to <ref refid="classdemo_1_1Widget" kindref="compound">demo::Widget</ref> and to <ref refid="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd" kindref="member">resize</ref>, a line<linebreak/>
+break, an anchor<anchor id="namespacedemo_1_1markup_1inline-anchor"/>here, an emoji <emoji name="smile" unicode="&amp;#x1f604;"/>, <javadocliteral>a &lt; b</javadocliteral> and <javadoccode>x + y</javadoccode>, and a rule: <hruler/>
+ <center>Centered.</center> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="21" column="6" declfile="src/cxx/demo/markup.hpp" declline="21" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1ad00395bf8ff99a80b915dcebd2cc1d76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::entities</definition>
+        <argsstring>()</argsstring>
+        <name>entities</name>
+        <qualifiedname>demo::markup::entities</qualifiedname>
+        <briefdescription>
+<para>Entities. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><nonbreakablespace/> <iexcl/> <cent/> <pound/> <curren/> <yen/> <brvbar/> <sect/> <umlaut/> <copy/> <ordf/> <laquo/> <not/> <shy/> <registered/> <macr/> <deg/> <plusmn/> <sup2/> <sup3/> <acute/> <micro/> <para/> <middot/> <cedil/> <sup1/> <ordm/> <raquo/> <frac14/> <frac12/> <frac34/> <iquest/> <Agrave/> <Aacute/> <Acirc/> <Atilde/> <Aumlaut/> <Aring/> <AElig/> <Ccedil/> <Egrave/> <Eacute/> <Ecirc/> <Eumlaut/> <Igrave/> <Iacute/> <Icirc/> <Iumlaut/> <ETH/> <Ntilde/> <Ograve/> <Oacute/> <Ocirc/> <Otilde/> <Oumlaut/> <times/> <Oslash/> <Ugrave/> <Uacute/> <Ucirc/> <Uumlaut/> <Yacute/> <THORN/> <szlig/> <agrave/> <aacute/> <acirc/> <atilde/> <aumlaut/> <aring/> <aelig/> <ccedil/> <egrave/> <eacute/> <ecirc/> <eumlaut/> <igrave/> <iacute/> <icirc/> <iumlaut/> <eth/> <ntilde/> <ograve/> <oacute/> <ocirc/> <otilde/> <oumlaut/> <divide/> <oslash/> <ugrave/> <uacute/> <ucirc/> <uumlaut/> <yacute/> <thorn/> <yumlaut/> <fnof/> <Alpha/> <Beta/> <Gamma/> <Delta/> <Epsilon/> <Zeta/> <Eta/> <Theta/> <Iota/> <Kappa/> <Lambda/> <Mu/> <Nu/> <Xi/> <Omicron/> <Pi/> <Rho/> <Sigma/> <Tau/> <Upsilon/> <Phi/> <Chi/> <Psi/> <Omega/> <alpha/> <beta/> <gamma/> <delta/> <epsilon/> <zeta/> <eta/> <theta/> <iota/> <kappa/> <lambda/> <mu/> <nu/> <xi/> <omicron/> <pi/> <rho/> <sigmaf/> <sigma/> <tau/> <upsilon/> <phi/> <chi/> <psi/> <omega/> <thetasym/> <upsih/> <piv/> <bull/> <hellip/> <prime/> <Prime/> <oline/> <frasl/> <weierp/> <imaginary/> <real/> <trademark/> <alefsym/> <larr/> <uarr/> <rarr/> <darr/> <harr/> <crarr/> <lArr/> <uArr/> <rArr/> <dArr/> <hArr/> <forall/> <part/> <exist/> <empty/> <nabla/> <isin/> <notin/> <ni/> <prod/> <sum/> <minus/> <lowast/> <radic/> <prop/> <infin/> <ang/> <and/> <or/> <cap/> <cup/> <int/> <there4/> <sim/> <cong/> <asymp/> <ne/> <equiv/> <le/> <ge/> <sub/> <sup/> <nsub/> <sube/> <supe/> <oplus/> <otimes/> <perp/> <sdot/> <lceil/> <rceil/> <lfloor/> <rfloor/> <lang/> <rang/> <loz/> <spades/> <clubs/> <hearts/> <diams/> <OElig/> <oelig/> <Scaron/> <scaron/> <Yumlaut/> <circ/> <tilde/> <ensp/> <emsp/> <thinsp/> <zwnj/> <zwj/> <lrm/> <rlm/> <ndash/> <mdash/> <lsquo/> <rsquo/> <sbquo/> <ldquo/> <rdquo/> <bdquo/> <dagger/> <Dagger/> <permil/> <lsaquo/> <rsaquo/> <euro/> <tm/> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="48" column="6" declfile="src/cxx/demo/markup.hpp" declline="48" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a2f00250de357ef48222fa010e4e664fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::lists</definition>
+        <argsstring>()</argsstring>
+        <name>lists</name>
+        <qualifiedname>demo::markup::lists</qualifiedname>
+        <briefdescription>
+<para>Lists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>one</para>
+</listitem><listitem><para>two<orderedlist>
+<listitem><para>nested</para>
+</listitem><listitem><para>ordered</para>
+</listitem></orderedlist>
+</para>
+</listitem><listitem><para>three</para>
+</listitem></itemizedlist>
+</para>
+<para><orderedlist type="a" start="3">
+<listitem>
+<para>c</para>
+</listitem>
+<listitem>
+<para>d</para>
+</listitem>
+</orderedlist>
+</para>
+<para><itemizedlist>
+<listitem override="unchecked"><para>to do</para>
+</listitem></itemizedlist>
+<itemizedlist>
+<listitem override="checked"><para>done </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="63" column="6" declfile="src/cxx/demo/markup.hpp" declline="63" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a10808638f8e7287f453f38e211f891d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::tables</definition>
+        <argsstring>()</argsstring>
+        <name>tables</name>
+        <qualifiedname>demo::markup::tables</qualifiedname>
+        <briefdescription>
+<para>A table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><table rows="3" cols="2"><caption>The caption</caption>
+<row>
+<entry thead="yes"><para>Name</para>
+</entry><entry thead="yes"><para>Value</para>
+</entry></row>
+<row>
+<entry thead="no"><para>one</para>
+</entry><entry thead="no"><para>1</para>
+</entry></row>
+<row>
+<entry thead="no" colspan="2"><para>spanning</para>
+</entry></row>
+</table>
+</para>
+<para><table rows="2" cols="2"><row>
+<entry thead="yes" align='left'><para><ref refid="classdemo_1_1Left" kindref="compound">Left</ref>  </para>
+</entry><entry thead="yes" align='right'><para><ref refid="classdemo_1_1Right" kindref="compound">Right</ref>  </para>
+</entry></row>
+<row>
+<entry thead="no" align='left'><para>a  </para>
+</entry><entry thead="no" align='right'><para>b  </para>
+</entry></row>
+</table>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="78" column="6" declfile="src/cxx/demo/markup.hpp" declline="78" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int demo::markup::code</definition>
+        <argsstring>()</argsstring>
+        <name>code</name>
+        <qualifiedname>demo::markup::code</qualifiedname>
+        <briefdescription>
+<para>Code. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><programlisting filename=".cpp"><codeline><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x<sp/>=<sp/><ref refid="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" kindref="member">demo::markup::code</ref>();<sp/></highlight><highlight class="comment">//<sp/>a<sp/>comment</highlight></codeline>
+</programlisting></para>
+<para><verbatim>verbatim   text &lt;b&gt;not bold&lt;/b&gt;
+</verbatim></para>
+<para><preformatted>preformatted
+  text</preformatted> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="93" column="5" declfile="src/cxx/demo/markup.hpp" declline="93" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a966d7f46b849ca8760818b383cc5ca7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::formulas</definition>
+        <argsstring>()</argsstring>
+        <name>formulas</name>
+        <qualifiedname>demo::markup::formulas</qualifiedname>
+        <briefdescription>
+<para>Formulas. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Inline <formula id="0">$ a^2 + b^2 = c^2 $</formula>, display <formula id="1">\[ \int_0^1 x\,dx = \frac{1}{2} \]</formula> and an environment <formula id="2">\begin{eqnarray*} a &amp;=&amp; b \\ c &amp;=&amp; d \end{eqnarray*}</formula> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="102" column="6" declfile="src/cxx/demo/markup.hpp" declline="102" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1aa085c71b5cfccf60586f240708c6511c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::images</definition>
+        <argsstring>()</argsstring>
+        <name>images</name>
+        <qualifiedname>demo::markup::images</qualifiedname>
+        <briefdescription>
+<para>Images. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A block image: <image type="html" name="diagram.png">The diagram</image>
+</para>
+<para>and an inline one,<image type="html" name="diagram.png" inline="yes">inline</image>
+, in a sentence. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="111" column="6" declfile="src/cxx/demo/markup.hpp" declline="111" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1add46a81111ab20fb72debb1050f5e779" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::headings</definition>
+        <argsstring>()</argsstring>
+        <name>headings</name>
+        <qualifiedname>demo::markup::headings</qualifiedname>
+        <briefdescription>
+<para>Headings and anchors. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><anchor id="namespacedemo_1_1markup_1block-anchor"/></para>
+<sect1 id="namespacedemo_1_1markup_1autotoc_md0_1s1"><sect2 id="namespacedemo_1_1markup_1autotoc_md0_1s2"><sect3 id="namespacedemo_1_1markup_1autotoc_md0">
+<title>A Markdown heading</title><para><heading level="4">An HTML heading</heading>
+</para>
+<para><simplesect kind="par"><title>A paragraph title</title><para>The paragraph. </para>
+</simplesect>
+</para>
+</sect3></sect2></sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="121" column="6" declfile="src/cxx/demo/markup.hpp" declline="121" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a5649ff84eaebc9119ad162ab6e091401" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int demo::markup::simplesects</definition>
+        <argsstring>()</argsstring>
+        <name>simplesects</name>
+        <qualifiedname>demo::markup::simplesects</qualifiedname>
+        <briefdescription>
+<para>Every simplesect kind. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="classdemo_1_1Widget" kindref="compound">demo::Widget</ref> </para>
+</simplesect>
+<simplesect kind="return"><para>a value </para>
+</simplesect>
+<simplesect kind="author"><para>Ann </para>
+</simplesect>
+<simplesect kind="authors"><para>Ann and Bob </para>
+</simplesect>
+<simplesect kind="version"><para>1.0 </para>
+</simplesect>
+<simplesect kind="since"><para>0.9 </para>
+</simplesect>
+<simplesect kind="date"><para>2026 </para>
+</simplesect>
+<simplesect kind="note"><para>A note. </para>
+</simplesect>
+<simplesect kind="warning"><para>A warning. </para>
+</simplesect>
+<simplesect kind="pre"><para>A precondition. </para>
+</simplesect>
+<simplesect kind="post"><para>A postcondition. </para>
+</simplesect>
+<simplesect kind="copyright"><para>Somebody. </para>
+</simplesect>
+<simplesect kind="invariant"><para>An invariant. </para>
+</simplesect>
+<simplesect kind="remark"><para>A remark. </para>
+</simplesect>
+<simplesect kind="attention"><para>An attention. </para>
+</simplesect>
+<simplesect kind="important"><para>An important point. </para>
+</simplesect>
+<simplesect kind="par"><title>Custom title</title><para>A paragraph with a custom title.</para>
+</simplesect>
+<simplesect kind="rcs"><title>Id</title><para><ref refid="markup_8hpp" kindref="compound">markup.hpp</ref> 1 </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="146" column="5" declfile="src/cxx/demo/markup.hpp" declline="146" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1ab554f7de61beb364bcee53c252d92e55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int demo::markup::parameters</definition>
+        <argsstring>(T in, T *out, T &amp;both)</argsstring>
+        <name>parameters</name>
+        <qualifiedname>demo::markup::parameters</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>in</declname>
+        </param>
+        <param>
+          <type>T *</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>both</declname>
+        </param>
+        <briefdescription>
+<para>Parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an input </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">both</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>both ways </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="retval"><parameteritem>
+<parameternamelist>
+<parametername>0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>success </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>-1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>failure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>std::runtime_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>on error </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>std::logic_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>never </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="160" column="5" declfile="src/cxx/demo/markup.hpp" declline="160" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1ae5067c725c4a07037b6e4560f31a5aa1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::blocks</definition>
+        <argsstring>()</argsstring>
+        <name>blocks</name>
+        <qualifiedname>demo::markup::blocks</qualifiedname>
+        <briefdescription>
+<para>Blocks. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><details><summary>More</summary><para>Hidden text.</para>
+</details></para>
+<para><blockquote><para>A quote.</para>
+</blockquote></para>
+<para><blockquote><para>A Markdown quote. </para>
+</blockquote></para>
+<para><parblock><para>The first paragraph of a block.</para>
+<para>The second paragraph. </para>
+</parblock></para>
+<para><variablelist>
+<varlistentry><term>Term</term></varlistentry>
+<listitem><para>Its definition.</para>
+</listitem>
+</variablelist>
+</para>
+<para><htmlonly> &lt;b&gt;HTML only&lt;/b&gt; </htmlonly> <latexonly> \textbf{LaTeX only} </latexonly> <manonly> man only </manonly> <rtfonly> rtf only </rtfonly> <docbookonly> docbook only </docbookonly></para>
+<para><indexentry><primaryie>indexed term</primaryie><secondaryie></secondaryie></indexentry> English only.</para>
+<internal><para>Internal documentation. </para>
+</internal>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="195" column="6" declfile="src/cxx/demo/markup.hpp" declline="195" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1_1markup_1a9b35146a2443d942a2f4c80d5aedca8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::markup::xrefsects</definition>
+        <argsstring>()</argsstring>
+        <name>xrefsects</name>
+        <qualifiedname>demo::markup::xrefsects</qualifiedname>
+        <briefdescription>
+<para>Cross-reference lists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Something to do. </para>
+</xrefdescription></xrefsect><xrefsect id="bug_1_bug000001"><xreftitle>Bug</xreftitle><xrefdescription><para>A bug. </para>
+</xrefdescription></xrefsect><xrefsect id="deprecated_1_deprecated000001"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Deprecated. </para>
+</xrefdescription></xrefsect><xrefsect id="test_1_test000001"><xreftitle>Test</xreftitle><xrefdescription><para>A test. </para>
+</xrefdescription></xrefsect><xrefsect id="custom_1_custom000001"><xreftitle>Custom</xreftitle><xrefdescription><para>A custom item. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/markup.hpp" line="205" column="6" declfile="src/cxx/demo/markup.hpp" declline="205" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Description markup, one function per family. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/markup.hpp" line="8" column="1"/>
+  </compounddef>
+</doxygen>

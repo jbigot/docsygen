@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Named" kind="class" language="C++" prot="public">
+    <compoundname>demo::Named</compoundname>
+    <derivedcompoundref refid="classdemo_1_1LabelledCircle" prot="protected" virt="non-virtual">demo::LabelledCircle</derivedcompoundref>
+    <includes refid="shapes_8hpp" local="no">shapes.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Named_1ab4419765d9c4381e94af15b5f169b775" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * demo::Named::name</definition>
+        <argsstring>() const</argsstring>
+        <name>name</name>
+        <qualifiedname>demo::Named::name</qualifiedname>
+        <briefdescription>
+<para>The name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="22" column="14"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Something with a name. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>demo::LabelledCircle</label>
+        <link refid="classdemo_1_1LabelledCircle"/>
+        <childnode refid="1" relation="protected-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>demo::Named</label>
+        <link refid="classdemo_1_1Named"/>
+      </node>
+    </inheritancegraph>
+    <location file="src/cxx/demo/shapes.hpp" line="19" column="1" bodyfile="src/cxx/demo/shapes.hpp" bodystart="19" bodyend="23"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Named_1ab4419765d9c4381e94af15b5f169b775" prot="public" virt="non-virtual"><scope>demo::Named</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

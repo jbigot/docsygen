@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="markup_8hpp" kind="file" language="C++">
+    <compoundname>markup.hpp</compoundname>
+    <innernamespace refid="namespacedemo">demo</innernamespace>
+    <innernamespace refid="namespacedemo_1_1markup">demo::markup</innernamespace>
+    <briefdescription>
+<para>Every kind of description markup, one function per family. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacedemo" kindref="compound">demo</ref><sp/>{</highlight></codeline>
+<codeline lineno="8" refid="namespacedemo_1_1markup" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacedemo_1_1markup" kindref="compound">markup</ref><sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="namespacedemo_1_1markup_1a885a565860c6cc36e37b85c0d6456180" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a885a565860c6cc36e37b85c0d6456180" kindref="member">inline_elements</ref>();</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="namespacedemo_1_1markup_1ad00395bf8ff99a80b915dcebd2cc1d76" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1ad00395bf8ff99a80b915dcebd2cc1d76" kindref="member">entities</ref>();</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="namespacedemo_1_1markup_1a2f00250de357ef48222fa010e4e664fb" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a2f00250de357ef48222fa010e4e664fb" kindref="member">lists</ref>();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="namespacedemo_1_1markup_1a10808638f8e7287f453f38e211f891d7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a10808638f8e7287f453f38e211f891d7" kindref="member">tables</ref>();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93" refid="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a234be6a6bd4c19f58c5be2c2d0afcab5" kindref="member">code</ref>();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="namespacedemo_1_1markup_1a966d7f46b849ca8760818b383cc5ca7f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a966d7f46b849ca8760818b383cc5ca7f" kindref="member">formulas</ref>();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="namespacedemo_1_1markup_1aa085c71b5cfccf60586f240708c6511c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1aa085c71b5cfccf60586f240708c6511c" kindref="member">images</ref>();</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121" refid="namespacedemo_1_1markup_1add46a81111ab20fb72debb1050f5e779" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1add46a81111ab20fb72debb1050f5e779" kindref="member">headings</ref>();</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="namespacedemo_1_1markup_1a5649ff84eaebc9119ad162ab6e091401" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a5649ff84eaebc9119ad162ab6e091401" kindref="member">simplesects</ref>();</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="160" refid="namespacedemo_1_1markup_1ab554f7de61beb364bcee53c252d92e55" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1ab554f7de61beb364bcee53c252d92e55" kindref="member">parameters</ref>(T<sp/>in,<sp/>T*<sp/>out,<sp/>T&amp;<sp/>both);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="195" refid="namespacedemo_1_1markup_1ae5067c725c4a07037b6e4560f31a5aa1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1ae5067c725c4a07037b6e4560f31a5aa1" kindref="member">blocks</ref>();</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="namespacedemo_1_1markup_1a9b35146a2443d942a2f4c80d5aedca8b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacedemo_1_1markup_1a9b35146a2443d942a2f4c80d5aedca8b" kindref="member">xrefsects</ref>();</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>markup</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/cxx/demo/markup.hpp"/>
+  </compounddef>
+</doxygen>

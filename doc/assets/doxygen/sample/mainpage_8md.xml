@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="mainpage_8md" kind="file" language="Markdown">
+    <compoundname>mainpage.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@mainpage<sp/>The<sp/>docsygen<sp/>sample</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">This<sp/>sample<sp/>covers<sp/>every<sp/>construct<sp/>that<sp/>docsygen<sp/>renders.<sp/>Start<sp/>with<sp/>the<sp/>@ref<sp/>guide.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>@subpage<sp/>guide</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>@subpage<sp/>escapes</highlight></codeline>
+    </programlisting>
+    <location file="src/pages/mainpage.md"/>
+  </compounddef>
+</doxygen>
