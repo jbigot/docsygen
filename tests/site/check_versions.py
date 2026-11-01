@@ -12,7 +12,7 @@ Usage: python3 -I check_versions.py PUBLIC EXPECTED.json
 Exit 1 on any difference.
 """
 import json, os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'oracle'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import htmltree
 
 

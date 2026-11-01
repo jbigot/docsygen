@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
 # The Docsy-flavor test site: the docsygen module as a site uses it, without Docsy itself
-# (tests/site/run.sh, tests/oracle/run.sh info). The XML is mounted at assets/doxygen/oracle.
+# (tests/site/run.sh, tests/reference.sh). The XML is mounted at assets/doxygen/corpus.
 disableKinds: [taxonomy, term, rss, sitemap]

@@ -2,7 +2,7 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* Two versions of the oracle's XML: ref at /ref/, and 1.0, the latest, at /latest/ with
+{{- /* Two versions of the corpus entry's XML: ref at /ref/, and 1.0, the latest, at /latest/ with
        redirects from /1.0/. */ -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "ref" "path" ":version") -}}
-{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/oracle" "version" "1.0" "path" ":version" "latest" true) -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/corpus" "version" "ref" "path" ":version") -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/corpus" "version" "1.0" "path" ":version" "latest" true) -}}

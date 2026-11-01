@@ -12,7 +12,6 @@ Exit 1 on any failure.
 """
 import json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'oracle'))
 import htmltree
 from check_versions import menu
 

@@ -16,7 +16,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 | --- | --- | --- |
 | Hugo | ≥ 0.169.0 | the tests use Hugo with the native XML decoder (below) |
 | Docsy | 0.18.0, pinned | module path `github.com/docsy/docsy/theme`; needs Dart Sass |
-| Doxygen | 1.17 to 1.18 | the tests' oracle is 1.18.0 |
+| Doxygen | 1.17 to 1.18 | the tests use both |
 | npm | ≥ 11.18 | for the example site: older npm installs the wrong `sass` |
 
 `go` and `git` are needed for Hugo's module commands, Python 3 for some tests.
@@ -32,7 +32,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
   `docsy.dev/blog/<year>/<version>/`, before bumping it. It moved in 0.18, to the repository
   `github.com/docsy/docsy` and the module `github.com/docsy/docsy/theme`, and Hugo modules don't
   follow GitHub's redirects.
-- **Doxygen**: the tests download Doxygen 1.18.0 once into `/var/tmp/docsygen-matrix`, unless
+- **Doxygen**: the tests download Doxygen 1.17.0 and 1.18.0 once into `/var/tmp/docsygen-matrix`, unless
   `DOXYGEN` names a binary. When a floor rises, everything that only served older versions goes.
 
 ## Repository layout
@@ -62,27 +62,37 @@ regenerates PDI's XML, and `exampleSite/assets/doxygen/README.md` says how each 
 
 ## Tests
 
-`sh tests/all.sh` runs every suite, in about 2.5 minutes; run it on each change, and don't edit
-the tree while it runs: later suites would test the edit. The PDI oracle needs `PDI_SRC`, a PDI
-source tree, the first time. When a build fails, run it without `--quiet`, which hides
-`errorf`'s message.
+`sh tests/all.sh` runs every suite, in about 3 minutes; run it on each change, and don't edit
+the tree while it runs: later suites would test the edit. When a build fails, run it without
+`--quiet`, which hides `errorf`'s message.
 
+- **The corpus** (`tests/corpus/`): `sample` and `sample-c` (a C++ and a C project meant to use
+  every construct docsygen renders), `sample-next` (the sample one release later, without
+  `io.hpp` and with `extra.hpp`, for versions), and `pdi`, PDI's real, large XML (also the
+  performance check). `tests/corpus/generate.sh` runs Doxygen on an entry with a `Doxyfile`; the
+  XML is generated per Doxygen version, into the cache `/var/tmp/docsygen-matrix/corpus`, never
+  committed. `pdi` is committed as it is.
 - `unit` (`tests/unit/`): unit cases of partials, and builds that must fail or warn.
-- `site` (`tests/site/`): a test site without Docsy, on the sample oracles and PDI, checked by
-  `check.py` (links, ids, foreign classes) and for its redirects.
-- `info`, `info-docsy` (`tests/oracle/`): docsygen gives the same information as Doxygen's HTML,
-  pairing Doxygen's pages with docsygen's (`tests/pairing/`). Information that the XML lacks is
-  an entry of `xml-gaps.yaml`, never a guess; the rules are in `info-rules.yaml`.
+- `site` (`tests/site/`): a test site without Docsy on each corpus entry, and on `versions`
+  (`sample` as 1.0 and `sample-next` as 2.0, the latest), checked by `check.py` (links, ids,
+  foreign classes) and for its redirects.
 - `check-docsy`, `check-layout`: the two layouts of the example site.
-- `reference`: the test site against its build at the baseline commit in `tests/reference-base`;
-  a change that changes the output moves the baseline.
-- `reader-diff`: everything built with both readers must be identical.
-- `tests/matrix.sh`, run separately: every supported Doxygen, and the minimum Hugo.
+- `reference`: what changed since the previous commit. It builds the test site of every corpus
+  entry and Doxygen version (1.17, 1.18) with the module of `REF` (default `HEAD`: the working
+  tree against the last commit; `REF=main` for a branch) and with the working tree's, prints the
+  number of identical, changed, added and removed files, and writes a `diff -r` per changed site
+  into `/var/tmp/docsygen-reference`. A change doesn't fail it: `sh tests/reference-summary.sh`
+  groups the changes by kind, so that an expected change is checked at a glance, and
+  `sh tests/reference.sh --strict` fails on any change, for a refactor.
+- `reader-diff`: everything built with both readers must be identical. The reader's own tests
+  (against expat) are in [hugo-xml-document](https://github.com/jbigot/hugo-xml-document).
+- `tests/matrix.sh`, run separately: the `site` suite for every supported Doxygen, with the Hugo
+  fork and the minimum released Hugo, and `unit` with both Hugos.
 
 To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 `module.replacements: "github.com/jbigot/docsygen -> <tree>"`, mounts for `content`, `layouts`
-(an `all.html` that prints `{{ .Content }}`) and an oracle's XML at `assets/doxygen/sample`
-(`DOXYGEN=… sh tests/oracle/generate.sh sample <dir>`).
+(an `all.html` that prints `{{ .Content }}`) and a corpus entry's XML at `assets/doxygen/sample`
+(`DOXYGEN=… sh tests/corpus/generate.sh sample <dir>`).
 
 ## Architecture
 

@@ -10,20 +10,17 @@
 # DOCSYGEN_READER=template mounts tests/reader-template to force the template reader.
 # With each reader:
 #   1. tests/unit/run.sh, which must pass with both;
-#   2. the Docsy test site on the sample, sample-c and pdi oracles, and the example site in its
+#   2. the Docsy test site on the sample, sample-c and pdi corpus entries, and the example site in its
 #      two organizations (the whole tree and PDI's layout), whose public/ directories must be
 #      identical.
-# The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go
-# or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
+# The example site needs go or HUGO_MODULE_REPLACEMENTS for its modules. Exit 1 on any difference or failure.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
 HUGO=$(native_hugo)
 DOCSYGEN_HUGO_KIND=native
-# The same sample XML for every run: Doxygen writes its output directory into Doxyfile.xml.
-DOCSYGEN_ORACLES=$tmp/oracle
-export HUGO DOCSYGEN_HUGO_KIND DOCSYGEN_ORACLES
+export HUGO DOCSYGEN_HUGO_KIND
 hugo=$HUGO
 "$hugo" version
 status=0
@@ -48,7 +45,7 @@ compare() {
 
 echo "== sites"
 for name in sample sample-c pdi; do
-  if ! dir=$(oracle "$name"); then fail "no $name oracle"; continue; fi
+  if ! dir=$(corpus "$name"); then fail "no $name corpus entry"; continue; fi
   ok=1
   for reader in template native; do
     work=$tmp/site-$name-$reader
@@ -58,7 +55,7 @@ for name in sample sample-c pdi; do
     DOCSYGEN_READER=$reader
     # shellcheck disable=SC2086 # extra is one word or none
     site_config "$work/hugo.yaml" "$root/tests/site/layouts=layouts" "$root/tests/site/content=content" $extra \
-      "$dir/xml=assets/doxygen/oracle"
+      "$dir/xml=assets/doxygen/corpus"
     cat "$root/tests/site/config.yaml" >> "$work/hugo.yaml"
     # Not --quiet: it would hide the ERROR line that errorf logs.
     if ! "$hugo" --source "$work" --destination "$work/public" > "$work/log" 2>&1; then

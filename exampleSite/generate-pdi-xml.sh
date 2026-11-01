@@ -10,7 +10,7 @@
 #
 # Usage: sh generate-pdi-xml.sh PDI_SOURCE_DIR CONFIGURED_DOXYFILE [NAME]
 #   NAME  the directory under assets/doxygen/ (default: pdi)
-# DOXYGEN selects the Doxygen binary (default: the oracle's, Doxygen 1.18.0, as tests/lib.sh
+# DOXYGEN selects the Doxygen binary (default: Doxygen 1.18.0, as tests/lib.sh
 # downloads it).
 set -eu
 

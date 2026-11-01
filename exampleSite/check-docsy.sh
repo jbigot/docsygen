@@ -13,7 +13,7 @@
 #   - the offline search index holds PDI_share's brief, from /docs/latest/ only;
 #   - the print page of the reference holds a member's signature;
 #   - llms.txt, if Docsy produces it, lists pages of /docs/main/;
-#   - each committed XML tree comes from Doxygen 1.18.0, the oracle's version;
+#   - each committed XML tree comes from Doxygen 1.18.0, the tests' newest Doxygen;
 #   - where the versions meet Docsy's own pages, tests/site/check_example.py, on this build and
 #     on another one with a baseURL that has a path, as GitHub Pages gives a project site.
 # HUGO selects the Hugo binary (tests/lib.sh: the Hugo fork by default). Hugo needs go for its

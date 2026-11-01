@@ -14,15 +14,15 @@
 # added to the site's params.
 # A case or build case with a hugo key (native or release) runs only when DOCSYGEN_HUGO_KIND
 # (tests/lib.sh) is that value.
-# Every site mounts the XML of the sample and sample-c oracles, the example site's committed PDI
+# Every site mounts the XML of the sample and sample-c corpus entries, the corpus's committed PDI
 # XML and fixtures/doxygen-1.17 at assets/doxygen/{sample,sample-c,pdi,doxygen-1.17}.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/../lib.sh"
 filter=${1:-${DOCSYGEN_TEST:-}}
-set -- "$(oracle sample)/xml=assets/doxygen/sample" "$(oracle sample-c)/xml=assets/doxygen/sample-c" \
-  "$root/exampleSite/assets/doxygen/pdi=assets/doxygen/pdi" "$here/fixtures/doxygen-1.17=assets/doxygen/doxygen-1.17"
+set -- "$(corpus sample)/xml=assets/doxygen/sample" "$(corpus sample-c)/xml=assets/doxygen/sample-c" \
+  "$root/tests/corpus/pdi/xml=assets/doxygen/pdi" "$here/fixtures/doxygen-1.17=assets/doxygen/doxygen-1.17"
 
 # unit_site DIR [SOURCE=TARGET ...]: a unit site in DIR. The first mount of a file wins, so a
 # case's own mounts come first.

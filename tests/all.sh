@@ -4,8 +4,7 @@
 # Run every suite of the standard check, in order, and stop at the first failure.
 #
 # Usage: sh tests/all.sh
-# The pdi oracle needs PDI_SRC the first time (tests/lib.sh, oracle), and the example site go or
-# HUGO_MODULE_REPLACEMENTS for its modules. Prints one line per suite, its last line of output
+# The example site needs go or HUGO_MODULE_REPLACEMENTS for its modules. Prints one line per suite, its last line of output
 # after it; a failing suite's output is printed in full. With ALL_LOGS set to a directory, each
 # suite's output is kept there as NAME.log. Exit 1 on the first failure.
 set -eu
@@ -29,11 +28,8 @@ run() {
 }
 
 cd "$root"
-run oracle-unit python3 -I -m unittest discover -s tests/oracle -p 'test_*.py'
 run unit sh tests/unit/run.sh
 run site sh tests/site/run.sh
-run info sh tests/oracle/run.sh info
-run info-docsy sh tests/oracle/run.sh info-docsy
 run check-docsy sh exampleSite/check-docsy.sh
 run check-layout sh exampleSite/check-layout.sh
 run reference sh tests/reference.sh

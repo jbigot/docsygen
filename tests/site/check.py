@@ -26,7 +26,7 @@ Docsy's print pages (_print/), which repeat every page of a section, are link ta
 Exit 1 on any failure.
 """
 import collections, glob, json, os, re, sys, urllib.parse
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'oracle'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import htmltree
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}

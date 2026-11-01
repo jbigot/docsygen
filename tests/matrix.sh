@@ -1,15 +1,14 @@
 #!/bin/sh
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-# Run the test suites against each supported Doxygen version and against the module's minimum Hugo.
+# Run the corpus against each supported Doxygen version and each Hugo: the Hugo fork's
+# docsygen-native, where docsygen reads the XML with the native decoder, and the module's minimum
+# release (hugoVersion.min in hugo.yaml), where it reads it with the template reader.
 #
 # Usage: sh tests/matrix.sh
-# Per Doxygen version (DOXYGEN set to it): coverage.py on the sample's XML,
-# tests/site/run.sh and tests/oracle/run.sh info on sample and sample-c.
-# With the Hugo of module.hugoVersion.min in hugo.yaml, the latest release (HUGO set to it, and
-# DOCSYGEN_HUGO_KIND to release): tests/unit/run.sh and tests/site/run.sh, where docsygen reads
-# the XML with the template reader, as such a Hugo has no native decoder. The latter builds the
-# pdi oracle, which needs PDI_SRC the first time (tests/lib.sh, oracle).
+# For each Doxygen version (DOXYGEN set to it) and each Hugo (HUGO, and DOCSYGEN_HUGO_KIND, native
+# or release): tests/site/run.sh, which builds every corpus entry; coverage.py once per Doxygen
+# version, on the sample's XML, and tests/unit/run.sh once per Hugo, with the latest Doxygen.
 # The release binaries are downloaded once into the kept cache /var/tmp/docsygen-matrix.
 # Exit 1 on any failure.
 set -eu
@@ -18,33 +17,36 @@ here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
 doxygens="1.17.0 1.18.0"
 hugo_min=$(sed -n 's/^ *min: *//p' "$root/hugo.yaml")
-cache=/var/tmp/docsygen-matrix
 
 status=0
 fail() { echo "matrix.sh: FAILED: $*" >&2; status=1; }
 
+hugo_release=$cache/hugo-$hugo_min/hugo
+fetch "https://github.com/gohugoio/hugo/releases/download/v$hugo_min/hugo_extended_${hugo_min}_linux-amd64.tar.gz" \
+  "$cache/hugo-$hugo_min" || fail "no Hugo $hugo_min"
+fork=$hugo
+
 for v in $doxygens; do
   printf '=== Doxygen %s\n' "$v"
-  fetch "https://github.com/doxygen/doxygen/releases/download/Release_$(echo "$v" | tr . _)/doxygen-$v.linux.bin.tar.gz" \
-    "$cache/doxygen-$v"
-  DOXYGEN=$cache/doxygen-$v/doxygen-$v/bin/doxygen
+  DOXYGEN=$(doxygen_bin "$v") || { fail "$v: no Doxygen"; continue; }
   export DOXYGEN
   "$DOXYGEN" --version
-  sh "$root/tests/oracle/generate.sh" sample "$tmp/$v/sample" || fail "$v: sample oracle"
-  python3 -I "$root/tests/sample/coverage.py" "$tmp/$v/sample/xml" || fail "$v: coverage.py"
-  sh "$root/tests/site/run.sh" sample sample-c || fail "$v: site"
-  sh "$root/tests/oracle/run.sh" info sample sample-c || fail "$v: info oracle"
+  python3 -I "$root/tests/corpus/sample/coverage.py" "$(corpus sample)/xml" || fail "$v: coverage.py"
+  for kind in native release; do
+    case $kind in native) HUGO=$fork ;; release) HUGO=$hugo_release ;; esac
+    DOCSYGEN_HUGO_KIND=$kind
+    export HUGO DOCSYGEN_HUGO_KIND
+    printf -- '--- Hugo %s\n' "$kind"
+    sh "$root/tests/site/run.sh" || fail "Doxygen $v, Hugo $kind: site"
+  done
 done
-unset DOXYGEN
+unset HUGO DOCSYGEN_HUGO_KIND
 
-printf '=== Hugo %s\n' "$hugo_min"
-fetch "https://github.com/gohugoio/hugo/releases/download/v$hugo_min/hugo_extended_${hugo_min}_linux-amd64.tar.gz" \
-  "$cache/hugo-$hugo_min"
-HUGO=$cache/hugo-$hugo_min/hugo
-DOCSYGEN_HUGO_KIND=release
-export HUGO DOCSYGEN_HUGO_KIND
-"$HUGO" version
-sh "$root/tests/unit/run.sh" || fail "Hugo $hugo_min: unit"
-sh "$root/tests/site/run.sh" || fail "Hugo $hugo_min: site"
-
+for kind in native release; do
+  case $kind in native) HUGO=$fork ;; release) HUGO=$hugo_release ;; esac
+  DOCSYGEN_HUGO_KIND=$kind
+  export HUGO DOCSYGEN_HUGO_KIND
+  printf '=== unit, Hugo %s\n' "$kind"
+  sh "$root/tests/unit/run.sh" || fail "Hugo $kind: unit"
+done
 exit $status
