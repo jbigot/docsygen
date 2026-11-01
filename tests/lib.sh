@@ -14,6 +14,9 @@
 root=$(CDPATH='' cd -- "$(dirname -- "$0")" 2> /dev/null && git rev-parse --show-toplevel 2> /dev/null) \
   || root=$(git rev-parse --show-toplevel)
 tmp=$(mktemp -d)
+# The test sites and the documentation and example sites import docsygen through the replace of
+# their go.mod; HUGO_MODULE_REPLACEMENTS would override it, and test another tree.
+unset HUGO_MODULE_REPLACEMENTS
 if [ -n "${DOCSYGEN_KEEP:-}" ]; then echo "lib.sh: keeping $tmp" >&2; else trap 'rm -rf "$tmp"' EXIT; fi
 
 # fetch URL DIR: download and unpack the tarball at URL into DIR, unless DIR exists.
