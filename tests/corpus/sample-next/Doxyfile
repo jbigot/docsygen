@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
 # The C++ sample, one release later: the sample's sources without io.hpp (its pages disappear),
-# plus src/extra.hpp (its pages appear). Run doxygen from this directory (generate.sh does).
+# plus next/extra.hpp (its pages appear). Run doxygen from this directory (generate.sh does).
 @INCLUDE_PATH = ../sample
 @INCLUDE = Doxyfile
 PROJECT_NUMBER = 2.0
-INPUT = ../sample/src src
+INPUT = ../sample/src next
 EXCLUDE = ../sample/src/cxx/demo/io.hpp
 IMAGE_PATH = ../sample/images
 MERMAIDFILE_DIRS = ../sample/images
 EXAMPLE_PATH = ../sample/examples
+# Paths relative to both directories, as the sample's are to its own: Doxygen strips only the
+# directory it runs in by default, and would write the sample's absolute paths.
+STRIP_FROM_PATH = ../sample .
