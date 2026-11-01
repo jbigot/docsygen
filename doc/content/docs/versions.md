@@ -33,9 +33,10 @@ Titles and order
 
 Version menu
 : On a generated page, Docsy's navbar menu lists the versions, `latest (2.1)` for the latest
-  one, and each entry leads to the same page in that version, wherever it is placed, or to its
-  nearest existing parent. Hand-written pages show no menu, unless they
-  [claim an item]({{< relref "hand-written-pages" >}}).
+  one, and each entry leads to the same page in that version, wherever it is placed. When that
+  version lacks the page, the entry leads to the nearest parent that exists at the same path in
+  that version, or, for a version placed elsewhere, to its root. Hand-written pages show no
+  menu, unless they [claim an item]({{< relref "hand-written-pages" >}}).
 
 Notice
 : The pages of `main`, of releases newer than the latest, and of older releases say so above

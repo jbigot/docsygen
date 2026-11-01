@@ -55,13 +55,21 @@ Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.ya
 'docsygen'` in `assets/scss/_styles_project.scss`, the sample's XML in `assets/doxygen/sample`, one
 adapter call, `content/en/docs/_content.gotmpl`, which puts its reference at `/docs/api/latest/`,
 and a link to it from the docs landing page. Besides that, `ignoreLogs` for the sample's
-`eqnarray*` formula, Hugo 0.169 in `package.json`, and Node 22 instead of 24 in `engines`. Run
-`npx npm@11 install` once, then `npm run build`; Hugo and Dart Sass come from npm. The files it
-keeps from docsy-example are Apache-2.0 (`REUSE.toml`).
+`eqnarray*` formula, Hugo 0.169 in `package.json`, and Node 22 instead of 24 in `engines` (with
+`engine-strict` in `.npmrc`, npm refuses an older Node). docsy-example's own tooling is left out:
+its tests, CI, link checking (`link-cache`, lychee), formatting (`prettier`, cspell), update scripts
+(`npm-check-updates`, renovate), Netlify configuration, `docsy.work`, README, CONTRIBUTING and
+LICENSE, and the `package.json` scripts and dependencies that use them. Run `npx npm@11 install`
+once, then `npm run build`; Hugo and Dart Sass come from npm. The files it keeps from
+docsy-example are Apache-2.0, its content CC-BY-4.0 (`REUSE.toml`).
 
-`sh exampleSite/check.sh` builds it and checks the links and ids of what docsygen made
-(`check.py --under docs/api`); `sh exampleSite/preview.sh [--doc] [REV] [PORT]` serves it, or
-`doc/`, from the checkout or from any revision, with Docsy and npm's packages cached.
+`sh exampleSite/check.sh` builds it and checks what docsygen made (`tests/site/check_built.sh`
+with `--under docs/api`); `sh exampleSite/preview.sh [--doc] [REV] [PORT]` serves it, or `doc/`,
+from the checkout or from any revision, with Docsy and npm's packages cached.
+
+`doc/` and `exampleSite/` each hold a copy of the `sample` corpus entry's XML, generated with
+Doxygen 1.18.0: each site builds from its own directory. `sh tests/corpus/snapshot.sh` refreshes
+both after a change to the sample, and the `snapshot` suite fails when they are stale.
 
 The draft of PDI's website, which showed the reference in PDI's own layout, lives in
 [pdi-docsygen](https://github.com/jbigot/pdi-docsygen).
@@ -74,28 +82,49 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
 
 - **The corpus** (`tests/corpus/`): `sample` and `sample-c` (a C++ and a C project meant to use
   every construct docsygen renders), `sample-next` (the sample one release later, without
-  `io.hpp` and with `extra.hpp`, for versions), and `pdi`, PDI's real, large XML (also the
+  `io.hpp` and with `next/extra.hpp`, for versions), and `pdi`, PDI's real, large XML (also the
   performance check). `tests/corpus/generate.sh` runs Doxygen on an entry with a `Doxyfile`; the
   XML is generated per Doxygen version, into the cache `/var/tmp/docsygen-matrix/corpus`, never
-  committed. `pdi` is committed as it is.
+  committed, and the entries that no run used for two weeks go. `pdi` is committed as it is,
+  from Doxygen 1.18.0.
 - `unit` (`tests/unit/`): unit cases of partials, and builds that must fail or warn.
-- `site` (`tests/site/`): a test site without Docsy on each corpus entry, and on `versions`
-  (`sample` as 1.0 and `sample-next` as 2.0, the latest), checked by `check.py` (links, ids,
-  foreign classes) and for its redirects.
-- `doc`: the documentation site builds, its links and ids are valid (`doc/check.sh`).
-- `example`: the example site builds, and what docsygen made in it is valid
-  (`exampleSite/check.sh`).
+- `site` (`tests/site/`): a test site without Docsy on each corpus entry, on `versions`
+  (`sample` as 1.0 and `sample-next` as 2.0, the latest) and on `versions-mixed` (the same, with
+  1.0 from Doxygen 1.17.0), checked by `check.py` (links, ids, roles, foreign classes) and for its
+  redirects.
+- `snapshot`: the copies of the sample's XML in `doc/` and `exampleSite/` are current
+  (`tests/corpus/snapshot.sh --check`).
+- `doc`, `example`: the documentation and example sites build, with `--printPathWarnings`, and
+  the links, ids and roles of their reference are valid (`doc/check.sh`, `exampleSite/check.sh`,
+  through `tests/site/check_built.sh`; a test-only hook, `tests/site/hooks`, publishes the
+  `paths.json` of each version root).
+- `docsy` (`tests/docsy/`): how the versions meet Docsy, on `doc/`'s configuration with four
+  versions of the sample (one from another adapter file, placed elsewhere) and hand-written
+  pages that link to them. Against expectations written from the design, not from the output:
+  the version menus, canonical links and notices (`versions-expected.json`), the links of a
+  hand-written page (`expected-links.json`), the sections and sidebar, the search index, the
+  sitemap, the print pages and `llms.txt`, a baseURL with a path, that a second build is
+  identical, and a development build's warnings.
 - `reference`: what changed since the previous commit. It builds the test site of every corpus
-  entry and Doxygen version (1.17, 1.18) with the module of `REF` (default `HEAD`: the working
-  tree against the last commit; `REF=main` for a branch) and with the working tree's, prints the
-  number of identical, changed, added and removed files, and writes a `diff -r` per changed site
-  into `/var/tmp/docsygen-reference`. A change doesn't fail it: `sh tests/reference-summary.sh`
-  groups the changes by kind, so that an expected change is checked at a glance, and
+  entry and Doxygen version (1.17, 1.18; the entries whose XML doesn't depend on it, with 1.18
+  only) with the module of `REF` (default `HEAD`: the working tree against the last commit;
+  `REF=main` for a branch) and with the working tree's, prints the number of identical, changed,
+  added and removed files, and writes a `diff -r` per changed site into
+  `/var/tmp/docsygen-reference`. A change doesn't fail it: `sh tests/reference-summary.sh` groups
+  the changes by kind, so that an expected change is checked at a glance, and
   `sh tests/reference.sh --strict` fails on any change, for a refactor.
-- `reader-diff`: everything built with both readers must be identical. The reader's own tests
-  (against expat) are in [hugo-xml-document](https://github.com/jbigot/hugo-xml-document).
-- `tests/matrix.sh`, run separately: the `site` suite for every supported Doxygen, with the Hugo
-  fork and the minimum released Hugo, and `unit` with both Hugos.
+- `reader-diff`: everything built with both readers must be identical.
+- `tests/matrix.sh`, run separately: for every supported Doxygen, the `site` suite with the Hugo
+  fork and the minimum released Hugo, and the reader's comparison with expat
+  ([hugo-xml-document](https://github.com/jbigot/hugo-xml-document)'s `tests/run.sh`, at the
+  version `go.mod` requires) on the corpus, with both readers; and `unit`, `doc`, `example` and
+  `docsy` with both Hugos.
+
+The tests use internal partials of hugo-xml-document, which its README lists as stable for its
+dependents' tests: `xmldoc/read.html` and `xmldoc/parse.html` to force the template reader, and
+`xmldoc/native.html`. The tests set aside `HUGO_MODULE_REPLACEMENTS`: test sites import docsygen
+through the `replace` of a `go.mod`. [pdi-docsygen](https://github.com/jbigot/pdi-docsygen) keeps
+copies of `tests/site/check.py` and `htmltree.py`: update them there too.
 
 To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 `module.replacements: "github.com/jbigot/docsygen -> <tree>"`, mounts for `content`, `layouts`

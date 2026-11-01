@@ -68,7 +68,9 @@ docsygen is released under the [MIT license](LICENSE). The repository follows th
 specification](https://reuse.software/spec/): each file carries its own copyright and license in
 an `SPDX-` header, or in a `.license` file next to it when it can't hold one (images, JSON,
 Doxygen's generated files, and test inputs whose exact content matters), and the texts are in
-[LICENSES/](LICENSES/). Files that come from elsewhere keep their own: PDI's Doxygen XML, images
-and site assets under BSD-3-Clause, and the schemas and stylesheet that Doxygen copies into its
+[LICENSES/](LICENSES/). Files that come from elsewhere keep their own: PDI's Doxygen XML and images
+(`tests/corpus/pdi`) under BSD-3-Clause, and the schemas and stylesheet that Doxygen copies into its
 XML output under GPL-2.0-or-later (`xml.xsd`: W3C-20150513). Two partials that reuse Docsy's
-markup are Apache-2.0, and the PDI home page, adapted from PDI's site, BSD-3-Clause.
+markup are Apache-2.0, and so are the files of the example site that come from
+[docsy-example](https://github.com/docsy/docsy-example), but its content, CC-BY-4.0
+(`REUSE.toml`).
