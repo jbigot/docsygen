@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """HTML trees, CSS-like selectors, and the gaps of xml-gaps.yaml, for the oracles (info.py) and
 tests/site/check.py.
 

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: part, the brief of a class is its block's markup
   partial: test/part.html
   context: {model: sample, key: api/demo/widget, address: {type: brief, id: classdemo_1_1Widget}}

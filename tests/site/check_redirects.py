@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check that each page of the latest version has a redirect at its numbered path.
 
 Usage: python3 -I check_redirects.py PUBLIC LATEST NUMBERED

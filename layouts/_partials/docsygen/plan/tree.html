@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The blocks of a list page: its title (translator_en.h) and the list. */ -}}
 {{- $m := .ctx.model -}}
 {{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}

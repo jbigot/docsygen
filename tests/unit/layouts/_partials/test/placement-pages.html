@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The pages of a build case's site, sorted, as one warning: "placement-pages: URL[title] … |". */ -}}
 {{- $pages := slice -}}
 {{- range site.Pages -}}{{- $pages = $pages | append (printf "%s[%s]" .RelPermalink .Title) -}}{{- end -}}

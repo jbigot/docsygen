@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The strings of .contains that the skeleton of page .key of .model (Docsy scheme) lacks. */ -}}
 {{- $m := .model -}}
 {{- if not (reflect.IsMap $m) -}}{{- $m = partial "docsygen/model.html" (printf "doxygen/%s" $m) -}}{{- end -}}

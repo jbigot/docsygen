@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check the versions of the example site where they meet Docsy's own pages (exampleSite/check-docsy.sh).
 
 Usage: python3 -I check_example.py PUBLIC BASED

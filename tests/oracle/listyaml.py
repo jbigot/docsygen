@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Read the YAML of xml-gaps.yaml and info-rules.yaml: a list of flat maps, in block style.
 
 The Python standard library has no YAML reader, and these files need very little of YAML:

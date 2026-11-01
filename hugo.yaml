@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # docsygen is consumed as a Hugo module. Its floor is the latest Hugo release, which
 # tests/matrix.sh checks; tests/all.sh builds with the native decoder of a Hugo fork.
 module:

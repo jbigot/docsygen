@@ -1,1 +1,5 @@
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
 <r><a>a<!--c-->b</a><b>x<![CDATA[y]]>z</b><c><![CDATA[]]></c><d>p<?pi x?>q</d><e><!--only--></e></r>

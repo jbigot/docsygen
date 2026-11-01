@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Check an XML reader against expat: every corpus file must give the same tree, in the document
 # layout ({tag, attributes, children}), and every file in edge/bad must fail the build. READER
 # selects the reader: `template` (the default) is the template reader, through

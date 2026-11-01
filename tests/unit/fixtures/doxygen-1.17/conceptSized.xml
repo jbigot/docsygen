@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.17.0" xml:lang="en-US">
   <compounddef id="conceptSized" kind="concept">
     <compoundname>Sized</compoundname>

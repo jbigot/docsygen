@@ -1,4 +1,7 @@
 ---
+# SPDX-FileCopyrightText: 2015-2026 Commissariat a l'energie atomique et aux energies alternatives (CEA)
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: BSD-3-Clause
 title: PDI
 linkTitle: PDI
 ---

@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* Dump the tree of every assets/corpus/**.xml file to trees.json, keyed by path. */ -}}
 {{- $out := newScratch -}}
 {{- range resources.Match "corpus/**.xml" -}}

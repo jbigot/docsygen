@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Build the example site in PDI's organization (pdi-layout.yaml, content-pdi/) and check it.
 #
 # Usage: sh exampleSite/check-layout.sh

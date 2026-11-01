@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* docsygen/versions/weight.html of each element of a list (cases/versions.yaml). */ -}}
 {{- $out := slice -}}
 {{- range . -}}{{- $out = $out | append (partial "docsygen/versions/weight.html" .) -}}{{- end -}}

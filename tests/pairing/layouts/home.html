@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* Publish paths.json in each version root (/ref/paths.json), for tests/oracle/info.py:
        {pages: {key: {url, roles}}, targets, anchors} of that root, keyed by Doxygen's page names. */ -}}
 {{- range where site.Pages "Params.docsygen.root" true -}}

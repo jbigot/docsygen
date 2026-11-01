@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Tests of htmltree.py, the HTML tree, selectors and gaps of the oracles, and of listyaml.py.
 
 Run: python3 -I -m unittest discover -s tests/oracle -p 'test_htmltree.py'

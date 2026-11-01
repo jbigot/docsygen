@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: versions, a link to a version that development mode skips is text
   partial: docsygen/versions.html
   context: {}

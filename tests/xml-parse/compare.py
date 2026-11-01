@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Compare the trees dumped by layouts/home.html with expat's parse of the same files.
 
 Usage: python3 -I compare.py [--layout document] trees.json NAME=DIR [NAME=DIR ...]

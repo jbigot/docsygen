@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Tests of info.py, the information comparator of the Docsy output.
 
 Run: python3 -I -m unittest discover -s tests/oracle -p 'test_info.py'

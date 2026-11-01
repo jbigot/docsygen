@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Shared by the test scripts, which source it: . "$(dirname "$0")/../lib.sh"
 # It sets:
 #   root  the repository root

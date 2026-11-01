@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing to docsygen
 
 This file is for working on docsygen itself: its toolchain, its tests, how it is built, and what
@@ -158,3 +163,13 @@ Pitfalls met so far:
 - Docsy's `favicons.html` and its other `os.FileExists` checks look at the real `static/`, not at
   mounts; its blocks and `{{% alert %}}` need goldmark's `unsafe: true`.
 - Building Hugo fills Go's build cache (33 GB once): `go clean -cache` afterwards.
+
+## Licenses
+
+A new file carries its license in a header, as the others do: `SPDX-FileCopyrightText` and
+`SPDX-License-Identifier`, MIT unless the file comes from elsewhere, in which case it keeps its
+own. Where a header can't go (binary and JSON files, Doxygen's generated files, inputs of a test
+whose line numbers or exact bytes matter, such as `tests/sample/src/` and
+`tests/xml-parse/edge/`), a `<file>.license` holds it. In Hugo templates the header is a `{{- /* …
+*/ -}}` comment, in Markdown pages with front matter a `#` comment inside it. Check with `reuse
+lint`.

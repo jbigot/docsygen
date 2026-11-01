@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Check that hugo server re-parses only the XML files that changed: editing a content file must
 # re-parse nothing, and editing one XML file must re-parse that file only. partialCached alone
 # doesn't do it, since Hugo clears its cache at the start of every build.

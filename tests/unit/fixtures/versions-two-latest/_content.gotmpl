@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* Two calls marked latest, for builds/versions.yaml: both generate latest/. */ -}}
 {{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "0.9" "path" ":version" "latest" true) -}}
 {{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" ":version" "latest" true) -}}

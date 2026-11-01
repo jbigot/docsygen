@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # What Doxygen 1.16 and 1.17 added to the XML: a concept's parts (1.16), Mermaid diagrams (1.17).
 # The XML is Doxygen 1.17.0's, of fixtures/doxygen-1.17/a.h: run doxygen there and copy index.xml,
 # a_8h.xml, conceptSized.xml and flow.mmd (the copy that Doxygen writes next to the XML for

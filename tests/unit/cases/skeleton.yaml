@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: skeleton of the guide, a section heading before its block
   partial: test/skeleton.html
   context:

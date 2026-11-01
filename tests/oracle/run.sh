@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Build a site from each oracle's XML and check with info.py that it shows all the information of
 # that oracle's Doxygen HTML.
 #

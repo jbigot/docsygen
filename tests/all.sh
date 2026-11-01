@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Run every suite of the standard check, in order, and stop at the first failure.
 #
 # Usage: sh tests/all.sh

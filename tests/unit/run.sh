@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Run the unit cases (cases/*.yaml) and the build cases (builds/*.yaml) of docsygen's partials.
 #
 # Usage: sh tests/unit/run.sh [REGEX]

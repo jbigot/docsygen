@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: model of a directory without index.xml
   partial: docsygen/model.html
   context: doxygen/nope

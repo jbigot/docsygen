@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: scheme, a class under its namespace
   partial: test/paths.html
   context: {model: sample}

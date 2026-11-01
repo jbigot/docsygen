@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check the example site in PDI's organization (exampleSite/check-layout.sh).
 
 Usage: python3 -I check_layout.py PUBLIC EXPECTED.json [--development]

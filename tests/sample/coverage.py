@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """List the description elements of compound.xsd that the sample's XML never uses.
 
 Usage: python3 -I coverage.py XMLDIR

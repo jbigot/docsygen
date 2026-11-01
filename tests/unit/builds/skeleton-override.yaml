@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: a site's class skeleton replaces the class page's, and only it
   partial: test/skeleton-override.html
   context: {model: sample, reversed: api/demo/widget, same: api/demo}

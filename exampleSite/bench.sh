@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Time the build of the example site with N copies of PDI's reference, as N versions.
 #
 # Usage: sh exampleSite/bench.sh N [HUGO_ARG ...]

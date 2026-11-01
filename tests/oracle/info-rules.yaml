@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # The intentional differences of the Docsy output, removed from the Doxygen side before the
 # comparison: see info.py. The user reviews each rule.
 - oracle: sample

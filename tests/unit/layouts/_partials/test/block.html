@@ -1,2 +1,6 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The markup of .block (heading false) with .ctx: context {block, ctx}. */ -}}
 {{- return partial (printf "docsygen/markup/block-%s.html" .block.type) (dict "block" (merge .block (dict "heading" false)) "ctx" .ctx) -}}

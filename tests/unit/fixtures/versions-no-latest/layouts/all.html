@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* A page of a build case's site: warns with the entries of its version menu. */ -}}
 {{- $menu := partial "navbar-version-selector.html" . -}}
 {{- with $menu -}}{{- warnf "menu %s" (delimit (findRE `>[^<>]+</a>` .) "") -}}{{- end -}}

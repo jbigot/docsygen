@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Check the template reader against the native decoder of gohugoio/hugo#15485, with one Hugo
 # binary for both readers, so that a difference can only come from the reader.
 #

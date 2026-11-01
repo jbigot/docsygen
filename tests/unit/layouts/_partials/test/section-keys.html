@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The keys of the sections of compound .id in .model. */ -}}
 {{- $out := slice -}}
 {{- range partial "docsygen/plan/sections.html" . -}}{{- $out = $out | append .key -}}{{- end -}}

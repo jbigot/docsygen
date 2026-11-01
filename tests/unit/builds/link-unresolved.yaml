@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: a doxygen link that resolves to nothing
   partial: test/link.html
   context: {destination: "doxygen:nope"}

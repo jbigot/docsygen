@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Generate an oracle: Doxygen's XML and its HTML, written by the same run into OUT/xml and
 # OUT/html, with the overrides that keep the HTML plain (no tree view, search, dot, custom layout,
 # header, footer or stylesheet) and the XML complete (source listings included).

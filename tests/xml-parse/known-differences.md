@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+
 # Known differences between the XML readers and expat
 
 `run.sh` compares two readers with expat:

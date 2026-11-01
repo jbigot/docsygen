@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check that a Docsy site shows all the information of Doxygen's HTML for the same XML.
 
 Usage: python3 -I info.py --doxygen HTMLDIR --compat C.json --site PUBLIC --paths D.json

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # The example site in PDI's own organization: hugo --config hugo.yaml,pdi-layout.yaml. Four
 # top-menu entries, each a docs section with its own sidebar (content-pdi/): the user
 # documentation at /docs/<version>/ (the guide's pages, the C API, and in the latest version a

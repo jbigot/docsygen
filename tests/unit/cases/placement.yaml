@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: placement pattern, a version in the middle
   partial: docsygen/placement/pattern.html
   context: {path: "docs/:version/api", version: "1.7", latest: false}

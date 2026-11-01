@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check the output of the Docsy-flavor test site.
 
 Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json]

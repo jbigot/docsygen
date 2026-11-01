@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* Call docsygen/adapter.html with the case's options and a stand-in store: only the option
        checks can run outside a content adapter. */ -}}
 {{- partial "docsygen/adapter.html" (merge . (dict "store" "not a content adapter")) -}}

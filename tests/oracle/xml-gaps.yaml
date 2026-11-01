@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # What Doxygen's HTML shows and its XML doesn't give, removed from the Doxygen side before the
 # comparison: see tests/oracle/htmltree.py. The user approves each entry.
 - oracle: sample

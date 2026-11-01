@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+
 # PDI's Doxygen XML
 
 The example site renders three versions of [PDI](https://github.com/pdidev/pdi)'s reference

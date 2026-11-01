@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: links, a generated page's link to an item that no page holds is text
   partial: docsygen/versions.html
   context: {}

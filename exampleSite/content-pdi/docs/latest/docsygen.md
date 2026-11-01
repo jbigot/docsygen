@@ -1,4 +1,6 @@
 ---
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 title: docsygen
 description: >-
   Generate the C and C++ API reference of a Docsy site from Doxygen's XML: set up, the content

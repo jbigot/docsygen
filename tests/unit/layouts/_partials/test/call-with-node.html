@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* Call the partial .call with the node itself, for the partials that take a node rather
        than a map: context {xml: STRING, call: PARTIAL}. */ -}}
 {{- return partial .call .node -}}

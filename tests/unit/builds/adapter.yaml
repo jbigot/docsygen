@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 - name: adapter with an unknown option
   partial: test/adapter.html
   context: {dir: doxygen/sample, version: v, path: ref, latset: true}

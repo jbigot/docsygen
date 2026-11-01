@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Compare the Docsy test site built with the module of the baseline commit and with the working
 # tree's: the baseline's output is the reference that the Docsy flavor is checked against.
 #

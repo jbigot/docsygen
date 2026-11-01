@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* docsygen/link.html for a link to .destination on the home page, as the link render hook
        calls it. */ -}}
 {{- return partial "docsygen/link.html" (dict "Destination" .destination "Text" "" "Title" "" "PlainText" "" "Page" site.Home) -}}

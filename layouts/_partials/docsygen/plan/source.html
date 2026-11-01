@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* The blocks of a file's source listing. */ -}}
 {{- $id := .role.id -}}
 {{- return slice (dict "type" "title" "id" "" "labels" slice "groups" slice "text" (index .ctx.model.ids $id).name)

@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 # Serve the example site with PDI's reference, as docsygen renders it.
 #
 # Usage: sh exampleSite/preview.sh [--pdi|--plain] [REV] [PORT]

@@ -1,3 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
 {{- /* A namespace below the :version segment, in two versions. */ -}}
 {{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "old" "path" "ref/:version/api" "select" "api/demo") -}}
 {{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" "ref/:version/api" "select" "api/demo" "latest" true) -}}

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
 """Check the version menu and the canonical link of pages of a Docsy site with several versions.
 
 Usage: python3 -I check_versions.py PUBLIC EXPECTED.json
