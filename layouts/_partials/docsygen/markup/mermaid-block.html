@@ -1,0 +1,13 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A Mermaid diagram as a fenced code block, rendered by .ctx.page.RenderString: Docsy's
+       render-codeblock-mermaid hook, or the site's own, draws it and loads the script. The fence
+       is longer than any run of backticks in the source.
+       Usage: partial "docsygen/markup/mermaid-block.html" (dict "source" $source "ctx" $ctx) */ -}}
+{{- $source := .source -}}
+{{- $ticks := 3 -}}
+{{- range findRE "`+" $source -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
+{{- $fence := strings.Repeat (int $ticks) "`" -}}
+{{- return .ctx.page.RenderString (dict "display" "block") (printf "%smermaid\n%s\n%s" $fence $source $fence) -}}

@@ -18,6 +18,9 @@ Checks:
   - the sitemap lists the reference's pages under /docs/latest/ only;
   - the print page of /docs/main/ holds a member's signature, and the print page of /docs/1.0/
     has the notice and one canonical link;
+  - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
+    guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
+    demo::Box's page, with no diagram, does not;
   - llms.txt lists pages of /docs/latest/;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
@@ -81,6 +84,13 @@ def main(argv):
         errors.append('the print page of /docs/1.0/ has no notice')
     if len(re.findall(r'rel="?canonical', printed)) != 1:
         errors.append('the print page of /docs/1.0/ has not one canonical link')
+    button = read(public, 'docs/latest/api/demo/button/index.html')
+    if 'data-docsy-plugin="mermaid"' not in button or '<pre class="mermaid">' not in button:
+        errors.append("demo::Button's page, with an inheritance diagram, doesn't load Mermaid")
+    if 'data-docsy-plugin="mermaid"' in read(public, 'docs/latest/api/demo/box/index.html'):
+        errors.append("demo::Box's page, with no diagram, loads Mermaid")
+    if 'data-docsy-plugin="mermaid"' not in read(public, 'docs/main/pages/guide/index.html'):
+        errors.append("the guide page, with a <mermaid>, doesn't load Mermaid")
     if not os.path.exists(os.path.join(public, 'llms.txt')):
         errors.append('no llms.txt')
     elif '/docs/latest/' not in read(public, 'llms.txt'):

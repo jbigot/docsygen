@@ -3,13 +3,13 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* docsygen/part.html on model .model (test/context.html reads it), with the context a page of that model gets
-       (docsygen/ctx/root.html, without a root page: no links): .address, .anchor. With .key, the
+       (docsygen/ctx/root.html, with the home page as its page, and no root page: no links): .address, .anchor. With .key, the
        block of .address in the plan of page .key, through its markup partial
        (docsygen/markup/block-<type>.html), is compared with part.html's output: true when they
        are the same. Otherwise part.html's output. */ -}}
 {{- $m := .model -}}
 {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
-{{- $ctx := dict "model" $m "paths" $paths "page" nil "version" (path.Base $m.dir) "links" dict "urls" dict
+{{- $ctx := dict "model" $m "paths" $paths "page" site.Home "version" (path.Base $m.dir) "links" dict "urls" dict
     "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $m.dir (jsonify slice))) -}}
 {{- $html := partial "docsygen/part.html" (dict "address" .address "ctx" $ctx "anchor" (.anchor | default false)) -}}
 {{- with .key -}}

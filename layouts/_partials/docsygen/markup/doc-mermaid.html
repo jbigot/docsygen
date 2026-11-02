@@ -2,7 +2,7 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* A Mermaid diagram, which Docsy's Mermaid plugin renders on the pages that set hasmermaid, in
+{{- /* A Mermaid diagram, drawn through the Mermaid code-block hook, in
        a figure with its caption. A <mermaid>'s caption is an attribute: plain text, which
        Doxygen's HTML shows as is too (markup and all). */ -}}
 {{- $n := .node -}}
@@ -10,8 +10,7 @@ SPDX-License-Identifier: MIT
 {{- $caption := $n.attributes.caption -}}
 {{- if eq $n.tag "mermaidfile" -}}{{- $caption = partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}{{- end -}}
 {{- if $diagram.ok -}}
-  {{- with .ctx.page -}}{{- .Store.Set "hasmermaid" true -}}{{- end -}}
-  <figure class="figure d-block"><pre class="mermaid">{{ $diagram.source }}</pre>{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
+  <figure class="figure d-block">{{ partial "docsygen/markup/mermaid-block.html" (dict "source" $diagram.source "ctx" .ctx) }}{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- else -}}
   <figure class="figure d-block">{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- end -}}
