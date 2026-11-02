@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 // SPDX-License-Identifier: MIT
-// docsygen's styles for the reference pages, imported by a site's _styles_project.scss:
-//   @import 'docsygen';
+// docsygen's styles for the reference pages, loaded by a site's _styles_project.scss:
+//   @use 'docsygen';
 // Only docsygen-* classes are styled, through Bootstrap's --bs-* variables, so that Docsy's light
 // and dark modes apply, but for Docsy's version menu item at the end.
 

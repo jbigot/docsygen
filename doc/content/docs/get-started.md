@@ -34,10 +34,10 @@ the print heading of docs pages), which only works when it is imported **before*
 stops otherwise.
 {{% /alert %}}
 
-Then import its styles from your `assets/scss/_styles_project.scss`:
+Then load its styles from your `assets/scss/_styles_project.scss`:
 
 ```scss
-@import 'docsygen';
+@use 'docsygen';
 ```
 
 ### 2. Bring in Doxygen's XML

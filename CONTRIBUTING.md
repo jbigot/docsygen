@@ -51,7 +51,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 ## The example site
 
 `exampleSite/` is [docsy-example](https://github.com/docsy/docsy-example) at the tag of the pinned
-Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@import
+Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@use
 'docsygen'` in `assets/scss/_styles_project.scss`, the sample's XML in `assets/doxygen/sample`, one
 adapter call, `content/en/docs/_content.gotmpl`, which puts its reference at `/docs/api/latest/`,
 and a link to it from the docs landing page. Besides that, `ignoreLogs` for the sample's

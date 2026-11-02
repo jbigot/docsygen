@@ -3,6 +3,8 @@ Project-specific styles. For details, see:
 https://www.docsy.dev/docs/content/lookandfeel/#project-style-files
 */
 
+@use 'docsygen';
+
 // Dark mode enhancements
 @import 'td/color-adjustments-dark';
 @import 'td/code-dark';
@@ -21,5 +23,3 @@ https://www.docsy.dev/docs/content/lookandfeel/#project-style-files
     color: tint-color($primary, 80%) !important;
   }
 }
-
-@import 'docsygen';

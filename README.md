@@ -33,10 +33,10 @@ module:
     - path: github.com/docsy/docsy/theme
 ```
 
-Import its styles from `assets/scss/_styles_project.scss`:
+Load its styles from `assets/scss/_styles_project.scss`:
 
 ```scss
-@import 'docsygen';
+@use 'docsygen';
 ```
 
 Copy Doxygen's XML directory under `assets/doxygen/mylib/`, and generate the pages from a content
