@@ -3,8 +3,8 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The declaration rows of a member (memberdef.cpp, writeDeclaration; memberlist.cpp,
-       writePlainDeclarations for enums): an optional template row, the member row with the type
-       on the left and the linked name and arguments on the right, and its brief. */ -}}
+       writePlainDeclarations for enums): one row, with the type on the left and, on the right, an
+       optional template line, the linked name and arguments, and the brief. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $id := .id -}}
@@ -144,16 +144,12 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- $left = printf "%s%s" $marks $left -}}
-{{- if $tparams -}}
-<tr class="docsygen-summary-template"><td colspan="2">template&lt;{{ delimit $tparams ", " }}&gt;</td></tr>
-<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{ $right }}</td></tr>
-{{- else -}}
-<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{ $right }}</td></tr>
-{{- end -}}
+{{- $template := "" -}}
+{{- if $tparams -}}{{- $template = printf `<div class="small text-body-secondary">template&lt;%s&gt;</div>` (delimit $tparams ", ") -}}{{- end -}}
+{{- $brief := "" -}}
 {{- with $parts.briefdescription -}}
   {{- $text := false -}}
   {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
-  {{- if $text -}}
-<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}</td></tr>
-  {{- end -}}
+  {{- if $text -}}{{- $brief = printf `<div class="text-body-secondary">%s</div>` (partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true)) -}}{{- end -}}
 {{- end -}}
+<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{ $template | safeHTML }}{{ $right }}{{ $brief | safeHTML }}</td></tr>

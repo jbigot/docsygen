@@ -29,7 +29,7 @@ SPDX-License-Identifier: MIT
   {{- range $values -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $inits = true -}}{{- end -}}{{- end -}}{{- end -}}
   {{- end -}}
   {{- with $values -}}
-<table class="docsygen-enumvalues"><tr><th colspan="{{ cond $inits 3 2 }}">{{ T "docsygen-enumerator" }}</th></tr>
+<table class="docsygen-enumvalues"><thead><tr><th colspan="{{ cond $inits 3 2 }}">{{ T "docsygen-enumerator" }}</th></tr></thead><tbody>
     {{- range . -}}
       {{- $v := . -}}
       {{- $name := "" -}}
@@ -44,7 +44,7 @@ SPDX-License-Identifier: MIT
       {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}{{- end -}}
 </td></tr>
     {{- end -}}
-</table>
+</tbody></table>
   {{- end -}}
 {{- end -}}
 {{- /* Reimplements, then reimplemented by. */ -}}

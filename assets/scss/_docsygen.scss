@@ -40,54 +40,22 @@
   font-size: 0.9em;
 }
 
-// Tables: summaries, enum values, fields, members lists.
-.docsygen-summary,
-.docsygen-enumvalues,
-.docsygen-fields,
-.docsygen-members {
-  width: 100%;
-  margin-bottom: 1rem;
-
-  th,
-  td {
-    padding: 0.25rem 0.5rem;
-    vertical-align: top;
-    border-bottom: 1px solid var(--bs-border-color-translucent);
-  }
-}
-
+// Tables: Docsy styles every table of the content (td-table: striped, responsive), summaries,
+// enum values, fields and members lists included; only the summaries' columns are ours.
 .docsygen-summary {
   .docsygen-summary-type {
     width: 1%;
     white-space: nowrap;
-    text-align: right;
-    font-family: var(--bs-font-monospace);
   }
 
+  .docsygen-summary-type,
   .docsygen-summary-name {
     font-family: var(--bs-font-monospace);
   }
 
-  .docsygen-summary-template td {
-    border-bottom: none;
-    font-family: var(--bs-font-monospace);
-    font-size: 0.85em;
-    color: var(--bs-secondary-color);
-  }
-
-  .docsygen-summary-brief td {
-    padding-top: 0;
-    color: var(--bs-secondary-color);
-  }
-
-  // A row's brief belongs to the row above it.
-  tr:has(+ .docsygen-summary-brief) td {
-    border-bottom: none;
-  }
-
-  .docsygen-summary-group th,
-  .docsygen-summary-inherited th {
-    background-color: var(--bs-tertiary-bg);
+  // The brief is prose; the template line is code.
+  .docsygen-summary-name > .text-body-secondary:not(.small) {
+    font-family: var(--bs-body-font-family);
   }
 }
 

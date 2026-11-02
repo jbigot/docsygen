@@ -19,7 +19,8 @@ Checks:
   - no `name` attribute on an <a>, nor an id of Doxygen's anchors (a<N>_…, r_…), which nothing
     links to;
   - no <p> holds a block element;
-  - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
+  - no class but docsygen-*, Docsy's alert classes, mermaid and the Bootstrap classes docsygen uses
+    (small, text-body-secondary), outside KaTeX's output
     (.katex*) and the highlighted code of listings (pre.docsygen-listing), on the pages of the
     test site (those that Docsy didn't lay out: without .td-content, nor a td-* class on <body>,
     as Docsy's home and community pages have; Docsy's classes are its business);
@@ -36,7 +37,7 @@ import htmltree
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
 LEFTOVERS = ('{{<', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
-ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*)$')
+ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|small|text-body-secondary)$')
 
 
 def foreign_classes(node, out):

@@ -103,8 +103,18 @@
   context:
     ctx: {model: sample}
     block: {type: decls, id: classdemo_1_1Widget, key: public-func}
-    contains: ['<table class="docsygen-summary">', '<td class="docsygen-summary-type">', '<td class="docsygen-summary-name">', '<tr class="docsygen-summary-brief">']
-    lacks: [memberdecls, memItemLeft, memItemRight, mdescRight, valign, 'memitem:']
+    contains: ['<table class="docsygen-summary">', '<td class="docsygen-summary-type">', '<td class="docsygen-summary-name">', '<div class="text-body-secondary">']
+    lacks: [memberdecls, memItemLeft, memItemRight, mdescRight, valign, 'memitem:', docsygen-summary-brief, docsygen-summary-template]
+  expect: []
+- name: summary, a member is one row
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: decls, id: namespacedemo, key: func}
+    contains:
+      - '<div class="small text-body-secondary">template&lt;Boxable T&gt;</div>box (T v)<div class="text-body-secondary">'
+      - 'Puts a value in a Box.'
+    lacks: ['<tr class="docsygen-summary-brief">', '<tr class="docsygen-summary-template">']
   expect: []
 - name: docsy markup, a block image is a figure
   partial: test/doc.html
