@@ -32,3 +32,15 @@
   partial: docsygen/text/md-escape.html
   context: "{#id}"
   expect: \{\#id\}
+- name: anchor of a qualified name
+  partial: docsygen/text/anchor.html
+  context: ns::f
+  expect: nsf
+- name: anchor of an operator
+  partial: docsygen/text/anchor.html
+  context: operator==
+  expect: operator
+- name: anchor of a name with nothing left is goldmark's fallback
+  partial: docsygen/text/anchor.html
+  context: '::'
+  expect: heading

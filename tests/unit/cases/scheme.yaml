@@ -36,12 +36,17 @@
   partial: test/paths.html
   context: {model: sample}
   select: [paths, targets, classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca, anchor]
-  expect: resize-2
+  expect: resize-1
+- name: scheme, a section is named as Hugo names a heading
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, guide_1first-section, anchor]
+  expect: first-section
 - name: scheme, a member named details yields to the fixed anchor
   partial: test/paths.html
   context: {model: sample}
   select: [paths, targets, classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68, anchor]
-  expect: details-2
+  expect: details-1
 - name: scheme, the C sample has no pages section
   partial: test/paths.html
   context: {model: sample-c}

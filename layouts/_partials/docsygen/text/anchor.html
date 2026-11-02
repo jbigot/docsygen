@@ -1,0 +1,9 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A string as an anchor, named as Hugo names a heading: anchorize, which follows the site's
+       markup.goldmark.parser.autoHeadingIDType, and goldmark's "heading" when nothing is left
+       (for "::"). A collision is numbered by the caller (docsygen/paths/scheme.html).
+       Usage: partial "docsygen/text/anchor.html" "ns::f" → nsf */ -}}
+{{- return (anchorize . | default "heading") -}}

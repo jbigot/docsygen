@@ -21,16 +21,19 @@ SPDX-License-Identifier: MIT
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
        Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
        for member groups, conceptdef, inherited, inline-classes, all-members, source, letter-<l> of
-       the class index, index-<filter>-<l> of a member index), the members (slug(name)), the enum
-       values (<enum anchor>-<slug(value)>), the sections (slug(title)), the anchors (slug(id
-       without its compound's prefix)); -2, … on a collision, "a" for an empty slug.
+       the class index, index-<filter>-<l> of a member index), the members (the name), the enum
+       values (<enum anchor>-<value>), the sections (the title), the anchors (the id without its
+       compound's prefix). An anchor is docsygen/text/anchor.html of its name, as Hugo names a
+       heading, with -1, -2, … on a collision, as goldmark numbers duplicate heading ids; a
+       page's path segment takes -2, ….
        Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
 {{- define "_partials/docsygen/paths/scheme/alloc.html" -}}
-  {{- /* A name unique in .page of scratch .s: .base, or .base-2, …; "a" for an empty one. */ -}}
+  {{- /* A name unique in .page of scratch .s: .base, or .base-<n> from n = .first (2 for a page's
+         segment, 1 for an anchor); "a" for an empty one. */ -}}
   {{- $base := .base | default "a" -}}
   {{- $a := $base -}}
   {{- if index (.s.Get "used") (printf "%s|%s" .page $a) -}}
-    {{- range seq 2 10000 -}}
+    {{- range seq .first 10000 -}}
       {{- $c := printf "%s-%d" $base . -}}
       {{- if not (index ($.s.Get "used") (printf "%s|%s" $.page $c)) -}}{{- $a = $c -}}{{- break -}}{{- end -}}
     {{- end -}}
@@ -44,7 +47,7 @@ SPDX-License-Identifier: MIT
   {{- $key := "index" -}}
   {{- $path := "" -}}
   {{- if .parent -}}
-    {{- $seg := partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" (printf "/%s" .parent) "base" .seg) -}}
+    {{- $seg := partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" (printf "/%s" .parent) "base" .seg "first" 2) -}}
     {{- $pp := index ($s.Get "path") .parent -}}
     {{- $path = cond (eq $pp "") $seg (printf "%s/%s" $pp $seg) -}}
     {{- $key = $path -}}
@@ -427,7 +430,7 @@ SPDX-License-Identifier: MIT
     {{- if eq .role "compound" -}}
       {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
         {{- $base := .key -}}
-        {{- if hasPrefix .key "user-defined-" -}}{{- $base = partial "docsygen/text/slug.html" .heading | default .key -}}{{- end -}}
+        {{- if hasPrefix .key "user-defined-" -}}{{- $base = anchorize .heading | default .key -}}{{- end -}}
         {{- $fixed = $fixed | append (dict "key" .key "base" $base) -}}
       {{- end -}}
       {{- /* The other headings of docsygen/plan/compound.html. */ -}}
@@ -445,21 +448,21 @@ SPDX-License-Identifier: MIT
           {{- end -}}
         {{- end -}}
         {{- range uniq $letters -}}
-          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (anchorize . | default (printf "%x" .)))) -}}
         {{- end -}}
       {{- else -}}
         {{- /* A member index page shows each filter's list, with its own letters. */ -}}
         {{- $filter := .filter -}}
         {{- range where (index $entries .name) "filters" "intersect" (slice $filter) -}}{{- $letters = $letters | append .letter -}}{{- end -}}
         {{- range uniq $letters -}}
-          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s-%s" $filter .) "base" (printf "index-%s-%s" $filter (partial "docsygen/text/slug.html" . | default (printf "%x" .)))) -}}
+          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s-%s" $filter .) "base" (printf "index-%s-%s" $filter (anchorize . | default (printf "%x" .)))) -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- range $fixed -}}
     {{- if not (index ($s.Get "anchor") (printf "%s\x00%s" $key .key)) -}}
-      {{- $s.SetInMap "anchor" (printf "%s\x00%s" $key .key) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" .base)) -}}
+      {{- $s.SetInMap "anchor" (printf "%s\x00%s" $key .key) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" .base "first" 1)) -}}
     {{- end -}}
   {{- end -}}
   {{- $compounds := $shown.Get $key | default slice -}}
@@ -468,7 +471,7 @@ SPDX-License-Identifier: MIT
     {{- $e := index $m.ids . -}}
     {{- if ne (index $rolePage .) $key -}}
       {{- $n := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
-      {{- $s.SetInMap "homes" . (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/slug.html" $n))) -}}
+      {{- $s.SetInMap "homes" . (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/anchor.html" $n) "first" 1)) -}}
     {{- end -}}
   {{- end -}}
   {{- $enums := slice -}}
@@ -481,7 +484,7 @@ SPDX-License-Identifier: MIT
             {{- $e := index $m.ids $id -}}
             {{- if and (eq $e.home $c) (not (isset ($s.Get "homes") $id)) (partial "docsygen/model/linkable.html" (dict "model" $m "id" $id)) -}}
               {{- $n := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
-              {{- $s.SetInMap "homes" $id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/slug.html" $n))) -}}
+              {{- $s.SetInMap "homes" $id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/anchor.html" $n) "first" 1)) -}}
               {{- if eq $e.kind "enum" -}}{{- $enums = $enums | append $e -}}{{- end -}}
             {{- end -}}
           {{- end -}}
@@ -495,7 +498,7 @@ SPDX-License-Identifier: MIT
         {{- $n := "" -}}
         {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "name") -}}{{- $n = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
         {{- $s.SetInMap "homes" .attributes.id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key
-            "base" (printf "%s-%s" (index ($s.Get "homes") $enum.id) (partial "docsygen/text/slug.html" $n)))) -}}
+            "base" (printf "%s-%s" (index ($s.Get "homes") $enum.id) (partial "docsygen/text/anchor.html" $n)) "first" 1)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -513,8 +516,8 @@ SPDX-License-Identifier: MIT
   {{- range $what := slice "section" "anchor" -}}
     {{- range $found -}}
       {{- if and (eq (cond (eq .what "section") "section" "anchor") $what) (not (isset ($s.Get "homes") .id)) -}}
-        {{- $base := cond (eq $what "section") (partial "docsygen/text/slug.html" .name) (partial "docsygen/text/slug.html" (strings.TrimPrefix (printf "%s_1" .home) .id)) -}}
-        {{- $s.SetInMap "homes" .id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" $base)) -}}
+        {{- $base := cond (eq $what "section") (partial "docsygen/text/anchor.html" .name) (partial "docsygen/text/anchor.html" (strings.TrimPrefix (printf "%s_1" .home) .id)) -}}
+        {{- $s.SetInMap "homes" .id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" $base "first" 1)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
