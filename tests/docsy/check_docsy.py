@@ -11,6 +11,9 @@ Checks:
     item is empty, and the stylesheet hides an empty one;
   - /docs/ lists the version roots in the order of the version menu, titled with their version,
     and so does its sidebar, by their version label;
+  - a class page's brief is its lead and its meta description, and the content does not
+    repeat it before its first section (demo::Widget); a brief with Markdown characters
+    (demo::Escapes) is its lead as text;
   - the offline search index holds demo::Widget's description from /docs/latest/ only;
   - the sitemap lists the reference's pages under /docs/latest/ only;
   - the print page of /docs/main/ holds a member's signature, and the print page of /docs/1.0/
@@ -20,7 +23,7 @@ Checks:
     href or src of a page starts with /sub/ and leads to a file.
 Exit 1 on any failure.
 """
-import glob, json, os, re, sys
+import glob, html, json, os, re, sys
 
 
 def read(*path):
@@ -50,6 +53,20 @@ def main(argv):
     want = [('/docs/main/', 'main'), ('/docs/latest/', 'latest (2.0)'), ('/docs/1.0/', '1.0')]
     if sidebar != want:
         errors.append(f"/docs/'s sidebar lists {sidebar}, not {want}")
+    widget = read(public, 'docs/latest/api/demo/widget/index.html')
+    lead = re.findall(r'<div class="lead">(.*?)</div>', widget, re.S)
+    if [re.sub(r'<[^>]*>', '', l).strip() for l in lead] != ['A widget.']:
+        errors.append(f"demo::Widget's lead is {lead}, not its brief")
+    if 'name="description" content="A widget."' not in widget:
+        errors.append("demo::Widget's meta description is not its brief")
+    top = widget[widget.find('<div class="lead">'):widget.find('<h2')]
+    if top.count('A widget.') != 1:
+        errors.append("demo::Widget's brief is not once before its first section")
+    escapes = read(public, 'docs/latest/api/demo/escapes/index.html')
+    lead = re.findall(r'<div class="lead">(.*?)</div>', escapes, re.S)
+    text = html.unescape(re.sub(r'<[^>]*>', '', lead[0])).strip() if lead else None
+    if text != 'a*b_c [d] <e> f #g {h}':
+        errors.append(f"demo::Escapes's lead is {text!r}, not its brief as text")
     index = glob.glob(os.path.join(public, 'offline-search-index.*.json'))
     refs = sorted({e['ref'] for i in index for e in json.load(open(i)) if 'to build one' in e['body']})
     if not refs or any(not r.startswith('/docs/latest/') for r in refs):

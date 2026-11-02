@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
        for a list or an index the page with its role. Its heading is left to the caller. With
        .anchor, a member block carries its member's anchor on its wrapper. A block embedded away
        from its own page is away: a description is then whole, its sections in it rather than
-       blocks of their own, and a brief's More... links to the page that holds the details.
+       blocks of their own.
        A part that the version lacks stops the build.
        Usage: partial "docsygen/part.html" (dict "address" $address "ctx" $ctx "anchor" false) */ -}}
 {{- $ctx := .ctx -}}
@@ -41,6 +41,12 @@ SPDX-License-Identifier: MIT
         {{- if and (not $found) (eq (partial "docsygen/part/address.html" .) $a) -}}{{- $found = . -}}{{- $holder = $key -}}{{- end -}}
       {{- end -}}
     {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- /* A compound's brief is the lead of its page, not a block of its plan. */ -}}
+{{- if and (not $found) (eq $a.type "brief") $a.id -}}
+  {{- with index $paths.targets $a.id -}}
+    {{- $found = dict "type" "brief" "id" $a.id "part" "brief" -}}{{- $holder = .page -}}
   {{- end -}}
 {{- end -}}
 {{- if not $found -}}

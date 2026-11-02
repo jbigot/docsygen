@@ -4,13 +4,17 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* An element's text as one line of Markdown: computeroutput as a code span, bold as **, emphasis
        as *, other elements as their text, everything else escaped (docsygen/text/md-escape.html),
-       whitespace collapsed.
-       Usage: partial "docsygen/text/markdown.html" $briefdescription */ -}}
+       whitespace collapsed. With .lead, only what Markdown reads as markup is escaped (a text that
+       stays readable as the meta description it also is, and where a block marker begins it),
+       whereas a heading gets every punctuation character escaped.
+       Usage: partial "docsygen/text/markdown.html" $briefdescription
+              partial "docsygen/text/markdown.html" (dict "node" $briefdescription "lead" true) */ -}}
 {{- define "_partials/docsygen/text/markdown/inline.html" -}}
   {{- $out := "" -}}
-  {{- range .children -}}
+  {{- $lead := .lead -}}
+  {{- range .node.children -}}
     {{- if not (reflect.IsMap .) -}}
-      {{- $out = add $out (partial "docsygen/text/md-escape.html" (replaceRE `\s+` " " .)) -}}
+      {{- $out = add $out (partial "docsygen/text/markdown/escape.html" (dict "text" (replaceRE `\s+` " " .) "lead" $lead)) -}}
     {{- else if eq .tag "computeroutput" -}}
       {{- $code := replaceRE `\s+` " " (partial "docsygen/text/plain.html" .) -}}
       {{- $fence := cond (strings.Contains $code "`") "``" "`" -}}
@@ -18,14 +22,23 @@ SPDX-License-Identifier: MIT
       {{- $out = printf "%s%s%s%s%s%s" $out $fence $pad $code $pad $fence -}}
     {{- else if in (slice "bold" "emphasis") .tag -}}
       {{- $mark := cond (eq .tag "bold") "**" "*" -}}
-      {{- with strings.TrimSpace (partial "docsygen/text/markdown/inline.html" .) -}}{{- $out = printf "%s%s%s%s" $out $mark . $mark -}}{{- end -}}
+      {{- with strings.TrimSpace (partial "docsygen/text/markdown/inline.html" (dict "node" . "lead" $lead)) -}}{{- $out = printf "%s%s%s%s" $out $mark . $mark -}}{{- end -}}
     {{- else if .children -}}
       {{- /* A paragraph ends with a space, so that two paragraphs don't run together. */ -}}
-      {{- $out = printf "%s%s%s" $out (partial "docsygen/text/markdown/inline.html" .) (cond (eq .tag "para") " " "") -}}
+      {{- $out = printf "%s%s%s" $out (partial "docsygen/text/markdown/inline.html" (dict "node" . "lead" $lead)) (cond (eq .tag "para") " " "") -}}
     {{- else -}}
-      {{- $out = add $out (partial "docsygen/text/md-escape.html" (replaceRE `\s+` " " (partial "docsygen/text/plain.html" (dict "children" (slice .))))) -}}
+      {{- $out = add $out (partial "docsygen/text/markdown/escape.html" (dict "text" (replaceRE `\s+` " " (partial "docsygen/text/plain.html" (dict "children" (slice .)))) "lead" $lead)) -}}
     {{- end -}}
   {{- end -}}
   {{- return $out -}}
 {{- end -}}
-{{- return strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/markdown/inline.html" .)) -}}
+{{- $node := . -}}
+{{- $lead := false -}}
+{{- with .node -}}{{- $node = . -}}{{- $lead = $.lead -}}{{- end -}}
+{{- $out := strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/markdown/inline.html" (dict "node" $node "lead" $lead))) -}}
+{{- if $lead -}}
+  {{- /* A paragraph that begins like a list item, a heading or a quote. */ -}}
+  {{- $out = replaceRE `^(\d+)([.)])` `${1}\${2}` $out -}}
+  {{- $out = replaceRE `^([-+=])` `\${1}` $out -}}
+{{- end -}}
+{{- return $out -}}

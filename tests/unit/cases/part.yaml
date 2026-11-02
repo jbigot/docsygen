@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-- name: part, the brief of a class is its block's markup
+- name: part, the brief of a class, which is not in its plan, is a paragraph
   partial: test/part.html
-  context: {model: sample, key: api/demo/widget, address: {type: brief, id: classdemo_1_1Widget}}
-  expect: true
+  context: {model: sample, address: {type: brief, id: classdemo_1_1Widget}}
+  expect: <p>A widget.</p>
 - name: part, the description of a class is its block's markup
   partial: test/part.html
   context: {model: sample, key: api/demo/widget, address: {type: description, id: classdemo_1_1Widget}}

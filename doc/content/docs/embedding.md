@@ -59,7 +59,7 @@ One part of a page, `part` being its type:
 
 | `part` | Shows | Other parameters |
 | --- | --- | --- |
-| `brief` | the brief description | |
+| `brief` | the brief description, which a compound's own page shows as its lead | |
 | `includes` | the `#include` lines | |
 | `diagram` | the inheritance diagram | |
 | `concept-definition` | a concept's definition | |

@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A string as literal Markdown text for docsygen/text/markdown.html: every punctuation
+       character escaped (docsygen/text/md-escape.html), or with .lead only those that Markdown
+       reads as inline markup or HTML: \ ` * _ [ ] < > & ~ ! | # { }.
+       Usage: partial "docsygen/text/markdown/escape.html" (dict "text" "a_b." "lead" true) → a\_b. */ -}}
+{{- if .lead -}}
+  {{- return replaceRE "([\\\\`*_\\[\\]<>&~!|#{}])" `\$1` .text -}}
+{{- end -}}
+{{- return partial "docsygen/text/md-escape.html" .text -}}

@@ -52,16 +52,16 @@
   context: {model: sample-c}
   select: [path, structcpoint]
   expect: api/cpoint
-- name: scheme, a brief with Markdown characters as the summary
+- name: scheme, a plain brief is its own description
   partial: test/paths.html
   context: {model: sample}
-  select: [entry, classdemo_1_1Escapes, summary]
-  expect: 'a\*b\_c \[d\] \<e\> `f` \#g \{h\}'
+  select: [entry, classdemo_1_1Widget, description]
+  expect: A widget.
 - name: scheme, a brief with Markdown characters as the description
   partial: test/paths.html
   context: {model: sample}
   select: [entry, classdemo_1_1Escapes, description]
-  expect: 'a*b_c [d] &lt;e&gt; `f` #g {h}'
+  expect: 'a\*b\_c \[d\] \<e\> `f` \#g \{h\}'
 - name: scheme, pathMap rewrites a generated file's location
   partial: test/paths.html
   context: {model: sample, pathMap: [{from: build/gen/, to: ""}]}

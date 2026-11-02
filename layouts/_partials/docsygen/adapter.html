@@ -182,7 +182,7 @@ SPDX-License-Identifier: MIT
       {{- if in $selected.keys .key -}}
         {{- $rel := strings.TrimPrefix "/" (strings.TrimPrefix $rootEntry.path .path) -}}
         {{- $placed := path.Join $pattern.path $rel -}}
-        {{- $params := dict "description" .summary "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
+        {{- $params := dict "description" .description "no_list" true "docsygen" (merge $docsygen (dict "key" .key)) -}}
         {{- $isDuplicate := or (eq $duplicate true) (and (reflect.IsSlice $duplicate) (in $duplicate .key)) -}}
         {{- if $isDuplicate -}}{{- $params = merge $params (dict "docsygen" (dict "duplicate" true)) -}}{{- end -}}
         {{- if or (not $search) $isDuplicate -}}{{- $params = merge $params (dict "exclude_search" true) -}}{{- end -}}

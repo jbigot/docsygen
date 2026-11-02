@@ -7,6 +7,13 @@
     key: api/demo/widget
     n: 2
   expect: [{type: title, text: demo::Widget Class Reference}, {type: summary-links, text: ""}]
+- name: plan, a class page has no brief block
+  partial: test/plan-types.html
+  context:
+    ctx: {model: sample}
+    key: api/demo/widget
+    type: brief
+  expect: []
 - name: sections of a class, summaries before detailed sections
   partial: test/section-keys.html
   context:

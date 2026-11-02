@@ -126,22 +126,6 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- return $out.Get "m" -}}
 {{- end -}}
-{{- define "_partials/docsygen/paths/scheme/plain.html" -}}
-  {{- /* The text of .children for a description: code spans in backquotes, &, < and > as entities. */ -}}
-  {{- $out := "" -}}
-  {{- range .children -}}
-    {{- if not (reflect.IsMap .) -}}
-      {{- $out = add $out (replace (replace (replace . "&" "&amp;") "<" "&lt;") ">" "&gt;") -}}
-    {{- else if eq .tag "computeroutput" -}}
-      {{- $out = printf "%s`%s`" $out (partial "docsygen/text/plain.html" .) -}}
-    {{- else if .children -}}
-      {{- $out = printf "%s%s%s" $out (partial "docsygen/paths/scheme/plain.html" .) (cond (eq .tag "para") " " "") -}}
-    {{- else -}}
-      {{- $out = add $out (partial "docsygen/paths/scheme/plain.html" (dict "children" (slice (partial "docsygen/text/plain.html" (dict "children" (slice .)))))) -}}
-    {{- end -}}
-  {{- end -}}
-  {{- return $out -}}
-{{- end -}}
 {{- define "_partials/docsygen/paths/scheme/ids.html" -}}
   {{- /* The ids of the sections, anchors and xrefsects under .children, in document order. */ -}}
   {{- $out := slice -}}
@@ -542,13 +526,11 @@ SPDX-License-Identifier: MIT
 {{- range $key := $s.Get "order" -}}
   {{- $parent := index ($s.Get "parent") $key -}}
   {{- $description := "" -}}
-  {{- $summary := "" -}}
   {{- with index ($s.Get "brief") $key -}}
     {{- with index $m.ids . -}}
       {{- range .node.children -}}
         {{- if and (reflect.IsMap .) (eq .tag "briefdescription") -}}
-          {{- $description = strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/paths/scheme/plain.html" .)) -}}
-          {{- $summary = partial "docsygen/text/markdown.html" . -}}
+          {{- $description = partial "docsygen/text/markdown.html" (dict "node" . "lead" true) -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
@@ -556,7 +538,7 @@ SPDX-License-Identifier: MIT
   {{- $section := or (eq $key "index") (eq $parent "index") (gt (index ($s.Get "children") $key | default 0) 0) -}}
   {{- $pages = $pages | append (dict "key" $key "path" (index ($s.Get "path") $key) "kind" (cond $section "section" "page")
       "parent" $parent "title" (index ($s.Get "title") $key) "linkTitle" (index ($s.Get "linkTitle") $key)
-      "weight" (index ($s.Get "weight") $key) "description" $description "summary" $summary "roles" (index ($s.Get "roles") $key)) -}}
+      "weight" (index ($s.Get "weight") $key) "description" $description "roles" (index ($s.Get "roles") $key)) -}}
 {{- end -}}
 {{- $anchors := newScratch -}}
 {{- range $k, $a := $s.Get "anchor" -}}

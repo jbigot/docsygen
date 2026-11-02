@@ -45,8 +45,7 @@ SPDX-License-Identifier: MIT
     {{- $text := false -}}
     {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
     {{- if $text -}}
-{{- $embedded := and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $e.id))))) -}}
-<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if $classLike }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $e.id) }}{{ with $u }} <a href="{{ . }}{{ if not $embedded }}#details{{ end }}">More...</a>{{ end }}{{ end }}</td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}</td></tr>
     {{- end -}}
   {{- end -}}
 {{- end -}}

@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The types of the blocks of the plan of page .key that are of type .type: context {ctx, key, type}. */ -}}
+{{- $entry := false -}}
+{{- range .ctx.paths.pages -}}{{- if eq .key $.key -}}{{- $entry = . -}}{{- end -}}{{- end -}}
+{{- $out := slice -}}
+{{- range partial "docsygen/plan.html" (dict "entry" $entry "ctx" .ctx) -}}
+  {{- if eq .type $.type -}}{{- $out = $out | append .type -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

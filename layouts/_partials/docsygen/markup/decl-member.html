@@ -154,6 +154,6 @@ SPDX-License-Identifier: MIT
   {{- $text := false -}}
   {{- range .children -}}{{- if reflect.IsMap . -}}{{- $text = true -}}{{- end -}}{{- end -}}
   {{- if $text -}}
-<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}{{ if and (eq $kind "enum") (partial "docsygen/plan/detailed.html" (dict "model" $m "id" $id)) }}{{ with $link }} <a href="{{ . }}">More...</a>{{ end }}{{ end }}</td></tr>
+<tr class="docsygen-summary-brief"><td></td><td>{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) }}</td></tr>
   {{- end -}}
 {{- end -}}
