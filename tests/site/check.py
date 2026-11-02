@@ -16,6 +16,8 @@ Checks:
   - every internal href resolves to a file, and its fragment to an id in that file, but the
     links the documentation's authors wrote (class docsygen-ulink), left as they are;
   - no id appears twice in a file;
+  - no `name` attribute on an <a>, nor an id of Doxygen's anchors (a<N>_…, r_…), which nothing
+    links to;
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, and mermaid, outside KaTeX's output
     (.katex*) and the highlighted code of listings (pre.docsygen-listing), on the pages of the
@@ -101,6 +103,10 @@ def main(argv):
         for n in walk(tree):
             if 'id' in n.attrs:
                 seen[n.attrs['id']] += 1
+            if n.tag == 'a' and 'name' in n.attrs:
+                errors.append(f'{rel}: <a name={n.attrs["name"]!r}>')
+            if re.match(r'^(a\d+_|r_)', n.attrs.get('id', '')):
+                errors.append(f'{rel}: id {n.attrs["id"]!r} is a Doxygen anchor')
             if 'data-doxygen-id' in n.attrs and in_root:
                 marks[n.attrs['data-doxygen-id']] += 1
             if n.tag == 'p':

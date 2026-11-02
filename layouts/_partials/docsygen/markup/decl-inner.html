@@ -3,13 +3,12 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The declaration rows of an inner compound (classdef.cpp, writeDeclarationLink;
-       namespacedef.cpp; groupdef.cpp): its kind, its name in the scope of the page, and its brief,
-       with More... to a class's details. The row's anchor escapes the name, as Doxygen does. */ -}}
+       namespacedef.cpp; groupdef.cpp): its kind, its name in the scope of the page, and its
+       brief. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $e := index $m.ids .id -}}
 {{- $page := index $m.ids .page -}}
-{{- $classLike := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $e.kind -}}
 {{- $name := partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) -}}
 {{- $prefix := printf "%s::" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .page)) -}}
 {{- if and (ne $page.kind "file") (ne $page.kind "group") (hasPrefix $name $prefix) -}}{{- $name = strings.TrimPrefix $prefix $name -}}{{- end -}}
@@ -17,11 +16,8 @@ SPDX-License-Identifier: MIT
 {{- $local := not (or (strings.Contains (index $m.ids .id).name "<") (in (slice "file" "group") $page.kind)) -}}
 {{- $label := cond $local (replaceRE ` ?<[^:]*>$` "" $name) $name -}}
 {{- $left := printf "%s " $e.kind -}}
-{{- /* The row's key leaves out a class template's parameters. */ -}}
-{{- $key := $label -}}
 {{- if eq $e.kind "group" -}}
   {{- $left = "" -}}
-  {{- $key = $e.name -}}
   {{- $label = printf "%s " (partial "docsygen/plan/title.html" (dict "model" $m "id" .id)).text -}}
 {{- else if eq $e.kind "dir" -}}
   {{- $left = "dir" -}}
@@ -29,15 +25,8 @@ SPDX-License-Identifier: MIT
   {{- $icon := "file" -}}
   {{- $left = $icon -}}
   {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" .id))) -}}{{- with index $ctx.urls . -}}{{- $left = printf "<a href=\"%s\">%s</a>" . $icon -}}{{- end -}}{{- end -}}
-{{- else if and $classLike (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}
-  {{- /* A class embedded in its scope (INLINE_SIMPLE_STRUCTS) is keyed by its name and refid. */ -}}
-  {{- $key = printf "%s_%s" $name .id -}}
 {{- end -}}
-{{- $escaped := "" -}}
-{{- range split $key "" -}}
-  {{- $escaped = add $escaped (cond (findRE `^[A-Za-z0-9-]$` . 1) . (printf "_%X" .)) -}}
-{{- end -}}
-<tr id="r_{{ $escaped }}"><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id)) -}}
+<tr><td class="docsygen-summary-type">{{ $left | safeHTML }}</td><td class="docsygen-summary-name">{{- $url := (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id)) -}}
 {{- if and (eq $e.kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" .id))))) -}}{{- $url = "" -}}{{- end -}}
 {{ with $url }}<a href="{{ . }}">{{ $label }}</a>{{ else }}<b>{{ $label }}</b>{{ end }}</td></tr>
 {{- range $e.node.children -}}
