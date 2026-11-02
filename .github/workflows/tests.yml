@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+# Run the tests (CONTRIBUTING.md, "Tests"). The tests use Hugo's fork with the native XML decoder
+# (docsygen-native, not released): tests/lib.sh builds it from a clone when the cache has no
+# binary for its commit, and downloads Doxygen 1.18.0. Every change runs tests/all.sh; the
+# matrix, which adds Doxygen 1.17.0 and the minimum released Hugo, runs on main and on demand.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache-dependency-path: "**/go.sum"
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Clone the Hugo fork
+        id: fork
+        run: |
+          git clone --depth 1 --branch docsygen-native https://github.com/jbigot/hugo.git "$RUNNER_TEMP/hugo"
+          echo "HUGO_SRC=$RUNNER_TEMP/hugo" >> "$GITHUB_ENV"
+          echo "commit=$(git -C "$RUNNER_TEMP/hugo" rev-parse --short=9 HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Restore the Hugo fork build
+        uses: actions/cache@v6
+        with:
+          path: /tmp/docsygen-hugo-doc
+          key: hugo-fork-${{ steps.fork.outputs.commit }}
+      - name: Install npm dependencies (Hugo, Dart Sass, Bootstrap, Font Awesome)
+        run: |
+          npm install --global npm@11
+          for site in doc exampleSite; do (cd $site && npm ci); done
+      - name: Run the tests
+        run: sh tests/all.sh
+
+  matrix:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache-dependency-path: "**/go.sum"
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Clone the Hugo fork
+        id: fork
+        run: |
+          git clone --depth 1 --branch docsygen-native https://github.com/jbigot/hugo.git "$RUNNER_TEMP/hugo"
+          echo "HUGO_SRC=$RUNNER_TEMP/hugo" >> "$GITHUB_ENV"
+          echo "commit=$(git -C "$RUNNER_TEMP/hugo" rev-parse --short=9 HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Restore the Hugo fork build
+        uses: actions/cache@v6
+        with:
+          path: /tmp/docsygen-hugo-doc
+          key: hugo-fork-${{ steps.fork.outputs.commit }}
+      - name: Install npm dependencies (Hugo, Dart Sass, Bootstrap, Font Awesome)
+        run: |
+          npm install --global npm@11
+          for site in doc exampleSite; do (cd $site && npm ci); done
+      - name: Run the matrix
+        run: sh tests/matrix.sh
