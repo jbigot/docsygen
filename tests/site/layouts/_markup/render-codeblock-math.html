@@ -2,4 +2,14 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-<pre data-test-hook="math">{{ .Inner }}</pre>
+{{- /* Docsy's render-codeblock-math.html, without its scripts/math.html (the test sites have no
+       Docsy): KaTeX's HTML, and the key that makes Docsy load its CSS. */ -}}
+{{ $opts := dict "output" "htmlAndMathml" "displayMode" (not (eq ($.Type) "inline")) -}}
+{{ with try (transform.ToMath .Inner $opts) -}}
+  {{ with .Err -}}
+    {{ errorf "Unable to render mathematical markup to HTML using the transform.ToMath function. The KaTeX display engine threw the following error: %s: see %s." . $.Position -}}
+  {{ else -}}
+    {{ .Value -}}
+    {{ $.Page.Store.Set "hasMath" true -}}
+  {{ end -}}
+{{ end -}}

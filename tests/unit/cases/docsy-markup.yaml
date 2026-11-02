@@ -72,20 +72,20 @@
     contains: ['class="katex"', '<annotation encoding="application/x-tex">a^2</annotation>']
     lacks: ['katex-display', '$']
   expect: []
-- name: docsy markup, a display formula through KaTeX
+- name: docsy markup, a display formula through the math hook
   partial: test/doc-contains.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><formula id="1">\[ x \]</formula></para></detaileddescription>'
-    contains: ['katex-display', '<annotation encoding="application/x-tex">x</annotation>']
-    lacks: ['\[']
+    contains: ['<pre data-test-hook="math">x</pre>']
+    lacks: ['\[', 'katex']
   expect: []
-- name: docsy markup, a formula environment through KaTeX
+- name: docsy markup, a formula environment through the math hook
   partial: test/doc-contains.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><formula id="2">\begin{aligned} a &amp;= b \end{aligned}</formula></para></detaileddescription>'
-    contains: ['katex-display', 'application/x-tex">\begin{aligned} a &amp;= b \end{aligned}</annotation>']
+    contains: ['<pre data-test-hook="math">\begin{aligned} a &amp;= b \end{aligned}</pre>']
   expect: []
 - name: docsy markup, an inheritance diagram in Mermaid
   partial: test/block.html

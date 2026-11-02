@@ -163,9 +163,8 @@ SPDX-License-Identifier: MIT
 {{- else if eq $tag "image" -}}
   {{- if eq $n.attributes.type "html" -}}{{- partial "docsygen/markup/doc-image.html" (merge $sub (dict "node" $n)) -}}{{- end -}}
 {{- else if eq $tag "formula" -}}
-  {{- /* KaTeX, as Docsy's scripts/math.html renders: $…$ inline, anything else displayed, without
-         Doxygen's delimiters; \f{env}{…\f} as \begin{env}…\end{env}. A formula KaTeX rejects is
-         its source in <code>, with a warning. */ -}}
+  {{- /* $…$ is inline, anything else displayed, without Doxygen's delimiters; \f{env}{…\f} is
+         \begin{env}…\end{env}. */ -}}
   {{- $text := trim (delimit $n.children "") " \n" -}}
   {{- $tex := $text -}}
   {{- $display := true -}}
@@ -179,15 +178,26 @@ SPDX-License-Identifier: MIT
       {{- $tex = printf "\\begin{%s}%s\\end{%s}" (index . 0 1) (index . 0 2) (index . 0 1) -}}
     {{- end -}}
   {{- end -}}
+  {{- /* Docsy's options (render-codeblock-math, scripts/math), so that what passes here passes
+         there. */ -}}
   {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" $display)) -}}
-    {{- with .Err -}}
-      {{- warnidf "docsygen-formula" "docsygen: formula %q: %s" $text . -}}
+    {{- if .Err -}}
+      {{- /* Docsy's hook fails the build on a formula KaTeX rejects: warn instead. */ -}}
+      {{- warnidf "docsygen-formula" "docsygen: formula %q: %s" $text .Err -}}
       <code>{{ $text }}</code>
+    {{- else if $display -}}
+      {{- /* A display formula goes through the site's math code-block hook; the fence is longer
+             than any run of backticks in the formula. */ -}}
+      {{- $ticks := 3 -}}
+      {{- range findRE "`+" $tex -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
+      {{- $fence := strings.Repeat (int $ticks) "`" -}}
+      {{- $ctx.page.RenderString (dict "display" "block") (printf "%smath\n%s\n%s" $fence $tex $fence) -}}
     {{- else -}}
+      {{- /* Docsy has no hook for inline math: its key makes Docsy load KaTeX's CSS. */ -}}
       {{- .Value -}}
+      {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
 {{- else if in (slice "programlisting" "verbatim" "preformatted") $tag -}}
   {{- partial "docsygen/markup/doc-code.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "details" -}}
