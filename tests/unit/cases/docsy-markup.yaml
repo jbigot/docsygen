@@ -81,6 +81,14 @@
       - '<pre class="docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre>'
     lacks: [memitem, memname, memtitle, memproto, memdoc]
   expect: []
+- name: docsy markup, a member's labels are Bootstrap badges, and its heading has no overload counter
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca}
+    contains: ['<span class="badge text-bg-secondary">noexcept</span>']
+    lacks: ['class="docsygen-label"', '[1/2]', '[2/2]']
+  expect: []
 - name: docsy markup, a member's template line in its signature
   partial: test/block-contains.html
   context:

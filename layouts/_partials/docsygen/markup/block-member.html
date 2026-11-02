@@ -22,21 +22,10 @@ SPDX-License-Identifier: MIT
 {{- with $parts.argsstring -}}{{- $argsText = delimit .children "" -}}{{- end -}}
 {{- /* A friend function has a parameter list but no () in its title. */ -}}
 {{- $hasParams := or $isFunction (and (eq $kind "friend") (hasPrefix $argsText "(")) -}}
-{{- /* The overload counter, among the members of the same name in the same section. */ -}}
-{{- $count := 0 -}}
-{{- $rank := 0 -}}
+{{- /* The section the member is documented in, for the labels of a related member. */ -}}
 {{- $section := "" -}}
 {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $e.home) -}}
-  {{- if and (eq .group "doc") (in .members $id) -}}
-    {{- $section = .key -}}
-    {{- range .members -}}
-      {{- $other := index $m.ids . -}}
-      {{- if eq (index (split $other.name "::") (sub (len (split $other.name "::")) 1)) $short -}}
-        {{- $count = add $count 1 -}}
-        {{- if eq . $id -}}{{- $rank = $count -}}{{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
+  {{- if and (eq .group "doc") (in .members $id) -}}{{- $section = .key -}}{{- end -}}
 {{- end -}}
 {{- /* The labels, in getLabels' order: a friend or a related member has only that one. */ -}}
 {{- $words := split (partial "docsygen/plan/argsstring.html" $argsText).rest " " -}}
@@ -61,6 +50,6 @@ SPDX-License-Identifier: MIT
 {{- $proto = $proto.proto -}}
 <div class="docsygen-member"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
 <pre class="docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre>
-{{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="docsygen-label">{{ . }}</span>{{ end }}</div>{{- end -}}
+{{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="badge text-bg-secondary">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}
 </div>

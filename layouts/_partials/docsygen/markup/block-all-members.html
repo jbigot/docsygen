@@ -79,7 +79,7 @@ SPDX-License-Identifier: MIT
               {{- if in (slice "signal" "slot") $md.kind -}}{{- $labels = $labels | append $md.kind -}}{{- end -}}
             {{- end -}}
             {{- $spans := "" -}}
-            {{- range $labels -}}{{- $spans = printf `%s<span class="docsygen-label">%s</span>` $spans (htmlEscape .) -}}{{- end -}}
+            {{- range $labels -}}{{- $spans = printf `%s<span class="badge text-bg-secondary">%s</span> ` $spans (htmlEscape .) -}}{{- end -}}
             {{- $rows = $rows | append (dict "first" $first "plain" $plain "class" (printf `<a href="%s">%s</a>` (htmlEscape ($classUrl | default "")) (htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $cd.id)))) "labels" $spans) -}}
           {{- end -}}
         {{- end -}}
