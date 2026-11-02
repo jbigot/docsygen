@@ -20,10 +20,10 @@ name the same `dir` and `pathMap`, or the build stops.
 
 The latest release
 : The call marked `latest`, one at most, generates its pages at `latest/` (`/docs/latest/`), and
-  each one gets an alias at its numbered path (`/docs/2.1/…`) that redirects there and keeps the
-  URL's `#fragment`. When 2.2 comes out, mark it `latest` instead: `/docs/2.1/` becomes an
-  ordinary version, and its links keep working. The label `latest`, and a `latest` segment in
-  `path`, are reserved for it.
+  each one gets an alias at its numbered path (`/docs/2.1/…`) that redirects there (Hugo's own
+  alias page: a `#fragment` is dropped). When 2.2 comes out, mark it `latest` instead:
+  `/docs/2.1/` becomes an ordinary version, and its links keep working. The label `latest`, and
+  a `latest` segment in `path`, are reserved for it.
 
 Titles and order
 : Each version's root is titled with the project's name (Doxygen's `PROJECT_NAME`) and its

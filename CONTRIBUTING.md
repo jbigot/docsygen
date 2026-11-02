@@ -205,7 +205,8 @@ Pitfalls met so far:
 - In a print output, `.RelPermalink` is the HTML page's: test the format through
   `.AlternativeOutputFormats.Get "html"`.
 - YAML reads `1.10` as 1.1: quote version labels.
-- A meta refresh drops the URL's fragment: redirects need a line of script.
+- A meta refresh drops the URL's fragment, and Hugo's alias page has no script to keep it:
+  an alias lands at the top of its target.
 - Hugo drops symlinked mounts.
 - Docsy's `favicons.html` and its other `os.FileExists` checks look at the real `static/`, not at
   mounts; its blocks and `{{% alert %}}` need goldmark's `unsafe: true`.
