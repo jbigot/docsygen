@@ -10,8 +10,7 @@ SPDX-License-Identifier: MIT
 {{- $m := .model -}}
 {{- $e := index $m.ids .id -}}
 {{- $hide := eq (index ((index $m.options "HIDE_COMPOUND_REFERENCE") | default (slice "NO")) 0) "YES" -}}
-{{- $words := dict "class" "Class" "struct" "Struct" "union" "Union" "interface" "Interface" "protocol" "Protocol"
-    "category" "Category" "exception" "Exception" -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
 {{- $name := partial "docsygen/plan/display-name.html" (dict "model" $m "id" .id) -}}
 {{- $text := $name -}}
 {{- $labels := slice -}}
@@ -19,14 +18,14 @@ SPDX-License-Identifier: MIT
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $title = partial "docsygen/text/plain.html" . -}}{{- end -}}
 {{- end -}}
-{{- with index $words $e.kind -}}
+{{- if in $classLike $e.kind -}}
   {{- $template := false -}}
   {{- range $e.node.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}
       {{- range .children -}}{{- if reflect.IsMap . -}}{{- $template = true -}}{{- end -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- if not $hide -}}{{- $text = printf "%s %s%s Reference" $name . (cond $template " Template" "") -}}{{- end -}}
+  {{- if not $hide -}}{{- $text = T (printf "docsygen-%s%s-reference" $e.kind (cond $template "-template" "")) (dict "name" $name) -}}{{- end -}}
   {{- $a := $e.node.attributes -}}
   {{- range slice "final" "sealed" "abstract" "export" -}}
     {{- if eq (index $a .) "yes" -}}{{- $labels = $labels | append . -}}{{- end -}}
@@ -35,8 +34,7 @@ SPDX-License-Identifier: MIT
     {{- if and (reflect.IsMap .) (eq .tag "qualifier") (not (in $labels (delimit .children ""))) -}}{{- $labels = $labels | append (delimit .children "") -}}{{- end -}}
   {{- end -}}
 {{- else -}}
-  {{- $suffix := index (dict "namespace" " Namespace Reference" "file" " File Reference" "dir" " Directory Reference"
-      "concept" " Concept Reference") $e.kind -}}
+  {{- $suffix := index (dict "namespace" "namespace" "file" "file" "dir" "directory" "concept" "concept") $e.kind -}}
   {{- if and (eq $e.kind "file") (not (index (partial "docsygen/model/scopes.html" $m) .id))
       (eq (index ((index $m.options "FULL_PATH_NAMES") | default (slice "YES")) 0) "YES") -}}
     {{- /* filedef.cpp: a file outside any directory, such as a Markdown file, is titled by its path. */ -}}
@@ -46,7 +44,7 @@ SPDX-License-Identifier: MIT
     {{- $text = cond $hide $name $text -}}
   {{- end -}}
   {{- if $suffix -}}
-    {{- if not $hide -}}{{- $text = printf "%s%s" $name $suffix -}}{{- end -}}
+    {{- if not $hide -}}{{- $text = T (printf "docsygen-%s-reference" $suffix) (dict "name" $name) -}}{{- end -}}
   {{- else if $title -}}
     {{- $text = $title -}}
   {{- end -}}

@@ -46,5 +46,5 @@ SPDX-License-Identifier: MIT
     {{- end -}}
   {{- end -}}
   {{- with $ctx.page -}}{{- .Store.Set "hasmermaid" true -}}{{- end -}}
-<div class="docsygen-diagram"><div class="docsygen-diagram-title">Inheritance diagram for {{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id) }}:</div><pre class="mermaid">{{ delimit $lines "\n" }}</pre></div>
+<div class="docsygen-diagram"><div class="docsygen-diagram-title">{{ T "docsygen-inheritance-diagram-for" (dict "name" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id))) }}</div><pre class="mermaid">{{ delimit $lines "\n" }}</pre></div>
 {{- end -}}

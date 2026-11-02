@@ -25,9 +25,10 @@ SPDX-License-Identifier: MIT
 {{- $tag := $n.tag -}}
 {{- $styles := dict "bold" "b" "emphasis" "em" "s" "s" "strike" "strike" "underline" "u" "subscript" "sub"
     "superscript" "sup" "small" "small" "cite" "cite" "del" "del" "ins" "ins" "center" "center" -}}
-{{- $simplesects := dict "see" "See also" "return" "Returns" "author" "Author" "authors" "Authors" "version" "Version"
-    "since" "Since" "date" "Date" "note" "Note" "warning" "Warning" "pre" "Precondition" "post" "Postcondition"
-    "copyright" "Copyright" "invariant" "Invariant" "remark" "Remarks" "attention" "Attention" "important" "Important" -}}
+{{- $simplesects := dict "see" "docsygen-see-also" "return" "docsygen-returns" "author" "docsygen-author" "authors" "docsygen-authors"
+    "version" "docsygen-version" "since" "docsygen-since" "date" "docsygen-date" "note" "docsygen-note" "warning" "docsygen-warning"
+    "pre" "docsygen-precondition" "post" "docsygen-postcondition" "copyright" "docsygen-copyright" "invariant" "docsygen-invariant"
+    "remark" "docsygen-remarks" "attention" "docsygen-attention" "important" "docsygen-important" -}}
 {{- if and (eq $tag "para") (not $n.children) (not $n.attributes) (eq .parent.tag "para") -}}
   {{- /* The ¶ entity is an empty para element, which can only be one inside a paragraph. */ -}}
   {{- partial "docsygen/render/entity-lookup.html" "para" -}}
@@ -103,7 +104,7 @@ SPDX-License-Identifier: MIT
   {{- /* A Docsy alert; consecutive sections of a kind share one, a part each. */ -}}
   {{- $kind := $n.attributes.kind -}}
   {{- if not .continued -}}
-  <div class="alert {{ cond (in (slice "note" "remark") $kind) "alert-info" "alert-warning" }}" role="alert"><div class="h4 alert-heading" role="heading">{{ index $simplesects $kind }}</div>
+  <div class="alert {{ cond (in (slice "note" "remark") $kind) "alert-info" "alert-warning" }}" role="alert"><div class="h4 alert-heading" role="heading">{{ with index $simplesects $kind }}{{ T . }}{{ end }}</div>
   {{- end -}}
   <div>
   {{- range $i, $c := $n.children -}}
@@ -114,7 +115,8 @@ SPDX-License-Identifier: MIT
   </div>{{- if not .continues -}}</div>{{- end -}}
 {{- else if eq $tag "simplesect" -}}
   {{- $kind := $n.attributes.kind -}}
-  {{- $title := index $simplesects $kind -}}
+  {{- $title := "" -}}
+  {{- with index $simplesects $kind -}}{{- $title = T . -}}{{- end -}}
   {{- if .continued -}}
     <dd>
   {{- else -}}

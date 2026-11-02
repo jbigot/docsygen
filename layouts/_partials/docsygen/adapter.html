@@ -164,7 +164,7 @@ SPDX-License-Identifier: MIT
         {{- $isVersion := eq $i $at -}}
         {{- $page := dict "path" $p "kind" "section" "type" "docs"
             "title" (cond $isVersion (strings.TrimSpace (printf "%s %s" $project $.version)) (index $segments $i))
-            "linkTitle" (cond (and $isVersion $latest) (printf "latest (%s)" $.version) (cond $isVersion $.version (index $segments $i)))
+            "linkTitle" (cond (and $isVersion $latest) (T "docsygen-latest-version" (dict "version" $.version)) (cond $isVersion $.version (index $segments $i)))
             "params" (dict "exclude_search" (not $search) "no_list" true "docsygen" (dict "version" $.version "release" $release
               "pattern" (delimit (first (add $i 1) $patternSegments) "/"))) -}}
         {{- if $isVersion -}}{{- $page = merge $page (dict "weight" $menuWeight "params" (dict "sidebar_root_for" "self" "exclude_search" (not $search))) -}}{{- end -}}
@@ -197,7 +197,7 @@ SPDX-License-Identifier: MIT
             {{- /* The version's section: the version menu's entry and order. */ -}}
             {{- $params = merge $params (dict "sidebar_root_for" "self") -}}
             {{- $pageWeight = $menuWeight -}}
-            {{- $linkTitle = cond $latest (printf "latest (%s)" $.version) $.version -}}
+            {{- $linkTitle = cond $latest (T "docsygen-latest-version" (dict "version" $.version)) $.version -}}
           {{- end -}}
           {{- if eq .path "" -}}
             {{- /* The whole tree: its root is the version's, and the main page's title its first

@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+# A site's rewording of docsygen's strings: a plain one and a section heading.
+docsygen-implemented-in: "Overridden in {{ .list }}."
+docsygen-section-public-func: "Methods"

@@ -25,7 +25,7 @@ SPDX-License-Identifier: Apache-2.0
     {{- range . -}}{{- $entries = $entries | append . -}}{{- end -}}
   {{- end -}}
   {{- $title := $label -}}
-  {{- range where $entries "latest" true -}}{{- if eq .version $label -}}{{- $title = printf "latest (%s)" .version -}}{{- end -}}{{- end -}}
+  {{- range where $entries "latest" true -}}{{- if eq .version $label -}}{{- $title = T "docsygen-latest-version" (dict "version" .version) -}}{{- end -}}{{- end -}}
 <div class="td-version-menu dropdown">
   <a class="nav-link dropdown-toggle td-version-menu__title" href="#" role="button"
     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0
     {{- range $entries }}
       {{- $active := eq .version $label }}
     <li><a class="dropdown-item{{ if $active }} active{{ end }}"{{ if $active }} aria-current="page"{{ end }} href="{{ (partial "docsygen/versions/twin.html" (dict "page" $page "version" .)).url }}">
-      {{- if .latest }}latest ({{ .version }}){{ else }}{{ .version }}{{ end -}}
+      {{- if .latest }}{{ T "docsygen-latest-version" (dict "version" .version) }}{{ else }}{{ .version }}{{ end -}}
     </a></li>
     {{- end }}
   </ul>

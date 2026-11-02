@@ -6,5 +6,5 @@ SPDX-License-Identifier: MIT
 {{- $m := .ctx.model -}}
 {{- $id := .role.id -}}
 {{- return slice (dict "type" "title" "id" "" "labels" slice "groups" slice
-    "text" (printf "%s Member List" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id))))
-    (dict "type" "all-members" "id" $id "heading" (dict "level" 2 "text" "List of all members" "anchorKey" "all-members")) -}}
+    "text" (T "docsygen-member-list" (dict "name" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id)))))
+    (dict "type" "all-members" "id" $id "heading" (dict "level" 2 "text" (T "docsygen-list-of-all-members") "anchorKey" "all-members")) -}}

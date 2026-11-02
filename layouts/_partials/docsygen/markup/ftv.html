@@ -2,18 +2,18 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* A list page's tree (ftvhelp.cpp, generateTreeViewInline) as nested lists: the intro, then
-       one item per node, its children in a list of their own, all shown (Doxygen's levels and
-       folding need its scripts). A node is {id, name, url, src, kind, children}: id the compound it
+{{- /* A list page's tree (ftvhelp.cpp, generateTreeViewInline) as nested lists: one item per node, its
+       children in a list of their own, all shown (Doxygen's levels and folding need its
+       scripts). A node is {id, name, url, src, kind, children}: id the compound it
        shows ("" for none), name its HTML label, url its link ("" for none), src a file's source
        listing, kind its kind (namespace, class, concept, dir, file, or none). An item shows the
        compound's abbreviated brief.
-       Usage: partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "intro" $html "nodes" $nodes) */ -}}
+       Usage: partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "nodes" $nodes) */ -}}
 {{- define "_partials/docsygen/markup/inline/ftv-items.html" -}}
   {{- $html := "" -}}
   {{- range .nodes -}}
     {{- $item := cond (ne .url "") (printf `<a href="%s">%s</a>` .url .name) (printf `<b>%s</b>` .name) -}}
-    {{- with .src -}}{{- $item = printf `%s <a class="docsygen-tree-source" href="%s">source</a>` $item . -}}{{- end -}}
+    {{- with .src -}}{{- $item = printf `%s <a class="docsygen-tree-source" href="%s">%s</a>` $item . (T "docsygen-source-link") -}}{{- end -}}
     {{- with .id -}}
       {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
       {{- $desc := partial "docsygen/markup/brief-abbrev.html" (dict "ctx" $.ctx "id" .) -}}
@@ -24,7 +24,6 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- return $html -}}
 {{- end -}}
-<div class="docsygen-text">{{ .intro | safeHTML }}</div>
 {{- with .nodes -}}
 <ul class="docsygen-tree">{{ partial "docsygen/markup/inline/ftv-items.html" (dict "ctx" $.ctx "nodes" .) | safeHTML }}</ul>
 {{- end -}}

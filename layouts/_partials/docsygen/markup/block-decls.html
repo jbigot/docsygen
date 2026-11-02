@@ -19,7 +19,7 @@ SPDX-License-Identifier: MIT
 {{- $key := $ctx.key | default "" -}}
 {{- $sections := partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
 {{- $own := dict -}}
-{{- $section := dict "key" "inherited" "heading" "Additional Inherited Members" "subtitle" "" "members" slice "inner" slice -}}
+{{- $section := dict "key" "inherited" "heading" (T "docsygen-additional-inherited-members") "subtitle" "" "members" slice "inner" slice -}}
 {{- range $sections -}}
   {{- if eq .group "summary" -}}{{- $own = merge $own (dict .key true) -}}{{- end -}}
   {{- if eq .key $b.key -}}{{- $section = . -}}{{- end -}}
@@ -60,7 +60,10 @@ SPDX-License-Identifier: MIT
   {{- range $inherited -}}
     {{- $class := printf "%s_%s" (replace (partial "docsygen/markup/section-label.html" .key) "-" "_") .base -}}
     {{- $heading := partial "docsygen/plan/section-heading.html" (dict "model" $m "key" .key "kind" $e.kind) -}}
-<tr class="docsygen-summary-inherited"><th colspan="2">{{ $heading }} inherited from {{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .base) }}{{ with $u }}<a href="{{ . }}">{{ end }}{{ partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base) }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .base) }}{{ with $u }}</a>{{ end }}</th></tr>
+    {{- $baseName := htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" .base)) -}}
+    {{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .base) -}}
+    {{- with $u }}{{ $baseName = printf `<a href="%s">%s</a>` (htmlEscape .) $baseName }}{{ end -}}
+<tr class="docsygen-summary-inherited"><th colspan="2">{{ T "docsygen-inherited-from" (dict "section" (htmlEscape $heading) "base" $baseName) | safeHTML }}</th></tr>
     {{- $base := .base -}}
     {{- range .members -}}{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" . "page" $id "inherit" $class) -}}{{- end -}}
   {{- end -}}

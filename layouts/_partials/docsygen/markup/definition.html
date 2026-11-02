@@ -8,8 +8,12 @@ SPDX-License-Identifier: MIT
 {{- $ctx := .ctx -}}
 {{- $url := index $ctx.urls (index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $d.file)))) | default "" -}}
 {{- $file := (index $ctx.model.ids $d.file).name -}}
+{{- $link := htmlEscape $file -}}
+{{- with $url }}{{ $link = printf `<a href="%s">%s</a>` (htmlEscape .) $link }}{{ end -}}
 {{- if $d.line -}}
-<p class="docsygen-definition">Definition at line {{ with $url }}<a href="{{ . }}#{{ printf "l%05d" $d.line }}">{{ $d.line }}</a>{{ else }}{{ $d.line }}{{ end }} of file {{ with $url }}<a href="{{ . }}">{{ $file }}</a>{{ else }}{{ $file }}{{ end }}.</p>
+  {{- $line := string $d.line -}}
+  {{- with $url }}{{ $line = printf `<a href="%s#%s">%s</a>` (htmlEscape .) (printf "l%05d" $d.line) $line }}{{ end -}}
+<p class="docsygen-definition">{{ T "docsygen-definition-at-line" (dict "line" $line "file" $link) | safeHTML }}</p>
 {{- else -}}
-<p class="docsygen-definition">Definition in file {{ with $url }}<a href="{{ . }}">{{ $file }}</a>{{ else }}{{ $file }}{{ end }}.</p>
+<p class="docsygen-definition">{{ T "docsygen-definition-in-file" (dict "file" $link) | safeHTML }}</p>
 {{- end -}}

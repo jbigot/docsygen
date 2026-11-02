@@ -10,7 +10,7 @@
 # A build case is {name, partial, context, mounts?, params?, error | warning}, one build each:
 # the build must fail with an error, or succeed with a warning, that contains the given text.
 # mounts maps directories of tests/unit to assets/ paths, or to layouts or content paths when the
-# target starts with layouts or content; a site with content builds its pages too. params is
+# target starts with layouts, content or i18n; a site with content builds its pages too. params is
 # added to the site's params.
 # A case or build case with a hugo key (native or release) runs only when DOCSYGEN_HUGO_KIND
 # (tests/lib.sh) is that value.
@@ -58,7 +58,7 @@ for case in json.load(open(sys.argv[1])):
     if sys.argv[2] and not re.search(sys.argv[2], case['name']): continue
     if case.get('hugo', sys.argv[3]) != sys.argv[3]: continue
     want = 'error' if 'error' in case else 'warning'
-    mounts = ' '.join(f'{k}={v}' if v.split('/')[0] in ('layouts', 'content') else f'{k}=assets/{v}'
+    mounts = ' '.join(f'{k}={v}' if v.split('/')[0] in ('layouts', 'content', 'i18n') else f'{k}=assets/{v}'
                       for k, v in (case.get('mounts') or {}).items())
     # mounts last: read merges consecutive tabs, so an empty field must not come before another.
     print('\t'.join([case['name'], want, case[want], json.dumps(case.get('params') or {}), mounts]))

@@ -14,7 +14,7 @@ SPDX-License-Identifier: MIT
 {{- if and (eq $e.kind "define") $p.initializer -}}
   {{- $params := false -}}
   {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = true -}}{{- end -}}{{- end -}}
-  {{- if $params -}}<b>Value:</b><pre class="docsygen-value"><code>{{ partial "docsygen/text/plain.html" $p.initializer }}</code></pre>{{- end -}}
+  {{- if $params -}}<b>{{ T "docsygen-value" }}</b><pre class="docsygen-value"><code>{{ partial "docsygen/text/plain.html" $p.initializer }}</code></pre>{{- end -}}
 {{- end -}}
 {{- range slice "briefdescription" "detaileddescription" "inbodydescription" -}}
   {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
@@ -29,7 +29,7 @@ SPDX-License-Identifier: MIT
   {{- range $values -}}{{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "initializer") -}}{{- $inits = true -}}{{- end -}}{{- end -}}{{- end -}}
   {{- end -}}
   {{- with $values -}}
-<table class="docsygen-enumvalues"><tr><th colspan="{{ cond $inits 3 2 }}">Enumerator</th></tr>
+<table class="docsygen-enumvalues"><tr><th colspan="{{ cond $inits 3 2 }}">{{ T "docsygen-enumerator" }}</th></tr>
     {{- range . -}}
       {{- $v := . -}}
       {{- $name := "" -}}
@@ -63,7 +63,7 @@ SPDX-License-Identifier: MIT
   {{- $n := len $links -}}
   {{- $list := "" -}}
   {{- range $i, $l := $links -}}
-    {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) ", and " ", ")) $l -}}
+    {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) (T "docsygen-list-last-separator") (T "docsygen-list-separator"))) $l -}}
   {{- end -}}
   {{- return $list -}}
 {{- end -}}
@@ -77,11 +77,11 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- with $from -}}
   {{- $base := index $m.ids (index . 0).attributes.refid -}}
-  {{- $verb := cond (and $base (eq $base.node.attributes.virt "pure-virtual")) "Implements" "Reimplemented from" -}}
-<p>{{ $verb }} {{ partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx) | safeHTML }}.</p>
+  {{- $key := cond (and $base (eq $base.node.attributes.virt "pure-virtual")) "docsygen-implements" "docsygen-reimplemented-from" -}}
+<p>{{ T $key (dict "list" (partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx))) | safeHTML }}</p>
 {{- end -}}
 {{- with $by -}}
-<p>{{ cond (eq $e.node.attributes.virt "pure-virtual") "Implemented in" "Reimplemented in" }} {{ partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx) | safeHTML }}.</p>
+<p>{{ T (cond (eq $e.node.attributes.virt "pure-virtual") "docsygen-implemented-in" "docsygen-reimplemented-in") (dict "list" (partial "docsygen/markup/inline/reimplements.html" (dict "refs" . "ctx" $ctx))) | safeHTML }}</p>
 {{- end -}}
 {{- partial "docsygen/markup/examples-section.html" (dict "ctx" $ctx "id" .id) -}}
 {{- $definition := partial "docsygen/plan/definition.html" (dict "model" $m "id" .id) -}}

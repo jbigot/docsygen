@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 {{- $m := .model -}}
 {{- $e := index $m.ids .id -}}
 {{- $kind := $e.kind -}}
-{{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
 {{- $private := eq (index ((index $m.options "EXTRACT_PRIVATE") | default (slice "NO")) 0) "YES" -}}
 {{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
 {{- $isClass := in $classLike $kind -}}
@@ -123,7 +122,7 @@ SPDX-License-Identifier: MIT
   {{- $list := $found.Get $key -}}
   {{- if or $list ($found.Get (printf "only-%s" $key)) -}}
     {{- $inner := hasPrefix $key "inner-" -}}
-    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" (cond (eq $key "related") "(Note that these are not member symbols.)" "")
+    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" (cond (eq $key "related") (T "docsygen-note-that-these-are-not-member-symbols") "")
         "group" "summary" "members" (cond $inner slice ($list | default slice)) "inner" (cond $inner $list slice)
         "groupsOnly" (not $list)) -}}
   {{- end -}}
@@ -158,12 +157,6 @@ SPDX-License-Identifier: MIT
 {{- $docOrder := cond $isClass
     (slice "doc-typedef" "doc-enum" "doc-constructor" "doc-function" "doc-related" "doc-variable" "doc-property" "doc-event")
     (slice "doc-define" "doc-typedef" "doc-enum" "doc-function" "doc-variable" "doc-property" "doc-event") -}}
-{{- $docHeadings := dict "doc-typedef" (cond $isClass "Member Typedef Documentation" "Typedef Documentation")
-    "doc-enum" (cond $isClass "Member Enumeration Documentation" "Enumeration Type Documentation")
-    "doc-constructor" "Constructor & Destructor Documentation" "doc-function" (cond $isClass "Member Function Documentation" "Function Documentation")
-    "doc-related" "Friends And Related Symbol Documentation"
-    "doc-variable" (cond $isClass (cond $cmode "Field Documentation" "Member Data Documentation") "Variable Documentation")
-    "doc-property" "Property Documentation" "doc-event" "Event Documentation" "doc-define" "Macro Definition Documentation" -}}
 {{- /* SORT_MEMBER_DOCS sorts each detailed section by name, ignoring case, keeping the order of
        equal names. Without it, a class's sections keep the order of declaration, across
        protection levels (the XML groups members by protection). */ -}}
@@ -188,7 +181,7 @@ SPDX-License-Identifier: MIT
     {{- $doc.Set $key $sorted -}}
   {{- end -}}
   {{- with $doc.Get $key -}}
-    {{- $sections = $sections | append (dict "key" $key "heading" (index $docHeadings $key) "subtitle" "" "group" "doc" "members" . "inner" slice) -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" "" "group" "doc" "members" . "inner" slice) -}}
   {{- end -}}
 {{- end -}}
 {{- return $sections -}}

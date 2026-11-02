@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 {{- $sub := dict "ctx" .ctx "single" .single -}}
 {{- $kind := $n.attributes.kind -}}
 {{- $class := index (dict "param" "params" "retval" "retval" "exception" "exception" "templateparam" "tparams") $kind -}}
-{{- $title := index (dict "param" "Parameters" "retval" "Return values" "exception" "Exceptions" "templateparam" "Template Parameters") $kind -}}
+{{- $title := T (index (dict "param" "docsygen-parameters" "retval" "docsygen-return-values" "exception" "docsygen-exceptions" "templateparam" "docsygen-template-parameters") $kind) -}}
 <dl class="docsygen-{{ $class }}"><dt>{{ $title }}</dt><dd><dl class="docsygen-param-items">
 {{- range $n.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "parameteritem") -}}

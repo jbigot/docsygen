@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
   {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
     {{- if eq .group "doc" -}}
 <table class="docsygen-fields">
-<tr><th colspan="3">Class Members</th></tr>
+<tr><th colspan="3">{{ T "docsygen-class-members" }}</th></tr>
       {{- range .members -}}
         {{- $v := index $m.ids . -}}
         {{- $p := dict -}}

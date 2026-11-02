@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
   {{- range $i, $u := . -}}
     {{- $link := htmlEscape (index $m.ids $u.example).name -}}
     {{- $href := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $u.example) -}}{{- with $href -}}{{- $link = printf `<a href="%s#%s">%s</a>` (htmlEscape .) $u.anchor $link -}}{{- end -}}
-    {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) ", and " ", ")) $link -}}
+    {{- $list = printf "%s%s%s" $list (cond (eq $i 0) "" (cond (eq $i (sub $n 1)) (T "docsygen-list-last-separator") (T "docsygen-list-separator"))) $link -}}
   {{- end -}}
-<dl class="docsygen-examples"><dt>Examples</dt><dd>{{ $list | safeHTML }}.</dd>
+<dl class="docsygen-examples"><dt>{{ T "docsygen-examples" }}</dt><dd>{{ $list | safeHTML }}.</dd>
 </dl>
 {{- end -}}

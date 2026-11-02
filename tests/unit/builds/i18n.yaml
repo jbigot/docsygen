@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+- name: i18n, a site rewords a string in its own i18n/en.yaml
+  partial: test/content.html
+  context: {page: /api/latest/api/demo/shape}
+  mounts: {fixtures/i18n/content: content, fixtures/i18n/i18n: i18n, fixtures/placement/layouts: layouts}
+  warning: 'Overridden in'
+- name: i18n, a site rewords a section heading by its kind
+  partial: test/content.html
+  context: {page: /api/latest/api/demo/shape}
+  mounts: {fixtures/i18n/content: content, fixtures/i18n/i18n: i18n, fixtures/placement/layouts: layouts}
+  warning: '>Methods</h2>'

@@ -33,7 +33,7 @@ SPDX-License-Identifier: MIT
   {{- $blocks = $blocks | append (dict "type" "inheritance" "id" $id) (dict "type" "diagram" "id" $id) -}}
 {{- end -}}
 {{- if eq $kind "concept" -}}
-  {{- $blocks = $blocks | append (dict "type" "concept-definition" "id" $id "heading" (dict "level" 2 "text" "Concept definition" "anchorKey" "conceptdef")) -}}
+  {{- $blocks = $blocks | append (dict "type" "concept-definition" "id" $id "heading" (dict "level" 2 "text" (T "docsygen-concept-definition") "anchorKey" "conceptdef")) -}}
 {{- end -}}
 {{- range $sections -}}
   {{- if and (eq .group "summary") (not .in) -}}
@@ -41,10 +41,10 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- if and $classLike (partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id)) -}}
-  {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" "inherited" "heading" (dict "level" 2 "text" "Additional Inherited Members" "anchorKey" "inherited")) -}}
+  {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" "inherited" "heading" (dict "level" 2 "text" (T "docsygen-additional-inherited-members") "anchorKey" "inherited")) -}}
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
-    "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" "Detailed Description" "anchorKey" "details"))) -}}
+    "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" (T "docsygen-detailed-description") "anchorKey" "details"))) -}}
 {{- /* The sections of the detailed description, depth first: a heading each (its title's node
        for flavors that render it), one level below the description's. */ -}}
 {{- define "_partials/docsygen/plan/compound/sections.html" -}}
@@ -87,7 +87,7 @@ SPDX-License-Identifier: MIT
     {{- end -}}
   {{- end -}}
   {{- with $inline -}}
-    {{- $blocks = $blocks | append (dict "type" "inline-classes" "id" $id "ids" . "heading" (dict "level" 2 "text" "Class Documentation" "anchorKey" "inline-classes")) -}}
+    {{- $blocks = $blocks | append (dict "type" "inline-classes" "id" $id "ids" . "heading" (dict "level" 2 "text" (T "docsygen-class-documentation") "anchorKey" "inline-classes")) -}}
   {{- end -}}
 {{- end -}}
 {{- range $sections -}}

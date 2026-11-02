@@ -28,7 +28,7 @@ SPDX-License-Identifier: MIT
     <div class="docsygen-text">{{ range $includes }}{{ partial "docsygen/markup/inline/include.html" (dict "node" . "ctx" $ctx) }}<br />{{ end }}</div>
   {{- end -}}
   {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "source" "id" $id))) -}}
-    {{- with index $ctx.urls . -}}<p><a href="{{ . }}">Go to the source code of this file.</a></p>{{- end -}}
+    {{- with index $ctx.urls . -}}<p><a href="{{ . }}">{{ T "docsygen-go-to-the-source-code-of-this-file" }}</a></p>{{- end -}}
   {{- end -}}
 {{- else if and ($yes.Get "SHOW_HEADERFILE") $includes -}}
   <p>{{ range $includes }}{{ partial "docsygen/markup/inline/include.html" (dict "node" . "ctx" $ctx) }}{{ end }}</p>

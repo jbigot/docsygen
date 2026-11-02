@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 {{- $id := .block.id -}}
 {{- $e := index $m.ids $id -}}
 {{- with index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $id))) -}}
-{{- with index $ctx.urls . -}}<a href="{{ . }}">Go to the documentation of this file.</a>{{- end -}}
+{{- with index $ctx.urls . -}}<a href="{{ . }}">{{ T "docsygen-go-to-the-documentation-of-this-file" }}</a>{{- end -}}
 {{- end -}}
 {{- range $e.node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "programlisting") -}}

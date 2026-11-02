@@ -23,6 +23,15 @@ Page skeletons
 The page tree
 : It comes from `docsygen/paths/scheme.html`.
 
+Wording
+: Every word docsygen writes goes through Hugo's `i18n`, with keys in
+  [`i18n/en.yaml`](https://github.com/jbigot/docsygen/blob/main/i18n/en.yaml): headings
+  (`docsygen-section-public-func`), titles (`docsygen-class-reference`), sentences
+  (`docsygen-definition-at-line`), and the notice of other versions. Reword or translate them in
+  your own `i18n/<lang>.yaml`, keeping the keys; a language's file must hold them all. The
+  arguments are named fields (`{{ .name }}`), and a string that depends on a number has plural
+  forms (`one`, `other`).
+
 For example, a class page without its summary tables, in `layouts/_partials/docsygen/skeleton/class.html`:
 
 ```go-html-template

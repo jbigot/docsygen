@@ -173,8 +173,8 @@ SPDX-License-Identifier: MIT
 {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" "" "seg" "" "title" $title "roles" $rootRoles "brief" "indexpage") -}}
 
 {{- /* pages/ and topics/. */ -}}
-{{- range slice (dict "kind" "page" "tag" "innerpage" "name" "pages" "title" "Pages" "weight" 10)
-    (dict "kind" "group" "tag" "innergroup" "name" "topics" "title" "Topics" "weight" 20) -}}
+{{- range slice (dict "kind" "page" "tag" "innerpage" "name" "pages" "title" (T "docsygen-pages") "weight" 10)
+    (dict "kind" "group" "tag" "innergroup" "name" "topics" "title" (T "docsygen-topics") "weight" 20) -}}
   {{- $t := . -}}
   {{- $listed := newScratch -}}
   {{- range $m.order -}}
@@ -231,7 +231,7 @@ SPDX-License-Identifier: MIT
 {{- if or $api (index $tree "annotated") (index $tree "namespaces") (index $tree "concepts") -}}
   {{- $treeRoles := slice -}}
   {{- range slice "annotated" "namespaces" "concepts" -}}{{- with index $tree . -}}{{- $treeRoles = $treeRoles | append . -}}{{- end -}}{{- end -}}
-  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "api" "title" "API reference" "linkTitle" "API" "weight" 30 "roles" $treeRoles) -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "api" "title" (T "docsygen-api-reference") "linkTitle" (T "docsygen-api") "weight" 30 "roles" $treeRoles) -}}
   {{- range sort $api "order" -}}
     {{- $e := index $m.ids .id -}}
     {{- $rel := $e.name -}}
@@ -308,7 +308,7 @@ SPDX-License-Identifier: MIT
   {{- if and (eq (index $m.ids .).kind "file") (or (index $crole .) (index ($more.Get "source" | default dict) .)) -}}{{- $fileRoles.Set . true -}}{{- end -}}
 {{- end -}}
 {{- if or $keptList ($fileRoles.Values) (index $tree "files") -}}
-  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "files" "title" "Files" "weight" 40
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "files" "title" (T "docsygen-files") "weight" 40
       "roles" (cond (isset $tree "files") (slice (index $tree "files")) slice)) -}}
   {{- $dirPages := newScratch -}}
   {{- range sort $keptList "order" -}}
@@ -356,7 +356,7 @@ SPDX-License-Identifier: MIT
 {{- $examples := slice -}}
 {{- range $m.order -}}{{- if and (eq (index $m.ids .).kind "example") (index $crole .) -}}{{- $examples = $examples | append . -}}{{- end -}}{{- end -}}
 {{- if or $examples (index $tree "examples") -}}
-  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "examples" "title" "Examples" "weight" 50
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "examples" "title" (T "docsygen-examples") "weight" 50
       "roles" (cond (isset $tree "examples") (slice (index $tree "examples")) slice)) -}}
   {{- range $i, $id := $examples -}}
     {{- $e := index $m.ids $id -}}
@@ -368,14 +368,14 @@ SPDX-License-Identifier: MIT
 {{- /* indexes/. */ -}}
 {{- $indexRoles := $more.Get "index" | default dict -}}
 {{- $indexPages := slice
-    (dict "name" "classes" "title" "Class Index" "roles" (index $indexRoles "classes" | default slice))
-    (dict "name" "hierarchy" "title" "Class Hierarchy" "roles" (cond (isset $tree "hierarchy") (slice (index $tree "hierarchy")) slice))
-    (dict "name" "class-members" "title" "Class Members" "roles" (index $indexRoles "class-members" | default slice))
-    (dict "name" "namespace-members" "title" "Namespace Members" "roles" (index $indexRoles "namespace-members" | default slice))
-    (dict "name" "file-members" "title" "File Members" "roles" (index $indexRoles "file-members" | default slice)) -}}
+    (dict "name" "classes" "title" (T "docsygen-class-index") "roles" (index $indexRoles "classes" | default slice))
+    (dict "name" "hierarchy" "title" (T "docsygen-class-hierarchy") "roles" (cond (isset $tree "hierarchy") (slice (index $tree "hierarchy")) slice))
+    (dict "name" "class-members" "title" (T "docsygen-class-members") "roles" (index $indexRoles "class-members" | default slice))
+    (dict "name" "namespace-members" "title" (T "docsygen-namespace-members") "roles" (index $indexRoles "namespace-members" | default slice))
+    (dict "name" "file-members" "title" (T "docsygen-file-members") "roles" (index $indexRoles "file-members" | default slice)) -}}
 {{- range $i, $p := $indexPages -}}
   {{- if $p.roles -}}
-    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "indexes" "title" "Indexes" "weight" 60 "roles" slice) -}}
+    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "indexes" "title" (T "docsygen-indexes") "weight" 60 "roles" slice) -}}
     {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" $p.name "title" $p.title "weight" (add $i 1) "roles" $p.roles) -}}
   {{- end -}}
 {{- end -}}
@@ -384,7 +384,7 @@ SPDX-License-Identifier: MIT
 {{- range $i, $id := $m.order -}}
   {{- if and (index $crole $id) (not (index ($s.Get "rolePage") $id)) -}}
     {{- $e := index $m.ids $id -}}
-    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "other" "title" "Other" "weight" 70 "roles" slice) -}}
+    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "other" "title" (T "docsygen-other") "weight" 70 "roles" slice) -}}
     {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" (partial "docsygen/paths/segment.html" (dict "name" $e.name "kind" $e.kind))
         "title" $e.name "weight" (add $i 1) "roles" (slice (index $crole $id)) "brief" $id) -}}
   {{- end -}}
