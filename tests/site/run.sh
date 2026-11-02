@@ -8,7 +8,8 @@
 # Usage: sh tests/site/run.sh [NAME ...]
 #   NAME   sample, sample-c, pdi (the corpus, tests/lib.sh), versions (sample as 1.0, sample-next as
 #          2.0, the latest), versions-mixed (versions with 1.0 from Doxygen 1.17.0, the oldest
-#          supported) or unknown-kind (tests/unit/fixtures/unknown-kind); all by default
+#          supported), nested (the sample as the latest 1.0, from an adapter two directories deep) or
+#          unknown-kind (tests/unit/fixtures/unknown-kind); all by default
 # A build fails on any WARN or ERROR line, but an expected warning: the unknown-kind fixture's, and
 # the sample's for its eqnarray* formula, an environment KaTeX lacks (its source is shown).
 # Exit 1 on any failure.
@@ -16,7 +17,7 @@ set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/../lib.sh"
-[ $# -gt 0 ] || set -- sample sample-c pdi unknown-kind versions versions-mixed
+[ $# -gt 0 ] || set -- sample sample-c pdi unknown-kind versions versions-mixed nested
 status=0
 for name; do
   printf '== %s\n' "$name"
@@ -25,6 +26,8 @@ for name; do
     versions) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml
        expected='docsygen: formula "\\begin{eqnarray*}' ;;
     versions-mixed) if ! dir=$(DOXYGEN=$(doxygen_bin 1.17.0) && corpus sample); then status=1; continue; fi; xml=$dir/xml
+       expected='docsygen: formula "\\begin{eqnarray*}' ;;
+    nested) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml
        expected='docsygen: formula "\\begin{eqnarray*}' ;;
     unknown-kind) xml=$root/tests/unit/fixtures/unknown-kind; expected='docsygen: unknown compound kind "widgetkind"' ;;
     *) if ! dir=$(corpus "$name"); then status=1; continue; fi; xml=$dir/xml
@@ -36,6 +39,7 @@ for name; do
     if ! dir=$(corpus sample-next); then status=1; continue; fi
     content=content-versions next=$dir/xml
   fi
+  if [ "$name" = nested ]; then content=content-nested; fi
   mkdir -p "$work"
   # The hand-written page links to the sample's symbols.
   extra=
@@ -62,6 +66,12 @@ for name; do
       [ "$found" = "$3" ] || { echo "run.sh: $2 is $found in $1, expected $3" >&2; status=1; }
     done
     python3 -I "$here/check_redirects.py" "$work/public" /latest/ /2.0/ || status=1
+    continue
+  fi
+  if [ "$name" = nested ]; then
+    # An absolute alias from the adapter's directory, not the site's root.
+    python3 -I "$here/check.py" "$work/public" "$xml" /deep/er/latest/ || status=1
+    python3 -I "$here/check_redirects.py" "$work/public" /deep/er/latest/ /deep/er/1.0/ || status=1
     continue
   fi
   links=

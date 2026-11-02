@@ -68,11 +68,12 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- return $add -}}
 {{- end -}}
-{{- /* aliases: the page at path p of the latest release, also at its numbered path, relative
-       to the parent of the page's directory (Hugo's rule): up to the adapter's directory,
-       then down. */ -}}
+{{- /* aliases: the page at path p of the latest release, also at its numbered path, an absolute
+       alias from the adapter's directory, which is that of the outermost template running
+       (the adapter file), relative to the content directory. */ -}}
 {{- define "_partials/docsygen/adapter/alias.html" -}}
-  {{- return slice (printf "%s%s" (strings.Repeat (sub (len (split .path "/")) 1) "../") .numbered) -}}
+  {{- $adapter := (index templates.Current.Ancestors.Reverse 0).Name -}}
+  {{- return slice (path.Join "/" (path.Dir $adapter) .numbered) -}}
 {{- end -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
