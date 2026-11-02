@@ -119,9 +119,6 @@ dl[class^="docsygen-"] {
 
 // Code: listings with their line numbers, concepts, verbatim blocks, macro values.
 .docsygen-listing .docsygen-line {
-  display: block;
-  min-height: 1lh;
-
   &[data-line]::before {
     content: attr(data-line);
     display: inline-block;
