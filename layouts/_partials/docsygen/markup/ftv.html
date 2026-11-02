@@ -17,7 +17,7 @@ SPDX-License-Identifier: MIT
     {{- with .id -}}
       {{- /* Not `with partial`: Hugo reads it as a partial decorator. */ -}}
       {{- $desc := partial "docsygen/markup/brief-abbrev.html" (dict "ctx" $.ctx "id" .) -}}
-      {{- with $desc -}}{{- $item = printf `%s <span class="docsygen-tree-desc">%s</span>` $item . -}}{{- end -}}
+      {{- with $desc -}}{{- $item = printf `%s <span class="text-body-secondary">— %s</span>` $item . -}}{{- end -}}
     {{- end -}}
     {{- with .children -}}{{- $item = printf `%s<ul>%s</ul>` $item (partial "docsygen/markup/inline/ftv-items.html" (dict "ctx" $.ctx "nodes" .)) -}}{{- end -}}
     {{- $html = printf `%s<li class="docsygen-tree-%s">%s</li>` $html (.kind | default "none") $item -}}

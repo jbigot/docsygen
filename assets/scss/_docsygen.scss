@@ -28,11 +28,6 @@
   font-weight: bold;
 }
 
-.docsygen-definition {
-  color: var(--bs-secondary-color);
-  font-size: 0.9em;
-}
-
 // Tables: Docsy styles every table of the content (td-table: striped, responsive), summaries,
 // enum values, fields and members lists included; only the summaries' columns are ours.
 .docsygen-summary {
@@ -52,10 +47,6 @@
   }
 }
 
-.docsygen-members-undocumented {
-  color: var(--bs-secondary-color);
-}
-
 // Definition lists: parameters, returns, notes, xref items, examples.
 dl[class^="docsygen-"] {
   > dt {
@@ -71,11 +62,6 @@ dl[class^="docsygen-"] {
   > dt {
     font-weight: normal;
   }
-}
-
-.docsygen-direction {
-  color: var(--bs-secondary-color);
-  font-size: 0.85em;
 }
 
 // Code: listings with their line numbers, concepts, verbatim blocks, macro values.
@@ -95,14 +81,6 @@ dl[class^="docsygen-"] {
 .docsygen-tree {
   ul {
     margin-bottom: 0;
-  }
-
-  .docsygen-tree-desc {
-    color: var(--bs-secondary-color);
-
-    &::before {
-      content: "— ";
-    }
   }
 
   .docsygen-tree-source {
@@ -127,18 +105,7 @@ dl[class^="docsygen-"] {
   }
 }
 
-// Figures and diagrams.
-.docsygen-figure {
-  figcaption {
-    color: var(--bs-secondary-color);
-    font-size: 0.9em;
-  }
-}
-
-.docsygen-diagram-title {
-  color: var(--bs-secondary-color);
-}
-
+// Diagrams.
 .docsygen-diagram .docsygen-current > rect,
 .docsygen-diagram .docsygen-current > .label-container {
   stroke-width: 2px;

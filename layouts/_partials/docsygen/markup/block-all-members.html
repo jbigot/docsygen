@@ -90,7 +90,7 @@ SPDX-License-Identifier: MIT
 {{- with $rows -}}
 <table class="docsygen-members">
   {{- range $i, $r := . }}
-  <tr{{ if $r.plain }} class="docsygen-members-undocumented"{{ end }}><td>{{ $r.first | safeHTML }}</td><td>{{ $r.class | safeHTML }}</td><td>{{ $r.labels | safeHTML }}</td></tr>
+  <tr{{ if $r.plain }} class="text-body-secondary"{{ end }}><td>{{ $r.first | safeHTML }}</td><td>{{ $r.class | safeHTML }}</td><td>{{ $r.labels | safeHTML }}</td></tr>
   {{- end }}
 </table>
 {{- end -}}

@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT
 {{- if $d.line -}}
   {{- $line := string $d.line -}}
   {{- with $url }}{{ $line = printf `<a href="%s#%s">%s</a>` (htmlEscape .) (printf "l%05d" $d.line) $line }}{{ end -}}
-<p class="docsygen-definition">{{ T "docsygen-definition-at-line" (dict "line" $line "file" $link) | safeHTML }}</p>
+<p class="small text-body-secondary">{{ T "docsygen-definition-at-line" (dict "line" $line "file" $link) | safeHTML }}</p>
 {{- else -}}
-<p class="docsygen-definition">{{ T "docsygen-definition-in-file" (dict "file" $link) | safeHTML }}</p>
+<p class="small text-body-secondary">{{ T "docsygen-definition-in-file" (dict "file" $link) | safeHTML }}</p>
 {{- end -}}

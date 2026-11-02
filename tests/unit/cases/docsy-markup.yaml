@@ -17,7 +17,7 @@
   context:
     ctx: {}
     xml: '<detaileddescription><para><parameterlist kind="param"><parameteritem><parameternamelist><parametername direction="in">x</parametername></parameternamelist><parameterdescription><para>The x.</para></parameterdescription></parameteritem></parameterlist></para></detaileddescription>'
-  expect: '<dl class="docsygen-params"><dt>Parameters</dt><dd><dl class="docsygen-param-items"><dt><code>x</code> <span class="docsygen-direction">[in]</span></dt><dd>The x.</dd></dl></dd></dl>'
+  expect: '<dl class="docsygen-params"><dt>Parameters</dt><dd><dl class="docsygen-param-items"><dt><code>x</code> <span class="small text-body-secondary">[in]</span></dt><dd>The x.</dd></dl></dd></dl>'
 - name: docsy markup, a returns section is a definition list
   partial: test/doc.html
   context:
@@ -70,7 +70,7 @@
   context:
     ctx: {model: sample}
     block: {type: diagram, id: classdemo_1_1Button}
-  expect: "<div class=\"docsygen-diagram\"><div class=\"docsygen-diagram-title\">Inheritance diagram for demo::Button:</div><pre class=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre></div>"
+  expect: "<figure class=\"docsygen-diagram figure d-block\"><figcaption class=\"figure-caption\">Inheritance diagram for demo::Button:</figcaption><pre class=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre></figure>"
 - name: docsy markup, a member with its signature
   partial: test/block-contains.html
   context:
@@ -129,7 +129,7 @@
   context:
     ctx: {}
     xml: '<detaileddescription><para><image type="html" name="https://example.com/a.png">The caption</image></para></detaileddescription>'
-  expect: '<figure class="docsygen-figure"><img src="https://example.com/a.png" alt="The caption"><figcaption>The caption</figcaption></figure>'
+  expect: '<figure class="figure"><img src="https://example.com/a.png" alt="The caption"><figcaption class="figure-caption">The caption</figcaption></figure>'
 - name: docsy markup, an inline image
   partial: test/doc.html
   context:

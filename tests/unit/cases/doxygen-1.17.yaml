@@ -9,19 +9,19 @@
   context:
     ctx: {model: doxygen-1.17}
     xml: "<detaileddescription><para><mermaidfile name=\"flow.mmd\">File caption</mermaidfile>\n </para></detaileddescription>"
-  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph TD\n  X --&gt; Y\n</pre><figcaption>File caption</figcaption></figure>"
+  expect: "<figure class=\"figure d-block\"><pre class=\"mermaid\">graph TD\n  X --&gt; Y\n</pre><figcaption class=\"figure-caption\">File caption</figcaption></figure>"
 - name: docsy markup, a mermaid diagram for Docsy's Mermaid plugin
   partial: test/doc.html
   context:
     ctx: {}
     xml: "<detaileddescription><para><mermaid caption=\"Flow caption\">graph LR\n  A --&gt; B</mermaid>\n</para></detaileddescription>"
-  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph LR\n  A --&gt; B</pre><figcaption>Flow caption</figcaption></figure>"
+  expect: "<figure class=\"figure d-block\"><pre class=\"mermaid\">graph LR\n  A --&gt; B</pre><figcaption class=\"figure-caption\">Flow caption</figcaption></figure>"
 - name: docsy markup, a mermaid diagram file without a caption
   partial: test/doc.html
   context:
     ctx: {model: doxygen-1.17}
     xml: "<detaileddescription><para><mermaidfile name=\"flow.mmd\"></mermaidfile>\n </para></detaileddescription>"
-  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph TD\n  X --&gt; Y\n</pre></figure>"
+  expect: "<figure class=\"figure d-block\"><pre class=\"mermaid\">graph TD\n  X --&gt; Y\n</pre></figure>"
 - name: docsy markup, concept parts, code and an embedded description
   partial: test/block-contains.html
   context:
@@ -38,4 +38,4 @@
   context:
     ctx: {}
     xml: "<detaileddescription><para><mermaid caption=\"A &lt;b&gt;bold&lt;/b&gt; and **md** caption\">graph LR</mermaid>\n</para></detaileddescription>"
-  expect: "<figure class=\"docsygen-figure\"><pre class=\"mermaid\">graph LR</pre><figcaption>A &lt;b&gt;bold&lt;/b&gt; and **md** caption</figcaption></figure>"
+  expect: "<figure class=\"figure d-block\"><pre class=\"mermaid\">graph LR</pre><figcaption class=\"figure-caption\">A &lt;b&gt;bold&lt;/b&gt; and **md** caption</figcaption></figure>"

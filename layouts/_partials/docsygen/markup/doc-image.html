@@ -11,5 +11,5 @@ SPDX-License-Identifier: MIT
 {{- if eq $n.attributes.inline "yes" -}}
   <img src="{{ $img.src }}" alt="{{ $alt }}">
 {{- else -}}
-  <figure class="docsygen-figure"><img src="{{ $img.src }}" alt="{{ $alt }}">{{ with $caption }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
+  <figure class="figure"><img src="{{ $img.src }}" alt="{{ $alt }}">{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- end -}}

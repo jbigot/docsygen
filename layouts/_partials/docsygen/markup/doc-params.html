@@ -23,7 +23,7 @@ SPDX-License-Identifier: MIT
             {{- with .attributes.direction -}}{{- $dir = index (dict "in" "[in]" "out" "[out]" "inout" "[in,out]") . -}}{{- end -}}
           {{- end -}}
         {{- end -}}
-        <dt><code>{{ delimit $names ", " | safeHTML }}</code>{{ with $dir }} <span class="docsygen-direction">{{ . }}</span>{{ end }}</dt>
+        <dt><code>{{ delimit $names ", " | safeHTML }}</code>{{ with $dir }} <span class="small text-body-secondary">{{ . }}</span>{{ end }}</dt>
       {{- else if eq .tag "parameterdescription" -}}
         <dd>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</dd>
       {{- end -}}

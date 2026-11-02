@@ -20,10 +20,11 @@ Checks:
     links to;
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, mermaid and the Bootstrap classes docsygen uses
-    (badge, small, text-bg-secondary, text-body-secondary), outside KaTeX's output
-    (.katex*) and the highlighted code of listings (pre.docsygen-listing), on the pages of the
-    test site (those that Docsy didn't lay out: without .td-content, nor a td-* class on <body>,
-    as Docsy's home and community pages have; Docsy's classes are its business);
+    (badge, d-block, figure, figure-caption, small, text-bg-secondary, text-body-secondary),
+    outside KaTeX's output (.katex*) and the highlighted code of listings (pre.docsygen-listing),
+    on the pages of the test site (those that Docsy didn't lay out: without .td-content, nor a
+    td-* class on <body>, as Docsy's home and community pages have; Docsy's classes are its
+    business);
   - no {{<, HAHAHUGOSHORTCODE or ZgotmplZ is left;
   - PUBLIC has a page, and with --under, DIR has one;
   - with --links, the hrefs of PAGE's main element (a path under PUBLIC) are, in order, the list
@@ -37,7 +38,7 @@ import htmltree
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
 LEFTOVERS = ('{{<', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
-ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|badge|small|text-bg-secondary|text-body-secondary)$')
+ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|badge|d-block|figure|figure-caption|small|text-bg-secondary|text-body-secondary)$')
 
 
 def foreign_classes(node, out):
