@@ -78,16 +78,11 @@
   partial: docsygen/plan/class-files.html
   context: {model: sample, id: namespacedemo}
   expect: []
-- name: example anchors, one per first reference to a class or member
-  partial: docsygen/plan/examples.html
-  context: {model: sample}
-  select: [anchors, example_8cpp-example]
-  expect: ["", _a0, "", a1]
 - name: the examples that use a member
   partial: docsygen/plan/examples.html
   context: {model: sample}
   select: [uses, classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd]
-  expect: [{example: example_8cpp-example, anchor: a1}]
+  expect: [{example: example_8cpp-example, line: 6}]
 - name: SORT_MEMBER_DOCS sorts as Hugo's sort does, a destructor next to its constructor
   partial: docsygen/plan/sections.html
   context: {model: sample, id: classdemo_1_1Widget}

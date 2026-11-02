@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
          xml: STRING          becomes node, the string parsed with xmldoc/parse.html;
          model: NAME          becomes model, the model of assets/doxygen/NAME;
          ctx: {model?, links?, anchors?}  becomes ctx, as docsygen/ctx.html returns it for a
-                              page, with page nil, empty maps for what is not given, and
+                              page, with page the home page, empty maps for what is not given, and
                               paths when model is given.
        Any other context is passed as is. */ -}}
 {{- $c := . -}}
@@ -20,7 +20,7 @@ SPDX-License-Identifier: MIT
       {{- $s.SetInMap "m" "model" (partial "docsygen/model.html" (printf "doxygen/%s" $v)) -}}
     {{- else if eq $k "ctx" -}}
       {{- $ctx := newScratch -}}
-      {{- $ctx.Set "m" (dict "page" nil "links" ($v.links | default dict) "anchors" ($v.anchors | default dict)) -}}
+      {{- $ctx.Set "m" (dict "page" site.Home "links" ($v.links | default dict) "anchors" ($v.anchors | default dict)) -}}
       {{- with $v.model -}}
         {{- $model := partial "docsygen/model.html" (printf "doxygen/%s" .) -}}
         {{- $ctx.SetInMap "m" "model" $model -}}

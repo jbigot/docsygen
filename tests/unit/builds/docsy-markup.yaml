@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+- name: a render-codeblock hook that drops the line anchors of a numbered listing warns
+  partial: test/listing-contains.html
+  context:
+    ctx: {}
+    numbered: true
+    lang: cpp
+    xml: '<programlisting><codeline lineno="12"><highlight class="normal">int<sp/>a;</highlight></codeline></programlisting>'
+    contains: []
+    lacks: []
+  mounts: {fixtures/listing-hook: layouts}
+  warning: 'a listing has no line anchors (id="l-12")'

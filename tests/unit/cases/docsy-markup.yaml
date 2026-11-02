@@ -30,12 +30,34 @@
     ctx: {}
     xml: '<detaileddescription><para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Fix it.</para></xrefdescription></xrefsect></para></detaileddescription>'
   expect: '<dl class="docsygen-xref docsygen-todo"><dt>Todo</dt><dd>Fix it.</dd></dl>'
-- name: docsy markup, a listing is a highlighted pre, a span per line
-  partial: test/doc.html
+- name: docsy markup, a listing is a fenced code block
+  partial: test/doc-contains.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><programlisting filename=".txt"><codeline><highlight class="keyword">int</highlight><highlight class="normal"><sp/>a;</highlight></codeline><codeline><highlight class="normal"></highlight></codeline></programlisting></para></detaileddescription>'
-  expect: "<pre class=\"docsygen-listing\"><code><span class=\"docsygen-line\">int a;</span>\n<span class=\"docsygen-line\"></span></code></pre>"
+    contains: ['class="highlight"', 'int a;']
+    lacks: [docsygen-listing, docsygen-line, 'id="l-']
+  expect: []
+- name: docsy markup, a numbered listing starts at its first line
+  partial: test/listing-contains.html
+  context:
+    ctx: {}
+    numbered: true
+    lang: cpp
+    xml: '<programlisting><codeline lineno="12"><highlight class="normal">int<sp/>a;</highlight></codeline><codeline lineno="13"><highlight class="normal">int<sp/>b;</highlight></codeline></programlisting>'
+    contains: ['id="l-12"', 'id="l-13"', 'href="#l-12"']
+    lacks: ['id="l-11"', 'id="l-14"']
+  expect: []
+- name: docsy markup, a listing with a line of backticks keeps its following lines
+  partial: test/listing-contains.html
+  context:
+    ctx: {}
+    numbered: true
+    lang: cpp
+    xml: '<programlisting><codeline lineno="1"><highlight class="normal">a;</highlight></codeline><codeline lineno="2"><highlight class="normal">```</highlight></codeline><codeline lineno="3"><highlight class="normal">b;</highlight></codeline></programlisting>'
+    contains: ['id="l-1"', 'id="l-3"', 'b;']
+    lacks: ['<p>', '<code>b;']
+  expect: []
 - name: render, the text of a listing
   partial: test/call-with-node.html
   context:

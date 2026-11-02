@@ -2,55 +2,49 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* A program listing as a highlighted pre, a span.docsygen-line per codeline, each highlighted on
-       its own (transform.Highlight, inline, with the site's highlighting settings): a token that
-       spans lines, such as a block comment, is highlighted line by line. The language is .lang, or
-       the extension of the listing's filename, else text. A .numbered line has the anchor
-       l<number> (lNNNNN) and its number in data-line, which the stylesheet shows; an example's own
-       listing starts the line of each of its anchors (docsygen/plan/examples.html) with it. Code
-       links are not kept.
+{{- /* A program listing as a fenced code block, rendered by .ctx.page.RenderString: Hugo's
+       highlighter, the site's markup.highlight settings and any render-codeblock hook apply.
+       The language is .lang, or the extension of the listing's filename, else text. A .numbered
+       listing, and an example's own listing, has line numbers from its first codeline's lineno
+       (1 without), each line the anchor l-<number> (Chroma's lineanchors), which links to a
+       line target (docsygen/plan/examples.html, docsygen/markup/definition.html); a site whose
+       settings or hook drop them gets a warning. Code links are not kept.
        Usage: partial "docsygen/markup/listing.html" (dict "node" $programlisting "ctx" $ctx "numbered" false "lang" "") */ -}}
 {{- $ctx := .ctx -}}
 {{- $lang := .lang | default (strings.TrimPrefix "." (path.Ext (.node.attributes.filename | default ""))) | default "text" -}}
-{{- $anchors := slice -}}
+{{- $numbered := .numbered | default false -}}
 {{- with $ctx.key -}}
   {{- range where $ctx.paths.pages "key" . -}}
     {{- range .roles -}}
       {{- $page := and (eq .role "compound") (index $ctx.model.ids .id) -}}
-      {{- if and $page (eq $page.kind "example") (eq $.node.attributes.filename $page.name) -}}
-        {{- $anchors = index (partial "docsygen/plan/examples.html" (dict "model" $ctx.model)).anchors $page.id | default slice -}}
-      {{- end -}}
+      {{- if and $page (eq $page.kind "example") (eq $.node.attributes.filename $page.name) -}}{{- $numbered = true -}}{{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- define "_partials/docsygen/markup/inline/listing-refs.html" -}}
-  {{- /* The number of refs under . */ -}}
-  {{- $n := 0 -}}
-  {{- range .children -}}
-    {{- if reflect.IsMap . -}}{{- $n = add $n (cond (eq .tag "ref") 1 (partial "docsygen/markup/inline/listing-refs.html" .)) -}}{{- end -}}
-  {{- end -}}
-  {{- return $n -}}
-{{- end -}}
-{{- $r := 0 -}}
+{{- /* The code, a line per codeline; a numbered listing is padded with empty lines where the XML
+       omits some (the lines of documentation comments), so that every line has its own number. */ -}}
+{{- $first := 0 -}}
 {{- $lines := slice -}}
 {{- range .node.children -}}
   {{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
-    {{- $text := partial "docsygen/render/listing-text.html" . -}}
-    {{- $code := "" -}}
-    {{- with $text -}}
-      {{- $code = string (transform.Highlight . $lang (dict "hl_inline" true)) -}}
-      {{- /* Chroma ends a line comment's token with a newline, which one codeline can't hold. */ -}}
-      {{- $code = replace (replaceRE `^<code[^>]*>` "" (strings.TrimSuffix "</code>" $code)) "\n" "" -}}
+    {{- $n := int (.attributes.lineno | default 0) -}}
+    {{- if not $first -}}{{- $first = $n | default 1 -}}{{- end -}}
+    {{- if and $numbered $n (gt (sub $n $first (len $lines)) 0) -}}
+      {{- range seq (sub $n $first (len $lines)) -}}{{- $lines = $lines | append "" -}}{{- end -}}
     {{- end -}}
-    {{- $marks := "" -}}
-    {{- $refs := partial "docsygen/markup/inline/listing-refs.html" . -}}
-    {{- range seq $refs -}}
-      {{- with and (lt $r (len $anchors)) (index $anchors $r) -}}{{- $marks = printf `%s<span id="%s"></span>` $marks . -}}{{- end -}}
-      {{- $r = add $r 1 -}}
-    {{- end -}}
-    {{- $attrs := "" -}}
-    {{- if $.numbered -}}{{- $attrs = printf ` id="l%05d" data-line="%d"` (int .attributes.lineno) (int .attributes.lineno) -}}{{- end -}}
-    {{- $lines = $lines | append (printf `<span class="docsygen-line"%s>%s%s</span>` $attrs $marks $code) -}}
+    {{- $lines = $lines | append (partial "docsygen/render/listing-text.html" .) -}}
   {{- end -}}
 {{- end -}}
-<pre class="docsygen-listing"><code>{{ delimit $lines "\n" | safeHTML }}</code></pre>
+{{- $first = $first | default 1 -}}
+{{- $code := delimit $lines "\n" -}}
+{{- /* A fence one backtick longer than the longest run in the code can't end early. */ -}}
+{{- $ticks := 3 -}}
+{{- range findRE "`+" $code -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
+{{- $fence := strings.Repeat (int $ticks) "`" -}}
+{{- $info := $lang -}}
+{{- if $numbered -}}{{- $info = printf `%s {linenos=inline, anchorlinenos=true, lineanchors="l", linenostart=%d}` $lang $first -}}{{- end -}}
+{{- $html := $ctx.page.RenderString (dict "display" "block") (printf "%s%s\n%s\n%s" $fence $info $code $fence) -}}
+{{- if and $numbered (not (strings.Contains (string $html) (printf `id="l-%d"` $first))) -}}
+  {{- warnidf "docsygen-listing-anchors" "docsygen: %s: a listing has no line anchors (id=\"l-%d\"), which links to its lines target: check markup.highlight (lineNos, anchorLineNos, lineAnchors, codeFences) and the site's render-codeblock hook" $ctx.page.Path $first -}}
+{{- end -}}
+{{- return $html -}}

@@ -21,7 +21,8 @@ Checks:
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, mermaid and the Bootstrap classes docsygen uses
     (badge, d-block, figure, figure-caption, small, text-bg-secondary, text-body-secondary),
-    outside KaTeX's output (.katex*) and the highlighted code of listings (pre.docsygen-listing),
+    outside KaTeX's output (.katex*), the highlighted code (div.highlight) and the language-* class of
+    code that Chroma has no lexer for,
     on the pages of the test site (those that Docsy didn't lay out: without .td-content, nor a
     td-* class on <body>, as Docsy's home and community pages have; Docsy's classes are its
     business);
@@ -38,17 +39,17 @@ import htmltree
 
 BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
 LEFTOVERS = ('{{<', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
-ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|badge|d-block|figure|figure-caption|small|text-bg-secondary|text-body-secondary)$')
+ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|language-.*|badge|d-block|figure|figure-caption|small|text-bg-secondary|text-body-secondary)$')
 
 
 def foreign_classes(node, out):
     """The classes of node and its descendants that ALLOWED rejects, as {class: count}, skipping
-    KaTeX's output and the highlighted code of listings."""
+    KaTeX's output and the highlighted code (div.highlight)."""
     for c in node.children:
         if not isinstance(c, htmltree.Node):
             continue
         cls = htmltree.classes(c)
-        if any(x.startswith('katex') for x in cls) or (c.tag == 'pre' and 'docsygen-listing' in cls):
+        if any(x.startswith('katex') for x in cls) or (c.tag == 'div' and 'highlight' in cls):
             continue
         for x in cls:
             if not ALLOWED.match(x):

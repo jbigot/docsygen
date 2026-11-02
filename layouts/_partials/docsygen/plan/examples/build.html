@@ -26,7 +26,6 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- return $found -}}
 {{- end -}}
-{{- $anchors := newScratch -}}
 {{- $uses := newScratch -}}
 {{- $uses.Set "m" dict -}}
 {{- $examples := slice -}}
@@ -34,33 +33,34 @@ SPDX-License-Identifier: MIT
 {{- range sort $examples "name" -}}
   {{- $ex := . -}}
   {{- $listing := partial "docsygen/plan/examples/listing.html" (dict "node" $ex.node "name" $ex.name) -}}
-  {{- $list := slice -}}
   {{- with $listing -}}
-    {{- $n := 0 -}}
     {{- $seen := newScratch -}}
-    {{- range partial "docsygen/plan/examples/refs.html" . -}}
-      {{- $anchor := "" -}}
-      {{- $id := .attributes.refid -}}
-      {{- with index $m.ids $id -}}
-        {{- $t := . -}}
-        {{- if not ($seen.Get $id) -}}
-          {{- if and (eq $t.what "compound") (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $t.kind) -}}
-            {{- $anchor = printf "_a%d" $n -}}
-          {{- else if and (eq $t.what "member") (partial "docsygen/model/linkable.html" (dict "model" $m "id" $id)) -}}
-            {{- $related := false -}}
-            {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $t.home) -}}{{- if and (eq .key "related") (in .members $id) -}}{{- $related = true -}}{{- end -}}{{- end -}}
-            {{- if not $related -}}{{- $anchor = printf "a%d" $n -}}{{- end -}}
-          {{- end -}}
-          {{- if $anchor -}}
-            {{- $seen.Set $id true -}}
-            {{- $n = add $n 1 -}}
-            {{- $uses.SetInMap "m" $id ((index ($uses.Get "m") $id | default slice) | append (dict "example" $ex.id "anchor" $anchor)) -}}
+    {{- $line := 0 -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "codeline") -}}
+        {{- $line = int (.attributes.lineno | default (add $line 1)) -}}
+        {{- range partial "docsygen/plan/examples/refs.html" . -}}
+          {{- $id := .attributes.refid -}}
+          {{- with index $m.ids $id -}}
+            {{- $t := . -}}
+            {{- if not ($seen.Get $id) -}}
+              {{- $used := false -}}
+              {{- if and (eq $t.what "compound") (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") $t.kind) -}}
+                {{- $used = true -}}
+              {{- else if and (eq $t.what "member") (partial "docsygen/model/linkable.html" (dict "model" $m "id" $id)) -}}
+                {{- $related := false -}}
+                {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $t.home) -}}{{- if and (eq .key "related") (in .members $id) -}}{{- $related = true -}}{{- end -}}{{- end -}}
+                {{- $used = not $related -}}
+              {{- end -}}
+              {{- if $used -}}
+                {{- $seen.Set $id true -}}
+                {{- $uses.SetInMap "m" $id ((index ($uses.Get "m") $id | default slice) | append (dict "example" $ex.id "line" $line)) -}}
+              {{- end -}}
+            {{- end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- $list = $list | append $anchor -}}
     {{- end -}}
   {{- end -}}
-  {{- $anchors.SetInMap "m" $ex.id $list -}}
 {{- end -}}
-{{- return dict "anchors" ($anchors.Get "m" | default dict) "uses" ($uses.Get "m") -}}
+{{- return dict "uses" ($uses.Get "m") -}}

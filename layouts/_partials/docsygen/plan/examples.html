@@ -3,14 +3,11 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* What Doxygen's code parser records while it writes example listings (code.l, getLinkInScope,
-       generateClassOrGlobalLink, generateClassMemberLink; ExampleList::inSort), as {anchors, uses}:
-         anchors  {example refid: [one entry per ref of its listing, in order: the anchor Doxygen
-                  writes before it, or ""]}. The first ref to each linkable class gets "_aN", to
-                  each linkable member "aN", one counter per example; a related function gets
-                  none, called with its scope or not. Doxygen picks the prefix by the path its
-                  code parser takes, which the XML doesn't record: an unqualified call to a
-                  function outside a class gets "_aN" (an XML gap).
-         uses     {class or member refid: [{example, anchor}]}, by example name: the "Examples"
-                  section of its documentation.
+       generateClassOrGlobalLink, generateClassMemberLink; ExampleList::inSort), as {uses}:
+         uses  {class or member refid: [{example, line}]}, by example name: the "Examples"
+               section of its documentation. line is the line of the example's first ref to it
+               (a codeline's lineno, else its place in the listing, from 1), which the listing
+               anchors as l-<line> (docsygen/markup/listing.html). A related function is not
+               recorded, called with its scope or not.
        Usage: partial "docsygen/plan/examples.html" (dict "model" $model) */ -}}
 {{- return partialCached "docsygen/plan/examples/build.html" .model .model.dir -}}

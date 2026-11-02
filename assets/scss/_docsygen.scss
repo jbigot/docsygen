@@ -47,19 +47,6 @@
   }
 }
 
-// Code: listings with their line numbers, concepts, verbatim blocks, macro values.
-.docsygen-listing .docsygen-line {
-  &[data-line]::before {
-    content: attr(data-line);
-    display: inline-block;
-    width: 4em;
-    margin-right: 1em;
-    text-align: right;
-    color: var(--bs-secondary-color);
-    user-select: none;
-  }
-}
-
 // Trees: lists, nested, with the kind of each node and its brief.
 .docsygen-tree {
   ul {
