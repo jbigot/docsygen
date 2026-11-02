@@ -186,12 +186,8 @@ SPDX-License-Identifier: MIT
       {{- warnidf "docsygen-formula" "docsygen: formula %q: %s" $text .Err -}}
       <code>{{ $text }}</code>
     {{- else if $display -}}
-      {{- /* A display formula goes through the site's math code-block hook; the fence is longer
-             than any run of backticks in the formula. */ -}}
-      {{- $ticks := 3 -}}
-      {{- range findRE "`+" $tex -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
-      {{- $fence := strings.Repeat (int $ticks) "`" -}}
-      {{- $ctx.page.RenderString (dict "display" "block") (printf "%smath\n%s\n%s" $fence $tex $fence) -}}
+      {{- /* A display formula goes through the site's math code-block hook. */ -}}
+      {{- partial "docsygen/markup/fence.html" (dict "info" "math" "code" $tex "ctx" $ctx) -}}
     {{- else -}}
       {{- /* Docsy has no hook for inline math: its key makes Docsy load KaTeX's CSS. */ -}}
       {{- .Value -}}

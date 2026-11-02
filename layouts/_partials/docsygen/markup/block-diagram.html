@@ -45,5 +45,5 @@ SPDX-License-Identifier: MIT
     {{- else -}}{{- $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $n.link) -}}{{- with $u -}}{{- $lines = $lines | append (printf "  click n%s \"%s\"" $n.id .) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-<figure class="docsygen-diagram figure d-block"><figcaption class="figure-caption">{{ T "docsygen-inheritance-diagram-for" (dict "name" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id))) }}</figcaption>{{ partial "docsygen/markup/mermaid-block.html" (dict "source" (delimit $lines "\n") "ctx" $ctx) }}</figure>
+<figure class="docsygen-diagram figure d-block"><figcaption class="figure-caption">{{ T "docsygen-inheritance-diagram-for" (dict "name" (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $id))) }}</figcaption>{{ partial "docsygen/markup/fence.html" (dict "info" "mermaid" "code" (delimit $lines "\n") "ctx" $ctx) }}</figure>
 {{- end -}}

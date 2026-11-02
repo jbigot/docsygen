@@ -37,13 +37,9 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $first = $first | default 1 -}}
 {{- $code := delimit $lines "\n" -}}
-{{- /* A fence one backtick longer than the longest run in the code can't end early. */ -}}
-{{- $ticks := 3 -}}
-{{- range findRE "`+" $code -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
-{{- $fence := strings.Repeat (int $ticks) "`" -}}
 {{- $info := $lang -}}
 {{- if $numbered -}}{{- $info = printf `%s {linenos=inline, anchorlinenos=true, lineanchors="l", linenostart=%d}` $lang $first -}}{{- end -}}
-{{- $html := $ctx.page.RenderString (dict "display" "block") (printf "%s%s\n%s\n%s" $fence $info $code $fence) -}}
+{{- $html := partial "docsygen/markup/fence.html" (dict "info" $info "code" $code "ctx" $ctx) -}}
 {{- if and $numbered (not (strings.Contains (string $html) (printf `id="l-%d"` $first))) -}}
   {{- warnidf "docsygen-listing-anchors" "docsygen: %s: a listing has no line anchors (id=\"l-%d\"), which links to its lines target: check markup.highlight (lineNos, anchorLineNos, lineAnchors, codeFences) and the site's render-codeblock hook" $ctx.page.Path $first -}}
 {{- end -}}

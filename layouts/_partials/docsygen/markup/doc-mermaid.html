@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 {{- $caption := $n.attributes.caption -}}
 {{- if eq $n.tag "mermaidfile" -}}{{- $caption = partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}{{- end -}}
 {{- if $diagram.ok -}}
-  <figure class="figure d-block">{{ partial "docsygen/markup/mermaid-block.html" (dict "source" $diagram.source "ctx" .ctx) }}{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
+  <figure class="figure d-block">{{ partial "docsygen/markup/fence.html" (dict "info" "mermaid" "code" $diagram.source "ctx" .ctx) }}{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- else -}}
   <figure class="figure d-block">{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- end -}}

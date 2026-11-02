@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A fenced code block rendered by .ctx.page.RenderString, so that Hugo's highlighter and the
+       code-block hooks (Docsy's or the site's: render-codeblock-<lang>) draw it. The fence is one
+       backtick longer than the longest run in the code, so that it can't end early.
+       Usage: partial "docsygen/markup/fence.html" (dict "info" "mermaid" "code" $source "ctx" $ctx) */ -}}
+{{- $ticks := 3 -}}
+{{- range findRE "`+" .code -}}{{- $ticks = math.Max $ticks (add (len .) 1) -}}{{- end -}}
+{{- $fence := strings.Repeat (int $ticks) "`" -}}
+{{- return .ctx.page.RenderString (dict "display" "block") (printf "%s%s\n%s\n%s" $fence .info .code $fence) -}}
