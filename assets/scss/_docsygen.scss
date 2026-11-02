@@ -47,23 +47,6 @@
   }
 }
 
-// Definition lists: parameters, returns, notes, xref items, examples.
-dl[class^="docsygen-"] {
-  > dt {
-    font-weight: bold;
-  }
-
-  > dd {
-    margin-left: 1.5rem;
-  }
-}
-
-.docsygen-param-items {
-  > dt {
-    font-weight: normal;
-  }
-}
-
 // Code: listings with their line numbers, concepts, verbatim blocks, macro values.
 .docsygen-listing .docsygen-line {
   &[data-line]::before {
@@ -113,18 +96,6 @@ dl[class^="docsygen-"] {
 }
 
 // Lists from Doxygen's markup.
-.docsygen-checklist {
-  list-style: none;
-}
-
-.docsygen-checked::before {
-  content: "☑ ";
-}
-
-.docsygen-unchecked::before {
-  content: "☐ ";
-}
-
 .docsygen-multicol {
   column-width: 14rem;
 }

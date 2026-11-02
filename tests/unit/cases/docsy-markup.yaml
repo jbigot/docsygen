@@ -142,3 +142,9 @@
     ctx: {anchors: {x_1s: s}}
     xml: '<detaileddescription><para>Intro.</para><sect1 id="x_1s"><title>T</title><para>Body.</para></sect1></detaileddescription>'
   expect: '<p>Intro.</p><h4 id="s">T</h4><p>Body.</p>'
+- name: docsy markup, a checklist is a list of goldmark's task items
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><itemizedlist><listitem override="checked"><para>a</para></listitem><listitem override="unchecked"><para>b</para></listitem></itemizedlist></para></detaileddescription>'
+  expect: '<ul><li><input checked="" disabled="" type="checkbox"> a</li><li><input disabled="" type="checkbox"> b</li></ul>'

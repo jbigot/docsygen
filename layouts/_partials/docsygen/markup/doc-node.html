@@ -62,18 +62,16 @@ SPDX-License-Identifier: MIT
 {{- else if eq $tag "sp" -}}
   {{- cond (isset $n.attributes "value") (printf "%c" (int $n.attributes.value)) " " -}}
 {{- else if in (slice "itemizedlist" "orderedlist") $tag -}}
-  {{- $check := false -}}
-  {{- range $n.children -}}{{- if and (reflect.IsMap .) .attributes.override -}}{{- $check = true -}}{{- end -}}{{- end -}}
   {{- if eq $tag "orderedlist" -}}
     {{- /* Doxygen gives an auto list (Markdown, -#) a type that follows its depth, but the XML
            doesn't tell auto lists from HTML ones: only the XML's type is written (an XML gap). */ -}}
     <ol{{ with $n.attributes.type }} type="{{ . }}"{{ end }}{{ with $n.attributes.start }} start="{{ . }}"{{ end }}>
-  {{- else if $check -}}<ul class="docsygen-checklist">
   {{- else -}}<ul>
   {{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "listitem") -}}
-      {{- with .attributes.override -}}<li class="docsygen-{{ . }}">{{- else -}}<li>{{- end -}}
+      {{- /* A checklist item starts as goldmark's task lists do, which Docsy styles. */ -}}
+      <li>{{- with .attributes.override -}}<input {{ if eq . "checked" }}checked="" {{ end }}disabled="" type="checkbox"> {{ end -}}
       {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" . "grand" $tag)) -}}
       </li>
     {{- end -}}
