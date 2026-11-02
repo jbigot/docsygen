@@ -166,6 +166,18 @@
     ctx: {}
     xml: '<detaileddescription><para>See <image type="html" name="https://example.com/a.png" inline="yes">A</image> here.</para></detaileddescription>'
   expect: '<p>See <img src="https://example.com/a.png" alt="A"> here.</p>'
+- name: docsy markup, an image of the XML directory is published at its asset path
+  partial: test/doc.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><image type="html" name="diagram.png">The caption</image></para></detaileddescription>'
+  expect: '<figure class="figure"><img src="/doxygen/sample/diagram.png" alt="The caption"><figcaption class="figure-caption">The caption</figcaption></figure>'
+- name: docsy markup, an image's alt text is escaped
+  partial: test/doc.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para>See <image type="html" name="https://example.com/a b.png" inline="yes">a [b] c</image> here.</para></detaileddescription>'
+  expect: '<p>See <img src="https://example.com/a%20b.png" alt="a [b] c"> here.</p>'
 - name: docsy markup, a section in a member's documentation
   partial: test/doc.html
   context:

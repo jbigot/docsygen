@@ -3,13 +3,16 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* An HTML image: a figure with its caption in a block, an img inline; the caption's text is
-       its alt text. */ -}}
+       its alt text. The img is Markdown's, rendered by .ctx.page.RenderString, so that the
+       site's image hook (Hugo's embedded one, or its own render-image.html) draws it. */ -}}
 {{- $n := .node -}}
 {{- $img := partial "docsygen/render/image.html" (dict "node" $n "ctx" .ctx) -}}
 {{- $caption := partial "docsygen/markup/doc.html" (dict "node" $n "ctx" .ctx "single" true) -}}
-{{- $alt := partial "docsygen/text/plain.html" $n -}}
+{{- $alt := replaceRE `([\\\[\]])` `\$1` (replaceRE `\s+` " " (partial "docsygen/text/plain.html" $n)) -}}
+{{- $src := replace (replace $img.src "<" "%3C") ">" "%3E" -}}
+{{- $md := .ctx.page.RenderString (dict "display" "inline") (printf "![%s](<%s>)" $alt $src) -}}
 {{- if eq $n.attributes.inline "yes" -}}
-  <img src="{{ $img.src }}" alt="{{ $alt }}">
+  {{- $md -}}
 {{- else -}}
-  <figure class="figure"><img src="{{ $img.src }}" alt="{{ $alt }}">{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
+  <figure class="figure">{{ $md }}{{ with $caption }}<figcaption class="figure-caption">{{ . }}</figcaption>{{ end }}</figure>
 {{- end -}}
