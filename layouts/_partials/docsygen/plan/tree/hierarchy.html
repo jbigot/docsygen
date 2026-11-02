@@ -148,12 +148,12 @@ SPDX-License-Identifier: MIT
       {{- $full := (index ($s.Get "info") $key).full -}}
       {{- $base := index (split $full "<") 0 -}}
       {{- $class := printf "%s%s" (index (split $base "::") (sub (len (split $base "::")) 1)) (strings.TrimPrefix $base $full) -}}
-      {{- $roots = $roots | append (dict "key" $key "sort" (printf "%s\x01%s\x01%s\x01%s" (lower $class) $class (lower $full) $full)) -}}
+      {{- $roots = $roots | append (dict "key" $key "sort" (print $class " " $full)) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $nodes := slice -}}
-{{- range partial "docsygen/text/sort-bytes.html" (dict "list" $roots "key" "sort") -}}
+{{- range sort $roots "sort" -}}
   {{- $nodes = $nodes | append (partial "docsygen/plan/tree/hierarchy-node.html" (dict "s" $s "key" .key "nested" false)) -}}
 {{- end -}}
 {{- return $nodes -}}

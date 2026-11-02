@@ -38,7 +38,7 @@ SPDX-License-Identifier: MIT
       {{- $name := $e.name -}}
       {{- with $ns -}}{{- $name = strings.TrimPrefix (printf "%s::" (index $m.ids .).name) $name -}}{{- end -}}
       {{- $letter := upper (substr $class 0 1) -}}
-      {{- $byLetter.Set $letter (($byLetter.Get $letter | default slice) | append (dict "id" . "name" $name "ns" $ns "sort" (printf "%s\x01%s" (lower $class) $class))) -}}
+      {{- $byLetter.Set $letter (($byLetter.Get $letter | default slice) | append (dict "id" . "name" $name "ns" $ns "sort" $class)) -}}
     {{- end -}}
   {{- end -}}
   {{- $letters := slice -}}
@@ -51,7 +51,7 @@ SPDX-License-Identifier: MIT
     {{- range $i, $l := . }}
 <dl class="docsygen-index-letter">
 <dt id="{{ index $fixed (printf "letter-%s" $l) }}">{{ $l }}</dt>
-      {{ range partial "docsygen/text/sort-bytes.html" (dict "list" ($byLetter.Get $l) "key" "sort") -}}
+      {{ range sort ($byLetter.Get $l) "sort" -}}
 <dd>{{ $name := .name }}{{ $u := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id) }}{{ with $u }}<a href="{{ . }}">{{ $name }}</a>{{ else }}{{ $name }}{{ end }}
         {{- with .ns }} (
           {{- $nsName := (index $m.ids .).name -}}

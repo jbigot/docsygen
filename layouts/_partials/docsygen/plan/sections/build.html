@@ -173,11 +173,11 @@ SPDX-License-Identifier: MIT
       {{- range $member.node.children -}}
         {{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $line = int (.attributes.line | default 0) -}}{{- $column = int (.attributes.column | default 0) -}}{{- end -}}
       {{- end -}}
-      {{- $sortKey := cond $sort (printf "%s\x00%06d" (lower $name) $i) (printf "%09d %06d %06d" $line $column $i) -}}
+      {{- $sortKey := cond $sort $name (add (mul $line 1000000) $column) -}}
       {{- $keyed = $keyed | append (dict "id" $id "key" $sortKey) -}}
     {{- end -}}
     {{- $sorted := slice -}}
-    {{- range partial "docsygen/text/sort-bytes.html" (dict "list" $keyed "key" "key") -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
+    {{- range sort $keyed "key" -}}{{- $sorted = $sorted | append .id -}}{{- end -}}
     {{- $doc.Set $key $sorted -}}
   {{- end -}}
   {{- with $doc.Get $key -}}

@@ -31,7 +31,7 @@ SPDX-License-Identifier: MIT
 {{- $uses.Set "m" dict -}}
 {{- $examples := slice -}}
 {{- range $m.order -}}{{- if eq (index $m.ids .).kind "example" -}}{{- $examples = $examples | append (index $m.ids .) -}}{{- end -}}{{- end -}}
-{{- range partial "docsygen/text/sort-bytes.html" (dict "list" $examples "key" "name") -}}
+{{- range sort $examples "name" -}}
   {{- $ex := . -}}
   {{- $listing := partial "docsygen/plan/examples/listing.html" (dict "node" $ex.node "name" $ex.name) -}}
   {{- $list := slice -}}

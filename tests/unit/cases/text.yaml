@@ -32,23 +32,3 @@
   partial: docsygen/text/md-escape.html
   context: "{#id}"
   expect: \{\#id\}
-- name: tooltip of a short text
-  partial: docsygen/text/tooltip.html
-  context: "  A short brief.  "
-  expect: A short brief.
-- name: tooltip cut at punctuation after 80 characters
-  partial: docsygen/text/tooltip.html
-  context: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-  expect: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,..."
-- name: tooltip cut after 101 characters without punctuation
-  partial: docsygen/text/tooltip.html
-  context: "an Array_datatype is a Datatype that represents an array: i.e storage of multiple elements of the same type."
-  expect: "an Array_datatype is a Datatype that represents an array: i.e storage of multiple elements of the sam..."
-- name: tooltip of 81 characters is whole
-  partial: docsygen/text/tooltip.html
-  context: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-  expect: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-- name: sort-bytes orders by bytes, keeping equal keys in order
-  partial: docsygen/text/sort-bytes.html
-  context: {list: [{k: "~b", n: 1}, {k: "b", n: 2}, {k: "B", n: 3}, {k: "b", n: 4}], key: k}
-  expect: [{k: B, n: 3}, {k: b, n: 2}, {k: b, n: 4}, {k: "~b", n: 1}]

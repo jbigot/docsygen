@@ -243,7 +243,7 @@ SPDX-License-Identifier: MIT
     {{- end -}}
     {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" (cond (ne .parent "") (index ($s.Get "rolePage") .parent) $sec)
         "seg" (partial "docsygen/paths/segment.html" (dict "name" (cond (eq $e.name "") "" $rel) "kind" $e.kind))
-        "title" $title "linkTitle" $rel "roles" (slice (index $crole .id)) "brief" .id "sort" (printf "%s\x00%s" (lower $rel) $rel)) -}}
+        "title" $title "linkTitle" $rel "roles" (slice (index $crole .id)) "brief" .id "sort" $rel) -}}
   {{- end -}}
 {{- end -}}
 {{- range $id, $role := $more.Get "all-members" -}}
@@ -316,7 +316,7 @@ SPDX-License-Identifier: MIT
     {{- $rest := cond (ne $p.path "") (strings.TrimPrefix (printf "%s/" $p.path) .path) .path -}}
     {{- $key := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" ($p.page | default $sec)
         "seg" (partial "docsygen/paths/segment.html" (dict "name" $rest "kind" "dir")) "title" .path
-        "roles" (slice (index $crole .id)) "brief" .id "sort" (printf "0%s\x00%s" (lower $rest) $rest)) -}}
+        "roles" (slice (index $crole .id)) "brief" .id "sort" (print "0" $rest)) -}}
     {{- $dirPages.Set .path $key -}}
   {{- end -}}
   {{- /* The other dirs: on the page of the same path, or of their nearest kept ancestor. */ -}}
@@ -347,7 +347,7 @@ SPDX-License-Identifier: MIT
       {{- with index ($more.Get "source" | default dict) $id -}}{{- $roles = $roles | append . -}}{{- end -}}
       {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" ($p.page | default $sec)
           "seg" (partial "docsygen/paths/segment.html" (dict "name" $rest "kind" "file")) "title" (path.Base $f)
-          "roles" $roles "brief" $id "sort" (printf "1%s\x00%s" (lower $rest) $rest)) -}}
+          "roles" $roles "brief" $id "sort" (print "1" $rest)) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -400,7 +400,7 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- range $p, $list := $byParent.Values -}}
-  {{- range $i, $c := partial "docsygen/text/sort-bytes.html" (dict "list" $list "key" "sort") -}}
+  {{- range $i, $c := sort $list "sort" -}}
     {{- $s.SetInMap "weight" $c.key (add $i 1) -}}
   {{- end -}}
 {{- end -}}
