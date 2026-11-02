@@ -100,8 +100,16 @@
     block: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
     contains:
       - '<div class="docsygen-member" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd">'
-      - '<pre class="docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre>'
+      - '<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre></div>'
     lacks: [memitem, memname, memtitle, memproto, memdoc]
+  expect: []
+- name: docsy markup, a member's signature is a code block without highlighting
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b}
+    contains: ['<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>bool demo::Widget::operator&lt;(const ']
+    lacks: ['<span', 'class="line"']
   expect: []
 - name: docsy markup, a member's labels are Bootstrap badges, and its heading has no overload counter
   partial: test/block-contains.html
@@ -116,7 +124,7 @@
   context:
     ctx: {model: sample}
     block: {type: member, id: classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2}
-    contains: ["<pre class=\"docsygen-signature\"><code>template&lt;typename T, int N = 3&gt;\nconst T &amp; demo::Box&lt; T, N &gt;::front("]
+    contains: ["<div class=\"highlight\"><pre tabindex=\"0\" class=\"chroma docsygen-signature\"><code>template&lt;typename T, int N = 3&gt;\nconst T &amp; demo::Box&lt; T, N &gt;::front("]
   expect: []
 - name: docsy markup, an enum's values
   partial: test/block-contains.html
