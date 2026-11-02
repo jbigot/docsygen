@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
        members the class gains in later versions.
          item     the compound, a name as in doxygen: links (or id, a Doxygen id)
          version  the version (default: the page's, else latest: docsygen/shortcode/ctx.html)
-       Usage: {{< docsygen/members item="demo::Widget" >}} */ -}}
+       Usage: {{% docsygen/members item="demo::Widget" %}} */ -}}
 {{- $s := partial "docsygen/shortcode/ctx.html" . -}}
 {{- if $s.ok -}}
   {{- $ctx := $s.ctx -}}
@@ -19,11 +19,13 @@ SPDX-License-Identifier: MIT
     {{- errorf "docsygen: %s: %q is not a compound with a page of its own" .Page.Path (.Get "item" | default $id) -}}
   {{- else -}}
     {{- range where $ctx.paths.pages "key" $key -}}
+      {{- $html := slice -}}
       {{- range partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx) -}}
         {{- if eq .type "member" -}}
-          {{- partial "docsygen/shortcode/full.html" (dict "shortcode" $ "ctx" $ctx "id" .id) -}}
+          {{- $html = $html | append (partial "docsygen/shortcode/full.html" (dict "shortcode" $ "ctx" $ctx "id" .id)) -}}
         {{- end -}}
       {{- end -}}
+      {{- partial "docsygen/markup/md-safe.html" (delimit $html "\n") -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

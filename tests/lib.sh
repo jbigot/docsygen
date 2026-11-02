@@ -122,6 +122,8 @@ site_config() {
   cp "$root/go.sum" "$(dirname "$config")/go.sum"
   if [ "${DOCSYGEN_READER:-}" = template ]; then set -- "$root/tests/reader-template/layouts=layouts" "$@"; fi
   {
+    # goldmark's unsafe, which docsygen's shortcodes need, unless DOCSYGEN_SAFE is set (a build case).
+    if [ -z "${DOCSYGEN_SAFE:-}" ]; then printf 'markup:\n  goldmark:\n    renderer:\n      unsafe: true\n'; fi
     printf 'module:\n'
     printf '  imports:\n    - path: github.com/jbigot/docsygen\n'
     if [ $# -gt 0 ]; then

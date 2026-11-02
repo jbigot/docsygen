@@ -24,6 +24,14 @@
   partial: docsygen/text/slug.html
   context: "::"
   expect: ""
+- name: md-safe puts a space on every blank line, inside a pre too
+  partial: docsygen/markup/md-safe.html
+  context: "<div>\n\n<pre>a\n\nb</pre></div>"
+  expect: "<div>\n&#32;\n<pre>a\n&#32;\nb</pre></div>"
+- name: md-safe trims, and covers lines of spaces
+  partial: docsygen/markup/md-safe.html
+  context: "\n<div>\n  \n\t\nx</div>\n\n"
+  expect: "<div>\n&#32;\n&#32;\nx</div>"
 - name: md-escape of emphasis and links
   partial: docsygen/text/md-escape.html
   context: a_b*c[d]

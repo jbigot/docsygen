@@ -1,0 +1,11 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Stops the build unless goldmark lets raw HTML through, which the HTML that docsygen's shortcodes
+       return, called as {{% %}}, needs (Docsy needs it too). A module can't set it for the site:
+       Hugo doesn't merge the markup settings of modules.
+       Usage: partialCached "docsygen/shortcode/unsafe.html" .Page "" */ -}}
+{{- if strings.Contains (.RenderString "<b>x</b>") "raw HTML omitted" -}}
+  {{- errorf "docsygen: set markup.goldmark.renderer.unsafe: true (Docsy needs it too)" -}}
+{{- end -}}

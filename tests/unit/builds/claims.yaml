@@ -40,3 +40,9 @@
   context: {key: api/demo/widget, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, dup: /latest/api/demo/widget, claim: /claim, anchor: resize}
   mounts: {fixtures/claims-members: content, fixtures/versions/layouts: layouts}
   warning: 'claims: url=/claim/ link=/claim/#resize dup=true canonical=https://example.org/claim/ anchor=true'
+- name: shortcodes, a site without goldmark's unsafe stops the build
+  partial: test/content.html
+  context: {page: /claim}
+  safe: true
+  mounts: {fixtures/claims-page: content, fixtures/versions/layouts: layouts}
+  error: 'docsygen: set markup.goldmark.renderer.unsafe: true (Docsy needs it too)'

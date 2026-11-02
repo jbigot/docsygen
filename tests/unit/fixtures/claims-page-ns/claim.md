@@ -8,6 +8,6 @@ params:
     claims: ["namespace:demo"]
 ---
 
-{{< docsygen/part item="namespace:demo" part="brief" >}}
+{{% docsygen/part item="namespace:demo" part="brief" %}}
 
-{{< docsygen/member item="demo::version" >}}
+{{% docsygen/member item="demo::version" %}}

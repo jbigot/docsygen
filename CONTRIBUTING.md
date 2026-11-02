@@ -148,8 +148,10 @@ To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 - **Rendering**: a page's plan lists its blocks in Doxygen's order. A skeleton
   (`docsygen/skeleton/<kind>.html`) turns it into Markdown, with real headings and one shortcode
   per block, so that search, print and `llms.txt` work. Generated pages are built from the
-  public shortcodes, so that an embedded part renders as on its own page; each block renders
-  through `docsygen/markup/block-<type>.html`.
+  public shortcodes, called as `{{% %}}` (goldmark reads their output, so it needs `unsafe: true`,
+  which `docsygen/shortcode/unsafe.html` checks), so that an embedded part renders as on its own
+  page; each block renders through `docsygen/markup/block-<type>.html`, and a shortcode returns it
+  through `docsygen/markup/md-safe.html`, since a blank line would end goldmark's HTML block.
 - **Versions**: a registry built at render time from the version roots knows every version,
   since adapter files can't see each other.
 

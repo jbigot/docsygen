@@ -40,6 +40,17 @@ Then load its styles from your `assets/scss/_styles_project.scss`:
 @use 'docsygen';
 ```
 
+Docsy needs goldmark to let raw HTML through, and so does docsygen, whose shortcodes return HTML
+that Markdown pages include. A module can't set it for the site: set it in your `hugo.yaml`, or the
+build stops with a message naming the setting.
+
+```yaml
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+```
+
 ### 2. Bring in Doxygen's XML
 
 docsygen reads the XML directory that Doxygen writes (`XML_OUTPUT`, `xml` by default) from Hugo's

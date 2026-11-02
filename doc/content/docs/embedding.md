@@ -11,6 +11,11 @@ Any page can show a part of a version's reference with three shortcodes. The gen
 built from the same ones, so an embedded part looks as it does on its own page, and its links go
 to the version's own pages.
 
+Call them with `{{%/* */%}}`, as Markdown, and not with `{{</* */>}}`: their output goes through
+Hugo's render hooks and goldmark, which needs `markup.goldmark.renderer.unsafe: true`, as Docsy
+does. A `{{</* docsygen/… */>}}` call leaves the page's Markdown unread, and the page shows its
+headings' `{#id}` as text.
+
 All three take:
 
 | Parameter | Meaning |
@@ -28,19 +33,19 @@ A member, with `form="full"` (the default), its documentation as its compound's 
 `form="summary"`, its row of the summary table:
 
 ```markdown
-{{</* docsygen/member item="demo::Widget::width" form="summary" */>}}
+{{%/* docsygen/member item="demo::Widget::width" form="summary" */%}}
 ```
 
-{{< docsygen/member item="demo::Widget::width" form="summary" >}}
+{{% docsygen/member item="demo::Widget::width" form="summary" %}}
 
 The full form carries the member's anchor, so that links to the member can land on the page,
 unless the page already has it, from the member's heading or an earlier full form:
 
 ```markdown
-{{</* docsygen/member item="demo::Widget::width" */>}}
+{{%/* docsygen/member item="demo::Widget::width" */%}}
 ```
 
-{{< docsygen/member item="demo::Widget::width" >}}
+{{% docsygen/member item="demo::Widget::width" %}}
 
 ## `docsygen/members`
 
@@ -48,10 +53,10 @@ Every member that a compound's page documents, in its order, each in full: a han
 a class lists them all, and keeps up with the members later versions add.
 
 ```markdown
-{{</* docsygen/members item="demo::Widget" */>}}
+{{%/* docsygen/members item="demo::Widget" */%}}
 ```
 
-{{< docsygen/members item="demo::Widget" >}}
+{{% docsygen/members item="demo::Widget" %}}
 
 ## `docsygen/part`
 
@@ -75,10 +80,10 @@ One part of a page, `part` being its type:
 | `generated-from` | the files a compound's documentation comes from | |
 
 ```markdown
-{{</* docsygen/part item="demo::Circle" part="brief" */>}}
-{{</* docsygen/part item="demo::Circle" part="diagram" */>}}
+{{%/* docsygen/part item="demo::Circle" part="brief" */%}}
+{{%/* docsygen/part item="demo::Circle" part="diagram" */%}}
 ```
 
-{{< docsygen/part item="demo::Circle" part="brief" >}}
+{{% docsygen/part item="demo::Circle" part="brief" %}}
 
-{{< docsygen/part item="demo::Circle" part="diagram" >}}
+{{% docsygen/part item="demo::Circle" part="diagram" %}}

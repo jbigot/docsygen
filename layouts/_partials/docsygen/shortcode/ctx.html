@@ -8,8 +8,11 @@ SPDX-License-Identifier: MIT
        above it), else latest. The item is the item argument, a name in the syntax of doxygen:
        links (docsygen/resolve.html), or the id argument, a Doxygen id. A version that development
        mode skips gives ok false, with a warning; a name that resolves to nothing stops the build.
+       It stops the build
+       unless goldmark's unsafe is set (docsygen/shortcode/unsafe.html).
        Usage: partial "docsygen/shortcode/ctx.html" . (the shortcode's context) */ -}}
 {{- $page := .Page -}}
+{{- partialCached "docsygen/shortcode/unsafe.html" $page "" -}}
 {{- $version := .Get "version" -}}
 {{- if not $version -}}
   {{- with $page.Params.docsygen -}}{{- $version = string (.version | default "") -}}{{- end -}}

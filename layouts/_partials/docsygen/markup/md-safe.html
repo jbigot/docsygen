@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* HTML that a shortcode called as {{% %}} returns, made safe for goldmark: every whitespace-only
+       line holds &#32; (a space, to the browser, inside <pre> too), and the whole is trimmed.
+       Goldmark ends an HTML block of CommonMark's type 6 (a line that starts with <div, <table,
+       <figure, <p, …) or 7 at a blank line, and would read what follows as Markdown (an
+       indented line as code); type 1 (<pre, <script, <style) ends at its closing tag only, but
+       the rest of the output isn't always inside one.
+       Usage: partial "docsygen/markup/md-safe.html" $html */ -}}
+{{- return safeHTML (replaceRE `(?m)^[ \t]*\n` "&#32;\n" (strings.TrimSpace (string .))) -}}

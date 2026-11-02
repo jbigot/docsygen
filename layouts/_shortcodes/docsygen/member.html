@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
        The full form carries the member's anchor on its wrapper, so that links to the member can
        land there, unless the page already has it (docsygen/shortcode/full.html).
        docsygen/members shows all the members of a compound this way.
-       Usage: {{< docsygen/member item="demo::Widget::resize(int)" form="summary" >}} */ -}}
+       Usage: {{% docsygen/member item="demo::Widget::resize(int)" form="summary" %}} */ -}}
 {{- $s := partial "docsygen/shortcode/ctx.html" . -}}
 {{- if $s.ok -}}
   {{- $ctx := $s.ctx -}}
@@ -19,10 +19,8 @@ SPDX-License-Identifier: MIT
   {{- if or (not $e) (ne $e.what "member") -}}
     {{- errorf "docsygen: %s: %q is not a member" .Page.Path (.Get "item" | default $id) -}}
   {{- else if eq (.Get "form" | default "full") "summary" -}}
-<table class="docsygen-summary">
-{{- partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" $id "page" $e.home) -}}
-</table>
+{{- partial "docsygen/markup/md-safe.html" (printf "<table class=\"docsygen-summary\">%s</table>" (partial "docsygen/markup/decl-member.html" (dict "ctx" $ctx "id" $id "page" $e.home))) -}}
   {{- else -}}
-    {{- partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id) -}}
+    {{- partial "docsygen/markup/md-safe.html" (partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id)) -}}
   {{- end -}}
 {{- end -}}

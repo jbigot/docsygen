@@ -5,4 +5,4 @@ SPDX-License-Identifier: MIT
 {{- /* The markers of the compounds that this page absorbed (docsygen/paths.html, merged), for
        tests/site/check.py. */ -}}
 {{- $key := .block.key -}}
-{{- range $id, $page := .ctx.paths.merged -}}{{- if eq $page $key -}}<span hidden data-doxygen-id="{{ $id }}"></span>{{- end -}}{{- end -}}
+{{- range $id, $page := .ctx.paths.merged -}}{{- if eq $page $key -}}<div hidden data-doxygen-id="{{ $id }}"></div>{{- end -}}{{- end -}}

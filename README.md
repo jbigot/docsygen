@@ -39,6 +39,9 @@ Load its styles from `assets/scss/_styles_project.scss`:
 @use 'docsygen';
 ```
 
+Set `markup.goldmark.renderer.unsafe: true` in your `hugo.yaml`, as Docsy needs it too: the build
+stops without it.
+
 Copy Doxygen's XML directory under `assets/doxygen/mylib/`, and generate the pages from a content
 adapter, `content/docs/_content.gotmpl`:
 

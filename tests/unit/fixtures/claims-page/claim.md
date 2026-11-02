@@ -8,8 +8,8 @@ params:
     claims: ["demo::Widget"]
 ---
 
-{{< docsygen/part item="demo::Widget" part="brief" >}}
+{{% docsygen/part item="demo::Widget" part="brief" %}}
 
-{{< docsygen/member item="demo::Widget::width" >}}
+{{% docsygen/member item="demo::Widget::width" %}}
 
-{{< docsygen/member item="demo::Widget::set_width" >}}
+{{% docsygen/member item="demo::Widget::set_width" %}}
