@@ -51,6 +51,10 @@ markup:
       unsafe: true
 ```
 
+The sections that a member's documentation holds (Doxygen's `\section`) are headings of its page,
+below the member's own (a `\section` is a level 4 heading). Hugo's table of contents stops at level 3
+by default, at the members: raise `markup.tableOfContents.endLevel` to list the sections too.
+
 ### 2. Bring in Doxygen's XML
 
 docsygen reads the XML directory that Doxygen writes (`XML_OUTPUT`, `xml` by default) from Hugo's

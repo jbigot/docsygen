@@ -23,9 +23,9 @@ SPDX-License-Identifier: MIT
        another page absorbed: the merged block marks it there. */ -}}
 {{- if not (index $ctx.paths.merged .block.id) -}}<div hidden data-doxygen-id="{{ .block.id }}"></div>{{- end -}}
 {{- if eq $e.kind "page" -}}
-  <div class="docsygen-text">{{ with $parts.detaileddescription }}{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $sctx) }}{{ end }}</div>
+  <div class="docsygen-text">{{ with $parts.detaileddescription }}{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $sctx "mdheadings" true) }}{{ end }}</div>
 {{- else if eq $e.kind "example" -}}
-  {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $sctx) -}}{{- end -}}
+  {{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $sctx "mdheadings" true) -}}{{- end -}}
 {{- else -}}
   {{- if partial "docsygen/markup/has-details.html" (dict "ctx" $ctx "id" .block.id) -}}
     {{- if $textblock -}}<div class="docsygen-text">{{- end -}}

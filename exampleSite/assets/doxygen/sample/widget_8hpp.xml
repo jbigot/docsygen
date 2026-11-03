@@ -87,10 +87,11 @@
 <codeline lineno="99" refid="classdemo_1_1Escapes" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Escapes" kindref="compound">Escapes</ref><sp/>{</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="102" refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" kindref="member">value</ref>;</highlight></codeline>
-<codeline lineno="103"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"></highlight></codeline>
-<codeline lineno="109"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624" kindref="member">sections</ref>();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="src/cxx/demo/widget.hpp"/>
   </compounddef>

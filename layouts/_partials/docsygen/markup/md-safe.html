@@ -8,5 +8,11 @@ SPDX-License-Identifier: MIT
        <figure, <p, …) or 7 at a blank line, and would read what follows as Markdown (an
        indented line as code); type 1 (<pre, <script, <style) ends at its closing tag only, but
        the rest of the output isn't always inside one.
+       A Markdown heading (docsygen/markup/doc-heading.html) is written between U+E000 and
+       U+E001, which become the blank lines that set it apart, once the others are protected.
        Usage: partial "docsygen/markup/md-safe.html" $html */ -}}
-{{- return safeHTML (replaceRE `(?m)^[ \t]*\n` "&#32;\n" (strings.TrimSpace (string .))) -}}
+{{- $html := replaceRE `(?m)^[ \t]*\n` "&#32;\n" (strings.TrimSpace (string .)) -}}
+{{- /* The blank lines next to a heading are its own. */ -}}
+{{- $html = replaceRE `(?:&#32;\n)*\x{E000}` "\uE000" $html -}}
+{{- $html = replaceRE `\x{E001}\n?(?:&#32;\n)*` "\uE001" $html -}}
+{{- return safeHTML (replace (replace $html "\uE000" "\n\n") "\uE001" "\n\n") -}}

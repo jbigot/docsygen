@@ -20,13 +20,37 @@
         <location file="src/cxx/demo/widget.hpp" line="102" column="7" bodyfile="src/cxx/demo/widget.hpp" bodystart="102" bodyend="-1"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::Escapes::sections</definition>
+        <argsstring>()</argsstring>
+        <name>sections</name>
+        <qualifiedname>demo::Escapes::sections</qualifiedname>
+        <briefdescription>
+<para>A member whose documentation has sections. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classdemo_1_1Escapes_1member-section">
+<title>A section of a member</title><para>Its text. </para>
+<sect2 id="classdemo_1_1Escapes_1member-subsection">
+<title>A subsection of a member</title><para>Its own text. </para>
+</sect2>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="110" column="8"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
 <para>a*b_c [d] &lt;e&gt; <computeroutput>f</computeroutput> #g {h} </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="src/cxx/demo/widget.hpp" line="99" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="99" bodyend="103"/>
+    <location file="src/cxx/demo/widget.hpp" line="99" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="99" bodyend="111"/>
     <listofallmembers>
+      <member refid="classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624" prot="public" virt="non-virtual"><scope>demo::Escapes</scope><name>sections</name></member>
       <member refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" prot="public" virt="non-virtual"><scope>demo::Escapes</scope><name>value</name></member>
     </listofallmembers>
   </compounddef>

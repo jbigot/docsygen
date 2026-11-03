@@ -24,6 +24,7 @@
   </compound>
   <compound refid="classdemo_1_1Escapes" kind="class"><name>demo::Escapes</name>
     <member refid="classdemo_1_1Escapes_1a8c54b8e64a80ce4fc0bd83b4327f2df3" kind="variable"><name>value</name></member>
+    <member refid="classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624" kind="function"><name>sections</name></member>
   </compound>
   <compound refid="classdemo_1_1Foo" kind="class"><name>demo::Foo</name>
     <member refid="classdemo_1_1Foo_1aba2f95e2c5c5539cd1b85fecb4a5ddd4" kind="variable"><name>value</name></member>

@@ -20,6 +20,9 @@ markup:
     renderer:
       # Docsy's blocks and alert shortcode write HTML.
       unsafe: true
+  tableOfContents:
+    # Down to the sections of a member's documentation (level 4), which Hugo's default (3) leaves out.
+    endLevel: 4
   highlight:
     # As docsy-example: Chroma's classes, which Docsy styles in light and dark mode.
     style: tango

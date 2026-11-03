@@ -184,6 +184,20 @@
     ctx: {anchors: {x_1s: s}}
     xml: '<detaileddescription><para>Intro.</para><sect1 id="x_1s"><title>T</title><para>Body.</para></sect1></detaileddescription>'
   expect: '<p>Intro.</p><h4 id="s">T</h4><p>Body.</p>'
+- name: docsy markup, a section in a member's documentation is a Markdown heading
+  partial: test/doc.html
+  context:
+    ctx: {anchors: {x_1s: s}}
+    mdheadings: true
+    xml: '<detaileddescription><para>Intro.</para><sect2 id="x_1s"><title>T <computeroutput>f*</computeroutput></title><para>Body.</para></sect2></detaileddescription>'
+  expect: "<p>Intro.</p>\uE000##### T `f*` {#s}\uE001<p>Body.</p>"
+- name: docsy markup, a heading in a table cell stays HTML
+  partial: test/doc.html
+  context:
+    ctx: {}
+    mdheadings: true
+    xml: '<detaileddescription><para><table rows="1" cols="1"><row><entry thead="no"><para><heading level="3">H</heading></para></entry></row></table></para></detaileddescription>'
+  expect: '<table><tr><td><h3>H</h3></td></tr></table>'
 - name: docsy markup, a checklist is a list of goldmark's task items
   partial: test/doc.html
   context:

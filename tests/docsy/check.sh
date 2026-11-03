@@ -36,6 +36,8 @@ export PATH="$doc/node_modules/.bin:$PATH"
   printf '    - {source: "%s", target: assets/doxygen/next}\n' "$next"
   printf '    - {source: "%s", target: layouts}\n' "$root/tests/site/hooks"
   printf 'outputs:\n  home: [HTML, RSS, LLMS]\n'
+  # Hugo's table of contents stops at level 3, the members; a section in one is a level 4 heading.
+  printf 'markup:\n  tableOfContents:\n    endLevel: 5\n'
 } > "$tmp/docsy.yaml"
 printf 'params:\n  docsygen:\n    versions: [main, latest]\n' > "$tmp/development.yaml"
 

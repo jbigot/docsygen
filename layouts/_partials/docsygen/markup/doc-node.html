@@ -86,18 +86,17 @@ SPDX-License-Identifier: MIT
   {{- if gt $level 6 -}}{{- $level = 6 -}}{{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "title") -}}
-      {{- printf "<h%d id=\"%s\">" $level (index $ctx.anchors $n.attributes.id | default "") | safeHTML }}
-      {{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}{{ printf "</h%d>" $level | safeHTML -}}
+      {{- partial "docsygen/markup/doc-heading.html" (dict "level" $level "node" . "id" (index $ctx.anchors $n.attributes.id) "md" $.mdheadings "sub" $sub) -}}
     {{- end -}}
   {{- end -}}
   {{- range $i, $c := $n.children -}}
     {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
-      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false "mdheadings" $.mdheadings)) -}}
     {{- end -}}
   {{- end -}}
   {{- end -}}
 {{- else if eq $tag "heading" -}}
-  {{- printf "<h%s>" $n.attributes.level | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}{{ printf "</h%s>" $n.attributes.level | safeHTML -}}
+  {{- partial "docsygen/markup/doc-heading.html" (dict "level" (int $n.attributes.level) "node" $n "id" "" "md" .mdheadings "sub" $sub) -}}
 {{- else if and (eq $tag "simplesect") (in (slice "warning" "attention" "important" "note" "remark") $n.attributes.kind) -}}
   {{- /* A Docsy alert; consecutive sections of a kind share one, a part each. */ -}}
   {{- $kind := $n.attributes.kind -}}

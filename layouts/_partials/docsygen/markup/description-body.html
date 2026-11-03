@@ -28,6 +28,6 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- partial "docsygen/markup/template-params.html" (dict "model" $m "id" $id) -}}
 {{- with and ($yes.Get "REPEAT_BRIEF") $parts.briefdescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
-{{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+{{- with $parts.detaileddescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "mdheadings" true) -}}{{- end -}}
 {{- partial "docsygen/markup/examples-section.html" (dict "ctx" $ctx "id" $id) -}}
 {{- with $definition -}}{{- partial "docsygen/markup/definition.html" (dict "definition" $definition "ctx" $ctx "model" $m "id" $id) -}}{{- end -}}

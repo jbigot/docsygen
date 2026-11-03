@@ -1,0 +1,16 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A heading of a description (a section's title, a \heading). Where the output goes through
+       docsygen/markup/md-safe.html (.md), a Markdown heading, between the U+E000 and U+E001 that
+       md-safe makes blank lines, so that goldmark reads it: it joins the page's table of contents,
+       .Fragments and the site's heading render hook, and keeps its id (.id, when there is one).
+       Elsewhere (in a list, a table), HTML. .node is the element whose children are the text,
+       .sub the context its inline content is rendered with.
+       Usage: partial "docsygen/markup/doc-heading.html" (dict "level" 4 "node" $title "id" $anchor "md" true "sub" $sub) */ -}}
+{{- if .md -}}
+  {{- printf "%s %s%s" (strings.Repeat .level "#") (partial "docsygen/text/markdown.html" .node) (cond (ne .id "") (printf " {#%s}" .id) "") | safeHTML -}}
+{{- else -}}
+  {{- printf "<h%d%s>" .level (cond (ne .id "") (printf ` id="%s"` .id) "") | safeHTML }}{{ partial "docsygen/markup/doc.html" (merge .sub (dict "node" .node)) }}{{ printf "</h%d>" .level | safeHTML -}}
+{{- end -}}

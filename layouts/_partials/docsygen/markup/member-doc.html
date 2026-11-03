@@ -17,7 +17,7 @@ SPDX-License-Identifier: MIT
   {{- if $params -}}<b>{{ T "docsygen-value" }}</b><pre class="docsygen-value"><code>{{ partial "docsygen/text/plain.html" $p.initializer }}</code></pre>{{- end -}}
 {{- end -}}
 {{- range slice "briefdescription" "detaileddescription" "inbodydescription" -}}
-  {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+  {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "mdheadings" true) -}}{{- end -}}
 {{- end -}}
 {{- if eq $e.kind "enum" -}}
   {{- $values := slice -}}

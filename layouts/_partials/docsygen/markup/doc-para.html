@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
        paragraph of a list item or a cell, and closed and reopened around each inner block. */ -}}
 {{- $n := .node -}}
 {{- $parent := .parent -}}
-{{- $sub := dict "ctx" .ctx "single" .single -}}
+{{- $sub := dict "ctx" .ctx "single" .single "mdheadings" .mdheadings -}}
 {{- $needsTag := or (in (slice "sect1" "sect2" "sect3" "sect4" "sect5" "sect6" "internal" "listitem" "entry" "simplesect"
     "xrefdescription" "blockquote" "parblock" "details" "summary") $parent.tag) (and .root (not .single)) -}}
 {{- /* The position among the parent's paragraphs, and the context class it gives. */ -}}

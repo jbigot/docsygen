@@ -100,6 +100,14 @@ class Escapes {
 public:
   /// A member of a class with a difficult brief.
   int value;
+  /** @brief A member whose documentation has sections.
+   *
+   *  @section member-section A section of a member
+   *  Its text.
+   *  @subsection member-subsection A subsection of a member
+   *  Its own text.
+   */
+  void sections();
 };
 
 /** @example example.cpp

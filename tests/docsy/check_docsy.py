@@ -14,6 +14,8 @@ Checks:
   - a class page's brief is its lead and its meta description, and the content does not
     repeat it before its first section (demo::Widget); a brief with Markdown characters
     (demo::Escapes) is its lead as text;
+  - a section in a member's documentation (demo::Escapes::sections) is a heading of the page that
+    keeps its id, and is in the page's table of contents;
   - the offline search index holds demo::Widget's description from /docs/latest/ only;
   - the sitemap lists the reference's pages under /docs/latest/ only;
   - the print page of /docs/main/ holds a member's signature, and the print page of /docs/1.0/
@@ -70,6 +72,15 @@ def main(argv):
     text = html.unescape(re.sub(r'<[^>]*>', '', lead[0])).strip() if lead else None
     if text != 'a*b_c [d] <e> f #g {h}':
         errors.append(f"demo::Escapes's lead is {text!r}, not its brief as text")
+    # 1.0 is the sample itself, which has the member (latest is sample-next's).
+    escapes = read(public, 'docs/1.0/api/demo/escapes/index.html')
+    toc = re.search(r'id="TableOfContents">(.*?)</nav>', escapes, re.S)
+    links = re.findall(r'<a href="#([^"]+)">([^<]*)</a>', toc.group(1)) if toc else []
+    sections = [(i, t) for i, t in links if t == 'A section of a member']
+    if len(sections) != 1:
+        errors.append(f"demo::Escapes's table of contents lacks the section of a member: {links}")
+    elif f'<h4 id="{sections[0][0]}">A section of a member' not in escapes:
+        errors.append("demo::Escapes's section of a member is no heading with the id of its table of contents entry")
     index = glob.glob(os.path.join(public, 'offline-search-index.*.json'))
     refs = sorted({e['ref'] for i in index for e in json.load(open(i)) if 'to build one' in e['body']})
     if not refs or any(not r.startswith('/docs/latest/') for r in refs):
