@@ -14,6 +14,20 @@
     key: api/demo/widget
     type: brief
   expect: []
+- name: plan, a class whose inherited members all join its own sections has no additional ones
+  partial: test/plan-keys.html
+  context:
+    ctx: {model: sample}
+    key: api/demo/circle
+    type: decls
+  expect: [public-func, public-attrib]
+- name: plan, a class that inherits into a section it lacks has additional inherited members
+  partial: test/plan-keys.html
+  context:
+    ctx: {model: sample}
+    key: api/demo/labelledcircle
+    type: decls
+  expect: [public-func, inherited]
 - name: sections of a class, summaries before detailed sections
   partial: test/section-keys.html
   context:

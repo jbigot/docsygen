@@ -39,7 +39,18 @@ SPDX-License-Identifier: MIT
     {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
   {{- end -}}
 {{- end -}}
-{{- if and $classLike (partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id)) -}}
+{{- /* Members inherited into a summary section the class has join its table: only the others make
+       "Additional Inherited Members" (docsygen/markup/block-decls.html). */ -}}
+{{- $additional := false -}}
+{{- if $classLike -}}
+  {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
+    {{- $key := .key -}}
+    {{- $own := false -}}
+    {{- range $sections -}}{{- if and (eq .group "summary") (eq .key $key) -}}{{- $own = true -}}{{- end -}}{{- end -}}
+    {{- if not $own -}}{{- $additional = true -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $additional -}}
   {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" "inherited" "heading" (dict "level" 2 "text" (T "docsygen-additional-inherited-members") "anchorKey" "inherited")) -}}
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
