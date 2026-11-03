@@ -28,8 +28,6 @@ docsygen-directory-reference: "{{ .name }} Directory Reference"
 docsygen-concept-reference: "{{ .name }} Concept Reference"
 docsygen-member-list: "{{ .name }} Member List"
 docsygen-documentation: "{{ .project }} Documentation"
-docsygen-class-index: Class Index
-docsygen-data-structure-index: Data Structure Index
 docsygen-class-list: Class List
 docsygen-class-hierarchy: Class Hierarchy
 docsygen-namespace-list: Namespace List
@@ -37,8 +35,6 @@ docsygen-file-list: File List
 docsygen-related-pages: Related Pages
 docsygen-data-structures: Data Structures
 docsygen-class-members: Class Members
-docsygen-namespace-members: Namespace Members
-docsygen-file-members: File Members
 docsygen-concepts: Concepts
 docsygen-topics: Topics
 docsygen-examples: Examples

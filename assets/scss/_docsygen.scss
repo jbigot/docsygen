@@ -55,23 +55,6 @@
   }
 }
 
-// Indexes: the letters and their entries.
-.docsygen-index-letters {
-  margin-bottom: 1rem;
-
-  a {
-    margin-right: 0.5rem;
-  }
-}
-
-.docsygen-index-classes {
-  column-width: 14rem;
-
-  dl {
-    break-inside: avoid;
-  }
-}
-
 // Diagrams.
 .docsygen-diagram .docsygen-current > rect,
 .docsygen-diagram .docsygen-current > .label-container {

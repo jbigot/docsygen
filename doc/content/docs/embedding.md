@@ -75,7 +75,6 @@ One part of a page, `part` being its type:
 | `member` | one member | |
 | `all-members` | the list of all members, inherited ones included | |
 | `tree` | a list (no `item`) | `name`: `annotated`, `namespaces`, `files`, … |
-| `index` | an index (no `item`) | `name`, `filter`, `letter` |
 | `source` | a file's source listing | |
 | `generated-from` | the files a compound's documentation comes from | |
 

@@ -42,10 +42,3 @@
     key: api/demo/widget
     contains: ["{{% docsygen/part id=\"classdemo_1_1Widget\" part=\"decls\" section=\"public-func\" %}}"]
   expect: []
-- name: skeleton of an index, its filter, without an empty letter
-  partial: test/skeleton.html
-  context:
-    model: sample
-    key: indexes/class-members
-    contains: ["{{% docsygen/part part=\"index\" name=\"class-members\" filter=\"all\" %}}"]
-  expect: []

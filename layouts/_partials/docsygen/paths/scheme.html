@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
          api/        (30) "API reference": namespaces, classes and concepts, nested by scope
          files/      (40) directories and files, by location (pathMap), dirs before files
          examples/   (50) the examples
-         indexes/    (60) classes, hierarchy, class-members, namespace-members, file-members
+         indexes/    (60) hierarchy
          other/      (70) compounds of other kinds
        A section or page exists only with roles. A class page holds its all-members role, a file
        page its source role. A segment is docsygen/paths/segment.html of the name (relative to
@@ -20,8 +20,7 @@ SPDX-License-Identifier: MIT
        Dirs mapped to one path share the first one's page; a dir with no file under its path
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
        Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
-       for member groups, conceptdef, inherited, inline-classes, all-members, source, letter-<l> of
-       the class index, index-<filter>-<l> of a member index), the members (the name), the enum
+       for member groups, conceptdef, inherited, inline-classes, all-members, source), the members (the name), the enum
        values (<enum anchor>-<value>), the sections (the title), the anchors (the id without its
        compound's prefix). An anchor is docsygen/text/anchor.html of its name, as Hugo names a
        heading, with -1, -2, … on a collision, as goldmark numbers duplicate heading ids; a
@@ -156,7 +155,6 @@ SPDX-License-Identifier: MIT
   {{- else if eq .role "compound" -}}{{- $s.SetInMap "crole" .id . -}}
   {{- else if in (slice "all-members" "source") .role -}}{{- $more.SetInMap .role .id . -}}
   {{- else if eq .role "tree" -}}{{- $more.SetInMap "tree" .name . -}}
-  {{- else if eq .role "index" -}}{{- $more.SetInMap "index" .name ((index ($more.Get "index") .name | default slice) | append .) -}}
   {{- end -}}
 {{- end -}}
 {{- $tree := $more.Get "tree" | default dict -}}
@@ -368,19 +366,10 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 
-{{- /* indexes/. */ -}}
-{{- $indexRoles := $more.Get "index" | default dict -}}
-{{- $indexPages := slice
-    (dict "name" "classes" "title" (T "docsygen-class-index") "roles" (index $indexRoles "classes" | default slice))
-    (dict "name" "hierarchy" "title" (T "docsygen-class-hierarchy") "roles" (cond (isset $tree "hierarchy") (slice (index $tree "hierarchy")) slice))
-    (dict "name" "class-members" "title" (T "docsygen-class-members") "roles" (index $indexRoles "class-members" | default slice))
-    (dict "name" "namespace-members" "title" (T "docsygen-namespace-members") "roles" (index $indexRoles "namespace-members" | default slice))
-    (dict "name" "file-members" "title" (T "docsygen-file-members") "roles" (index $indexRoles "file-members" | default slice)) -}}
-{{- range $i, $p := $indexPages -}}
-  {{- if $p.roles -}}
-    {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "indexes" "title" (T "docsygen-indexes") "weight" 60 "roles" slice) -}}
-    {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" $p.name "title" $p.title "weight" (add $i 1) "roles" $p.roles) -}}
-  {{- end -}}
+{{- /* indexes/: the class hierarchy. */ -}}
+{{- with index $tree "hierarchy" -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "indexes" "title" (T "docsygen-indexes") "weight" 60 "roles" slice) -}}
+  {{- $_ := partial "docsygen/paths/scheme/add.html" (dict "s" $s "parent" $sec "seg" "hierarchy" "title" (T "docsygen-class-hierarchy") "weight" 1 "roles" (slice .)) -}}
 {{- end -}}
 
 {{- /* other/: the compounds placed nowhere else. */ -}}
@@ -422,8 +411,6 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $withIds := newScratch -}}
 {{- range $id, $e := $m.ids -}}{{- if in (slice "section" "anchor" "xrefsect") $e.what -}}{{- $withIds.Set $e.home true -}}{{- end -}}{{- end -}}
-{{- $entries := partial "docsygen/paths/index-entries.html" $m -}}
-{{- $prefixes := index $m.options "IGNORE_PREFIX" | default slice -}}
 {{- range $key := $s.Get "order" -}}
   {{- $fixed := slice (dict "key" "details" "base" "details") -}}
   {{- range index ($s.Get "roles") $key -}}
@@ -437,27 +424,6 @@ SPDX-License-Identifier: MIT
       {{- range slice "conceptdef" "inherited" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
     {{- else if in (slice "all-members" "source") .role -}}
       {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
-    {{- else if eq .role "index" -}}
-      {{- $letters := slice -}}
-      {{- if eq .name "classes" -}}
-        {{- range $m.order -}}
-          {{- $e := index $m.ids . -}}
-          {{- if and (in $classLike $e.kind) (index $crole .) -}}
-            {{- $n := index (split (index (split $e.name "<") 0) "::") (sub (len (split (index (split $e.name "<") 0) "::")) 1) -}}
-            {{- $letters = $letters | append (upper (substr (partial "docsygen/text/ignore-prefix.html" (dict "name" $n "prefixes" $prefixes)) 0 1)) -}}
-          {{- end -}}
-        {{- end -}}
-        {{- range uniq $letters -}}
-          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s" .) "base" (printf "letter-%s" (anchorize . | default (printf "%x" .)))) -}}
-        {{- end -}}
-      {{- else -}}
-        {{- /* A member index page shows each filter's list, with its own letters. */ -}}
-        {{- $filter := .filter -}}
-        {{- range where (index $entries .name) "filters" "intersect" (slice $filter) -}}{{- $letters = $letters | append .letter -}}{{- end -}}
-        {{- range uniq $letters -}}
-          {{- $fixed = $fixed | append (dict "key" (printf "letter-%s-%s" $filter .) "base" (printf "index-%s-%s" $filter (anchorize . | default (printf "%x" .)))) -}}
-        {{- end -}}
-      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- range $fixed -}}

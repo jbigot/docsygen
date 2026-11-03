@@ -41,19 +41,20 @@
     match: {role: all-members}
   len: true
   expect: 0
-- name: roles of the C sample, its file members
+- name: roles of the C sample, no alphabetical index
   partial: test/roles.html
   context:
     model: sample-c
-    match: {role: index, name: file-members}
-  expect:
-    - {role: index, name: file-members, filter: all, letter: ""}
-    - {role: index, name: file-members, filter: functions, letter: ""}
-    - {role: index, name: file-members, filter: variables, letter: ""}
-    - {role: index, name: file-members, filter: typedefs, letter: ""}
-    - {role: index, name: file-members, filter: enums, letter: ""}
-    - {role: index, name: file-members, filter: enumvalues, letter: ""}
-    - {role: index, name: file-members, filter: macros, letter: ""}
+    match: {role: index}
+  len: true
+  expect: 0
+- name: roles of the sample, no alphabetical index
+  partial: test/roles.html
+  context:
+    model: sample
+    match: {role: index}
+  len: true
+  expect: 0
 - name: roles of PDI, no file page with SHOW_FILES=NO
   partial: test/roles.html
   context:
@@ -68,18 +69,3 @@
     match: {role: compound, id: structPDI__errhandler__t}
   len: true
   expect: 0
-- name: roles of PDI, a class member index split by letter
-  partial: test/roles.html
-  context:
-    model: pdi
-    match: {role: index, name: class-members, filter: all, letter: "~"}
-  len: true
-  expect: 1
-- name: index entries of the sample, only the first IGNORE_PREFIX that matches is ignored
-  partial: test/index-entries.html
-  context:
-    model: sample
-    prefixes: [make_, wid]
-    index: class-members
-    name: make_widget
-  expect: [{key: widget, letter: w}]

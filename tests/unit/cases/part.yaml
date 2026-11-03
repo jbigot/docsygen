@@ -38,5 +38,5 @@
   expect: []
 - name: part, an address is the block's fields but its heading, as strings
   partial: docsygen/part/address.html
-  context: {type: index, name: class-members, filter: all, letter: "", heading: {level: 2}, ids: [a]}
-  expect: {filter: all, name: class-members, type: index}
+  context: {type: tree, name: hierarchy, heading: {level: 2}, ids: [a]}
+  expect: {name: hierarchy, type: tree}

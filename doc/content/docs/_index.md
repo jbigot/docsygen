@@ -9,7 +9,7 @@ weight: 1
 
 docsygen is a [Hugo](https://gohugo.io/) module that turns the XML output of
 [Doxygen](https://www.doxygen.nl/) into native pages of a [Docsy](https://www.docsy.dev/) site:
-the C and C++ API reference (classes, namespaces, files, groups, pages, examples, indexes), with
+the C and C++ API reference (classes, namespaces, files, groups, pages, examples, class hierarchy), with
 links between them and from your hand-written pages. It reads the XML directly, from a content
 adapter: no tool runs between `doxygen` and `hugo`.
 

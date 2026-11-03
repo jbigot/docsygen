@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
        through its markup, docsygen/markup/block-<type>.html, with .ctx, a context of that version
        (docsygen/ctx/root.html). The block is looked for in the plan of .ctx.key, the page being
        rendered, then in that of the page that holds it: the page of its id (paths.targets), or
-       for a list or an index the page with its role. Its heading is left to the caller. With
+       for a list the page with its role. Its heading is left to the caller. With
        .anchor, a member block carries its member's anchor on its wrapper. A block embedded away
        from its own page is away: a description is then whole, its sections in it rather than
        blocks of their own.
@@ -23,8 +23,7 @@ SPDX-License-Identifier: MIT
   {{- range $paths.pages -}}
     {{- $key := .key -}}
     {{- range .roles -}}
-      {{- if and (eq .role $a.type) (eq (.name | default "") ($a.name | default "")) (eq (.filter | default "") ($a.filter | default ""))
-          (eq (.letter | default "") ($a.letter | default "")) -}}
+      {{- if and (eq .role $a.type) (eq (.name | default "") ($a.name | default "")) -}}
         {{- $keys = $keys | append $key -}}
       {{- end -}}
     {{- end -}}

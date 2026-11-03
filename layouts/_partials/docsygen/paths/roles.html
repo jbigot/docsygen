@@ -9,15 +9,10 @@ SPDX-License-Identifier: MIT
          {role: source, id}         and its source listing (files Doxygen writes one for)
          {role: tree, name}         annotated, hierarchy, namespaces, concepts, files, pages,
                                     topics, examples
-         {role: index, name, filter, letter}  classes, class-members, namespace-members and
-                                    file-members, by filter (all, functions, variables, typedefs,
-                                    enums, enumvalues, properties, events, related, macros), and
-                                    by first letter when the filter has more than 200 members
-                                    (letter is "" otherwise)
        Only what Doxygen 1.18 generates is listed (src/index.cpp, classdef.cpp, filedef.cpp,
        namespacedef.cpp), honouring the Doxyfile options that decide it: those of
        docsygen/paths/has-page.html for the compounds, OPTIMIZE_OUTPUT_FOR_C, SOURCE_BROWSER,
-       VERBATIM_HEADERS, and those of docsygen/paths/index-entries.html for the indexes.
+       VERBATIM_HEADERS.
        Usage: partial "docsygen/paths/roles.html" $model */ -}}
 {{- $m := . -}}
 {{- $yes := newScratch -}}
@@ -89,26 +84,4 @@ SPDX-License-Identifier: MIT
   {{- if $present -}}{{- $roles = $roles | append (dict "role" "tree" "name" $name) -}}{{- end -}}
 {{- end -}}
 
-{{- /* The indexes, from the member lists of index.xml: each class, namespace or file lists its own
-       members (index.cpp, add*MemberNameToIndex). */ -}}
-{{- if $hasClasses -}}{{- $roles = $roles | append (dict "role" "index" "name" "classes" "filter" "all" "letter" "") -}}{{- end -}}
-{{- $entries := partial "docsygen/paths/index-entries.html" $m -}}
-{{- range slice "class-members" "namespace-members" "file-members" -}}
-  {{- $index := . -}}
-  {{- $list := index $entries $index -}}
-  {{- range slice "all" "functions" "variables" "typedefs" "enums" "enumvalues" "properties" "events" "related" "macros" -}}
-    {{- $filter := . -}}
-    {{- $letters := newScratch -}}
-    {{- $n := 0 -}}
-    {{- range where $list "filters" "intersect" (slice $filter) -}}{{- $letters.Set .letter true -}}{{- $n = add $n 1 -}}{{- end -}}
-    {{- if gt $n 200 -}}
-      {{- /* index.cpp sorts the letters as bytes, as the keys of this map are sorted. */ -}}
-      {{- range $letter, $_ := $letters.Values -}}
-        {{- $roles = $roles | append (dict "role" "index" "name" $index "filter" $filter "letter" $letter) -}}
-      {{- end -}}
-    {{- else if $n -}}
-      {{- $roles = $roles | append (dict "role" "index" "name" $index "filter" $filter "letter" "") -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
 {{- return $roles -}}

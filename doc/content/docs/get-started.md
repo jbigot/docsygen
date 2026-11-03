@@ -122,7 +122,7 @@ directory of its `_content.gotmpl`.
 | `search` | no | whether its pages are in Docsy's search index (default: the value of `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 
-The whole tree holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections,
+The whole tree holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections (the class hierarchy),
 each only when Doxygen has something for it.
 
 `pathMap` matches each file location after the common leading directories are stripped, and
