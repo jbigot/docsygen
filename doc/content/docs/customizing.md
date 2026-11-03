@@ -45,11 +45,10 @@ For example, a class page without its summary tables, in `layouts/_partials/docs
 
 ## Your own hooks
 
-docsygen's canonical links and print notice go through Docsy's hooks. If your site has its own
+docsygen's canonical links go through Docsy's hooks. If your site has its own
 copy of one, call docsygen from it:
 
 | Your file | Add |
 | --- | --- |
 | `layouts/_partials/hooks/head-end.html` | `{{- partial "docsygen/canonical-link.html" . -}}` |
-| `layouts/_partials/print/page-heading-docs.html` | `{{ partial "version-banner.html" .Page }}` |
 | `layouts/_markup/render-link.html` | see [Link to the reference]({{< relref "linking" >}}) |

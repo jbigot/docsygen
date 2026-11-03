@@ -29,9 +29,9 @@ module:
 ```
 
 {{% alert title="docsygen comes first" color="warning" %}}
-docsygen replaces some of Docsy's partials (the version menu and banner, the `head-end` hook and
-the print heading of docs pages), which only works when it is imported **before** Docsy. The build
-stops otherwise.
+docsygen replaces some of Docsy's partials (the version menu and banner, and the `head-end` hook),
+which only works when it is imported **before** Docsy. The build stops
+otherwise.
 {{% /alert %}}
 
 Then load its styles from your `assets/scss/_styles_project.scss`:

@@ -91,8 +91,11 @@ def main(argv):
     if 'docsygen-signature' not in read(public, '_print/docs/main/index.html'):
         errors.append('the print page of /docs/main/ holds no member signature')
     printed = read(public, '_print/docs/1.0/index.html')
-    if 'docsygen-notice' not in printed:
-        errors.append('the print page of /docs/1.0/ has no notice')
+    # Docsy's print heading doesn't call version-banner.html: no notice, until Docsy does.
+    if 'docsygen-notice' in printed:
+        errors.append('the print page of /docs/1.0/ has a notice')
+    if '<h1 class="title">' not in printed:
+        errors.append("the print page of /docs/1.0/ has no Docsy print heading")
     if len(re.findall(r'rel="?canonical', printed)) != 1:
         errors.append('the print page of /docs/1.0/ has not one canonical link')
     button = read(public, 'docs/latest/api/demo/button/index.html')
