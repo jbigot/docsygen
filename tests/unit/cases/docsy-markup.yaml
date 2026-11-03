@@ -99,14 +99,14 @@
   context:
     ctx: {model: sample}
     block: {type: diagram, id: classdemo_1_1Button}
-  expect: "<figure class=\"docsygen-diagram figure d-block\"><figcaption class=\"figure-caption\">Inheritance diagram for demo::Button:</figcaption><pre data-test-hook=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre>\n</figure>"
+  expect: "<figure class=\"docsygen-diagram figure d-block td-max-width-on-larger-screens\"><figcaption class=\"figure-caption\">Inheritance diagram for demo::Button:</figcaption><pre data-test-hook=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre>\n</figure>"
 - name: docsy markup, a member with its signature
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
     block: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
     contains:
-      - '<div class="docsygen-member" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd">'
+      - '<div class="docsygen-member td-max-width-on-larger-screens" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd">'
       - '<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre></div>'
     lacks: [memitem, memname, memtitle, memproto, memdoc]
   expect: []

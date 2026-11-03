@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT
   {{- $id := . -}}
   {{- $e := index $m.ids $id -}}
   {{- $anchor := index $ctx.anchors $id -}}
-<div class="docsygen-member" data-doxygen-id="{{ $id }}">
+<div class="docsygen-member td-max-width-on-larger-screens" data-doxygen-id="{{ $id }}">
 <a id="{{ $anchor }}"></a>
 <div class="docsygen-member-title">{{ $e.name }}</div>
 <pre class="docsygen-signature"><code>{{ $e.kind }} {{ $e.name }}</code></pre>

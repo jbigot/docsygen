@@ -48,7 +48,7 @@ SPDX-License-Identifier: MIT
 {{- $proto := partial "docsygen/markup/signature.html" (dict "ctx" $ctx "id" $id "parts" $parts "scope" $scope "hasParams" $hasParams) -}}
 {{- $templates := $proto.templates -}}
 {{- $proto = $proto.proto -}}
-<div class="docsygen-member"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
+<div class="docsygen-member td-max-width-on-larger-screens"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
 <div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre></div>
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="badge text-bg-secondary">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}
