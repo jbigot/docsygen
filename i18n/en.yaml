@@ -26,7 +26,6 @@ docsygen-namespace-reference: "{{ .name }} Namespace Reference"
 docsygen-file-reference: "{{ .name }} File Reference"
 docsygen-directory-reference: "{{ .name }} Directory Reference"
 docsygen-concept-reference: "{{ .name }} Concept Reference"
-docsygen-member-list: "{{ .name }} Member List"
 docsygen-documentation: "{{ .project }} Documentation"
 docsygen-class-list: Class List
 docsygen-class-hierarchy: Class Hierarchy
@@ -110,7 +109,6 @@ docsygen-detailed-description: Detailed Description
 docsygen-additional-inherited-members: Additional Inherited Members
 docsygen-concept-definition: Concept definition
 docsygen-class-documentation: Class Documentation
-docsygen-list-of-all-members: List of all members
 docsygen-source: Source
 
 # The titles of the blocks of a description: the simple sections (@see, @return, …), the parameter

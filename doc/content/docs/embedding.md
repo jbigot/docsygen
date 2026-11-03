@@ -73,7 +73,7 @@ One part of a page, `part` being its type:
 | `section` | one section of the description | |
 | `inline-classes` | the classes documented inline | |
 | `member` | one member | |
-| `all-members` | the list of all members, inherited ones included | |
+| `all-members` | the list of all members, inherited ones included (a class page lists the inherited ones in its summaries instead) | |
 | `tree` | a list (no `item`) | `name`: `annotated`, `namespaces`, `files`, … |
 | `source` | a file's source listing | |
 | `generated-from` | the files a compound's documentation comes from | |

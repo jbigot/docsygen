@@ -34,7 +34,7 @@
   partial: test/claims.html
   context: {}
   mounts: {fixtures/claims-two: content, fixtures/versions/layouts: layouts}
-  error: 'docsygen: /claim claims api/demo/widget and api/demo/box, which both have the anchor "all-members"'
+  error: 'docsygen: /claim claims api/demo/widget and api/demo/box, which both have the anchor "conceptdef"'
 - name: claims, docsygen/members shows every member with its anchor
   partial: test/claims.html
   context: {key: api/demo/widget, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, dup: /latest/api/demo/widget, claim: /claim, anchor: resize}

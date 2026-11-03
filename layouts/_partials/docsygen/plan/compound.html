@@ -23,7 +23,6 @@ SPDX-License-Identifier: MIT
   {{- range $sections -}}
     {{- if and (eq .group "summary") (not (hasPrefix .key "user-defined-")) (not .groupsOnly) -}}{{- $keys = $keys | append .key -}}{{- end -}}
   {{- end -}}
-  {{- if index .ctx.paths.pageOf (string (jsonify (dict "role" "all-members" "id" $id))) -}}{{- $keys = $keys | append "all-members" -}}{{- end -}}
   {{- with $keys -}}{{- $blocks = $blocks | append (dict "type" "summary-links" "id" $id "anchorKeys" .) -}}{{- end -}}
 {{- end -}}
 {{- if or $classLike (in (slice "file" "concept") $kind) -}}

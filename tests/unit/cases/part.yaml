@@ -20,6 +20,12 @@
   partial: test/part.html
   context: {model: sample, key: api/demo/widget, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}}
   expect: true
+- name: part, the list of all members of a class is embedded without a block of the page
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: all-members, id: classdemo_1_1Widget}}
+    contains: ['This is the complete list of members for', 'class="docsygen-members"']
+  expect: []
 - name: part, a list is its block's markup
   partial: test/part.html
   context: {model: sample, key: api, address: {type: tree, name: annotated}}

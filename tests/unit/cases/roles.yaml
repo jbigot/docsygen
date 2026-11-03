@@ -7,12 +7,13 @@
     match: {role: source}
   len: true
   expect: 8
-- name: roles of the sample, the members list of a class
+- name: roles of the sample, no list of all members
   partial: test/roles.html
   context:
     model: sample
-    match: {role: all-members, id: classdemo_1_1Widget}
-  expect: [{role: all-members, id: classdemo_1_1Widget}]
+    match: {role: all-members}
+  len: true
+  expect: 0
 - name: roles of the sample, the main page is a compound of the root
   partial: test/roles.html
   context:
@@ -32,13 +33,6 @@
   context:
     model: sample-c
     match: {role: tree, name: namespaces}
-  len: true
-  expect: 0
-- name: roles of the C sample, no members list in C
-  partial: test/roles.html
-  context:
-    model: sample-c
-    match: {role: all-members}
   len: true
   expect: 0
 - name: roles of the C sample, no alphabetical index

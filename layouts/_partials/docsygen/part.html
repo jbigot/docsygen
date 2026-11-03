@@ -48,6 +48,12 @@ SPDX-License-Identifier: MIT
     {{- $found = dict "type" "brief" "id" $a.id "part" "brief" -}}{{- $holder = .page -}}
   {{- end -}}
 {{- end -}}
+{{- /* A class's list of all members is in no page's plan: it is for hand-written pages. */ -}}
+{{- if and (not $found) (eq $a.type "all-members") $a.id -}}
+  {{- with index $paths.targets $a.id -}}
+    {{- $found = dict "type" "all-members" "id" $a.id -}}{{- $holder = .page -}}
+  {{- end -}}
+{{- end -}}
 {{- if not $found -}}
   {{- errorf "docsygen: no part %s in version %s" (jsonify $a) $ctx.version -}}
   {{- return "" -}}

@@ -5,7 +5,6 @@ SPDX-License-Identifier: MIT
 {{- /* The content units of a model, independent of any URL scheme, in this order:
          {role: root}
          {role: compound, id}       every compound that has a page in Doxygen's HTML, followed by
-         {role: all-members, id}    its list of all members (class-likes with listofallmembers)
          {role: source, id}         and its source listing (files Doxygen writes one for)
          {role: tree, name}         annotated, hierarchy, namespaces, concepts, files, pages,
                                     topics, examples
@@ -30,13 +29,6 @@ SPDX-License-Identifier: MIT
   {{- if index $page $id -}}
     {{- $roles = $roles | append (dict "role" "compound" "id" $id) -}}
     {{- $count.Add $e.kind 1 -}}
-  {{- end -}}
-  {{- if and (in $classLike $e.kind) (index $page $id) (not ($yes.Get "OPTIMIZE_OUTPUT_FOR_C")) -}}
-    {{- range $e.node.children -}}
-      {{- if and (reflect.IsMap .) (eq .tag "listofallmembers") .children -}}
-        {{- $roles = $roles | append (dict "role" "all-members" "id" $id) -}}
-      {{- end -}}
-    {{- end -}}
   {{- end -}}
   {{- if eq $e.kind "file" -}}
     {{- /* filedef.cpp, generateSourceFile: not a documentation file, and SOURCE_BROWSER, or
