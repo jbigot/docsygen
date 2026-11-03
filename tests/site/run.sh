@@ -10,8 +10,7 @@
 #          2.0, the latest), versions-mixed (versions with 1.0 from Doxygen 1.17.0, the oldest
 #          supported), nested (the sample as the latest 1.0, from an adapter two directories deep) or
 #          unknown-kind (tests/unit/fixtures/unknown-kind); all by default
-# A build fails on any WARN or ERROR line, but an expected warning: the unknown-kind fixture's, and
-# the sample's for its eqnarray* formula, an environment KaTeX lacks (its source is shown).
+# A build fails on any WARN or ERROR line, but the unknown-kind fixture's expected warning.
 # Exit 1 on any failure.
 set -eu
 
@@ -23,15 +22,11 @@ for name; do
   printf '== %s\n' "$name"
   expected=
   case $name in
-    versions) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml
-       expected='docsygen: formula "\\begin{eqnarray*}' ;;
-    versions-mixed) if ! dir=$(DOXYGEN=$(doxygen_bin 1.17.0) && corpus sample); then status=1; continue; fi; xml=$dir/xml
-       expected='docsygen: formula "\\begin{eqnarray*}' ;;
-    nested) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml
-       expected='docsygen: formula "\\begin{eqnarray*}' ;;
+    versions) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml ;;
+    versions-mixed) if ! dir=$(DOXYGEN=$(doxygen_bin 1.17.0) && corpus sample); then status=1; continue; fi; xml=$dir/xml ;;
+    nested) if ! dir=$(corpus sample); then status=1; continue; fi; xml=$dir/xml ;;
     unknown-kind) xml=$root/tests/unit/fixtures/unknown-kind; expected='docsygen: unknown compound kind "widgetkind"' ;;
-    *) if ! dir=$(corpus "$name"); then status=1; continue; fi; xml=$dir/xml
-       if [ "$name" = sample ]; then expected='docsygen: formula "\\begin{eqnarray*}'; fi ;;
+    *) if ! dir=$(corpus "$name"); then status=1; continue; fi; xml=$dir/xml ;;
   esac
   work=$tmp/$name
   content=content next=

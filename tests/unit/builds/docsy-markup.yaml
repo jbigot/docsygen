@@ -11,11 +11,11 @@
     lacks: []
   mounts: {fixtures/listing-hook: layouts}
   warning: 'a listing has no line anchors (id="l-12")'
-- name: a display formula KaTeX rejects warns and shows its source
+- name: an inline formula KaTeX rejects stops the build
   partial: test/doc-contains.html
   context:
     ctx: {}
-    xml: '<detaileddescription><para><formula id="3">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</formula></para></detaileddescription>'
-    contains: ['<code>\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</code>']
-    lacks: ['data-test-hook']
-  warning: 'docsygen: formula'
+    xml: '<detaileddescription><para><formula id="3">$ \nosuchmacro $</formula></para></detaileddescription>'
+    contains: []
+    lacks: []
+  error: 'docsygen: formula "$ \\nosuchmacro $"'

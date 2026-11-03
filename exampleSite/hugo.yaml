@@ -1,9 +1,6 @@
 baseURL: https://example.docsy.dev
 title: Goldydocs
 
-# The sample demonstrates a formula that KaTeX lacks an environment for (its source is shown).
-ignoreLogs: [docsygen-formula]
-
 # cSpell:ignore goldmark github hugo readingtime docsy subdir lastmod pygments linenos catmullrom norsk gu slugorcontentbasename
 
 # Language settings

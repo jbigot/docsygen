@@ -97,7 +97,7 @@ int code();
  * Inline \f$ a^2 + b^2 = c^2 \f$, display
  * \f[ \int_0^1 x\,dx = \frac{1}{2} \f]
  * and an environment
- * \f{eqnarray*}{ a &=& b \\ c &=& d \f}
+ * \f{align*}{ a &= b \\ c &= d \f}
  */
 void formulas();
 

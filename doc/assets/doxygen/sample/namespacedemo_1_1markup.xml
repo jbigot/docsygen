@@ -148,7 +148,7 @@ break, an anchor<anchor id="namespacedemo_1_1markup_1inline-anchor"/>here, an em
 <para>Formulas. </para>
         </briefdescription>
         <detaileddescription>
-<para>Inline <formula id="0">$ a^2 + b^2 = c^2 $</formula>, display <formula id="1">\[ \int_0^1 x\,dx = \frac{1}{2} \]</formula> and an environment <formula id="2">\begin{eqnarray*} a &amp;=&amp; b \\ c &amp;=&amp; d \end{eqnarray*}</formula> </para>
+<para>Inline <formula id="0">$ a^2 + b^2 = c^2 $</formula>, display <formula id="1">\[ \int_0^1 x\,dx = \frac{1}{2} \]</formula> and an environment <formula id="2">\begin{align*} a &amp;= b \\ c &amp;= d \end{align*}</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

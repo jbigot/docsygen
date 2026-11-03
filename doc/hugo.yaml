@@ -4,9 +4,6 @@ baseURL: https://jbigot.github.io/docsygen/
 title: docsygen
 locale: en
 
-# The sample demonstrates a formula that KaTeX lacks an environment for (its source is shown).
-ignoreLogs: [docsygen-formula]
-
 module:
   hugoVersion:
     min: 0.169.0

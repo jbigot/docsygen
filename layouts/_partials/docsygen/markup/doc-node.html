@@ -177,18 +177,15 @@ SPDX-License-Identifier: MIT
       {{- $tex = printf "\\begin{%s}%s\\end{%s}" (index . 0 1) (index . 0 2) (index . 0 1) -}}
     {{- end -}}
   {{- end -}}
-  {{- /* Docsy's options (render-codeblock-math, scripts/math), so that what passes here passes
-         there. */ -}}
-  {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" $display)) -}}
-    {{- if .Err -}}
-      {{- /* Docsy's hook fails the build on a formula KaTeX rejects: warn instead. */ -}}
-      {{- warnidf "docsygen-formula" "docsygen: formula %q: %s" $text .Err -}}
-      <code>{{ $text }}</code>
-    {{- else if $display -}}
-      {{- /* A display formula goes through the site's math code-block hook. */ -}}
-      {{- partial "docsygen/markup/fence.html" (dict "info" "math" "code" $tex "ctx" $ctx) -}}
-    {{- else -}}
-      {{- /* Docsy has no hook for inline math: its key makes Docsy load KaTeX's CSS. */ -}}
+  {{- if $display -}}
+    {{- /* A display formula goes through the site's math code-block hook, which decides what
+           it accepts (Docsy's stops the build on a formula KaTeX rejects). */ -}}
+    {{- partial "docsygen/markup/fence.html" (dict "info" "math" "code" $tex "ctx" $ctx) -}}
+  {{- else -}}
+    {{- /* Docsy has no hook for inline math: done as its scripts/math.html does, whose key makes
+           Docsy load KaTeX's CSS. */ -}}
+    {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" false)) -}}
+      {{- with .Err -}}{{- errorf "docsygen: formula %q: %s" $text . -}}{{- end -}}
       {{- .Value -}}
       {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
     {{- end -}}

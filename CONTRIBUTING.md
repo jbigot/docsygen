@@ -54,14 +54,14 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@use
 'docsygen'` in `assets/scss/_styles_project.scss`, the sample's XML in `assets/doxygen/sample`, one
 adapter call, `content/en/docs/_content.gotmpl`, which puts its reference at `/docs/api/latest/`,
-and a link to it from the docs landing page. Besides that, `ignoreLogs` for the sample's
-`eqnarray*` formula, Hugo 0.169 in `package.json`, and Node 22 instead of 24 in `engines` (with
-`engine-strict` in `.npmrc`, npm refuses an older Node). docsy-example's own tooling is left out:
-its tests, CI, link checking (`link-cache`, lychee), formatting (`prettier`, cspell), update scripts
-(`npm-check-updates`, renovate), Netlify configuration, `docsy.work`, README, CONTRIBUTING and
-LICENSE, and the `package.json` scripts and dependencies that use them. Run `npx npm@11 install`
-once, then `npm run build`; Hugo and Dart Sass come from npm. The files it keeps from
-docsy-example are Apache-2.0, its content CC-BY-4.0 (`REUSE.toml`).
+and a link to it from the docs landing page. Besides that, Hugo 0.169 in `package.json`, and Node 22
+instead of 24 in `engines` (with `engine-strict` in `.npmrc`, npm refuses an older Node).
+docsy-example's own tooling is left out: its tests, CI, link checking (`link-cache`, lychee),
+formatting (`prettier`, cspell), update scripts (`npm-check-updates`, renovate), Netlify
+configuration, `docsy.work`, README, CONTRIBUTING and LICENSE, and the `package.json` scripts and
+dependencies that use them. Run `npx npm@11 install` once, then `npm run build`; Hugo and Dart Sass
+come from npm. The files it keeps from docsy-example are Apache-2.0, its content CC-BY-4.0
+(`REUSE.toml`).
 
 `sh exampleSite/check.sh` builds it and checks what docsygen made (`tests/site/check_built.sh`
 with `--under docs/api`); `sh exampleSite/preview.sh [--doc] [REV] [PORT]` serves it, or `doc/`,
