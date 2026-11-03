@@ -2,7 +2,8 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* The body of docsygen/plan/sections.html. */ -}}
+{{- /* The body of docsygen/plan/sections.html, with the sections already built of other compounds in
+       .known ({refid: sections}); the others a file needs are built here. */ -}}
 {{- $m := .model -}}
 {{- $e := index $m.ids .id -}}
 {{- $kind := $e.kind -}}
@@ -53,7 +54,9 @@ SPDX-License-Identifier: MIT
   {{- range index $m.fileMembers .id -}}
     {{- $mid := . -}}
     {{- $home := (index $m.ids $mid).home -}}
-    {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $home) -}}
+    {{- $homeSections := index $.known $home -}}
+    {{- if not $homeSections -}}{{- $homeSections = partial "docsygen/plan/sections/build.html" (dict "model" $m "id" $home "known" $.known) -}}{{- end -}}
+    {{- range $homeSections -}}
       {{- if and (hasPrefix .key "user-defined-") (in .members $mid) -}}{{- $inGroup.Set $mid . -}}{{- end -}}
     {{- end -}}
     {{- with $inGroup.Get $mid -}}

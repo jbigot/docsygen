@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
        each base's members in its own section order, in the section their protection gives them
        once inherited (public, protected or private inheritance), constructors and related symbols
        included, friends and private members excluded, without the members the class overrides or hides (not in its listofallmembers), and members seen through
-       an earlier base. Cached per class.
+       an earlier base. Built for every class of the model
+       at once (docsygen/plan/inherited/all.html).
        Usage: partial "docsygen/plan/inherited.html" (dict "model" $model "id" $refid) */ -}}
-{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/inherited/build.html" "context" . "scope" .model.dir "key" .id) -}}
+{{- return index (partial "docsygen/plan/inherited/all.html" .model) .id -}}

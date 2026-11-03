@@ -1,0 +1,9 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The inherited members (docsygen/plan/inherited.html) of every class of a model that
+       inherits some, as {refid: inherited}, built once per model, in one partialCached entry like
+       docsygen/plan/sections/all.html.
+       Usage: partial "docsygen/plan/inherited/all.html" $model */ -}}
+{{- return partialCached "docsygen/plan/inherited/all-build.html" . .dir -}}

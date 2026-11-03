@@ -140,8 +140,10 @@ To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
   tree, and what the reader accepts, the native decoder accepts with the same tree. Trees are
   cached in `hugo.Store`, per file and checked against its hash.
 - **Model**: one model per XML directory, built once per build from `index.xml`, with an id→page
-  map and a name→id map. Per-id results go in a per-model table (`docsygen/memo.html`), not in
-  `partialCached`, an LRU of 1000 entries.
+  map and a name→id map. `partialCached` is an LRU of 1000 entries: it holds O(versions) entries,
+  and what is computed per compound (sections, inherited members) is one map per model in one
+  entry (`plan/sections/all.html`, `plan/inherited/all.html`). Only the plans, one per page and
+  expensive, go in a per-model table (`docsygen/memo.html`), scoped by the dir and pathMap.
 - **Paths**: the page scheme (`docsygen/paths/scheme.html`) gives each page a key, unique after
   Hugo's path normalization; placements (`docsygen/adapter.html`, one call per part of a version)
   put the keys at paths.

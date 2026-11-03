@@ -2,12 +2,17 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* The result of partial NAME on CONTEXT, computed once per build for each KEY in SCOPE (a
-       model's dir), as partialCached would cache it. The results of a scope share one
-       partialCached entry: Hugo's partialCached is an LRU of 1000 entries, and an entry per page
-       or compound evicts the models they all use, which are then rebuilt for every page.
-       Usage: partial "docsygen/memo.html" (dict "name" "docsygen/plan/sections/build.html"
-              "context" . "scope" .model.dir "key" .id) */ -}}
+{{- /* The result of partial NAME on CONTEXT, computed once per build for each KEY in SCOPE, as
+       partialCached would cache it. Only the plans of pages (docsygen/plan.html) go through it:
+       measured on PDI, a plan costs about 5 s of a 12 s build when built at every use (in the
+       adapter, then by each shortcode that renders a part of the page, once per output format),
+       and there is one per page. partialCached is an LRU of 1000 entries, which an entry per page
+       fills, evicting the models that every page uses and that are then rebuilt for every page.
+       The results of a scope share one partialCached entry, holding a table. What is computed once
+       per compound or class (sections, inherited members) is a map in one entry per model instead
+       (docsygen/plan/sections/all.html), and tree nodes, used by a page or two, are not cached.
+       Usage: partial "docsygen/memo.html" (dict "name" "docsygen/plan/build.html"
+              "context" . "scope" .ctx.paths.scope "key" .entry.key) */ -}}
 {{- $table := partialCached "docsygen/memo/table.html" .scope .scope -}}
 {{- $key := printf "%s|%s" .name .key -}}
 {{- $r := $table.Get $key -}}

@@ -1,0 +1,10 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The sections (docsygen/plan/sections.html) of every compound of a model, as {refid: sections},
+       built once per model. One partialCached entry per model, where an entry per compound would
+       let the LRU of 1000 entries evict the models. The compounds that list members documented
+       elsewhere, the files, come last, since they read the sections of those members' compounds.
+       Usage: partial "docsygen/plan/sections/all.html" $model */ -}}
+{{- return partialCached "docsygen/plan/sections/all-build.html" . .dir -}}

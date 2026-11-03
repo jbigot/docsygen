@@ -1,0 +1,21 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The body of docsygen/plan/sections/all.html. */ -}}
+{{- $m := . -}}
+{{- /* A scratch map: merge would fold the case of refids. */ -}}
+{{- $all := newScratch -}}
+{{- $all.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- if ne (index $m.ids .).kind "file" -}}
+    {{- $all.SetInMap "m" . (partial "docsygen/plan/sections/build.html" (dict "model" $m "id" . "known" dict)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $others := $all.Get "m" -}}
+{{- range $m.order -}}
+  {{- if eq (index $m.ids .).kind "file" -}}
+    {{- $all.SetInMap "m" . (partial "docsygen/plan/sections/build.html" (dict "model" $m "id" . "known" $others)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $all.Get "m" -}}
