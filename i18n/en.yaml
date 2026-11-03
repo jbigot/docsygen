@@ -149,11 +149,6 @@ docsygen-inherited-from: "{{ .section }} inherited from {{ .base }}"
 docsygen-go-to-the-documentation-of-this-file: Go to the documentation of this file.
 docsygen-go-to-the-source-code-of-this-file: Go to the source code of this file.
 docsygen-source-link: source
-docsygen-this-is-the-complete-list-of-members: "This is the complete list of members for {{ .name }}, including all inherited members."
-docsygen-defined-in: "{{ .member }} (defined in {{ .scope }})"
-docsygen-enum-name: enum name
-docsygen-enum-value: enum value
-docsygen-typedef: typedef
 docsygen-list-separator: ", "
 docsygen-list-last-separator: ", and "
 

@@ -7,13 +7,6 @@
     match: {role: source}
   len: true
   expect: 8
-- name: roles of the sample, no list of all members
-  partial: test/roles.html
-  context:
-    model: sample
-    match: {role: all-members}
-  len: true
-  expect: 0
 - name: roles of the sample, the main page is a compound of the root
   partial: test/roles.html
   context:
