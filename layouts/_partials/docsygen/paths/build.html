@@ -45,4 +45,5 @@ SPDX-License-Identifier: MIT
     {{- $targets.SetInMap "m" $id (dict "page" . "anchor" $anchor) -}}
   {{- end -}}
 {{- end -}}
-{{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged "pageOf" $pageOf.Values -}}
+{{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged "pageOf" $pageOf.Values
+    "scope" (printf "%s|%s" $m.dir (jsonify (.pathMap | default slice))) -}}

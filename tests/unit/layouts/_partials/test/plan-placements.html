@@ -1,0 +1,21 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The number of blocks of the plan of page .key of model .model, for each pathMap of
+       .pathMaps in turn, as the placements of one XML directory with different pathMaps would
+       ask for it. */ -}}
+{{- $m := .model -}}
+{{- $out := slice -}}
+{{- range .pathMaps -}}
+  {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" .) -}}
+  {{- $last := 0 -}}
+  {{- range $paths.pages -}}
+    {{- if eq .key $.key -}}
+      {{- $ctx := dict "model" $m "paths" $paths "anchors" dict "links" dict "page" nil -}}
+      {{- $last = len (partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = $out | append $last -}}
+{{- end -}}
+{{- return $out -}}

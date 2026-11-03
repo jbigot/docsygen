@@ -4,6 +4,7 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The blocks of a page, the concatenation of the plans of its roles (docsygen/plan/<role>.html),
        as [{type, …, heading?}]. heading is {level, text, anchorKey}, where anchorKey is a model id
-       or a key of the page's fixed anchors (docsygen/paths.html, anchors). Cached per page.
+       or a key of the page's fixed anchors (docsygen/paths.html, anchors). Cached per page of a model and pathMap: the same key may have other roles, and other absorbed
+       compounds, under another pathMap.
        Usage: partial "docsygen/plan.html" (dict "entry" $pageEntry "ctx" $ctx) */ -}}
-{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/build.html" "context" . "scope" .ctx.model.dir "key" .entry.key) -}}
+{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/build.html" "context" . "scope" .ctx.paths.scope "key" .entry.key) -}}

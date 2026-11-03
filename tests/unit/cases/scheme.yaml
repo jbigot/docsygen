@@ -87,6 +87,10 @@
   context: {model: sample, pathMap: [{from: build/gen/, to: ""}], key: files}
   select: [last]
   expect: merged
+- name: plan, one key under two pathMaps of one directory
+  partial: test/plan-placements.html
+  context: {model: sample, key: files/cxx/demo, pathMaps: [[], [{from: build/gen/, to: ""}]]}
+  expect: [3, 7]
 - name: scheme, PDI's directories under files without file pages
   partial: test/paths.html
   context: {model: pdi}
