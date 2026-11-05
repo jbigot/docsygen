@@ -25,4 +25,5 @@ fi
 status=0
 if grep -E 'WARN|ERROR' "$tmp/log" >&2; then status=1; fi
 sh "$root/tests/site/check_built.sh" "$tmp/public" "$here/assets/doxygen/sample" /docs/reference/latest/ || status=1
+sh "$root/tests/site/check_chroma_css.sh" "$tmp/public" || status=1
 exit $status
