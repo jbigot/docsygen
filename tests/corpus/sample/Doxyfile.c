@@ -6,3 +6,4 @@ PROJECT_NAME = "docsygen C sample"
 PROJECT_BRIEF = "A C-only project"
 INPUT = src/c
 OPTIMIZE_OUTPUT_FOR_C = YES
+SHOW_USED_FILES = NO

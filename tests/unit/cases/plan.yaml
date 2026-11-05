@@ -14,6 +14,20 @@
     key: api/demo/widget
     type: brief
   expect: []
+- name: plan, a class's plan ends with generated-from
+  partial: test/plan-has.html
+  context:
+    ctx: {model: sample}
+    key: api/demo/widget
+    type: generated-from
+  expect: true
+- name: plan, no generated-from under SHOW_USED_FILES=NO
+  partial: test/plan-has.html
+  context:
+    ctx: {model: sample-c}
+    key: api/cpoint
+    type: generated-from
+  expect: false
 - name: plan, a class whose inherited members all join its own sections has no additional ones
   partial: test/plan-keys.html
   context:

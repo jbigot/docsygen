@@ -14,6 +14,10 @@ weight: 70
 `SHOW_FILES`
 : `NO` leaves out the file pages, as Doxygen's HTML does; directories keep theirs.
 
+`SHOW_USED_FILES`
+: `NO` leaves out the list of files a class's documentation was generated from, as Doxygen's HTML
+  does.
+
 `EXTRACT_PRIVATE`, `EXTRACT_STATIC`, `INLINE_SIMPLE_STRUCTS`, `SORT_MEMBER_DOCS`, …
 : The options that decide what Doxygen's HTML shows are read from the XML's `Doxyfile.xml`, and
   decide what docsygen shows.

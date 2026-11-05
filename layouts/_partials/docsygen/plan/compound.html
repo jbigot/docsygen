@@ -109,7 +109,8 @@ SPDX-License-Identifier: MIT
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if $classLike -}}
+{{- /* classdef.cpp, showUsedFiles */ -}}
+{{- if and $classLike (eq (index ((index $m.options "SHOW_USED_FILES") | default (slice "YES")) 0) "YES") -}}
   {{- $blocks = $blocks | append (dict "type" "generated-from" "id" $id) -}}
 {{- end -}}
 {{- return $blocks -}}
