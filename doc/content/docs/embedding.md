@@ -30,7 +30,7 @@ lacks stops the build; a version that development mode leaves out embeds nothing
 ## `docsygen/member`
 
 A member, with `form="full"` (the default), its documentation as its compound's page shows it, or
-`form="summary"`, its row of the summary table:
+`form="summary"`, its line of its compound's list:
 
 ```markdown
 {{%/* docsygen/member item="demo::Widget::width" form="summary" */%}}
@@ -68,7 +68,7 @@ One part of a page, `part` being its type:
 | `includes` | the `#include` lines | |
 | `diagram` | the inheritance diagram | |
 | `concept-definition` | a concept's definition | |
-| `decls` | a summary table | `section`, its key: `public-func`, `func`, `typedef`, … |
+| `list` | the list of a namespace's, topic's, file's, directory's or class's declarations | |
 | `description` | the detailed description, with its sections | |
 | `section` | one section of the description | |
 | `inline-classes` | the classes documented inline | |

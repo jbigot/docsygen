@@ -35,10 +35,10 @@
     key: api/demo/widget
     contains: ["## Member Function Documentation {#doc-function}\n\n### "]
   expect: []
-- name: skeleton of a class, a summary table names its section
+- name: skeleton of a class, its list is one part
   partial: test/skeleton.html
   context:
     model: sample
     key: api/demo/widget
-    contains: ["{{% docsygen/part id=\"classdemo_1_1Widget\" part=\"decls\" section=\"public-func\" %}}"]
+    contains: ["{{% docsygen/part id=\"classdemo_1_1Widget\" part=\"list\" %}}"]
   expect: []

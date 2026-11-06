@@ -143,23 +143,44 @@
       - 'data-doxygen-id="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4"'
     lacks: [fieldtable]
   expect: []
-- name: docsy markup, a summary table
-  partial: test/block-contains.html
+- name: list line links kind and name, brief plain
+  partial: docsygen/markup/list-line.html
   context:
-    ctx: {model: sample}
-    block: {type: decls, id: classdemo_1_1Widget, key: public-func}
-    contains: ['<table class="docsygen-summary">', '<td class="docsygen-summary-type">', '<td class="docsygen-summary-name">', '<div class="text-body-secondary">']
-    lacks: [memberdecls, memItemLeft, memItemRight, mdescRight, valign, 'memitem:', docsygen-summary-brief, docsygen-summary-template]
+    ctx: {model: sample, links: {classdemo_1_1Widget: /api/demo/widget/}}
+    page: namespacedemo
+    entry: {id: classdemo_1_1Widget, ids: [classdemo_1_1Widget], word: class, name: Widget, count: 0, countKey: "", brief: classdemo_1_1Widget, children: []}
+  expect: '<li><a href="/api/demo/widget/"><code><span class="docsygen-kind text-success-emphasis fw-bold">class</span> Widget</code></a> — A widget.</li>'
+- name: list line of an overload set shows its count
+  partial: docsygen/markup/list-line.html
+  context:
+    ctx: {model: sample, links: {namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc: /api/demo/#to_string}}
+    page: classdemo_1_1Widget
+    entry: {id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, ids: [namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, x], word: function, name: to_string, count: 2, countKey: overloads, brief: false, children: []}
+  expect: '<li><a href="/api/demo/#to_string"><code><span class="docsygen-kind text-primary-emphasis fw-bold">function</span> to_string</code> (2 overloads)</a></li>'
+- name: list line without brief has no dash
+  partial: docsygen/markup/list-line.html
+  context:
+    ctx: {model: sample, links: {classdemo_1_1Widget: /api/demo/widget/}}
+    page: namespacedemo
+    entry: {id: classdemo_1_1Widget, ids: [classdemo_1_1Widget], word: class, name: Widget, count: 0, countKey: "", brief: false, children: []}
+  expect: '<li><a href="/api/demo/widget/"><code><span class="docsygen-kind text-success-emphasis fw-bold">class</span> Widget</code></a></li>'
+- name: list of a namespace, its sub-namespaces first, a thematic group labelled, nested namespaces last
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: list, id: namespacedemo}}
+    contains: ['<span class="docsygen-kind text-warning-emphasis fw-bold">namespace</span> io</code>', '<p class="small text-body-secondary mb-0">Lookup</p><ul class="mb-2"><li>', '<span class="docsygen-kind text-warning-emphasis fw-bold">namespace</span> io::</code>', '<ul class="mb-2"><li>']
   expect: []
-- name: summary, a member is one row
-  partial: test/block-contains.html
+- name: list, a label precedes its bucket
+  partial: test/part-contains.html
   context:
-    ctx: {model: sample}
-    block: {type: decls, id: namespacedemo, key: func}
-    contains:
-      - '<div class="small text-body-secondary">template&lt;Boxable T&gt;</div>box (T v)<div class="text-body-secondary">'
-      - 'Puts a value in a Box.'
-    lacks: ['<tr class="docsygen-summary-brief">', '<tr class="docsygen-summary-template">']
+    part: {model: sample, address: {type: list, id: classdemo_1_1Widget}}
+    contains: ['<p class="small text-body-secondary mb-0">private</p><ul class="mb-2"><li>', '<p class="small text-body-secondary mb-0">static</p><ul class="mb-2"><li>']
+  expect: []
+- name: list, inherited members are labelled with their base
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: list, id: classdemo_1_1LabelledCircle}}
+    contains: ['<p class="small text-body-secondary mb-0">inherited from demo::Circle</p><ul class="mb-2"><li>', '<p class="small text-body-secondary mb-0">inherited from demo::Named</p>']
   expect: []
 - name: docsy markup, a block image is a figure
   partial: test/doc.html

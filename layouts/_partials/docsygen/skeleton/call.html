@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The shortcode call that renders a block in a page's Markdown: {{% docsygen/member id=… %}}
-       for a member, {{% docsygen/part id=… part=… section=… name=… %}} for the
+       for a member, {{% docsygen/part id=… part=… name=… %}} for the
        rest, with the fields of the block's address (docsygen/part/address.html) that are set.
        Usage, in a skeleton: partial "docsygen/skeleton/call.html" $block */ -}}
 {{- $a := partial "docsygen/part/address.html" . -}}
@@ -11,9 +11,9 @@ SPDX-License-Identifier: MIT
   {{- return printf "{{%% docsygen/member id=%q %%}}" $a.id -}}
 {{- end -}}
 {{- $args := slice -}}
-{{- range $f := slice "id" "type" "key" "name" -}}
+{{- range $f := slice "id" "type" "name" -}}
   {{- with index $a $f -}}
-    {{- $args = $args | append (printf "%s=%q" (index (dict "id" "id" "type" "part" "key" "section" "name" "name") $f) .) -}}
+    {{- $args = $args | append (printf "%s=%q" (index (dict "id" "id" "type" "part" "name" "name") $f) .) -}}
   {{- end -}}
 {{- end -}}
 {{- return printf "{{%% docsygen/part %s %%}}" (delimit $args " ") -}}

@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-- name: plan of a class starts with its title and summary links
+- name: plan of a class starts with its title, then its includes
   partial: test/plan.html
   context:
     ctx: {model: sample}
     key: api/demo/widget
     n: 2
-  expect: [{type: title, text: demo::Widget Class Reference}, {type: summary-links, text: ""}]
+  expect: [{type: title, text: demo::Widget Class Reference}, {type: includes, text: ""}]
 - name: plan, a class page has no brief block
   partial: test/plan-types.html
   context:
@@ -28,20 +28,20 @@
     key: api/cpoint
     type: generated-from
   expect: false
-- name: plan, a class whose inherited members all join its own sections has no additional ones
-  partial: test/plan-keys.html
-  context:
-    ctx: {model: sample}
-    key: api/demo/circle
-    type: decls
-  expect: [public-func, public-attrib]
-- name: plan, a class that inherits into a section it lacks has additional inherited members
-  partial: test/plan-keys.html
+- name: plan, a class's declarations are one list, its inherited members included
+  partial: test/plan-types.html
   context:
     ctx: {model: sample}
     key: api/demo/labelledcircle
-    type: decls
-  expect: [public-func, inherited]
+    type: list
+  expect: [list]
+- name: plan, a namespace's declarations are one list
+  partial: test/plan-types.html
+  context:
+    ctx: {model: sample}
+    key: api/demo
+    type: list
+  expect: [list]
 - name: sections of a class, summaries before detailed sections
   partial: test/section-keys.html
   context:

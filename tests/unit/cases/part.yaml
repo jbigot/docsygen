@@ -12,9 +12,9 @@
   partial: test/part.html
   context: {model: sample, key: api/demo/circle, address: {type: diagram, id: classdemo_1_1Circle}}
   expect: true
-- name: part, a summary table of a class is its block's markup
+- name: part, the list of a class is its block's markup
   partial: test/part.html
-  context: {model: sample, key: api/demo/widget, address: {type: decls, id: classdemo_1_1Widget, key: public-func}}
+  context: {model: sample, key: api/demo/widget, address: {type: list, id: classdemo_1_1Widget}}
   expect: true
 - name: part, the member of one overload is its block's markup
   partial: test/part.html

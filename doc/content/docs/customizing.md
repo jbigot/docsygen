@@ -31,12 +31,12 @@ Wording
   arguments are named fields (`{{ .name }}`), and a string that depends on a number has plural
   forms (`one`, `other`).
 
-For example, a class page without its summary tables, in `layouts/_partials/docsygen/skeleton/class.html`:
+For example, a class page without its list of members, in `layouts/_partials/docsygen/skeleton/class.html`:
 
 ```go-html-template
 {{- $out := slice -}}
 {{- range .blocks -}}
-  {{- if not (in (slice "title" "summary-links" "heading" "decls") .type) -}}
+  {{- if not (in (slice "title" "heading" "list") .type) -}}
     {{- $out = $out | append (partial "docsygen/skeleton/call.html" .) -}}
   {{- end -}}
 {{- end -}}

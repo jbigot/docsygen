@@ -106,10 +106,26 @@ docsygen-section-doc-define: Macro Definition Documentation
 
 # The other headings of a page.
 docsygen-detailed-description: Detailed Description
-docsygen-additional-inherited-members: Additional Inherited Members
 docsygen-concept-definition: Concept definition
 docsygen-class-documentation: Class Documentation
 docsygen-source: Source
+
+# The lists of declarations: the size of an overload set or of a variable template's
+# specializations, the labels over the lists, and the name of an anonymous namespace. The base of
+# docsygen-list-inherited-from is HTML, built and escaped by docsygen (a link).
+docsygen-list-overloads:
+  one: "({{ .count }} overload)"
+  other: "({{ .count }} overloads)"
+docsygen-list-specializations:
+  one: "({{ .count }} specialization)"
+  other: "({{ .count }} specializations)"
+docsygen-list-static: static
+docsygen-list-protected: protected
+docsygen-list-private: private
+docsygen-list-package: package
+docsygen-list-related: related
+docsygen-list-inherited-from: "inherited from {{ .base }}"
+docsygen-anonymous: (anonymous)
 
 # The titles of the blocks of a description: the simple sections (@see, @return, …), the parameter
 # lists, and the value of a variable or an enumerator.
@@ -145,7 +161,6 @@ docsygen-reimplemented-from: "Reimplemented from {{ .list }}."
 docsygen-implemented-in: "Implemented in {{ .list }}."
 docsygen-reimplemented-in: "Reimplemented in {{ .list }}."
 docsygen-inheritance-diagram-for: "Inheritance diagram for {{ .name }}:"
-docsygen-inherited-from: "{{ .section }} inherited from {{ .base }}"
 docsygen-go-to-the-documentation-of-this-file: Go to the documentation of this file.
 docsygen-go-to-the-source-code-of-this-file: Go to the source code of this file.
 docsygen-source-link: source

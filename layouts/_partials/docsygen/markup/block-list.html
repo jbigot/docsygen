@@ -1,0 +1,28 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* What a namespace, topic, file, directory or class page lists of its declarations
+       (docsygen/plan/list.html, which docsygen/plan/compound.html puts in the block as list): the
+       direct sub-namespaces or sub-topics first, on their own and by their name alone, then the
+       page's buckets (docsygen/markup/list-buckets.html), sub-namespaces and sub-topics last with
+       their content nested. */ -}}
+{{- $ctx := .ctx -}}
+{{- $b := .block -}}
+{{- $list := $b.list -}}
+{{- $subs := "" -}}
+{{- range $list.subs -}}
+  {{- $sub := . -}}
+  {{- range $list.buckets -}}
+    {{- range .entries -}}
+      {{- if eq .id $sub -}}
+        {{- $entry := dict "id" .id "ids" .ids "word" .word "name" (strings.TrimSuffix "::" .name) "count" 0 "countKey" "" "brief" .brief "children" slice -}}
+        {{- $subs = printf "%s%s" $subs (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $b.id)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<div class="docsygen-list">
+  {{- with $subs }}<ul class="mb-2">{{ . | safeHTML }}</ul><hr>{{ end -}}
+  {{- partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $list.buckets "page" $b.id) -}}
+</div>

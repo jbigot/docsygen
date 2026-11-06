@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The body of docsygen/plan.html. A page that absorbs compounds of other pages (paths.merged)
-       ends with a merged block. */ -}}
+       ends with a merged block, which only that page has. */ -}}
 {{- $blocks := slice -}}
 {{- range .entry.roles -}}
   {{- range partial (printf "docsygen/plan/%s.html" .role) (dict "role" . "entry" $.entry "ctx" $.ctx) -}}
@@ -12,5 +12,5 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $merged := false -}}
 {{- with .ctx.paths -}}{{- range $_, $key := .merged -}}{{- if eq $key $.entry.key -}}{{- $merged = true -}}{{- end -}}{{- end -}}{{- end -}}
-{{- if $merged -}}{{- $blocks = $blocks | append (dict "type" "merged" "key" .entry.key) -}}{{- end -}}
+{{- if $merged -}}{{- $blocks = $blocks | append (dict "type" "merged") -}}{{- end -}}
 {{- return $blocks -}}

@@ -3,9 +3,9 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The blocks of a compound's page, in the order of Doxygen's default layout:
-         title, summary-links, brief, includes, inheritance, diagram, concept-definition, one decls per summary
-         section, description ("Detailed Description"), a section block per section of the
-         description, inline-classes (the embedded classes),
+         title, brief, includes, inheritance, diagram, concept-definition, list (its declarations,
+         docsygen/plan/list.html), description ("Detailed Description"), a section block per
+         section of the description, inline-classes (the embedded classes),
          then each detailed section as a heading block followed by one member block per member,
          and generated-from.
        Blocks that a kind of compound doesn't have are left out. */ -}}
@@ -18,13 +18,6 @@ SPDX-License-Identifier: MIT
 {{- $title := partial "docsygen/plan/title.html" (dict "model" $m "id" $id) -}}
 {{- $blocks := slice (dict "type" "title" "id" $id "text" $title.text "labels" $title.labels
     "groups" (partial "docsygen/plan/groups.html" (dict "model" $m "id" $id))) -}}
-{{- if or $classLike (in (slice "namespace" "file" "group") $kind) -}}
-  {{- $keys := slice -}}
-  {{- range $sections -}}
-    {{- if and (eq .group "summary") (not (hasPrefix .key "user-defined-")) (not .groupsOnly) -}}{{- $keys = $keys | append .key -}}{{- end -}}
-  {{- end -}}
-  {{- with $keys -}}{{- $blocks = $blocks | append (dict "type" "summary-links" "id" $id "anchorKeys" .) -}}{{- end -}}
-{{- end -}}
 {{- if or $classLike (in (slice "file" "concept") $kind) -}}
   {{- $blocks = $blocks | append (dict "type" "includes" "id" $id) -}}
 {{- end -}}
@@ -34,24 +27,13 @@ SPDX-License-Identifier: MIT
 {{- if eq $kind "concept" -}}
   {{- $blocks = $blocks | append (dict "type" "concept-definition" "id" $id "heading" (dict "level" 2 "text" (T "docsygen-concept-definition") "anchorKey" "conceptdef")) -}}
 {{- end -}}
-{{- range $sections -}}
-  {{- if and (eq .group "summary") (not .in) -}}
-    {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
+{{- /* The list of the page's declarations (docsygen/plan/list.html), planned here, once per page:
+       its markup takes it from the block. */ -}}
+{{- if or $classLike (in (slice "namespace" "file" "group" "dir") $kind) -}}
+  {{- $list := partial "docsygen/plan/list.html" (dict "model" $m "id" $id) -}}
+  {{- if or $list.subs $list.buckets -}}
+    {{- $blocks = $blocks | append (dict "type" "list" "id" $id "list" $list) -}}
   {{- end -}}
-{{- end -}}
-{{- /* Members inherited into a summary section the class has join its table: only the others make
-       "Additional Inherited Members" (docsygen/markup/block-decls.html). */ -}}
-{{- $additional := false -}}
-{{- if $classLike -}}
-  {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
-    {{- $key := .key -}}
-    {{- $own := false -}}
-    {{- range $sections -}}{{- if and (eq .group "summary") (eq .key $key) -}}{{- $own = true -}}{{- end -}}{{- end -}}
-    {{- if not $own -}}{{- $additional = true -}}{{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- if $additional -}}
-  {{- $blocks = $blocks | append (dict "type" "decls" "id" $id "key" "inherited" "heading" (dict "level" 2 "text" (T "docsygen-additional-inherited-members") "anchorKey" "inherited")) -}}
 {{- end -}}
 {{- $blocks = $blocks | append (dict "type" "description" "id" $id "part" "detailed"
     "heading" (cond (eq $kind "page") nil (dict "level" 2 "text" (T "docsygen-detailed-description") "anchorKey" "details"))) -}}

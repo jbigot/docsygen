@@ -5,9 +5,8 @@ SPDX-License-Identifier: MIT
 {{- /* One part of a version's reference (docsygen/part.html), in any page.
          item     the item, a name as in doxygen: links (or id, a Doxygen id); none for a list
          part     the block type: brief, includes, inheritance, diagram, concept-definition,
-                  decls, description, section, inline-classes, member, tree,
+                  list, description, section, inline-classes, member, tree,
                   source, generated-from, merged, …
-         section  for decls, the summary section (public-func, …)
          name     for tree, the list
          version  the version (default: the page's, else latest: docsygen/shortcode/ctx.html)
        Usage: {{% docsygen/part item="demo::Widget" part="description" %}} */ -}}
@@ -15,8 +14,6 @@ SPDX-License-Identifier: MIT
 {{- if $s.ok -}}
   {{- $a := dict "type" (.Get "part") -}}
   {{- with $s.id -}}{{- $a = merge $a (dict "id" .) -}}{{- end -}}
-  {{- range $f := slice "section" "name" -}}
-    {{- with $.Get $f -}}{{- $a = merge $a (dict (cond (eq $f "section") "key" $f) (string .)) -}}{{- end -}}
-  {{- end -}}
+  {{- with .Get "name" -}}{{- $a = merge $a (dict "name" (string .)) -}}{{- end -}}
   {{- partial "docsygen/markup/md-safe.html" (partial "docsygen/part.html" (dict "address" $a "ctx" $s.ctx)) -}}
 {{- end -}}

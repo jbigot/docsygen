@@ -1,0 +1,36 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The buckets of a list (docsygen/plan/list.html), one <ul> each, of lines
+       (docsygen/markup/list-line.html), with a small gap between two; a bucket that starts a label
+       follows that label, as a small paragraph: static, protected, private, package, related, a
+       member group's heading, or "inherited from" its base, linked.
+       Usage: partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $buckets "page" $pageId) */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $page := .page -}}
+{{- $out := "" -}}
+{{- $prev := "" -}}
+{{- range .buckets -}}
+  {{- if and .label (ne .label $prev) -}}
+    {{- $label := "" -}}
+    {{- if in (slice "static" "protected" "private" "package" "related") .label -}}
+      {{- $label = T (printf "docsygen-list-%s" .label) -}}
+    {{- else if hasPrefix .label "inherited:" -}}
+      {{- $base := strings.TrimPrefix "inherited:" .label -}}
+      {{- $baseName := htmlEscape (partial "docsygen/plan/display-name.html" (dict "model" $m "id" $base)) -}}
+      {{- $url := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $base) -}}
+      {{- with $url -}}{{- $baseName = printf `<a href="%s">%s</a>` (htmlEscape .) $baseName -}}{{- end -}}
+      {{- $label = T "docsygen-list-inherited-from" (dict "base" $baseName) -}}
+    {{- else -}}
+      {{- $label = htmlEscape .label -}}
+    {{- end -}}
+    {{- $out = printf `%s<p class="small text-body-secondary mb-0">%s</p>` $out $label -}}
+  {{- end -}}
+  {{- $prev = .label -}}
+  {{- $lines := "" -}}
+  {{- range .entries -}}{{- $lines = printf "%s%s" $lines (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" . "page" $page)) -}}{{- end -}}
+  {{- $out = printf `%s<ul class="mb-2">%s</ul>` $out $lines -}}
+{{- end -}}
+{{- return safeHTML $out -}}
