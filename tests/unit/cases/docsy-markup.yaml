@@ -257,46 +257,46 @@
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: list, id: namespacedemo}}
-    contains: ['<div class="docsygen-list"><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::markup</code></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div>', '<p class="small text-body-secondary mb-0">Lookup</p><div class="small text-body-secondary">A member group of one function.</div><ul class="mb-3"><li>', '<code class="text-reset">io::</code></span>', '<ul class="mb-3"><li>']
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::markup</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div>', '<p class="small text-body-secondary mb-0">Lookup</p><div class="small text-body-secondary">A member group of one function.</div><ul class="mb-3"><li>', '<code class="text-reset">io::</code></span>', '<ul class="mb-3"><li>']
   expect: []
 - name: list of a namespace on its page, its sub-namespaces link to their nested entries, which carry the anchors
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api/demo, onPage: true, address: {type: list, id: namespacedemo}}
-    contains: ['<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-io"><code>::demo::io</code></a></span></div>', '<li id="namespace-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
+    contains: ['<div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-io"><code>::demo::io</code></a></span></div>', '<li id="namespace-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
   expect: []
 - name: list of the root namespace on its page, a nested namespace's anchor is named from the root
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api, onPage: true, address: {type: list}}
-    contains: ['<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-demo"><code>::demo</code></a></span></div>', '<li id="namespace-demo"><span class="docsygen-entity">', '<li id="namespace-demo-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
+    contains: ['<div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-demo"><code>::demo</code></a></span></div>', '<li id="namespace-demo"><span class="docsygen-entity">', '<li id="namespace-demo-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
   expect: []
 - name: list of a namespace away from its page, no anchors, its sub-namespaces link to their pages
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: list, id: namespacedemo}}
-    contains: ['<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div>']
+    contains: ['<div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div>']
     lacks: ['id="namespace-', 'href="#namespace-']
   expect: []
 - name: list of a namespace, its own entries follow a line naming it
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api/demo, onPage: true, address: {type: list, id: namespacedemo}}
-    contains: ['<code>::demo::markup</code></a></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div><']
+    contains: ['<code>::demo::markup</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div><']
     lacks: ['<hr>', '<ul class="mb-3"><li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href=']
   expect: []
 - name: "list of the root namespace, its own entries follow a line naming it ::"
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api, onPage: true, address: {type: list}}
-    contains: ['<code>::demo</code></a></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::</code></span></div><ul class="mb-3">']
+    contains: ['<code>::demo</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::</code></span></div><ul class="mb-3">']
     lacks: ['<hr>']
   expect: []
 - name: list of a nested namespace, the line names it in full
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api/demo/io, onPage: true, address: {type: list, id: namespacedemo_1_1io}}
-    contains: ['<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io::</code></span></div><ul class="mb-3">']
+    contains: ['<div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io::</code></span></div><ul class="mb-3">']
   expect: []
 - name: list of a namespace that holds only namespaces, no line naming it
   partial: test/block-contains.html
@@ -310,27 +310,64 @@
         own: 0
         namespace: "::demo::"
         buckets: [{label: "", kind: namespace, description: false, entries: [{id: namespacedemo_1_1io, ids: [namespacedemo_1_1io], word: namespace, name: "io::", count: 0, countKey: "", brief: false, children: []}]}]
-    contains: ['<div class="docsygen-list"><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><ul class="mb-3"><li>']
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><ul class="mb-3"><li>']
     lacks: ['<hr>', '::demo::</code>']
   expect: []
 - name: list of a root that lists namespaces, each on its line by its full name
   partial: test/part-contains.html
   context:
     part: {model: pdi, key: api, onPage: true, address: {type: list}}
-    contains: ['<div class="docsygen-list"><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-pdi"><code>::PDI</code></a></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-std"><code>::std</code></a></span></div><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::</code></span></div>']
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-pdi"><code>::PDI</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-std"><code>::std</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::</code></span></div>']
   expect: []
 - name: list of a root that lists no namespace, no line naming it
   partial: test/part-contains.html
   context:
     part: {model: sample-c, key: api, onPage: true, address: {type: list}}
     contains: ['<div class="docsygen-list"><ul class="mb-3"><li>']
-    lacks: [docsygen-list-namespace, '<hr>']
+    lacks: [docsygen-list-scope, '<hr>']
+  expect: []
+- name: list of a topic on its page, its sub-topics on their lines link to their nested entries, then a line names it
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: topics/cdemo, onPage: true, address: {type: list, id: group__cdemo}}
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <a href="#topic-shapes"><code>The C demo › Shapes</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <code class="text-reset">The C demo</code></span></div><ul class="mb-3"><li>', '<li id="topic-shapes"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <code class="text-reset">Shapes</code></span>']
+    lacks: ['<hr>', '<ul class="mb-3"><li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code>']
+  expect: []
+- name: list of a topic in a C project on its page, the same lines
+  partial: test/part-contains.html
+  context:
+    part: {model: sample-c, key: topics/cdemo, onPage: true, address: {type: list, id: group__cdemo}}
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <a href="#topic-shapes"><code>The C demo › Shapes</code></a></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <code class="text-reset">The C demo</code></span></div><ul class="mb-3"><li>', '<li id="topic-shapes">']
+    lacks: ['<hr>']
+  expect: []
+- name: list of a topic away from its page, no anchors, its sub-topics link to their pages
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: list, id: group__cdemo}}
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> ']
+    lacks: ['id="topic-', 'href="#topic-', '<hr>']
+  expect: []
+- name: list of a topic that holds only topics, no line naming it
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block:
+      type: list
+      id: group__cdemo
+      list:
+        subs: [group__cdemo__shapes]
+        own: 0
+        namespace: ""
+        topic: The C demo
+        buckets: [{label: "", kind: topic, description: false, entries: [{id: group__cdemo__shapes, ids: [group__cdemo__shapes], word: topic, name: Shapes, count: 0, countKey: "", brief: false, children: []}]}]
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-topic fw-bold">topic</code> <code class="text-reset">The C demo › Shapes</code></span></div><ul class="mb-3"><li>']
+    lacks: ['<hr>', '<code class="text-reset">The C demo</code>']
   expect: []
 - name: list of a class, no line naming a namespace
   partial: test/part-contains.html
   context:
     part: {model: sample, key: api/demo/widget, onPage: true, address: {type: list, id: classdemo_1_1Widget}}
-    lacks: [docsygen-list-namespace]
+    lacks: [docsygen-list-scope]
   expect: []
 - name: list, a label precedes its bucket
   partial: test/part-contains.html

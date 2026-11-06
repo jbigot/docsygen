@@ -4,17 +4,19 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* What a namespace, topic, file, directory or class page lists of its declarations
        (docsygen/plan/list.html, which docsygen/plan/compound.html puts in the block as list): the
-       direct sub-namespaces or sub-topics first, on their own and by their name alone, then the
-       page's buckets (docsygen/markup/list-buckets.html), sub-namespaces and sub-topics last with
-       their content nested.
-       On a namespace's list, each sub-namespace is a line of its own, "namespace ::<full name>",
-       then a line names the namespace, "namespace ::<full name>::" (the root's "namespace ::"),
-       when it has entries of its own, and on the root, when it lists namespaces too. Sub-topics
-       are a list, ruled off from the buckets.
-       On its own page, a namespace's list gives each nested namespace's line its anchor
-       (namespace:<id>, docsygen/paths/scheme.html), and a sub-namespace at the top links there.
-       Away from its page (docsygen/part.html), where the scheme can't keep those anchors unique,
-       the lines have none and a sub-namespace at the top links to its own page. */ -}}
+       direct sub-namespaces or sub-topics first, each on a line of its own, then a line naming
+       the namespace or topic, then the page's buckets (docsygen/markup/list-buckets.html),
+       sub-namespaces and sub-topics last with their content nested.
+       On a namespace's list, a sub-namespace's line reads "namespace ::<full name>", the line
+       naming the namespace "namespace ::<full name>::" (the root's "namespace ::"). On a topic's
+       list, a sub-topic's line reads "topic <title> › <sub-topic's title>", the line naming the
+       topic "topic <title>". The line naming it comes when it has entries of its own, and on the
+       root, when it lists namespaces too.
+       On its own page, a namespace's or topic's list gives each nested namespace's or sub-topic's
+       line its anchor (namespace:<id> or topic:<id>, docsygen/paths/scheme.html), and a line at
+       the top links there. Away from its page (docsygen/part.html), where the scheme can't keep
+       those anchors unique, the nested lines have none and a line at the top links to the
+       namespace's or sub-topic's own page. */ -}}
 {{- $ctx := .ctx -}}
 {{- $b := .block -}}
 {{- $list := $b.list -}}
@@ -22,38 +24,37 @@ SPDX-License-Identifier: MIT
 {{- if and (not $b.away) $ctx.paths $ctx.key -}}
   {{- $anchors = index $ctx.paths.anchors $ctx.key | default dict -}}
 {{- end -}}
-{{- /* A namespace line: the word in the namespace kind's colour, then the name, linked when .url is
-       not "". Codes in a span inside a div: Docsy gives the inline-code background to code directly
+{{- /* A line at the top: the word in its kind's colour, then the name, linked when .url is not
+       "". Codes in a span inside a div: Docsy gives the inline-code background to code directly
        in a paragraph or a list item. */ -}}
-{{- $line := `<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> %s</span></div>` -}}
+{{- $line := `<div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-%s fw-bold">%s</code> %s</span></div>` -}}
 {{- $lines := "" -}}
-{{- $topics := "" -}}
 {{- range $list.subs -}}
   {{- $sub := . -}}
   {{- range $list.buckets -}}
     {{- range .entries -}}
       {{- if eq .id $sub -}}
+        {{- $name := printf "%s › %s" $list.topic .name -}}
+        {{- if eq .word "namespace" -}}{{- $name = printf "::%s" (index $ctx.model.ids .id).name -}}{{- end -}}
         {{- $url := "" -}}
-        {{- with index $anchors (printf "namespace:%s" .id) -}}{{- $url = printf "%s#%s" (index ($ctx.urls | default dict) $ctx.key | default "") . -}}{{- end -}}
-        {{- if eq .word "namespace" -}}
-          {{- $name := printf "::%s" (index $ctx.model.ids .id).name -}}
-          {{- $url = $url | default (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id)) -}}
-          {{- $code := cond (ne $url "") (printf `<a href="%s"><code>%s</code></a>` (htmlEscape $url) (htmlEscape $name)) (printf `<code class="text-reset">%s</code>` (htmlEscape $name)) -}}
-          {{- $lines = printf "%s%s" $lines (printf $line $code) -}}
-        {{- else -}}
-          {{- $entry := dict "id" .id "ids" .ids "word" .word "name" .name "count" 0 "countKey" "" "brief" .brief "children" slice -}}
-          {{- $topics = printf "%s%s" $topics (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $b.id "url" $url)) -}}
-        {{- end -}}
+        {{- with index $anchors (printf "%s:%s" .word .id) -}}{{- $url = printf "%s#%s" (index ($ctx.urls | default dict) $ctx.key | default "") . -}}{{- end -}}
+        {{- $url = $url | default (partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" .id)) -}}
+        {{- $code := cond (ne $url "") (printf `<a href="%s"><code>%s</code></a>` (htmlEscape $url) (htmlEscape $name)) (printf `<code class="text-reset">%s</code>` (htmlEscape $name)) -}}
+        {{- $lines = printf "%s%s" $lines (printf $line .word .word $code) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if and $list.namespace (gt ($list.own | default 0) 0) -}}
-  {{- $name := replace $list.namespace "(anonymous)" (T "docsygen-anonymous") -}}
-  {{- $lines = printf "%s%s" $lines (printf $line (printf `<code class="text-reset">%s</code>` (htmlEscape $name))) -}}
+{{- if gt ($list.own | default 0) 0 -}}
+  {{- with $list.namespace -}}
+    {{- $name := replace . "(anonymous)" (T "docsygen-anonymous") -}}
+    {{- $lines = printf "%s%s" $lines (printf $line "namespace" "namespace" (printf `<code class="text-reset">%s</code>` (htmlEscape $name))) -}}
+  {{- end -}}
+  {{- with $list.topic -}}
+    {{- $lines = printf "%s%s" $lines (printf $line "topic" "topic" (printf `<code class="text-reset">%s</code>` (htmlEscape .))) -}}
+  {{- end -}}
 {{- end -}}
 <div class="docsygen-list">
-  {{- with $topics }}<ul class="mb-3">{{ . | safeHTML }}</ul><hr>{{ end -}}
   {{- with $lines }}{{ . | safeHTML }}{{ end -}}
   {{- partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $list.buckets "page" $b.id "anchors" $anchors) -}}
 </div>

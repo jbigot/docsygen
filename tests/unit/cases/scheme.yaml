@@ -67,6 +67,11 @@
   context: {model: sample}
   select: [paths, anchors, api, 'namespace:namespacedemo_1_1io']
   expect: namespace-demo-io
+- name: scheme, a sub-topic's anchor on its parent topic's page
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, topics/cdemo, 'topic:group__cdemo__shapes']
+  expect: topic-shapes
 - name: scheme, a set's members keep their anchors
   partial: test/paths.html
   context: {model: sample}

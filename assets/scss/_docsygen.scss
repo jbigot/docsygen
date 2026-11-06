@@ -63,9 +63,9 @@
   color: var(--bs-secondary-color);
 }
 
-// A namespace page's lines naming its sub-namespaces and itself: each spaced as the kind lists are
-// from one another, but by half.
-.docsygen-list-namespace {
+// The lines at the top of a namespace's or topic's list, naming its sub-namespaces or sub-topics
+// and itself: each spaced as the kind lists are from one another, but by half.
+.docsygen-list-scope {
   margin-bottom: 0.5rem;
 }
 

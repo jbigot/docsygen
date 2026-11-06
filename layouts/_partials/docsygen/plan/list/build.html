@@ -217,4 +217,10 @@ SPDX-License-Identifier: MIT
   {{- else if gt (len $buckets) $own -}}{{- $namespace = "::" -}}
   {{- end -}}
 {{- end -}}
-{{- return dict "subs" $subs "buckets" $buckets "own" $own "namespace" $namespace -}}
+{{- /* A topic's title, its name when it has none, as its sub-topics' entries name them. */ -}}
+{{- $topic := "" -}}
+{{- if eq $kind "group" -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $topic = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+  {{- $topic = $topic | default $e.name -}}
+{{- end -}}
+{{- return dict "subs" $subs "buckets" $buckets "own" $own "namespace" $namespace "topic" $topic -}}

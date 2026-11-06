@@ -30,7 +30,9 @@ SPDX-License-Identifier: MIT
        kept with the fixed ones as overloads:<id>: docsygen/plan/overloads/parts.html), then on a
        namespace's page (the root's included) the namespaces its list nests, at any depth
        (namespace-<names from the page's namespace down, joined by ->, "anonymous" for an
-       anonymous one; kept with the fixed ones as namespace:<id>). An anchor
+       anonymous one; kept with the fixed ones as namespace:<id>), and on a topic's page the
+       sub-topics its list nests, at any depth (topic-<titles from the page's topic down,
+       joined by ->; kept as topic:<id>). An anchor
        is docsygen/text/anchor.html of its name, as Hugo names a heading, with -1, -2, … on a
        collision, as goldmark numbers duplicate heading ids; a page's path segment takes -2, ….
        Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
@@ -48,14 +50,15 @@ SPDX-License-Identifier: MIT
   {{- .s.SetInMap "used" (printf "%s|%s" .page $a) true -}}
   {{- return $a -}}
 {{- end -}}
-{{- define "_partials/docsygen/paths/scheme/namespaces.html" -}}
-  {{- /* The namespaces under namespace .id ("" for the root) in .children ({id: [ids]}), at any
-         depth, as [{id, names}], names the segments from .id down, depth first. */ -}}
+{{- define "_partials/docsygen/paths/scheme/nested.html" -}}
+  {{- /* The namespaces under namespace .id ("" for the root), or the topics under topic .id, in
+         .children ({id: [ids]}), at any depth, as [{id, names}], names the segments
+         (.segments: {id: segment}) from .id down, depth first. */ -}}
   {{- $out := slice -}}
   {{- range index .children .id -}}
     {{- $names := $.names | append (index $.segments .) -}}
     {{- $out = $out | append (dict "id" . "names" $names) -}}
-    {{- range partial "docsygen/paths/scheme/namespaces.html" (dict "children" $.children "segments" $.segments "id" . "names" $names) -}}
+    {{- range partial "docsygen/paths/scheme/nested.html" (dict "children" $.children "segments" $.segments "id" . "names" $names) -}}
       {{- $out = $out | append . -}}
     {{- end -}}
   {{- end -}}
@@ -447,6 +450,24 @@ SPDX-License-Identifier: MIT
     {{- $nsSegments.Set $id (cond (ne $e.name "") (index (split $e.name "::") (sub (len (split $e.name "::")) 1)) "anonymous") -}}
   {{- end -}}
 {{- end -}}
+{{- /* The sub-topics that a topic's list nests: its inner groups, by title (their name without one). */ -}}
+{{- $topicChildren := newScratch -}}
+{{- $topicSegments := newScratch -}}
+{{- range $id := $m.order -}}
+  {{- $e := index $m.ids $id -}}
+  {{- if eq $e.kind "group" -}}
+    {{- $title := "" -}}
+    {{- range $e.node.children -}}
+      {{- if reflect.IsMap . -}}
+        {{- if and (eq .tag "innergroup") (eq (index $m.ids .attributes.refid | default dict).kind "group") -}}
+          {{- $topicChildren.Set $id (($topicChildren.Get $id | default slice) | append .attributes.refid) -}}
+        {{- else if eq .tag "title" -}}{{- $title = partial "docsygen/text/plain.html" . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $topicSegments.Set $id ($title | default $e.name) -}}
+  {{- end -}}
+{{- end -}}
 {{- $withIds := newScratch -}}
 {{- range $id, $e := $m.ids -}}{{- if in (slice "section" "anchor" "xrefsect") $e.what -}}{{- $withIds.Set $e.home true -}}{{- end -}}{{- end -}}
 {{- /* The members a file documents, global entities of no topic, are documented on the root
@@ -559,15 +580,23 @@ SPDX-License-Identifier: MIT
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- /* The namespaces that its list nests, on a namespace's page, after every other anchor. */ -}}
+  {{- /* The namespaces that its list nests, on a namespace's page, or the sub-topics, on a
+         topic's page, after every other anchor. */ -}}
   {{- range index ($s.Get "roles") $key -}}
-    {{- $isNs := or (eq .role "namespace-root") (and (eq .role "compound") (eq (index $m.ids .id).kind "namespace")) -}}
-    {{- $ns := cond (eq .role "compound") .id "" -}}
-    {{- if $isNs -}}
-      {{- range partial "docsygen/paths/scheme/namespaces.html" (dict "children" $nsChildren.Values "segments" $nsSegments.Values "id" $ns "names" slice) -}}
-        {{- if not (index ($s.Get "anchor") (printf "%s\x00namespace:%s" $key .id)) -}}
-          {{- $s.SetInMap "anchor" (printf "%s\x00namespace:%s" $key .id) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key
-              "base" (partial "docsygen/text/anchor.html" (printf "namespace %s" (delimit .names " "))) "first" 1)) -}}
+    {{- $word := "" -}}
+    {{- $tree := dict -}}
+    {{- if or (eq .role "namespace-root") (and (eq .role "compound") (eq (index $m.ids .id).kind "namespace")) -}}
+      {{- $word = "namespace" -}}
+      {{- $tree = dict "children" $nsChildren.Values "segments" $nsSegments.Values "id" (cond (eq .role "compound") .id "") "names" slice -}}
+    {{- else if and (eq .role "compound") (eq (index $m.ids .id).kind "group") -}}
+      {{- $word = "topic" -}}
+      {{- $tree = dict "children" $topicChildren.Values "segments" $topicSegments.Values "id" .id "names" slice -}}
+    {{- end -}}
+    {{- if $word -}}
+      {{- range partial "docsygen/paths/scheme/nested.html" $tree -}}
+        {{- if not (index ($s.Get "anchor") (printf "%s\x00%s:%s" $key $word .id)) -}}
+          {{- $s.SetInMap "anchor" (printf "%s\x00%s:%s" $key $word .id) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key
+              "base" (partial "docsygen/text/anchor.html" (printf "%s %s" $word (delimit .names " "))) "first" 1)) -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
