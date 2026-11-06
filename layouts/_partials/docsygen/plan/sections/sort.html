@@ -2,7 +2,8 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* The members .ids of a detailed section in the order of Doxygen's: SORT_MEMBER_DOCS sorts them
+{{- /* The members .ids of a detailed section in the order of Doxygen's, a class's constructors and
+       destructor first (Doxygen gives them a section of their own): SORT_MEMBER_DOCS sorts them
        by name, ignoring case, keeping the order of equal names; without it, a class's (.class)
        keep the order of declaration, across protection levels (the XML groups members by
        protection), and the others their order in .ids.
@@ -20,7 +21,13 @@ SPDX-License-Identifier: MIT
     {{- range $member.node.children -}}
       {{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $line = int (.attributes.line | default 0) -}}{{- $column = int (.attributes.column | default 0) -}}{{- end -}}
     {{- end -}}
-    {{- $keyed = $keyed | append (dict "id" $id "key" (cond $sort $name (add (mul $line 1000000) $column))) -}}
+    {{- /* A class's constructors first, then its destructor. */ -}}
+    {{- $rank := 2 -}}
+    {{- if $.class -}}
+      {{- $what := partial "docsygen/plan/constructor.html" (dict "model" $m "id" $id) -}}
+      {{- if eq $what "constructor" -}}{{- $rank = 0 -}}{{- else if eq $what "destructor" -}}{{- $rank = 1 -}}{{- end -}}
+    {{- end -}}
+    {{- $keyed = $keyed | append (dict "id" $id "key" (cond $sort (printf "%d %s" $rank $name) (add (mul $rank 1000000000000) (mul $line 1000000) $column))) -}}
   {{- end -}}
   {{- $out = slice -}}
   {{- range sort $keyed "key" -}}{{- $out = $out | append .id -}}{{- end -}}

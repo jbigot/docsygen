@@ -130,9 +130,9 @@ SPDX-License-Identifier: MIT
     {{- if and (eq $member.home $.id) (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .)) -}}
       {{- $name := index (split $member.name "::") (sub (len (split $member.name "::")) 1) -}}
       {{- $key := "" -}}
-      {{- if or (eq $member.kind "friend") (eq $section "related") -}}{{- $key = "doc-related" -}}
-      {{- else if in (slice "function" "slot" "signal") $member.kind -}}
-        {{- $key = cond (partial "docsygen/plan/constructor.html" (dict "model" $m "id" .)) "doc-constructor" "doc-function" -}}
+      {{- if eq $member.kind "friend" -}}{{- $key = "doc-friend" -}}
+      {{- else if eq $section "related" -}}{{- $key = "doc-related" -}}
+      {{- else if in (slice "function" "slot" "signal") $member.kind -}}{{- $key = "doc-function" -}}
       {{- else if eq $member.kind "variable" -}}{{- $key = "doc-variable" -}}
       {{- else if in (slice "typedef" "enum" "define" "property" "event") $member.kind -}}{{- $key = printf "doc-%s" $member.kind -}}
       {{- end -}}
@@ -141,7 +141,7 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- $docOrder := cond $isClass
-    (slice "doc-typedef" "doc-enum" "doc-constructor" "doc-function" "doc-related" "doc-variable" "doc-property" "doc-event")
+    (slice "doc-typedef" "doc-enum" "doc-function" "doc-friend" "doc-related" "doc-variable" "doc-property" "doc-event")
     (slice "doc-define" "doc-typedef" "doc-enum" "doc-function" "doc-variable" "doc-property" "doc-event") -}}
 {{- /* Each detailed section in Doxygen's order (docsygen/plan/sections/sort.html). */ -}}
 {{- range $docOrder -}}

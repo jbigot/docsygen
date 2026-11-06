@@ -26,7 +26,7 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Member Function Documentation {#doc-function}\n\n### ", " {#resize .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
+    contains: ["## Functions {#doc-function}\n\n### ", " {#resize .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
   expect: []
 - name: skeleton of a class, anchor of each overload in a set, the set's on its heading
   partial: test/skeleton.html
@@ -50,7 +50,7 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Member Function Documentation {#doc-function}\n\n### "]
+    contains: ["## Functions {#doc-function}\n\n### "]
   expect: []
 - name: skeleton of a class, its list is one part
   partial: test/skeleton.html

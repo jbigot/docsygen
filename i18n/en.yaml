@@ -40,22 +40,18 @@ docsygen-api: API
 docsygen-indexes: Indexes
 docsygen-other: Other
 
-# The headings of the detailed sections (doc-…) of a page; -c: with OPTIMIZE_OUTPUT_FOR_C;
-# -class: on a class's page.
-docsygen-section-doc-typedef: Typedef Documentation
-docsygen-section-doc-typedef-class: Member Typedef Documentation
-docsygen-section-doc-enum: Enumeration Type Documentation
-docsygen-section-doc-enum-class: Member Enumeration Documentation
-docsygen-section-doc-constructor: "Constructor & Destructor Documentation"
-docsygen-section-doc-function: Function Documentation
-docsygen-section-doc-function-class: Member Function Documentation
-docsygen-section-doc-related: Friends And Related Symbol Documentation
-docsygen-section-doc-variable: Variable Documentation
-docsygen-section-doc-variable-class: Member Data Documentation
-docsygen-section-doc-variable-class-c: Field Documentation
-docsygen-section-doc-property: Property Documentation
-docsygen-section-doc-event: Event Documentation
-docsygen-section-doc-define: Macro Definition Documentation
+# The headings of the detailed sections (doc-…) of a page, by kind; -c: a class's variables with
+# OPTIMIZE_OUTPUT_FOR_C.
+docsygen-section-doc-define: Macros
+docsygen-section-doc-typedef: Typedefs
+docsygen-section-doc-enum: Enums
+docsygen-section-doc-function: Functions
+docsygen-section-doc-friend: Friends
+docsygen-section-doc-related: Related
+docsygen-section-doc-variable: Variables
+docsygen-section-doc-variable-c: Fields
+docsygen-section-doc-property: Properties
+docsygen-section-doc-event: Events
 
 # The other headings of a page.
 docsygen-detailed-description: Detailed Description

@@ -8,9 +8,9 @@ SPDX-License-Identifier: MIT
          key       the sectiondef kind (public-func, func, …), inner-<kind> for a list of inner
                    compounds (inner-class, inner-namespace, inner-concept, inner-group,
                    inner-dir, inner-file), user-defined-N for the Nth member group, and
-                   doc-<kind> for the detailed documentation of members (doc-constructor,
-                   doc-function, doc-related, doc-variable, doc-typedef, doc-enum, doc-define,
-                   doc-property, doc-event)
+                   doc-<kind> for the detailed documentation of members (doc-function, with
+                   a class's constructors and destructor first, doc-friend, doc-related,
+                   doc-variable, doc-typedef, doc-enum, doc-define, doc-property, doc-event)
          heading   a member group's header, or a detailed section's heading
                    (docsygen/plan/section-heading.html); none for the other summary sections
          description  a member group's description node, or false

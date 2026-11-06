@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: MIT
 # A site's rewording of docsygen's strings: a plain one and a section heading.
 docsygen-implemented-in: "Overridden in {{ .list }}."
-docsygen-section-doc-function-class: "Methods"
+docsygen-section-doc-function: "Methods"

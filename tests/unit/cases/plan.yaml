@@ -48,7 +48,7 @@
     model: sample
     id: classdemo_1_1Widget
   expect: [public-func, public-static-func, public-attrib, public-static-attrib, protected-attrib, private-attrib,
-    friend, related, user-defined-1, doc-constructor, doc-function, doc-related, doc-variable]
+    friend, related, user-defined-1, doc-function, doc-friend, doc-related, doc-variable]
 - name: sections of a namespace
   partial: test/section-keys.html
   context:
@@ -112,12 +112,24 @@
   context: {model: sample}
   select: [uses, classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd]
   expect: [{example: example_8cpp-example, line: 6}]
-- name: SORT_MEMBER_DOCS sorts as Hugo's sort does, a destructor next to its constructor
+- name: a class's functions, its constructors first, then its destructor, then the others as SORT_MEMBER_DOCS sorts them
   partial: docsygen/plan/sections.html
   context: {model: sample, id: classdemo_1_1Widget}
   select: [9, members]
-  expect: [classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d, classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8,
-    classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788, classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9]
+  expect: [classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8, classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788,
+    classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9, classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d,
+    classdemo_1_1Widget_1a431d79300208104754f388e5f57e18d0, classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb,
+    classdemo_1_1Widget_1af76c892d06fe12a680b3460309fcaa0a, classdemo_1_1Widget_1aa43e271c95527243fd7d425e75f2d089,
+    classdemo_1_1Widget_1a120d0cbef27752545b762c709536b6cb, classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b,
+    classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca,
+    classdemo_1_1Widget_1ace6fb1a73735e7741e9e95a1c8a8bc8c, classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88]
+- name: detailed sections are named by kind, a class's friends apart from its related symbols
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/widget
+    contains: ["## Functions {#doc-function}", "## Friends {#doc-friend}", "## Related {#doc-related}", "## Variables {#doc-variable}"]
+  expect: []
 - name: overload set from a member group
   partial: test/overload.html
   context: {model: sample, id: namespacedemo, member: namespacedemo_1a74dde8fb93acece1f0b63c36266558d1}

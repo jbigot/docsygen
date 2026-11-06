@@ -2,13 +2,11 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* The heading of a detailed section of a page (translator_en.h), by key (doc-function, …), for
-       the page of a compound of kind .kind. It is the i18n key docsygen-section-<key>, followed by
-       -class for the headings that say "Member" on a class's page, and -c for
-       OPTIMIZE_OUTPUT_FOR_C's wording.
+{{- /* The heading of a detailed section of a page, by key (doc-function, …), for the page of a
+       compound of kind .kind: the i18n key docsygen-section-<key>, the kind's plain name
+       (Functions, Variables, …), followed by -c for a class's variables under
+       OPTIMIZE_OUTPUT_FOR_C (Fields).
        Usage: partial "docsygen/plan/section-heading.html" (dict "model" $model "key" "doc-function" "kind" "class") */ -}}
 {{- $cmode := eq (index ((index .model.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
-{{- $class := and (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") .kind)
-    (in (slice "doc-typedef" "doc-enum" "doc-function" "doc-variable") .key) -}}
-{{- $c := and $cmode $class (eq .key "doc-variable") -}}
-{{- return T (printf "docsygen-section-%s%s%s" .key (cond $class "-class" "") (cond $c "-c" "")) -}}
+{{- $class := in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") .kind -}}
+{{- return T (printf "docsygen-section-%s%s" .key (cond (and $cmode $class (eq .key "doc-variable")) "-c" "")) -}}
