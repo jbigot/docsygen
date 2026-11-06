@@ -9,9 +9,27 @@
 <para>The same example in several languages.</para>
 <para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C source code: <programlisting filename=".C"><codeline><highlight class="normal">demo_widget*<sp/>w<sp/>=<sp/>demo_make_widget();</highlight></codeline>
 <codeline><highlight class="normal">demo_resize(w,<sp/>3,<sp/>4);</highlight></codeline>
-</programlisting> <anchor id="variants_1sample_ex-Fortran"/>Fortran source code: <programlisting filename=".f"><codeline><highlight class="normal">w<sp/>=<sp/>make_widget()</highlight></codeline>
+</programlisting></para>
+<para><anchor id="variants_1sample_ex-Fortran"/>Fortran source code: <programlisting filename=".f"><codeline><highlight class="normal">w<sp/>=<sp/>make_widget()</highlight></codeline>
 <codeline><highlight class="normal"></highlight><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%resize(3,<sp/>4)</highlight></codeline>
 </programlisting></para>
+<para>The same, with the variants in one paragraph.</para>
+<para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_shared-C"/>C source code: <programlisting filename=".C"><codeline><highlight class="normal">demo_resize(w,<sp/>5,<sp/>6);</highlight></codeline>
+</programlisting> <anchor id="variants_1sample_shared-Fortran"/>Fortran source code: <programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%resize(5,<sp/>6)</highlight></codeline>
+</programlisting></para>
+<para>Variants of two paragraphs each.</para>
+<para><anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1sample_pb-C"/>C source code: <programlisting filename=".C"><codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+</programlisting></para>
+<para>is the same as: <programlisting filename=".C"><codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+<codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
+</programlisting> </para>
+</parblock></para>
+<para><parblock><para><anchor id="variants_1sample_pb-Fortran"/>Fortran source code: <programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%resize(7,<sp/>8)</highlight></codeline>
+</programlisting></para>
+<para>is the same as: <programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%resize(7,<sp/>8)</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">call<sp/></highlight><highlight class="normal">unused(w)</highlight></codeline>
+</programlisting> </para>
+</parblock></para>
 <para>A second group, from files.</para>
 <para><anchor id="variants_1sample_inc"/><anchor id="variants_1sample_inc-C"/>C++ source code: <programlisting filename="example.cpp"><codeline><highlight class="comment">//<sp/>Builds<sp/>a<sp/>widget<sp/>and<sp/>resizes<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
 <codeline><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="widget_8hpp" kindref="compound">demo/widget.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>

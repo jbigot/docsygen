@@ -9,12 +9,58 @@ C source code:
 demo_widget* w = demo_make_widget();
 demo_resize(w, 3, 4);
 ```
+
 @anchor sample_ex-Fortran
 Fortran source code:
 ```Fortran
 w = make_widget()
 call w%resize(3, 4)
 ```
+
+The same, with the variants in one paragraph.
+
+@anchor sample_shared
+@anchor sample_shared-C
+C source code:
+```C
+demo_resize(w, 5, 6);
+```
+@anchor sample_shared-Fortran
+Fortran source code:
+```Fortran
+call w%resize(5, 6)
+```
+
+Variants of two paragraphs each.
+
+@anchor sample_pb
+@parblock
+@anchor sample_pb-C
+C source code:
+```C
+demo_resize(w, 7, 8);
+```
+
+is the same as:
+```C
+demo_resize(w, 7, 8);
+demo_unused(w);
+```
+@endparblock
+
+@parblock
+@anchor sample_pb-Fortran
+Fortran source code:
+```Fortran
+call w%resize(7, 8)
+```
+
+is the same as:
+```Fortran
+call w%resize(7, 8)
+call unused(w)
+```
+@endparblock
 
 A second group, from files.
 

@@ -18,12 +18,58 @@
 <codeline><highlight class="normal">demo_widget*<sp/>w<sp/>=<sp/>demo_make_widget();</highlight></codeline>
 <codeline><highlight class="normal">demo_resize(w,<sp/>3,<sp/>4);</highlight></codeline>
 <codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">@anchor<sp/>sample_ex-Fortran</highlight></codeline>
 <codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
 <codeline><highlight class="normal">```Fortran</highlight></codeline>
 <codeline><highlight class="normal">w<sp/>=<sp/>make_widget()</highlight></codeline>
 <codeline><highlight class="normal">call<sp/>w%resize(3,<sp/>4)</highlight></codeline>
 <codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>same,<sp/>with<sp/>the<sp/>variants<sp/>in<sp/>one<sp/>paragraph.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>5,<sp/>6);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(5,<sp/>6)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Variants<sp/>of<sp/>two<sp/>paragraphs<sp/>each.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb</highlight></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">is<sp/>the<sp/>same<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+<codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(7,<sp/>8)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">is<sp/>the<sp/>same<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(7,<sp/>8)</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>unused(w)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">A<sp/>second<sp/>group,<sp/>from<sp/>files.</highlight></codeline>
 <codeline></codeline>
