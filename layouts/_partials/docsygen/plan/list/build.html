@@ -164,6 +164,7 @@ SPDX-License-Identifier: MIT
     (slice "concept" "type" "function" "variable" "macro" "friend" "namespace" "file" "dir") -}}
 {{- $buckets := partial "docsygen/plan/list/group.html" (dict "items" $items "labels" $labels "kinds" $kinds "descriptions" $descriptions.Values) -}}
 
+{{- $own := len $buckets -}}
 {{- /* The nested namespaces or sub-topics, last, by name, the anonymous ones after the others. */ -}}
 {{- if $nested -}}
   {{- $named := slice -}}
@@ -204,4 +205,12 @@ SPDX-License-Identifier: MIT
   {{- range $entries -}}{{- if in $subs .id -}}{{- $sorted = $sorted | append .id -}}{{- end -}}{{- end -}}
   {{- $subs = $sorted -}}
 {{- end -}}
-{{- return dict "subs" $subs "buckets" $buckets -}}
+{{- /* A namespace's qualified name and "::", an anonymous one's "<scope>::(anonymous)::". */ -}}
+{{- $namespace := "" -}}
+{{- if eq $kind "namespace" -}}
+  {{- $namespace = printf "%s::" ($e.name | default "") -}}
+  {{- if and $id (not $e.name) -}}
+    {{- $namespace = strings.TrimPrefix "::" (printf "%s::(anonymous)::" (partial "docsygen/plan/list/anonymous-scope.html" $e)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "subs" $subs "buckets" $buckets "own" $own "namespace" $namespace -}}

@@ -52,6 +52,21 @@
   context: {model: sample}
   select: [paths, anchors, api/demo, 'overloads:namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c']
   expect: size_of-specializations
+- name: scheme, a nested namespace's anchor on its parent namespace's page
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api/demo, 'namespace:namespacedemo_1_1io']
+  expect: namespace-io
+- name: scheme, a namespace's anchor on the root namespace's page
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api, 'namespace:namespacedemo']
+  expect: namespace-demo
+- name: scheme, a nested namespace's anchor on the root namespace's page, by its name from there
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api, 'namespace:namespacedemo_1_1io']
+  expect: namespace-demo-io
 - name: scheme, a set's members keep their anchors
   partial: test/paths.html
   context: {model: sample}

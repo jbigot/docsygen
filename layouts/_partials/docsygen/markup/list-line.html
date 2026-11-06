@@ -8,8 +8,9 @@ SPDX-License-Identifier: MIT
        size of a set, and the brief as plain text after a dash (left out with the dash when there is none),
        then the buckets nested under the entry. A member that the page documents nowhere else
        (its target is .ctx.key's page, or without one, its home is .page) gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
-       such an enum.
-       Usage: partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $pageId) */ -}}
+       such an enum. A nested namespace's line carries its anchor from .anchors ({namespace:<id>:
+       anchor}, default none), and .url (default the entity's) replaces the name's link.
+       Usage: partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $pageId "anchors" $anchors "url" "") */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $en := .entry -}}
@@ -30,6 +31,7 @@ SPDX-License-Identifier: MIT
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- with .url -}}{{- $url = . -}}{{- end -}}
 {{- /* A file without a page of its own (its source page only) isn't linked. */ -}}
 {{- if and $ctx.paths (eq (index $m.ids $en.id).kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $en.id))))) -}}{{- $url = "" -}}{{- end -}}
 {{- /* Only the name is the link, underlined as the site's other links, the kind's word in its
@@ -70,5 +72,10 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- with $brief -}}{{- $text = printf "%s — %s" $text . -}}{{- end -}}
 {{- $children := "" -}}
-{{- with $en.children -}}{{- $children = partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" . "page" $page) -}}{{- end -}}
-{{- return safeHTML (printf "<li>%s%s%s</li>" $marks $text $children) -}}
+{{- $anchors := .anchors | default dict -}}
+{{- with $en.children -}}{{- $children = partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" . "page" $page "anchors" $anchors) -}}{{- end -}}
+{{- $li := "<li>" -}}
+{{- if eq $en.word "namespace" -}}
+  {{- with index $anchors (printf "namespace:%s" $en.id) -}}{{- $li = printf `<li id="%s">` (htmlEscape .) -}}{{- end -}}
+{{- end -}}
+{{- return safeHTML (printf "%s%s%s%s</li>" $li $marks $text $children) -}}

@@ -6,10 +6,19 @@ SPDX-License-Identifier: MIT
        (docsygen/plan/list.html, which docsygen/plan/compound.html puts in the block as list): the
        direct sub-namespaces or sub-topics first, on their own and by their name alone, then the
        page's buckets (docsygen/markup/list-buckets.html), sub-namespaces and sub-topics last with
-       their content nested. */ -}}
+       their content nested. On a namespace's list, a line naming the namespace, "namespace
+       <name>::", precedes its own buckets, when it has any.
+       On its own page, a namespace's list gives each nested namespace's line its anchor
+       (namespace:<id>, docsygen/paths/scheme.html), and a sub-namespace at the top links there.
+       Away from its page (docsygen/part.html), where the scheme can't keep those anchors unique,
+       the lines have none and a sub-namespace at the top links to its own page. */ -}}
 {{- $ctx := .ctx -}}
 {{- $b := .block -}}
 {{- $list := $b.list -}}
+{{- $anchors := dict -}}
+{{- if and (not $b.away) $ctx.paths $ctx.key -}}
+  {{- $anchors = index $ctx.paths.anchors $ctx.key | default dict -}}
+{{- end -}}
 {{- $subs := "" -}}
 {{- range $list.subs -}}
   {{- $sub := . -}}
@@ -17,12 +26,22 @@ SPDX-License-Identifier: MIT
     {{- range .entries -}}
       {{- if eq .id $sub -}}
         {{- $entry := dict "id" .id "ids" .ids "word" .word "name" (strings.TrimSuffix "::" .name) "count" 0 "countKey" "" "brief" .brief "children" slice -}}
-        {{- $subs = printf "%s%s" $subs (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $b.id)) -}}
+        {{- $url := "" -}}
+        {{- with index $anchors (printf "namespace:%s" .id) -}}{{- $url = printf "%s#%s" (index ($ctx.urls | default dict) $ctx.key | default "") . -}}{{- end -}}
+        {{- $subs = printf "%s%s" $subs (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $b.id "url" $url)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- /* The namespace's name, as a list line's, code in a span: Docsy gives the inline-code background
+       to code directly in a paragraph or a list item. */ -}}
+{{- $scope := "" -}}
+{{- if and $list.namespace (gt ($list.own | default 0) 0) -}}
+  {{- $name := replace $list.namespace "(anonymous)" (T "docsygen-anonymous") -}}
+  {{- $scope = printf `<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">%s</code></span></div>` (htmlEscape $name) -}}
+{{- end -}}
 <div class="docsygen-list">
   {{- with $subs }}<ul class="mb-3">{{ . | safeHTML }}</ul><hr>{{ end -}}
-  {{- partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $list.buckets "page" $b.id) -}}
+  {{- $scope | safeHTML -}}
+  {{- partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $list.buckets "page" $b.id "anchors" $anchors) -}}
 </div>

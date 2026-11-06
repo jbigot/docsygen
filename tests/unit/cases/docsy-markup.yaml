@@ -259,6 +259,64 @@
     part: {model: sample, address: {type: list, id: namespacedemo}}
     contains: ['<code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io</code></span>', '<p class="small text-body-secondary mb-0">Lookup</p><div class="small text-body-secondary">A member group of one function.</div><ul class="mb-3"><li>', '<code class="text-reset">io::</code></span>', '<ul class="mb-3"><li>']
   expect: []
+- name: list of a namespace on its page, its sub-namespaces link to their nested entries, which carry the anchors
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api/demo, onPage: true, address: {type: list, id: namespacedemo}}
+    contains: ['<code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-io"><code>io</code></a></span>', '<li id="namespace-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
+  expect: []
+- name: list of the root namespace on its page, a nested namespace's anchor is named from the root
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api, onPage: true, address: {type: list}}
+    contains: ['<code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <a href="#namespace-demo"><code>demo</code></a></span>', '<li id="namespace-demo"><span class="docsygen-entity">', '<li id="namespace-demo-io"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io::</code></span>']
+  expect: []
+- name: list of a namespace away from its page, no anchors, its sub-namespaces link to their pages
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: list, id: namespacedemo}}
+    contains: ['<code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">io</code></span>']
+    lacks: ['id="namespace-', 'href="#namespace-']
+  expect: []
+- name: list of a namespace, its own entries follow a line naming it
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api/demo, onPage: true, address: {type: list, id: namespacedemo}}
+    contains: ['<hr><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">demo::</code></span></div><']
+  expect: []
+- name: "list of the root namespace, its own entries follow a line naming it ::"
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api, onPage: true, address: {type: list}}
+    contains: ['<hr><div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::</code></span></div><ul class="mb-3">']
+  expect: []
+- name: list of a nested namespace, the line names it in full
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api/demo/io, onPage: true, address: {type: list, id: namespacedemo_1_1io}}
+    contains: ['<div class="docsygen-list-namespace"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">demo::io::</code></span></div><ul class="mb-3">']
+  expect: []
+- name: list of a namespace that holds only namespaces, no line naming it
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block:
+      type: list
+      id: namespacedemo
+      list:
+        subs: [namespacedemo_1_1io]
+        own: 0
+        namespace: "demo::"
+        buckets: [{label: "", kind: namespace, description: false, entries: [{id: namespacedemo_1_1io, ids: [namespacedemo_1_1io], word: namespace, name: "io::", count: 0, countKey: "", brief: false, children: []}]}]
+    contains: ['<hr><ul class="mb-3"><li><span class="docsygen-entity">']
+    lacks: [docsygen-list-namespace]
+  expect: []
+- name: list of a class, no line naming a namespace
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, key: api/demo/widget, onPage: true, address: {type: list, id: classdemo_1_1Widget}}
+    lacks: [docsygen-list-namespace]
+  expect: []
 - name: list, a label precedes its bucket
   partial: test/part-contains.html
   context:

@@ -3,16 +3,17 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* docsygen/part.html on model .model (test/context.html reads it), with the context a page of that model gets
-       (docsygen/ctx/root.html, with the home page as its page, and no root page: no links): .address, .anchor. With .key, the
+       (docsygen/ctx/root.html, with the home page as its page, and no root page: no links): .address, .anchor, and
+       .key, the page rendered ("" by default: the part is away from its page). With .key, the
        block of .address in the plan of page .key, through its markup partial
        (docsygen/markup/block-<type>.html), is compared with part.html's output: true when they
-       are the same. Otherwise part.html's output. */ -}}
+       are the same; with .onPage too, part.html's output instead. Otherwise part.html's output. */ -}}
 {{- $m := .model -}}
 {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
-{{- $ctx := dict "model" $m "paths" $paths "page" site.Home "version" (path.Base $m.dir) "links" dict "urls" dict
+{{- $ctx := dict "model" $m "paths" $paths "page" site.Home "version" (path.Base $m.dir) "links" dict "urls" dict "key" (.key | default "")
     "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $m.dir (jsonify slice))) -}}
 {{- $html := partial "docsygen/part.html" (dict "address" .address "ctx" $ctx "anchor" (.anchor | default false)) -}}
-{{- with .key -}}
+{{- with and (not .onPage) .key -}}
   {{- $key := . -}}
   {{- $want := "" -}}
   {{- range where $paths.pages "key" $key -}}

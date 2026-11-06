@@ -6,11 +6,13 @@ SPDX-License-Identifier: MIT
        (docsygen/markup/list-line.html), with a gap between two; a bucket that starts a label
        follows that label, as a small paragraph: static, protected, private, package, related, a
        member group's heading, then its description, or "inherited from" its base, linked, after
-       the label of the inherited members when they are not public.
-       Usage: partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $buckets "page" $pageId) */ -}}
+       the label of the inherited members when they are not public. .anchors, {namespace:<id>:
+       anchor} (default none), gives a nested namespace's line its anchor.
+       Usage: partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $buckets "page" $pageId "anchors" $anchors) */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $page := .page -}}
+{{- $anchors := .anchors | default dict -}}
 {{- $out := "" -}}
 {{- $prev := "" -}}
 {{- range .buckets -}}
@@ -38,7 +40,7 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- $prev = .label -}}
   {{- $lines := "" -}}
-  {{- range .entries -}}{{- $lines = printf "%s%s" $lines (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" . "page" $page)) -}}{{- end -}}
+  {{- range .entries -}}{{- $lines = printf "%s%s" $lines (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" . "page" $page "anchors" $anchors)) -}}{{- end -}}
   {{- $out = printf `%s<ul class="mb-3">%s</ul>` $out $lines -}}
 {{- end -}}
 {{- return safeHTML $out -}}
