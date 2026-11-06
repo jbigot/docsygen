@@ -169,7 +169,16 @@ SPDX-License-Identifier: MIT
       {{- $tex = printf "\\begin{%s}%s\\end{%s}" (index . 0 1) (index . 0 2) (index . 0 1) -}}
     {{- end -}}
   {{- end -}}
-  {{- if $display -}}
+  {{- $listed := $ctx.sourceFormulas | default slice -}}
+  {{- if or (eq $listed true) (in $listed $text) -}}
+    {{- /* A formula of sourceFormulas shows as written, Doxygen's delimiters included, highlighted
+           as LaTeX: a listing, or inline code, never through KaTeX. */ -}}
+    {{- if $display -}}
+      {{- partial "docsygen/markup/fence.html" (dict "info" "latex" "code" $text "ctx" $ctx) -}}
+    {{- else -}}
+      {{- safeHTML (strings.TrimSpace (replace (string (transform.Highlight $text "latex" "hl_inline=true")) "\n" "")) -}}
+    {{- end -}}
+  {{- else if $display -}}
     {{- /* A display formula goes through the site's math code-block hook, which decides what
            it accepts (Docsy's stops the build on a formula KaTeX rejects, saying only that a
            code block failed). docsygen can't catch the hook's error, nor know that it uses KaTeX:

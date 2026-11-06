@@ -1,0 +1,14 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The formulas shown as their LaTeX source instead of through KaTeX: true for all of them, or
+       the list of the formulas as the XML gives them, from the adapter call's sourceFormulas
+       (.root) and the rendered page's params.docsygen.sourceFormulas (.page). The lists add up;
+       true in either wins.
+       Usage: partial "docsygen/ctx/source-formulas.html" (dict "root" $rootList "page" $pageList) */ -}}
+{{- if or (eq .root true) (eq .page true) -}}{{- return true -}}{{- end -}}
+{{- $out := slice -}}
+{{- range (.root | default slice) -}}{{- $out = $out | append (string .) -}}{{- end -}}
+{{- range (.page | default slice) -}}{{- $out = $out | append (string .) -}}{{- end -}}
+{{- return $out -}}

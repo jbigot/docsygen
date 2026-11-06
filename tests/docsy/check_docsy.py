@@ -38,6 +38,9 @@ Checks:
     search index hold every variant's code;
   - a hand-written page (/tabs/) with tabpanes of its own around an embedded group (demo::grow)
     has three tabpanes, its ids unique, each tab controlling its own pane;
+  - sourceFormulas: the formulas 1.0's adapter call lists show as LaTeX source on its pages, the
+    others, and latest's, through KaTeX; a hand-written page (/formulas/) whose
+    params.docsygen.sourceFormulas is true shows every embedded formula as source;
   - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
@@ -224,6 +227,22 @@ def main(argv):
             pane = re.search(f'id="{re.escape(target)}" role="tabpanel"[^>]*>(.*?)</div>', text, re.S)
             if target != controls or not pane:
                 errors.append(f'tabs/index.html: a tab controls {target!r}, {controls!r}, not a pane of the page')
+    # sourceFormulas: 1.0's adapter call lists the inline and the display formula of demo::markup,
+    # which show as LaTeX source there, its align* still through KaTeX; latest lists none; the
+    # hand-written page formulas, with sourceFormulas: true, shows all three as source.
+    for page, sources, katex in (('docs/1.0/api/demo/markup/index.html', ['a^2 + b^2', 'int_0^1'], True),
+                                 ('docs/latest/api/demo/markup/index.html', [], True),
+                                 ('formulas/index.html', ['a^2 + b^2', 'int_0^1', 'begin{align*}'], False)):
+        text = read(public, page)
+        latex = ''.join(re.findall(r'<code class="[^"]*language-latex[^"]*"[^>]*>(.*?)</code>', text, re.S))
+        latex = html.unescape(re.sub(r'<[^>]+>', '', latex))
+        for source in sources:
+            if source not in latex:
+                errors.append(f'{page}: the formula {source!r} is not shown as its LaTeX source')
+        if not sources and latex:
+            errors.append(f'{page}: a formula is shown as LaTeX source, though none is listed')
+        if ('class="katex"' in text) != katex:
+            errors.append(f'{page}: KaTeX output {"missing" if katex else "present"}')
     variants = read(public, 'docs/latest/pages/variants/index.html')
     # Every anchor of a group, its variants' too, is at its head, before its tabs, and nowhere in
     # its panes, which are hidden when their tab isn't selected: those that start a variant's

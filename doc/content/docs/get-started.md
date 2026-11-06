@@ -123,6 +123,7 @@ directory of its `_content.gotmpl`.
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
 | `topicMembers` | no | whether namespace pages also list the entities that topic pages document (default `true`): see [Place parts of the reference]({{< relref "placements" >}}) |
 | `variantSeparator` | no | what separates an example's anchor from its languages' (default `-`): see [Example variants]({{< relref "example-variants" >}}) |
+| `sourceFormulas` | no | the formulas to show as their LaTeX source instead of through KaTeX, or `true` for all (default none): see [Formulas]({{< relref "formulas" >}}) |
 
 The whole tree holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections (the class hierarchy),
 each only when Doxygen has something for it. `api/` is the root namespace's page: the namespaces,
