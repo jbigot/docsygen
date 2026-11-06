@@ -4,7 +4,7 @@ version = 1
 SPDX-PackageName = "docsygen"
 SPDX-PackageDownloadLocation = "https://github.com/jbigot/docsygen"
 
-# exampleSite/ is docsy-example (https://github.com/docsy/docsy-example, tag v0.18.0) plus the
+# exampleSite/ is docsy-example (https://github.com/docsy/docsy-example, tag v0.18.1) plus the
 # few files and changes that docsygen adds, which carry their own headers or .license files.
 # Its code and configuration are Apache-2.0 and its content CC-BY-4.0, as the site's footer says.
 [[annotations]]

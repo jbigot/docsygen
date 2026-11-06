@@ -15,7 +15,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 | Tool | Version | Notes |
 | --- | --- | --- |
 | Hugo | ≥ 0.169.0 | the tests use Hugo with the native XML decoder (below) |
-| Docsy | 0.18.0, pinned | module path `github.com/docsy/docsy/theme`; needs Dart Sass |
+| Docsy | 0.18.1, pinned | module path `github.com/docsy/docsy/theme`; needs Dart Sass |
 | Doxygen | 1.17 to 1.18 | the tests use both |
 | npm | ≥ 11.18 | for the example site: older npm installs the wrong `sass` |
 
@@ -51,7 +51,7 @@ to know about Doxygen, Hugo and Docsy to change it. How to use docsygen in a sit
 ## The example site
 
 `exampleSite/` is [docsy-example](https://github.com/docsy/docsy-example) at the tag of the pinned
-Docsy (v0.18.0), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@use
+Docsy (v0.18.1), plus what adding docsygen costs: the module imports in `hugo.yaml`, `@use
 'docsygen'` in `assets/scss/_styles_project.scss`, the sample's XML in `assets/doxygen/sample`, one
 adapter call, `content/en/docs/_content.gotmpl`, which puts its reference at `/docs/api/latest/`,
 and a link to it from the docs landing page. Besides that, Hugo 0.169 in `package.json`, and Node 22
