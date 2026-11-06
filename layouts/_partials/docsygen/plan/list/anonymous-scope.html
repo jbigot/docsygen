@@ -1,0 +1,15 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The name of the namespace that holds an anonymous namespace ("" for the global one), from its
+       compoundname: "demo::@1…" in demo; an empty one, or its parent's name, as some Doxygen
+       versions give it (docsygen/model/build.html). No innernamespace names it.
+       Usage: partial "docsygen/plan/list/anonymous-scope.html" $modelEntry */ -}}
+{{- $name := "" -}}
+{{- range .node.children -}}{{- if and (reflect.IsMap .) (eq .tag "compoundname") -}}{{- $name = delimit .children "" -}}{{- end -}}{{- end -}}
+{{- $parts := split $name "::" -}}
+{{- if hasPrefix (index $parts (sub (len $parts) 1)) "@" -}}
+  {{- $name = delimit (first (sub (len $parts) 1) $parts) "::" -}}
+{{- end -}}
+{{- return $name -}}

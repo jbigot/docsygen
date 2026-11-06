@@ -1,0 +1,72 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The item ({label, kind, rank, entry}, docsygen/plan/list/group.html) of a member, or of the
+       overload set .set ({set, members, description}, docsygen/plan/overloads.html, or nil) it is
+       in, with label .label; .class ranks a class's constructors and destructor first.
+       Usage: partial "docsygen/plan/list/member.html" (dict "model" $model "id" $memberId "set" $set "label" "" "class" true) */ -}}
+{{- $m := .model -}}
+{{- $set := .set -}}
+{{- $id := cond (reflect.IsMap $set) (index $set "set") .id -}}
+{{- $e := index $m.ids $id -}}
+{{- $name := "" -}}
+{{- $type := "" -}}
+{{- $args := "" -}}
+{{- $macroParams := slice -}}
+{{- $hasParams := false -}}
+{{- range $e.node.children -}}
+  {{- if not (reflect.IsMap .) -}}
+  {{- else if eq .tag "name" -}}{{- $name = delimit .children "" -}}
+  {{- else if eq .tag "type" -}}{{- $type = strings.TrimSpace (partial "docsygen/text/plain.html" .) -}}
+  {{- else if eq .tag "argsstring" -}}{{- $args = delimit .children "" -}}
+  {{- else if eq .tag "param" -}}
+    {{- $hasParams = true -}}
+    {{- range .children -}}{{- if and (reflect.IsMap .) (eq .tag "defname") -}}{{- $macroParams = $macroParams | append (partial "docsygen/text/plain.html" .) -}}{{- end -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $kind := index (dict "function" "function" "slot" "function" "signal" "function" "variable" "variable"
+    "property" "variable" "event" "variable" "typedef" "type" "enum" "type" "define" "macro" "friend" "friend") $e.kind | default "variable" -}}
+{{- $word := index (dict "slot" "function" "signal" "function" "property" "variable" "event" "variable" "define" "macro") $e.kind | default $e.kind -}}
+{{- if and (in (slice "function" "variable") $kind) (not (hasPrefix $name "operator")) -}}
+  {{- /* A specialization's name holds its template arguments. */ -}}
+  {{- $name = strings.TrimSpace (replaceRE `<.*$` "" $name) -}}
+{{- else if and (eq $kind "function") (findRE `^operator\s+\w` $name 1) -}}
+  {{- /* A conversion operator, spaced as class names are. */ -}}
+  {{- $name = replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $name) -}}
+{{- else if eq $kind "macro" -}}
+  {{- if $hasParams -}}{{- $name = printf "%s(%s)" $name (delimit $macroParams ", ") -}}{{- end -}}
+{{- else if and (eq $kind "friend") (not (hasPrefix $args "(")) -}}
+  {{- /* A friend class, with its kind and template parameters. */ -}}
+  {{- $texts := slice -}}
+  {{- range partial "docsygen/plan/list/params.html" $e.node -}}{{- $texts = $texts | append .text -}}{{- end -}}
+  {{- with $texts -}}{{- $name = printf "%s<%s>" $name (delimit . ", ") -}}{{- end -}}
+  {{- $name = trim (printf "%s %s" (strings.TrimPrefix "friend " $type) $name) " " -}}
+{{- end -}}
+{{- $ids := slice $id -}}
+{{- $count := 0 -}}
+{{- $countKey := "" -}}
+{{- $brief := $id -}}
+{{- if reflect.IsMap $set -}}
+  {{- $ids = $set.members -}}
+  {{- $brief = $set.description -}}
+  {{- if eq $kind "variable" -}}
+    {{- /* The specializations, whose name holds their arguments, without the primary template. */ -}}
+    {{- $countKey = "specializations" -}}
+    {{- range $ids -}}
+      {{- range (index $m.ids .).node.children -}}
+        {{- if and (reflect.IsMap .) (eq .tag "name") (strings.Contains (delimit .children "") "<") -}}{{- $count = add $count 1 -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $countKey = "overloads" -}}
+    {{- $count = len $ids -}}
+  {{- end -}}
+{{- end -}}
+{{- $rank := 2 -}}
+{{- if and .class (eq $kind "function") -}}
+  {{- $what := partial "docsygen/plan/constructor.html" (dict "model" $m "id" $id) -}}
+  {{- if eq $what "constructor" -}}{{- $rank = 0 -}}{{- else if eq $what "destructor" -}}{{- $rank = 1 -}}{{- end -}}
+{{- end -}}
+{{- $entry := dict "id" $id "ids" $ids "word" $word "name" $name "count" $count "countKey" $countKey "brief" $brief "children" slice -}}
+{{- return dict "label" .label "kind" $kind "rank" $rank "entry" $entry -}}

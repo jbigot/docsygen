@@ -1,0 +1,48 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The list plan (docsygen/plan/list.html) of compound .id of .model ("" for the root), with
+       .topicMembers (default true), as an outline of lines: a bucket as "<label> <kind>", an
+       entry as "- <word> <name>", followed by " (<count> <countKey>)" for a set and " +" for a set
+       with a description, a nested bucket indented by two spaces per level.
+         subs: true      the sub-namespaces (or sub-topics) instead
+         only: HEADER    the top-level bucket with that header only, without its header line
+         flat: true      without the nested buckets
+         entry: NAME     the buckets nested under the top-level entry of that name only
+         match: REGEX    the lines that match it only */ -}}
+{{- $plan := partial "docsygen/plan/list.html" (dict "model" .model "id" .id "topicMembers" (cond (isset . "topicMembers") .topicMembers true)) -}}
+{{- define "_partials/test/list/lines.html" -}}
+  {{- $out := slice -}}
+  {{- $pad := strings.Repeat .depth "  " -}}
+  {{- range .buckets -}}
+    {{- $header := trim (printf "%s %s" .label .kind) " " -}}
+    {{- if or (not $.only) (eq $header $.only) -}}
+      {{- if not $.only -}}{{- $out = $out | append (printf "%s%s" $pad $header) -}}{{- end -}}
+      {{- range .entries -}}
+        {{- $line := printf "%s- %s %s" $pad .word .name -}}
+        {{- if .count -}}{{- $line = printf "%s (%d %s)" $line .count .countKey -}}{{- end -}}
+        {{- if and (gt (len .ids) 1) (reflect.IsMap .brief) -}}{{- $line = printf "%s +" $line -}}{{- end -}}
+        {{- $out = $out | append $line -}}
+        {{- if not $.flat -}}
+          {{- range partial "test/list/lines.html" (dict "buckets" .children "depth" (add $.depth 1) "only" "" "flat" false) -}}{{- $out = $out | append . -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $out -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- $buckets := $plan.buckets -}}
+{{- with .entry -}}
+  {{- $name := . -}}
+  {{- range $plan.buckets -}}{{- range .entries -}}{{- if eq .name $name -}}{{- $buckets = .children -}}{{- end -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- if .subs -}}
+  {{- $out = $plan.subs -}}
+{{- else -}}
+  {{- range partial "test/list/lines.html" (dict "buckets" $buckets "depth" 0 "only" (.only | default "") "flat" (.flat | default false)) -}}
+    {{- if or (not $.match) (findRE $.match . 1) -}}{{- $out = $out | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

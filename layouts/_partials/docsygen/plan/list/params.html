@@ -1,0 +1,30 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The template parameters of a compound or member element, from its templateparamlist, as
+       [{text, name}]: text the parameter as declared, its default left out ("typename T",
+       "int N"), name what the arguments call it (its declname, or the last word of its type).
+       Usage: partial "docsygen/plan/list/params.html" $node */ -}}
+{{- $params := slice -}}
+{{- range .children -}}
+  {{- if and (reflect.IsMap .) (eq .tag "templateparamlist") -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+        {{- $type := "" -}}
+        {{- $declname := "" -}}
+        {{- range .children -}}
+          {{- if not (reflect.IsMap .) -}}
+          {{- else if eq .tag "type" -}}{{- $type = strings.TrimSpace (partial "docsygen/text/plain.html" .) -}}
+          {{- else if eq .tag "declname" -}}{{- $declname = strings.TrimSpace (partial "docsygen/text/plain.html" .) -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $words := split $type " " -}}
+        {{- $name := $declname -}}
+        {{- if and (not $name) (gt (len $words) 1) -}}{{- $name = index $words (sub (len $words) 1) -}}{{- end -}}
+        {{- $params = $params | append (dict "text" (trim (printf "%s %s" $type $declname) " ") "name" $name) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $params -}}

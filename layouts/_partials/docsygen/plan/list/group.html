@@ -1,0 +1,26 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Items, [{label, kind, rank, entry}], as the buckets of docsygen/plan/list.html: one per label
+       and kind with entries, in the order of .labels then .kinds, each sorted by rank (a class's
+       constructors 0, destructor 1, the rest 2), then by name with Hugo's sort.
+       Usage: partial "docsygen/plan/list/group.html" (dict "items" $items "labels" $labels "kinds" $kinds) */ -}}
+{{- $out := slice -}}
+{{- $items := .items -}}
+{{- range $label := .labels -}}
+  {{- range $kind := $.kinds -}}
+    {{- $mine := slice -}}
+    {{- range $items -}}{{- if and (eq .label $label) (eq .kind $kind) -}}{{- $mine = $mine | append . -}}{{- end -}}{{- end -}}
+    {{- if $mine -}}
+      {{- $entries := slice -}}
+      {{- range $rank := slice 0 1 2 -}}
+        {{- $ranked := slice -}}
+        {{- range $mine -}}{{- if eq .rank $rank -}}{{- $ranked = $ranked | append .entry -}}{{- end -}}{{- end -}}
+        {{- range sort $ranked "name" -}}{{- $entries = $entries | append . -}}{{- end -}}
+      {{- end -}}
+      {{- $out = $out | append (dict "label" $label "kind" $kind "entries" $entries) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

@@ -1,0 +1,170 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The body of docsygen/plan/list.html, which it calls again for nested namespaces and
+       sub-topics. */ -}}
+{{- $m := .model -}}
+{{- $id := .id -}}
+{{- $tm := .topicMembers -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $e := cond (eq $id "") dict (index $m.ids $id) -}}
+{{- $kind := cond (eq $id "") "namespace" $e.kind -}}
+{{- $isClass := in $classLike $kind -}}
+{{- $scope := cond (or $isClass (eq $kind "namespace")) ($e.name | default "") "" -}}
+{{- $keepTopic := or $tm (eq $kind "group") -}}
+{{- $labels := slice "" "static" "protected" "private" "package" "related" -}}
+{{- /* Items, {label, kind, rank, entry}, and the members to make items of, {id, label, sets}. */ -}}
+{{- $items := slice -}}
+{{- $members := slice -}}
+{{- $nested := slice -}}
+{{- $subs := slice -}}
+
+{{- if eq $id "" -}}
+  {{- /* The root: what no namespace or class holds. */ -}}
+  {{- $scopes := partial "docsygen/model/scopes.html" $m -}}
+  {{- $inNamespace := newScratch -}}
+  {{- range $m.order -}}
+    {{- $c := index $m.ids . -}}
+    {{- if eq $c.kind "namespace" -}}
+      {{- range $c.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "innerconcept") -}}{{- $inNamespace.Set .attributes.refid true -}}{{- end -}}{{- end -}}
+      {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .) -}}
+        {{- if eq .group "summary" -}}{{- range .members -}}{{- $inNamespace.Set . true -}}{{- end -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $m.order -}}
+    {{- $c := index $m.ids . -}}
+    {{- if and (or (in $classLike $c.kind) (eq $c.kind "concept")) (not (index $scopes .)) (not ($inNamespace.Get .)) -}}
+      {{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" "" "label" "")) -}}
+    {{- else if eq $c.kind "namespace" -}}
+      {{- if and $c.name (not (index $scopes .)) -}}{{- $nested = $nested | append . -}}{{- $subs = $subs | append . -}}
+      {{- else if and (not $c.name) (eq (partial "docsygen/plan/list/anonymous-scope.html" $c) "") -}}{{- $nested = $nested | append . -}}
+      {{- end -}}
+    {{- else if eq $c.kind "file" -}}
+      {{- $sets := partial "docsygen/plan/overloads.html" (dict "model" $m "id" .) -}}
+      {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .) -}}
+        {{- if and (eq .group "summary") (not (hasPrefix .key "inner-")) -}}
+          {{- range .members -}}
+            {{- if not ($inNamespace.Get .) -}}{{- $members = $members | append (dict "id" . "label" "" "sets" $sets) -}}{{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $sets := partial "docsygen/plan/overloads.html" (dict "model" $m "id" $id) -}}
+  {{- $prot := newScratch -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "innerclass") -}}{{- $prot.Set .attributes.refid .attributes.prot -}}{{- end -}}{{- end -}}
+  {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $id) -}}
+    {{- $key := .key -}}
+    {{- if ne .group "summary" -}}
+    {{- else if in (slice "inner-class" "inner-concept") $key -}}
+      {{- range .inner -}}
+        {{- $label := cond $isClass (index (dict "protected" "protected" "private" "private" "package" "package") ($prot.Get . | default "public") | default "") "" -}}
+        {{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" $scope "label" $label)) -}}
+      {{- end -}}
+    {{- else if eq $key "inner-namespace" -}}
+      {{- range .inner -}}
+        {{- if eq $kind "namespace" -}}{{- $nested = $nested | append . -}}{{- $subs = $subs | append . -}}
+        {{- else -}}{{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" "" "label" "")) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else if eq $key "inner-group" -}}
+      {{- range .inner -}}{{- $nested = $nested | append . -}}{{- $subs = $subs | append . -}}{{- end -}}
+    {{- else if in (slice "inner-file" "inner-dir") $key -}}
+      {{- range .inner -}}{{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" "" "label" "")) -}}{{- end -}}
+    {{- else if hasPrefix $key "user-defined-" -}}
+      {{- $set := index $sets (index .members 0) -}}
+      {{- if and $set (eq $set.group $key) -}}
+        {{- /* An overload set: in the list of its section. */ -}}
+        {{- range .members -}}
+          {{- $label := "" -}}
+          {{- if $isClass -}}{{- $label = partial "docsygen/plan/list/label.html" (partial "docsygen/plan/member-section.html" (dict "member" (index $m.ids .) "kind" "class")) -}}{{- end -}}
+          {{- $members = $members | append (dict "id" . "label" $label "sets" $sets) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $label := .heading -}}
+        {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
+        {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets) -}}{{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $label := cond $isClass (partial "docsygen/plan/list/label.html" $key) "" -}}
+      {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets) -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $kind "namespace" -}}
+    {{- /* By compoundname: the model names an anonymous namespace "". */ -}}
+    {{- $raw := "" -}}
+    {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "compoundname") -}}{{- $raw = delimit .children "" -}}{{- end -}}{{- end -}}
+    {{- range $m.order -}}
+      {{- $c := index $m.ids . -}}
+      {{- if and (eq $c.kind "namespace") (not $c.name) (ne . $id) (eq (partial "docsygen/plan/list/anonymous-scope.html" $c) $raw) -}}{{- $nested = $nested | append . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* What a class inherits, per base and section, its sets formed as its own are. */ -}}
+  {{- if $isClass -}}
+    {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
+      {{- $label := printf "inherited:%s" .base -}}
+      {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
+      {{- $g := partial "docsygen/plan/overloads/group.html" (dict "model" $m "members" .members) -}}
+      {{- $sets := newScratch -}}
+      {{- range $g.keys -}}
+        {{- $ids := index $g.by . -}}
+        {{- if ge (len $ids) 2 -}}
+          {{- $set := dict "set" (index $ids 0) "members" $ids "description" false "group" "" -}}
+          {{- range $ids -}}{{- $sets.Set . $set -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets.Values) -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* The members' items, a set once. */ -}}
+{{- $seen := newScratch -}}
+{{- range $members -}}
+  {{- $mid := .id -}}
+  {{- $me := index $m.ids $mid -}}
+  {{- $set := index .sets $mid -}}
+  {{- $first := cond (reflect.IsMap $set) (index $set "set") $mid -}}
+  {{- if and (not ($seen.Get $first)) (or $keepTopic (ne (index $m.ids $me.home).kind "group")) -}}
+    {{- $seen.Set $first true -}}
+    {{- $items = $items | append (partial "docsygen/plan/list/member.html" (dict "model" $m "id" $mid "set" $set "label" .label "class" $isClass)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $kinds := cond $isClass (slice "friend" "function" "type" "variable" "concept" "macro")
+    (slice "concept" "type" "function" "variable" "macro" "friend" "namespace" "file" "dir") -}}
+{{- $buckets := partial "docsygen/plan/list/group.html" (dict "items" $items "labels" $labels "kinds" $kinds) -}}
+
+{{- /* The nested namespaces or sub-topics, last, by name, the anonymous ones after the others. */ -}}
+{{- if $nested -}}
+  {{- $named := slice -}}
+  {{- $anonymous := slice -}}
+  {{- range $nested -}}
+    {{- $c := index $m.ids . -}}
+    {{- $name := "" -}}
+    {{- $word := "namespace" -}}
+    {{- if eq $c.kind "group" -}}
+      {{- $word = "topic" -}}
+      {{- range $c.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- $name = partial "docsygen/text/plain.html" . -}}{{- end -}}{{- end -}}
+      {{- $name = $name | default $c.name -}}
+    {{- else if $c.name -}}
+      {{- $name = printf "%s::" (strings.TrimPrefix (printf "%s::" $scope) $c.name) -}}
+    {{- else -}}
+      {{- $name = "(anonymous)::" -}}
+    {{- end -}}
+    {{- $children := (partial "docsygen/plan/list/build.html" (dict "model" $m "id" . "topicMembers" $tm)).buckets -}}
+    {{- $entry := dict "id" . "ids" (slice .) "word" $word "name" $name "count" 0 "countKey" "" "brief" . "children" $children -}}
+    {{- if or $c.name (eq $c.kind "group") -}}{{- $named = $named | append $entry -}}{{- else -}}{{- $anonymous = $anonymous | append $entry -}}{{- end -}}
+  {{- end -}}
+  {{- $entries := slice -}}
+  {{- range sort $named "name" -}}{{- $entries = $entries | append . -}}{{- end -}}
+  {{- range $anonymous -}}{{- $entries = $entries | append . -}}{{- end -}}
+  {{- $buckets = $buckets | append (dict "label" "" "kind" (index (index $entries 0) "word") "entries" $entries) -}}
+  {{- $sorted := slice -}}
+  {{- range $entries -}}{{- if in $subs .id -}}{{- $sorted = $sorted | append .id -}}{{- end -}}{{- end -}}
+  {{- $subs = $sorted -}}
+{{- end -}}
+{{- return dict "subs" $subs "buckets" $buckets -}}

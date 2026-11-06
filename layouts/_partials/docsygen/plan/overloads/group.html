@@ -1,0 +1,38 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The members of one summary section by what they overload, as {keys, by, others}: keys the
+       "function|<name>" and "variable|<name>" keys in order of first member, by {key: [ids]}, and
+       others whether some member is neither (docsygen/plan/overloads.html says which).
+       Usage: partial "docsygen/plan/overloads/group.html" (dict "model" $model "members" $ids) */ -}}
+{{- $m := .model -}}
+{{- $by := newScratch -}}
+{{- $keys := slice -}}
+{{- $others := false -}}
+{{- range .members -}}
+  {{- $e := index $m.ids . -}}
+  {{- $name := "" -}}
+  {{- $args := "" -}}
+  {{- range $e.node.children -}}
+    {{- if not (reflect.IsMap .) -}}
+    {{- else if eq .tag "name" -}}{{- $name = delimit .children "" -}}
+    {{- else if eq .tag "argsstring" -}}{{- $args = delimit .children "" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* A specialization's name holds its template arguments, an operator's name a < of its
+         own. */ -}}
+  {{- if not (hasPrefix $name "operator") -}}{{- $name = strings.TrimSpace (replaceRE `<.*$` "" $name) -}}{{- end -}}
+  {{- $what := "" -}}
+  {{- if or (in (slice "function" "slot" "signal") $e.kind) (and (eq $e.kind "friend") (hasPrefix $args "(")) -}}{{- $what = "function" -}}
+  {{- else if eq $e.kind "variable" -}}{{- $what = "variable" -}}
+  {{- end -}}
+  {{- if $what -}}
+    {{- $key := printf "%s|%s" $what $name -}}
+    {{- if not ($by.Get $key) -}}{{- $keys = $keys | append $key -}}{{- end -}}
+    {{- $by.Set $key (($by.Get $key | default slice) | append .) -}}
+  {{- else -}}
+    {{- $others = true -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "keys" $keys "by" $by.Values "others" $others -}}

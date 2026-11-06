@@ -1,0 +1,64 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The item ({label, kind, rank, entry}, docsygen/plan/list/group.html) of a class, concept,
+       namespace (not nested), file or directory listed in .scope ("" for none), with label .label.
+       A class's entry nests its nested classes, under the label of their protection.
+       Usage: partial "docsygen/plan/list/compound.html" (dict "model" $model "id" $refid "scope" "demo" "label" "") */ -}}
+{{- $m := .model -}}
+{{- $e := index $m.ids .id -}}
+{{- $classLike := slice "class" "struct" "union" "interface" "protocol" "category" "exception" -}}
+{{- $kind := "" -}}
+{{- $name := $e.name -}}
+{{- $children := slice -}}
+{{- if or (in $classLike $e.kind) (eq $e.kind "concept") -}}
+  {{- $kind = cond (eq $e.kind "concept") "concept" "type" -}}
+  {{- with .scope -}}{{- $name = strings.TrimPrefix (printf "%s::" .) $name -}}{{- end -}}
+  {{- $name = replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $name) -}}
+  {{- $params := partial "docsygen/plan/list/params.html" $e.node -}}
+  {{- if hasSuffix $name ">" -}}
+    {{- /* A specialization: its arguments name the parameters of a partial one, which take
+           their kind. */ -}}
+    {{- $text := newScratch -}}
+    {{- range $params -}}{{- if .name -}}{{- $text.Set .name .text -}}{{- end -}}{{- end -}}
+    {{- $out := "" -}}
+    {{- /* findRE skips what it doesn't match: these tokens cover any text. */ -}}
+    {{- range findRE `\w+|\W+` $name -}}
+      {{- $t := $text.Get . -}}
+      {{- $out = printf "%s%s" $out (cond (and $t (not (hasSuffix $out "::"))) $t .) -}}
+    {{- end -}}
+    {{- $name = $out -}}
+  {{- else if $params -}}
+    {{- $texts := slice -}}
+    {{- range $params -}}{{- $texts = $texts | append .text -}}{{- end -}}
+    {{- $name = printf "%s<%s>" $name (delimit $texts ", ") -}}
+  {{- end -}}
+  {{- /* The nested classes. */ -}}
+  {{- if in $classLike $e.kind -}}
+    {{- $prot := newScratch -}}
+    {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "innerclass") -}}{{- $prot.Set .attributes.refid .attributes.prot -}}{{- end -}}{{- end -}}
+    {{- $items := slice -}}
+    {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+      {{- if eq .key "inner-class" -}}
+        {{- range .inner -}}
+          {{- $label := index (dict "protected" "protected" "private" "private" "package" "package") ($prot.Get . | default "public") | default "" -}}
+          {{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" $e.name "label" $label)) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $children = partial "docsygen/plan/list/group.html" (dict "items" $items "labels" (slice "" "protected" "private" "package") "kinds" (slice "type")) -}}
+  {{- end -}}
+{{- else if eq $e.kind "namespace" -}}
+  {{- $kind = "namespace" -}}
+{{- else if eq $e.kind "file" -}}
+  {{- $kind = "file" -}}
+{{- else if eq $e.kind "dir" -}}
+  {{- $kind = "dir" -}}
+  {{- $name = path.Base $name -}}
+{{- else -}}
+  {{- $kind = $e.kind -}}
+{{- end -}}
+{{- $word := cond (eq $kind "type") $e.kind $kind -}}
+{{- $entry := dict "id" .id "ids" (slice .id) "word" $word "name" $name "count" 0 "countKey" "" "brief" .id "children" $children -}}
+{{- return dict "label" .label "kind" $kind "rank" 2 "entry" $entry -}}

@@ -1,0 +1,16 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The label (docsygen/plan/list.html) of a class's summary section: "protected", "private" or
+       "package" for one of that protection, static members included, "static" for public static
+       members, "related" for related symbols, "" otherwise (public members, friends, signals…).
+       Usage: partial "docsygen/plan/list/label.html" "public-static-func" */ -}}
+{{- $label := "" -}}
+{{- range slice "protected" "private" "package" -}}
+  {{- if hasPrefix $ (printf "%s-" .) -}}{{- $label = . -}}{{- end -}}
+{{- end -}}
+{{- if and (not $label) (hasPrefix . "public-static-") -}}{{- $label = "static" -}}
+{{- else if eq . "related" -}}{{- $label = "related" -}}
+{{- end -}}
+{{- return $label -}}

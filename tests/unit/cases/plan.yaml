@@ -174,3 +174,92 @@
       namespacedemo_1a61a455cdf092fb43ced09be7ff303914]
     described: false
     group: ""
+- name: list of a namespace, kinds in order
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, match: '^[^- ]'}
+  expect: [concept, type, function, variable, Lookup function, namespace]
+- name: list of a namespace, its sub-namespaces
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, subs: true}
+  expect: [namespacedemo_1_1io, namespacedemo_1_1markup]
+- name: list sorts types by name across kinds
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, only: type, flat: true}
+  expect: ['- class Box<typename T, int N>', '- class Button', '- class Circle', '- enum Color', '- class Diamond',
+    '- class Escapes', '- class Foo<int>', '- class Foo<typename T *>', '- class Foo<typename T>', '- class Gadget',
+    '- class LabelledCircle', '- class Left', '- enum Level', '- class Named', '- class Outer', '- class Right',
+    '- class Shape', '- class widget', '- class Widget']
+- name: list of a namespace, functions with their overload sets
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, only: function}
+  expect: ['- function box', '- function make_widget', '- function scale (2 overloads)', '- function to_string (2 overloads) +']
+- name: list counts a variable template's specializations
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, only: variable}
+  expect: ['- variable size_of (2 specializations)', '- variable version']
+- name: list nests a class's nested classes
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, entry: Outer}
+  expect: [type, '- class Inner', '  type', '  - class Innermost']
+- name: list of the root lists global functions and macros and nests namespaces last
+  partial: test/list.html
+  context: {model: sample, id: "", match: '^([a-z][a-z ]*$|- (function|macro|namespace) )'}
+  expect: [type, function, '- function cdemo_finalize', '- function cdemo_init', '- function cdemo_reset',
+    '- function cdemo_version', variable, macro, '- macro CDEMO_VERSION', '- macro CMAX(a, b)', '- macro CMIN(a, b)',
+    namespace, '- namespace demo::']
+- name: list of a class, constructors first
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1Widget, only: function}
+  expect: ['- function Widget (3 overloads)', '- function ~Widget', '- function draw', '- function measure',
+    '- function old_resize', '- function operator()', '- function operator<', '- function resize (2 overloads)']
+- name: list of a class, protected and private after public under their label
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1Widget, match: '^[^- ]'}
+  expect: [friend, function, variable, static function, static variable, protected variable, private variable,
+    related function, Accessors function]
+- name: list of a class, inherited last per base
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1LabelledCircle, match: '^[^- ]'}
+  expect: [function, 'inherited:classdemo_1_1Circle function', 'inherited:classdemo_1_1Circle variable',
+    'inherited:classdemo_1_1Shape function', 'inherited:classdemo_1_1Named function']
+- name: list of a class, overloads split by protection
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1Gadget}
+  expect: [function, '- function Gadget (3 overloads) +', '- function set (2 overloads) +', '- function update',
+    private function, '- function update']
+- name: list, a partial specialization names its parameters' kinds
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, match: '\*'}
+  expect: ['- class Foo<typename T *>']
+- name: list, a full specialization reads as its class
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, match: 'Foo<int'}
+  expect: ['- class Foo<int>']
+- name: list, topicMembers false leaves out a topic's member
+  partial: test/list.html
+  context: {model: sample, id: "", topicMembers: false, match: '^- (function cdemo_|macro)'}
+  expect: ['- function cdemo_reset', '- macro CMIN(a, b)']
+- name: list, anonymous namespace last
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, match: '^- namespace'}
+  expect: ['- namespace io::', '- namespace markup::', '- namespace (anonymous)::']
+- name: list, a conversion operator spaced as class names are
+  partial: test/list.html
+  context: {model: pdi, id: classPDI_1_1Ref__any, match: 'operator ref'}
+  expect: ['- function operator ref_access_t<R, W>']
+- name: list, a partial specialization of another namespace's class
+  partial: test/list.html
+  context: {model: pdi, id: namespacestd, only: type}
+  expect: ['- struct hash<PDI::Ref_any<bool R, bool W>>']
+- name: list, a friend class with its template parameters
+  partial: test/list.html
+  context: {model: pdi, id: classPDI_1_1Ref__any, only: friend}
+  expect: ['- friend class Ref_any<bool OR, bool OW>']
+- name: list, a macro with its parameters
+  partial: test/list.html
+  context: {model: pdi, id: "", match: 'PDI_PLUGIN\('}
+  expect: ['- macro PDI_PLUGIN(name)']
+- name: list, a topic nests its sub-topics last
+  partial: test/list.html
+  context: {model: sample, id: group__cdemo, match: '^[^- ]'}
+  expect: [type, function, variable, macro, Lifecycle function, topic]
