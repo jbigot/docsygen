@@ -75,3 +75,8 @@
   context: {page: /ref/1.0, text: cdemo_reset}
   mounts: {fixtures/placement-topic-members: content, fixtures/placement/layouts: layouts}
   warning: 'content-has cdemo_reset: true'
+- name: placement, files without api leave the global entities of no topic unplaced
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-files-only: content, fixtures/placement/layouts: layouts}
+  warning: 'links to CMIN, which no page of version 1.0 holds: rendered as text'

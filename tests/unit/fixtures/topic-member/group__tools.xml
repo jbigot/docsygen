@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="group__tools" kind="group">
+    <compoundname>tools</compoundname>
+    <title>Tools</title>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__tools_1gaa62eca81f20465829b39d81312c0bcff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void W::grouped</definition>
+        <argsstring>()</argsstring>
+        <name>grouped</name>
+        <qualifiedname>W::grouped</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A method documented in a topic. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="w.hpp" line="13" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A topic. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

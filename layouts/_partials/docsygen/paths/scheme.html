@@ -416,7 +416,8 @@ SPDX-License-Identifier: MIT
 {{- $withIds := newScratch -}}
 {{- range $id, $e := $m.ids -}}{{- if in (slice "section" "anchor" "xrefsect") $e.what -}}{{- $withIds.Set $e.home true -}}{{- end -}}{{- end -}}
 {{- /* The members a file documents, global entities of no topic, are documented on the root
-       namespace's page when it has one (docsygen/plan/namespace-root.html). */ -}}
+       namespace's page (docsygen/plan/namespace-root.html), which docsygen/paths/roles.html gives
+       every model with such members. */ -}}
 {{- $nsRootPage := $s.Get "nsRootPage" | default "" -}}
 {{- range $key := $s.Get "order" -}}
   {{- $fixed := slice (dict "key" "details" "base" "details") -}}

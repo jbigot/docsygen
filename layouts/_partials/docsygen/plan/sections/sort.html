@@ -1,0 +1,28 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The members .ids of a detailed section in the order of Doxygen's: SORT_MEMBER_DOCS sorts them
+       by name, ignoring case, keeping the order of equal names; without it, a class's (.class)
+       keep the order of declaration, across protection levels (the XML groups members by
+       protection), and the others their order in .ids.
+       Usage: partial "docsygen/plan/sections/sort.html" (dict "model" $model "ids" $ids "class" false) */ -}}
+{{- $m := .model -}}
+{{- $sort := eq (index ((index $m.options "SORT_MEMBER_DOCS") | default (slice "YES")) 0) "YES" -}}
+{{- $out := .ids -}}
+{{- if or $sort .class -}}
+  {{- $keyed := slice -}}
+  {{- range $id := .ids -}}
+    {{- $member := index $m.ids $id -}}
+    {{- $name := index (split $member.name "::") (sub (len (split $member.name "::")) 1) -}}
+    {{- $line := 0 -}}
+    {{- $column := 0 -}}
+    {{- range $member.node.children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "location") -}}{{- $line = int (.attributes.line | default 0) -}}{{- $column = int (.attributes.column | default 0) -}}{{- end -}}
+    {{- end -}}
+    {{- $keyed = $keyed | append (dict "id" $id "key" (cond $sort $name (add (mul $line 1000000) $column))) -}}
+  {{- end -}}
+  {{- $out = slice -}}
+  {{- range sort $keyed "key" -}}{{- $out = $out | append .id -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

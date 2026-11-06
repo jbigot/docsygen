@@ -29,7 +29,8 @@ SPDX-License-Identifier: MIT
   {{- if not ($pageOf.Get (jsonify .)) -}}{{- errorf "docsygen: role %s is on no page" (jsonify .) -}}{{- end -}}
 {{- end -}}
 {{- /* An id is documented on the page of its home compound; a member a file documents, on the
-       root namespace's page when there is one (scheme.nsRoot). */ -}}
+       root namespace's page (scheme.nsRoot), which every model with such members has, placed or
+       not. */ -}}
 {{- $targets := newScratch -}}
 {{- $targets.Set "m" dict -}}
 {{- range $id, $anchor := $scheme.homes -}}

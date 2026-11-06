@@ -4,14 +4,16 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The blocks of a compound's page, in the order of Doxygen's default layout:
          title, brief, includes, inheritance, diagram, concept-definition, list (its declarations,
-         docsygen/plan/list.html, with .ctx.topicMembers, true by default), description
+         docsygen/plan/list.html, on a namespace's page with .ctx.topicMembers, true by
+         default), description
          ("Detailed Description"), a section block per section of the description,
          inline-classes (the embedded classes), then each detailed section as a heading block
          followed by one member block per member (docsygen/plan/details.html), and
          generated-from.
        A namespace's, topic's or file's description comes first instead, without a heading, as
        the namespace pages of docsygen's design do. A file's detailed sections go to the root
-       namespace's page when there is one (docsygen/plan/namespace-root.html).
+       namespace's page (docsygen/plan/namespace-root.html), which every model with such members
+       has.
        Blocks that a kind of compound doesn't have are left out. */ -}}
 {{- $m := .ctx.model -}}
 {{- $id := .role.id -}}
@@ -40,7 +42,8 @@ SPDX-License-Identifier: MIT
 {{- /* The list of the page's declarations (docsygen/plan/list.html), planned here, once per page:
        its markup takes it from the block. */ -}}
 {{- if or $classLike (in (slice "namespace" "file" "group" "dir") $kind) -}}
-  {{- $list := partial "docsygen/plan/list.html" (dict "model" $m "id" $id "topicMembers" (cond (isset .ctx "topicMembers") .ctx.topicMembers true)) -}}
+  {{- $list := partial "docsygen/plan/list.html" (dict "model" $m "id" $id
+      "topicMembers" (or (ne $kind "namespace") (cond (isset .ctx "topicMembers") .ctx.topicMembers true))) -}}
   {{- if or $list.subs $list.buckets -}}
     {{- $blocks = $blocks | append (dict "type" "list" "id" $id "list" $list) -}}
   {{- end -}}
@@ -92,7 +95,7 @@ SPDX-License-Identifier: MIT
     {{- $blocks = $blocks | append (dict "type" "inline-classes" "id" $id "ids" . "heading" (dict "level" 2 "text" (T "docsygen-class-documentation") "anchorKey" "inline-classes")) -}}
   {{- end -}}
 {{- end -}}
-{{- /* The members a file documents go to the root namespace's page when there is one. */ -}}
+{{- /* The members a file documents go to the root namespace's page. */ -}}
 {{- if not (and (eq $kind "file") .ctx.paths .ctx.paths.nsRoot) -}}
   {{- range partial "docsygen/plan/details.html" (dict "model" $m "sections" $sections) -}}{{- $blocks = $blocks | append . -}}{{- end -}}
 {{- end -}}

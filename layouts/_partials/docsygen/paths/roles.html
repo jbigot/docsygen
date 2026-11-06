@@ -55,7 +55,14 @@ SPDX-License-Identifier: MIT
 {{- $global := false -}}
 {{- range slice "namespace" "concept" -}}{{- if $count.Get . -}}{{- $global = true -}}{{- end -}}{{- end -}}
 {{- range $classLike -}}{{- if $count.Get . -}}{{- $global = true -}}{{- end -}}{{- end -}}
+{{- /* Or members out of any namespace: those that files list (documented elsewhere), and those
+       that files document. */ -}}
 {{- range $_, $members := $m.fileMembers -}}{{- if $members -}}{{- $global = true -}}{{- end -}}{{- end -}}
+{{- if not $global -}}
+  {{- range $id, $e := $m.ids -}}
+    {{- if and (not $global) (eq $e.what "member") (eq (index $m.ids $e.home).kind "file") -}}{{- $global = true -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- if $global -}}{{- $roles = $roles | append (dict "role" "namespace-root") -}}{{- end -}}
 
 {{- /* The lists. */ -}}

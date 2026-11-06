@@ -37,7 +37,7 @@ SPDX-License-Identifier: MIT
        its section, its member group being no thematic group.
        With id "", the root namespace: the classes and concepts out of any namespace, every member
        of a file that no namespace lists, macros included, then the namespaces.
-       With topicMembers false (true by default), the members documented on a topic's page are
-       left out, but on topic pages.
+       With topicMembers false (true by default), a namespace's list, the root's included, leaves
+       out the members documented on a topic's page; other pages keep them.
        Usage: partial "docsygen/plan/list.html" (dict "model" $model "id" $refid "topicMembers" true) */ -}}
 {{- return partial "docsygen/plan/list/build.html" (dict "model" .model "id" .id "topicMembers" (cond (isset . "topicMembers") .topicMembers true)) -}}

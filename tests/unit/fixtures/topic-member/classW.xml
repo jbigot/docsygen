@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classW" kind="class" language="C++" prot="public">
+    <compoundname>W</compoundname>
+    <includes refid="w_8hpp" local="no">w.hpp</includes>
+    <sectiondef kind="public-func">
+      <member refid="group__tools_1gaa62eca81f20465829b39d81312c0bcff" kind="function"><name>grouped</name></member>
+      <memberdef kind="function" id="classW_1aa3ea445671ede4f9523749ad4ebcc46b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void W::plain</definition>
+        <argsstring>()</argsstring>
+        <name>plain</name>
+        <qualifiedname>W::plain</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A method of no topic. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="w.hpp" line="15" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A widget. </para>
+    </detaileddescription>
+    <location file="w.hpp" line="8" column="1" bodyfile="w.hpp" bodystart="8" bodyend="16"/>
+    <listofallmembers>
+      <member refid="group__tools_1gaa62eca81f20465829b39d81312c0bcff" prot="public" virt="non-virtual"><scope>W</scope><name>grouped</name></member>
+      <member refid="classW_1aa3ea445671ede4f9523749ad4ebcc46b" prot="public" virt="non-virtual"><scope>W</scope><name>plain</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

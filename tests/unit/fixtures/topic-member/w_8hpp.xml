@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="w_8hpp" kind="file" language="C++">
+    <compoundname>w.hpp</compoundname>
+    <innerclass refid="classW" prot="public">W</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A class with a member in a topic. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="classW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classW" kindref="compound">W</ref><sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="13" refid="group__tools_1gaa62eca81f20465829b39d81312c0bcff" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="group__tools_1gaa62eca81f20465829b39d81312c0bcff" kindref="member">grouped</ref>();</highlight></codeline>
+<codeline lineno="15" refid="classW_1aa3ea445671ede4f9523749ad4ebcc46b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classW_1aa3ea445671ede4f9523749ad4ebcc46b" kindref="member">plain</ref>();</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">};</highlight></codeline>
+    </programlisting>
+    <location file="w.hpp"/>
+  </compounddef>
+</doxygen>

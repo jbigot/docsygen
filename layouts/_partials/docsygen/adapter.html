@@ -29,8 +29,11 @@ SPDX-License-Identifier: MIT
                    alias at the same place with its label, which redirects to it
          search    whether the pages are in the site's search index (default: latest)
          pathMap   rewrites of file locations, [{from, to}] (default [])
-         topicMembers  whether namespace pages, and the other pages but topic pages, also list
-                   the entities that a topic (Doxygen group) page documents (default true)
+         topicMembers  whether namespace pages, api (the root namespace's) included, also list the
+                   entities that a topic (Doxygen group) page documents (default true); other
+                   pages always list them. The global entities of no topic are documented on api,
+                   whatever the placements: a site that places files but not api leaves them
+                   unplaced
        store, dir, version and path are required; the label latest, and a segment latest in the
        path, are reserved for the latest release. The pages of the other versions are left out of
        the sitemap, since their canonical page is usually under latest.

@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+INPUT=w.hpp
+GENERATE_LATEX=NO
+GENERATE_HTML=NO
+GENERATE_XML=YES
+QUIET=YES

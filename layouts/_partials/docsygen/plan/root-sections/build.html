@@ -4,7 +4,6 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The body of docsygen/plan/root-sections.html. */ -}}
 {{- $m := . -}}
-{{- $sort := eq (index ((index $m.options "SORT_MEMBER_DOCS") | default (slice "YES")) 0) "YES" -}}
 {{- $doc := newScratch -}}
 {{- range $m.order -}}
   {{- if eq (index $m.ids .).kind "file" -}}
@@ -17,16 +16,7 @@ SPDX-License-Identifier: MIT
 {{- range slice "doc-define" "doc-typedef" "doc-enum" "doc-function" "doc-variable" "doc-property" "doc-event" -}}
   {{- $key := . -}}
   {{- with $doc.Get $key -}}
-    {{- $members := . -}}
-    {{- if $sort -}}
-      {{- $keyed := slice -}}
-      {{- range $members -}}
-        {{- $name := (index $m.ids .).name -}}
-        {{- $keyed = $keyed | append (dict "id" . "key" (index (split $name "::") (sub (len (split $name "::")) 1))) -}}
-      {{- end -}}
-      {{- $members = slice -}}
-      {{- range sort $keyed "key" -}}{{- $members = $members | append .id -}}{{- end -}}
-    {{- end -}}
+    {{- $members := partial "docsygen/plan/sections/sort.html" (dict "model" $m "ids" . "class" false) -}}
     {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" "namespace"))
         "description" false "group" "doc" "members" $members "inner" slice) -}}
   {{- end -}}

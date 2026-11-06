@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 {{- /* The detailed sections of the root namespace's page, as docsygen/plan/sections.html gives
        them ([{key, heading, description, group: doc, members, inner}]): the members that files
        document, the global entities of no topic, by kind in a namespace's order (macros first),
-       sorted by name, ignoring case, under SORT_MEMBER_DOCS, else in the files' index order.
+       each in Doxygen's order (docsygen/plan/sections/sort.html), else in the files' index order.
        Built once per model.
        Usage: partial "docsygen/plan/root-sections.html" $model */ -}}
 {{- return partialCached "docsygen/plan/root-sections/build.html" . .dir -}}

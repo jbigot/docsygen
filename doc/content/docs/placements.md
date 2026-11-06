@@ -41,8 +41,16 @@ website](https://pdi.dev/) is arranged that way, from its `content/_content.gotm
   canonical page: its topic's when it is in one, its namespace's otherwise. A namespace page
   documents in detail only what has no other canonical page. With `topicMembers: false`, the
   namespace pages leave out the entities of topics, for a site that places its topics as an API
-  of their own: a C API's functions are then not listed again under `api`. Topic pages always
-  list their members.
+  of their own: a C API's functions are then not listed again under `api`; when every global
+  entity is in a topic, the root then lists only the namespaces and global classes, or nothing.
+  Topic and class pages always list their members.
+
+{{% alert title="Global entities live on the API reference's root" color="warning" %}}
+The functions, variables, types and macros out of any namespace and topic are documented on the
+API reference's root, `api`, not on their file's page, whatever the placements. A site that
+places `files` but not `api` gets them unplaced: links to them are rendered as text, with a
+`docsygen-unplaced` warning. Place `api` too, or put them in a topic.
+{{% /alert %}}
 
 Titles
 : The placement's root keeps the selected page's title unless `title` or `linkTitle` are given. A

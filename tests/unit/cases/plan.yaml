@@ -302,3 +302,7 @@
     key: files/c/cdemo-h
     type: member
   expect: []
+- name: list, topicMembers false keeps a class's member of a topic
+  partial: test/list.html
+  context: {model: topic-member, id: classW, topicMembers: false}
+  expect: [function, '- function grouped', '- function plain']

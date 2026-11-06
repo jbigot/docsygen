@@ -56,3 +56,10 @@
     match: {role: compound, id: structPDI__errhandler__t}
   len: true
   expect: 0
+- name: roles of a project whose global functions are documented in files only, the root namespace
+  partial: test/roles.html
+  context:
+    model: global-only
+    match: {role: namespace-root}
+  len: true
+  expect: 1

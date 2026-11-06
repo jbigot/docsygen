@@ -12,7 +12,8 @@ SPDX-License-Identifier: MIT
 {{- $kind := cond (eq $id "") "namespace" $e.kind -}}
 {{- $isClass := in $classLike $kind -}}
 {{- $scope := cond (or $isClass (eq $kind "namespace")) ($e.name | default "") "" -}}
-{{- $keepTopic := or $tm (eq $kind "group") -}}
+{{- /* topicMembers false thins namespace pages only, the root's included. */ -}}
+{{- $keepTopic := or $tm (ne $kind "namespace") -}}
 {{- $labels := slice "" "static" "protected" "private" "package" "related" -}}
 {{- /* Items, {label, kind, rank, entry}, and the members to make items of, {id, label, sets}. */ -}}
 {{- $items := slice -}}
