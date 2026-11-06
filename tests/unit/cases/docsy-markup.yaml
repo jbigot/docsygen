@@ -225,6 +225,13 @@
     page: namespacedemo
     entry: {id: classdemo_1_1Widget, ids: [classdemo_1_1Widget], word: class, name: Widget, count: 0, countKey: "", brief: classdemo_1_1Widget, children: []}
   expect: '<li><a href="/api/demo/widget/"><code><span class="docsygen-kind docsygen-kind-type fw-bold">class</span> Widget</code></a> — A widget.</li>'
+- name: list line of a variable template counts its specializations past the primary
+  partial: docsygen/markup/list-line.html
+  context:
+    ctx: {model: sample, links: {namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc: /api/demo/#size_of}}
+    page: classdemo_1_1Widget
+    entry: {id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, ids: [namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, x, y], word: variable, name: size_of, count: 2, countKey: specializations, brief: false, children: []}
+  expect: '<li><a href="/api/demo/#size_of"><code><span class="docsygen-kind docsygen-kind-variable fw-bold">variable</span> size_of</code></a> (+2 specializations)</li>'
 - name: list line of an overload set shows its count
   partial: docsygen/markup/list-line.html
   context:

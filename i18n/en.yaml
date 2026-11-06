@@ -67,8 +67,8 @@ docsygen-list-overloads:
   one: "({{ .count }} overload)"
   other: "({{ .count }} overloads)"
 docsygen-list-specializations:
-  one: "({{ .count }} specialization)"
-  other: "({{ .count }} specializations)"
+  one: "(+{{ .count }} specialization)"
+  other: "(+{{ .count }} specializations)"
 docsygen-list-static: static
 docsygen-list-protected: protected
 docsygen-list-private: private
