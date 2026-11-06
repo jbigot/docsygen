@@ -6,26 +6,14 @@ SPDX-License-Identifier: MIT
        through docsygen/markup/doc-node.html with .sub and its node, parent and index, but those
        of a tag in .skip (a title rendered apart). Where the site has Docsy's tabpane, the example
        variants among them (docsygen/markup/variants.html) are tabs
-       (docsygen/markup/doc-variants.html), followed by a copy for print, div.docsygen-variants-print:
-       the variants in sequence, as without tabpane, with no id (.ctx.noids), so that ids stay
-       unique and links land on the tabs. What a group leaves of a paragraph, and each variant of
-       the copy, renders as that paragraph would, in its place among the parent's children. Inside
-       a variant (.sub.ctx.variant), without tabpane, and where there is no group, the children
-       render in sequence.
+       (docsygen/markup/doc-variants.html), followed by a copy for print,
+       div.docsygen-variants-print: the variants in sequence (docsygen/markup/doc-variant.html), as
+       without tabpane, with no id (.ctx.noids), so that ids stay unique and links land on the
+       tabs. What a group leaves of a paragraph renders as that paragraph would, in its place
+       among the parent's children (docsygen/markup/doc-stand-in.html). Inside a variant
+       (.sub.ctx.variant), without tabpane, and where there is no group, the children render in
+       sequence.
        Usage: partial "docsygen/markup/doc-children.html" (dict "parent" $node "sub" (dict "ctx" $ctx …) "skip" (slice "title")) */ -}}
-{{- /* in: .parent, with .node in the place of its child .index when .node is a part of it. */ -}}
-{{- define "_partials/docsygen/markup/doc-children/in.html" -}}
-  {{- $in := .parent -}}
-  {{- $i := .index -}}
-  {{- $node := .node -}}
-  {{- $c := index .parent.children $i -}}
-  {{- if and (reflect.IsMap $node) (ne (len $node.children) (len $c.children)) -}}
-    {{- $kids := slice -}}
-    {{- range $j, $k := .parent.children -}}{{- $kids = $kids | append (cond (eq $j $i) $node $k) -}}{{- end -}}
-    {{- $in = dict "tag" .parent.tag "attributes" .parent.attributes "children" $kids -}}
-  {{- end -}}
-  {{- return $in -}}
-{{- end -}}
 {{- $parent := .parent -}}
 {{- $skip := .skip | default slice -}}
 {{- $items := slice -}}
@@ -43,20 +31,15 @@ SPDX-License-Identifier: MIT
 {{- else -}}
   {{- range $items -}}
     {{- if isset . "group" -}}
-      {{- partial "docsygen/markup/doc-variants.html" (dict "ctx" $.sub.ctx "group" .) -}}
+      {{- partial "docsygen/markup/doc-variants.html" (dict "group" . "parent" $parent "sub" $.sub) -}}
       {{- $print := merge $.sub (dict "ctx" (merge $.sub.ctx (dict "variant" true "noids" true)) "mdheadings" false) -}}
       <div class="docsygen-variants-print">
-      {{- range .variants -}}
-        {{- $i := .index -}}
-        {{- range .nodes -}}
-          {{- partial "docsygen/markup/doc-node.html" (merge $print (dict "node" . "parent" (partial "docsygen/markup/doc-children/in.html" (dict "parent" $parent "index" $i "node" .)) "index" $i)) -}}
-        {{- end -}}
-      {{- end -}}
+      {{- range .variants -}}{{- partial "docsygen/markup/doc-variant.html" (dict "variant" . "parent" $parent "sub" $print) -}}{{- end -}}
       </div>
     {{- else -}}
       {{- $node := .node -}}
       {{- if not (and (reflect.IsMap $node) (in $skip $node.tag)) -}}
-        {{- partial "docsygen/markup/doc-node.html" (merge $.sub (dict "node" $node "parent" (partial "docsygen/markup/doc-children/in.html" (dict "parent" $parent "index" .first "node" $node)) "index" .first)) -}}
+        {{- partial "docsygen/markup/doc-node.html" (merge $.sub (dict "node" $node "parent" (partial "docsygen/markup/doc-stand-in.html" (dict "parent" $parent "index" .first "node" $node)) "index" .first)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
