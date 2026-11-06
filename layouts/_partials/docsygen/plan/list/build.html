@@ -102,17 +102,23 @@ SPDX-License-Identifier: MIT
       {{- if and (eq $c.kind "namespace") (not $c.name) (ne . $id) (eq (partial "docsygen/plan/list/anonymous-scope.html" $c) $raw) -}}{{- $nested = $nested | append . -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- /* What a class inherits, per base and section, its sets formed as its own are. */ -}}
+  {{- /* What a class inherits, per base and section, its sets formed as its own are, with the
+         description the base gives a set when it inherits that whole set. */ -}}
   {{- if $isClass -}}
     {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
       {{- $label := printf "inherited:%s" .base -}}
       {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
+      {{- $baseSets := partial "docsygen/plan/overloads.html" (dict "model" $m "id" .base) -}}
       {{- $g := partial "docsygen/plan/overloads/group.html" (dict "model" $m "members" .members) -}}
       {{- $sets := newScratch -}}
       {{- range $g.keys -}}
         {{- $ids := index $g.by . -}}
         {{- if ge (len $ids) 2 -}}
-          {{- $set := dict "set" (index $ids 0) "members" $ids "description" false "group" "" -}}
+          {{- $description := false -}}
+          {{- with index $baseSets (index $ids 0) -}}
+            {{- if eq (jsonify .members) (jsonify $ids) -}}{{- $description = .description -}}{{- end -}}
+          {{- end -}}
+          {{- $set := dict "set" (index $ids 0) "members" $ids "description" $description "group" "" -}}
           {{- range $ids -}}{{- $sets.Set . $set -}}{{- end -}}
         {{- end -}}
       {{- end -}}

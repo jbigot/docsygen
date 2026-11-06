@@ -175,4 +175,11 @@ private:
   void update(int part);
 };
 
+/// A gadget that inherits the set of setters its base describes.
+class Gizmo : public Gadget {
+public:
+  /// Spins the gizmo.
+  void spin();
+};
+
 } // namespace demo

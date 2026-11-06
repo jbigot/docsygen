@@ -11,6 +11,7 @@
     <innerclass refid="classdemo_1_1Foo_3_01int_01_4" prot="public">demo::Foo&lt; int &gt;</innerclass>
     <innerclass refid="classdemo_1_1Foo_3_01T_01_5_01_4" prot="public">demo::Foo&lt; T * &gt;</innerclass>
     <innerclass refid="classdemo_1_1Gadget" prot="public">demo::Gadget</innerclass>
+    <innerclass refid="classdemo_1_1Gizmo" prot="public">demo::Gizmo</innerclass>
     <innerclass refid="classdemo_1_1LabelledCircle" prot="public">demo::LabelledCircle</innerclass>
     <innerclass refid="classdemo_1_1Left" prot="public">demo::Left</innerclass>
     <innerclass refid="classdemo_1_1Named" prot="public">demo::Named</innerclass>

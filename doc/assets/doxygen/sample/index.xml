@@ -44,6 +44,9 @@
     <member refid="classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d" kind="function"><name>update</name></member>
     <member refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" kind="function"><name>update</name></member>
   </compound>
+  <compound refid="classdemo_1_1Gizmo" kind="class"><name>demo::Gizmo</name>
+    <member refid="classdemo_1_1Gizmo_1ae581229d34c5e203998b7775fd5c49c0" kind="function"><name>spin</name></member>
+  </compound>
   <compound refid="classdemo_1_1Outer_1_1Inner" kind="class"><name>demo::Outer::Inner</name>
   </compound>
   <compound refid="classdemo_1_1Outer_1_1Inner_1_1Innermost" kind="class"><name>demo::Outer::Inner::Innermost</name>

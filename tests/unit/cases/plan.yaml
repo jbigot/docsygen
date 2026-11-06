@@ -186,7 +186,7 @@
   partial: test/list.html
   context: {model: sample, id: namespacedemo, only: type, flat: true}
   expect: ['- class Box<typename T, int N>', '- class Button', '- class Circle', '- enum Color', '- class Diamond',
-    '- class Escapes', '- class Foo<int>', '- class Foo<typename T *>', '- class Foo<typename T>', '- class Gadget',
+    '- class Escapes', '- class Foo<int>', '- class Foo<typename T *>', '- class Foo<typename T>', '- class Gadget', '- class Gizmo',
     '- class LabelledCircle', '- class Left', '- enum Level', '- class Named', '- class Outer', '- class Right',
     '- class Shape', '- class widget', '- class Widget']
 - name: list of a namespace, functions with their overload sets
@@ -263,3 +263,7 @@
   partial: test/list.html
   context: {model: sample, id: group__cdemo, match: '^[^- ]'}
   expect: [type, function, variable, macro, Lifecycle function, topic]
+- name: list, an inherited overload set keeps the description its base gives it
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1Gizmo, only: 'inherited:classdemo_1_1Gadget function'}
+  expect: ['- function Gadget (3 overloads) +', '- function set (2 overloads) +', '- function update']

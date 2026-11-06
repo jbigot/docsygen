@@ -31,6 +31,7 @@
     <innerclass refid="classdemo_1_1widget" prot="public">demo::widget</innerclass>
     <innerclass refid="classdemo_1_1Escapes" prot="public">demo::Escapes</innerclass>
     <innerclass refid="classdemo_1_1Gadget" prot="public">demo::Gadget</innerclass>
+    <innerclass refid="classdemo_1_1Gizmo" prot="public">demo::Gizmo</innerclass>
     <innernamespace refid="namespacedemo">demo</innernamespace>
     <briefdescription>
 <para>Widgets, spelled in two cases. </para>
@@ -119,7 +120,12 @@
 <codeline lineno="175" refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" kindref="member">update</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>part);</highlight></codeline>
 <codeline lineno="176"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179" refid="classdemo_1_1Gizmo" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdemo_1_1Gizmo" kindref="compound">Gizmo</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb" kindref="member">Gadget</ref><sp/>{</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="182" refid="classdemo_1_1Gizmo_1ae581229d34c5e203998b7775fd5c49c0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Gizmo_1ae581229d34c5e203998b7775fd5c49c0" kindref="member">spin</ref>();</highlight></codeline>
+<codeline lineno="183"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="src/cxx/demo/widget.hpp"/>
   </compounddef>

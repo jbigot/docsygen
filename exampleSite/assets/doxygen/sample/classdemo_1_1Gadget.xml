@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="classdemo_1_1Gadget" kind="class" language="C++" prot="public">
     <compoundname>demo::Gadget</compoundname>
+    <derivedcompoundref refid="classdemo_1_1Gizmo" prot="public" virt="non-virtual">demo::Gizmo</derivedcompoundref>
     <includes refid="widget_8hpp" local="no">widget.hpp</includes>
     <sectiondef kind="user-defined">
       <header>Construction</header>
@@ -147,6 +148,18 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>demo::Gadget</label>
+        <link refid="classdemo_1_1Gadget"/>
+      </node>
+      <node id="2">
+        <label>demo::Gizmo</label>
+        <link refid="classdemo_1_1Gizmo"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
     <location file="src/cxx/demo/widget.hpp" line="146" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="146" bodyend="176"/>
     <listofallmembers>
       <member refid="classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb" prot="public" virt="non-virtual"><scope>demo::Gadget</scope><name>Gadget</name></member>
