@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="variant-links" kind="page">
+    <compoundname>variant-links</compoundname>
+    <title>Links to example variants</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>See the <ref refid="variants_1sample_ex" kindref="member">sample_ex</ref> group, or its <ref refid="variants_1sample_ex-Fortran" kindref="member">sample_ex-Fortran</ref> variant. </para>
+    </detaileddescription>
+    <location file="src/pages/variant-links.md"/>
+  </compounddef>
+</doxygen>

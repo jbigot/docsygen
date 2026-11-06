@@ -1,0 +1,19 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The parent to render .node with, as the child .index of .parent: .parent itself, or, when
+       .node is a part of that child (docsygen/markup/variants.html splits a paragraph around an
+       example group), .parent with .node in the child's place, so that docsygen/markup/doc-para.html
+       decides on <p> as for the whole paragraph.
+       Usage: partial "docsygen/markup/doc-stand-in.html" (dict "parent" $parent "index" $i "node" $part) */ -}}
+{{- $in := .parent -}}
+{{- $i := .index -}}
+{{- $node := .node -}}
+{{- $c := index .parent.children $i -}}
+{{- if and (reflect.IsMap $node) (ne (len $node.children) (len $c.children)) -}}
+  {{- $kids := slice -}}
+  {{- range $j, $k := .parent.children -}}{{- $kids = $kids | append (cond (eq $j $i) $node $k) -}}{{- end -}}
+  {{- $in = dict "tag" .parent.tag "attributes" .parent.attributes "children" $kids -}}
+{{- end -}}
+{{- return $in -}}

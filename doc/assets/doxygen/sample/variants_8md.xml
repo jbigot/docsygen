@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="variants_8md" kind="file" language="Markdown">
+    <compoundname>variants.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@page<sp/>variants<sp/>Example<sp/>variants</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>same<sp/>example<sp/>in<sp/>several<sp/>languages.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_ex</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_ex-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_widget*<sp/>w<sp/>=<sp/>demo_make_widget();</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>3,<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_ex-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">w<sp/>=<sp/>make_widget()</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(3,<sp/>4)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>same,<sp/>with<sp/>the<sp/>variants<sp/>in<sp/>one<sp/>paragraph.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>5,<sp/>6);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_shared-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(5,<sp/>6)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Variants<sp/>of<sp/>two<sp/>paragraphs<sp/>each.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb</highlight></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">is<sp/>the<sp/>same<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>7,<sp/>8);</highlight></codeline>
+<codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pb-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(7,<sp/>8)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">is<sp/>the<sp/>same<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(7,<sp/>8)</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>unused(w)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">A<sp/>second<sp/>group,<sp/>from<sp/>files.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_inc</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_inc-C</highlight></codeline>
+<codeline><highlight class="normal">C++<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">@include<sp/>example.cpp</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_inc-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">@include<sp/>example.f90</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">A<sp/>group<sp/>in<sp/>a<sp/>list:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Step<sp/>one.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Step<sp/>two,<sp/>in<sp/>two<sp/>languages.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>@anchor<sp/>sample_item</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>@anchor<sp/>sample_item-C</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>```C</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>demo_resize(w,<sp/>3,<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>```</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>@anchor<sp/>sample_item-Fortran</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>```Fortran</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>call<sp/>w%resize(3,<sp/>4)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>```</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Step<sp/>three.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">An<sp/>anchor<sp/>with<sp/>no<sp/>group<sp/>before<sp/>it:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>plain-dashed</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>1,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">A<sp/>group<sp/>whose<sp/>anchor<sp/>starts<sp/>its<sp/>first<sp/>variant&apos;s<sp/>block,<sp/>with<sp/>another<sp/>anchor<sp/>before<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">variant&apos;s,<sp/>and<sp/>an<sp/>anchor<sp/>of<sp/>its<sp/>own<sp/>inside<sp/>it:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg_note</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>9,<sp/>9);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg_inner</highlight></codeline>
+<codeline><highlight class="normal">then:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(9,<sp/>9)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+    </programlisting>
+    <location file="src/pages/variants.md"/>
+  </compounddef>
+</doxygen>

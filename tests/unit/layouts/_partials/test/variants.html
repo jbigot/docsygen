@@ -1,0 +1,31 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* docsygen/markup/variants.html on the children of the parsed .xml, or of the detailed
+       description of the model's entry .id, as lines: an item "FIRST-LAST TEXT", a group
+       "FIRST-LAST group NAME ANCHOR [ANCHORS]" then "  LABEL ANCHOR: TEXT" per variant, TEXT as
+       test/variants-text.html writes it. With .all, the groups found in every element below
+       instead, "NAME: LABEL…". Context: {ctx, xml | id, all?}. */ -}}
+{{- $node := .node -}}
+{{- with .id -}}
+  {{- range (index $.ctx.model.ids .).node.children -}}{{- if and (reflect.IsMap .) (eq .tag "detaileddescription") -}}{{- $node = . -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- if .all -}}
+  {{- range partial "test/variants-groups.html" (dict "ctx" .ctx "node" $node) -}}{{- $out = $out | append . -}}{{- end -}}
+{{- else -}}
+  {{- range partial "docsygen/markup/variants.html" (dict "ctx" .ctx "children" $node.children) -}}
+    {{- if isset . "group" -}}
+      {{- $out = $out | append (printf "%d-%d group %s %s [%s]" .first .last .group .anchor (delimit .anchors " ")) -}}
+      {{- range .variants -}}
+        {{- $text := slice -}}
+        {{- range .nodes -}}{{- $text = $text | append (partial "test/variants-text.html" .) -}}{{- end -}}
+        {{- $out = $out | append (printf "  %s %s: %s" .label .anchor (delimit $text " ")) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $out = $out | append (printf "%d-%d %s" .first .last (partial "test/variants-text.html" .node)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

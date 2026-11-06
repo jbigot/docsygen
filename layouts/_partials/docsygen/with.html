@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The map .map with the keys of .set set to their values, a shallow copy: merge would merge a
+       value that is a map in both deeply, and a context (.ctx, with its model) is large.
+       Usage: partial "docsygen/with.html" (dict "map" $sub "set" (dict "ctx" $ctx)) */ -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $k, $v := .map -}}{{- $s.SetInMap "m" $k $v -}}{{- end -}}
+{{- range $k, $v := .set -}}{{- $s.SetInMap "m" $k $v -}}{{- end -}}
+{{- return $s.Get "m" -}}

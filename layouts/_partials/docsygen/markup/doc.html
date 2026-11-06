@@ -10,7 +10,12 @@ SPDX-License-Identifier: MIT
        Usage: partial "docsygen/markup/doc.html" (dict "node" $description "ctx" $ctx "single" false) */ -}}
 {{- $parent := .node -}}
 {{- $root := in (slice "briefdescription" "detaileddescription" "inbodydescription" "description" "docpart") $parent.tag -}}
-{{- range $i, $c := $parent.children -}}
-  {{- partial "docsygen/markup/doc-node.html" (dict "node" $c "parent" $parent "index" $i "ctx" $.ctx
-      "root" $root "single" ($.single | default false) "grand" ($.grand | default "") "mdheadings" ($.mdheadings | default false)) -}}
+{{- $sub := dict "ctx" $.ctx "root" $root "single" ($.single | default false) "grand" ($.grand | default "") "mdheadings" ($.mdheadings | default false) -}}
+{{- if or $root (in (slice "listitem" "parblock" "internal" "blockquote" "entry" "xrefdescription" "parameterdescription") $parent.tag) -}}
+  {{- /* A block container: its children may hold example variants. */ -}}
+  {{- partial "docsygen/markup/doc-children.html" (dict "parent" $parent "sub" $sub) -}}
+{{- else -}}
+  {{- range $i, $c := $parent.children -}}
+    {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $parent "index" $i)) -}}
+  {{- end -}}
 {{- end -}}

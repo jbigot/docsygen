@@ -1,0 +1,8 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The name of an anchor (\anchor), as its author wrote it: Doxygen's id is
+       <home>_1<name>, the name's case kept.
+       Usage: partial "docsygen/model/anchor-name.html" (index $model.ids $id) */ -}}
+{{- return strings.TrimPrefix (printf "%s_1" .home) .id -}}

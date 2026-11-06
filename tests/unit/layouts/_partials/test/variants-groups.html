@@ -1,0 +1,20 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The groups that docsygen/markup/variants.html finds among the children of .node and of
+       every element below it, in document order, as "NAME: LABEL…". Context: {ctx, node}. */ -}}
+{{- $out := slice -}}
+{{- range partial "docsygen/markup/variants.html" (dict "ctx" .ctx "children" .node.children) -}}
+  {{- if isset . "group" -}}
+    {{- $labels := slice -}}
+    {{- range .variants -}}{{- $labels = $labels | append .label -}}{{- end -}}
+    {{- $out = $out | append (printf "%s: %s" .group (delimit $labels " ")) -}}
+  {{- end -}}
+{{- end -}}
+{{- range .node.children -}}
+  {{- if reflect.IsMap . -}}
+    {{- range partial "test/variants-groups.html" (dict "ctx" $.ctx "node" .) -}}{{- $out = $out | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

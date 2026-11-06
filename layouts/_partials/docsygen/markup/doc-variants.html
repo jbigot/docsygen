@@ -1,0 +1,33 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A group of example variants (docsygen/markup/variants.html) among the children of .parent,
+       as Docsy's tabs, in a div.docsygen-variants: the group's anchors, its variants' included,
+       then a tabpane, rendered by .sub.ctx.page.RenderString, with one tab per variant, headed by
+       its label, whose pane holds the variant as it renders in sequence
+       (docsygen/markup/doc-variant.html, with .sub). The anchors are written before the tabs, and
+       not in the panes (.ctx.skipanchors): an inactive pane is hidden, and a link to one language
+       lands on the group. The tabs persist by header: the language chosen follows across the
+       site. The panes are rendered apart, with no group sought inside them (.ctx.variant), nor
+       Markdown headings, and put in the tabpane's output in place of a placeholder, so that no
+       listing goes through the shortcode parser. The tabpane's ids take their context from the
+       page and the group's anchor (docsygen/markup/tabpane-ids.html).
+       Usage: partial "docsygen/markup/doc-variants.html" (dict "group" $group "parent" $parent "sub" $sub) */ -}}
+{{- $ctx := .sub.ctx -}}
+{{- $g := .group -}}
+{{- $ids := $g.anchors -}}
+{{- range $g.variants -}}{{- $ids = $ids | append .anchor -}}{{- end -}}
+{{- $head := "" -}}
+{{- range $ids -}}{{- with index $ctx.anchors . -}}{{- $head = printf `%s<a id="%s"></a>` $head . -}}{{- end -}}{{- end -}}
+{{- $in := partial "docsygen/with.html" (dict "map" .sub "set" (dict "ctx" (partial "docsygen/with.html" (dict "map" $ctx "set" (dict "variant" true "skipanchors" $ids))) "mdheadings" false)) -}}
+{{- $panes := slice -}}
+{{- $tabs := "" -}}
+{{- range $v, $variant := $g.variants -}}
+  {{- $panes = $panes | append (string (partial "docsygen/markup/doc-variant.html" (dict "variant" . "parent" $.parent "sub" $in))) -}}
+  {{- $tabs = printf `%s{{< tab header=%q text=true >}}docsygen:variant:%d:{{< /tab >}}` $tabs .label $v -}}
+{{- end -}}
+{{- $html := $ctx.page.RenderString (printf `{{< tabpane persist="header" >}}%s{{< /tabpane >}}` $tabs) -}}
+{{- $html = partial "docsygen/markup/tabpane-ids.html" (dict "html" $html "context" (hash.XxHash (printf "%s %s" $ctx.page.Path $g.anchor))) -}}
+{{- range $v, $pane := $panes -}}{{- $html = replace $html (printf "docsygen:variant:%d:" $v) $pane -}}{{- end -}}
+{{- return safeHTML (printf `<div class="docsygen-variants">%s%s</div>` $head $html) -}}

@@ -1,0 +1,169 @@
+# SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+# SPDX-License-Identifier: MIT
+# docsygen/markup/variants.html, through test/variants.html: the anchor ids are the sample's
+# (page variants), which the model names.
+- name: variants, two variants make a group, labels C and Fortran
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: "<detaileddescription><para>Intro.</para>\n<para><anchor id=\"variants_1sample_ex\"/><anchor id=\"variants_1sample_ex-C\"/>C source code: <programlisting filename=\".C\"><codeline/></programlisting></para>\n<para><anchor id=\"variants_1sample_ex-Fortran\"/>Fortran source code: <programlisting filename=\".f\"><codeline/></programlisting></para>\n</detaileddescription>"
+  expect:
+    - '0-0 {Intro.}'
+    - '1-1 _'
+    - '2-4 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C source code: [code]}'
+    - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran Fortran source code: [code]}'
+    - '5-5 _'
+- name: variants, a paragraph after a group stays outside it
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para><para>After.</para></detaileddescription>'
+  expect:
+    - '0-1 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+    - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
+    - '2-2 {After.}'
+- name: variants, second group on the page is its own group
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_shared-C"/>C <programlisting><codeline/></programlisting> <anchor id="variants_1sample_shared-Fortran"/>F <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-1 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+    - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
+    - '2-2 group sample_shared variants_1sample_shared [variants_1sample_shared]'
+    - '  C variants_1sample_shared-C: {#variants_1sample_shared-C C [code]}'
+    - '  Fortran variants_1sample_shared-Fortran: {#variants_1sample_shared-Fortran F [code]}'
+- name: variants, dashed anchor without group is no variant
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para>Text.</para><para><anchor id="variants_1plain-dashed"/><programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 {Text.}'
+    - '1-1 {#variants_1plain-dashed [code]}'
+    - '2-2 {#variants_1sample_shared #variants_1sample_ex-C C [code]}'
+- name: variants, another anchor ends a group
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+    - '1-1 {#variants_1sample_shared #variants_1sample_ex-Fortran F [code]}'
+- name: variants, group inside a list item
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<listitem><para>Step two, in two languages. <anchor id="variants_1sample_item"/><anchor id="variants_1sample_item-C"/> C source code: <programlisting><codeline/></programlisting> <anchor id="variants_1sample_item-Fortran"/> Fortran source code: <programlisting><codeline/></programlisting></para></listitem>'
+  expect:
+    - '0-0 {Step two, in two languages.}'
+    - '0-0 group sample_item variants_1sample_item [variants_1sample_item]'
+    - '  C variants_1sample_item-C: {#variants_1sample_item-C C source code: [code]}'
+    - '  Fortran variants_1sample_item-Fortran: {#variants_1sample_item-Fortran Fortran source code: [code]}'
+- name: variants, a lone variant (one language) is still a group of one
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+- name: variants, a variant is its parblock
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: "<detaileddescription><para><anchor id=\"variants_1sample_pb\"/><parblock><para><anchor id=\"variants_1sample_pb-C\"/>C source code: <programlisting><codeline/></programlisting></para>\n<para>is the same as: <programlisting><codeline/></programlisting> </para>\n</parblock></para>\n<para><parblock><para><anchor id=\"variants_1sample_pb-Fortran\"/>Fortran source code: <programlisting><codeline/></programlisting></para>\n<para>is the same as: <programlisting><codeline/></programlisting> </para>\n</parblock></para>\n</detaileddescription>"
+  expect:
+    - '0-2 group sample_pb variants_1sample_pb [variants_1sample_pb]'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb-C C source code: [code]} {is the same as: [code]}]}'
+    - '  Fortran variants_1sample_pb-Fortran: {[pb {#variants_1sample_pb-Fortran Fortran source code: [code]} {is the same as: [code]}]}'
+    - '3-3 _'
+- name: variants, a group anchor at a parblock's start
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><parblock><para><anchor id="variants_1sample_pb"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para><para>more <programlisting><codeline/></programlisting></para></parblock></para><para><parblock><para><anchor id="variants_1sample_pb-Fortran"/>F <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
+  expect:
+    - '0-1 group sample_pb variants_1sample_pb [variants_1sample_pb]'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb #variants_1sample_pb-C C [code]} {more [code]}]}'
+    - '  Fortran variants_1sample_pb-Fortran: {[pb {#variants_1sample_pb-Fortran F [code]}]}'
+- name: variants, an unrelated anchor before a variant's at a parblock's start
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1plain-dashed"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb variants_1plain-dashed]'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1plain-dashed #variants_1sample_pb-C C [code]}]}'
+- name: variants, an unrelated anchor between the group's and its first variant's
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1plain-dashed"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex variants_1plain-dashed]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+- name: variants, a parblock not at its paragraph's start is the variant alone
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para>Before <anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para></parblock>After.</para></detaileddescription>'
+  expect:
+    - '0-0 {Before}'
+    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb]'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb-C C [code]}]}'
+    - '0-0 {After.}'
+- name: variants, the group anchor ends the previous paragraph
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: "<detaileddescription><para>Before. <anchor id=\"variants_1sample_ex\"/></para>\n<para><anchor id=\"variants_1sample_ex-C\"/>C <programlisting><codeline/></programlisting></para>\n<para><anchor id=\"variants_1sample_ex-Fortran\"/>F <programlisting><codeline/></programlisting></para></detaileddescription>"
+  expect:
+    - '0-0 {Before.}'
+    - '0-4 group sample_ex variants_1sample_ex [variants_1sample_ex]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
+    - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
+- name: variants, no group without the model's anchors
+  partial: test/variants.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 {#variants_1sample_ex #variants_1sample_ex-C C [code]}'
+- name: variants, every group of the sample's page
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    id: variants
+    all: true
+  # sample_pbg's anchor starts its first variant's parblock, which, looked into alone, also starts
+  # a group: rendering never looks for groups inside a variant (docsygen/markup/doc-children.html).
+  expect: ['sample_ex: C Fortran', 'sample_shared: C Fortran', 'sample_pb: C Fortran', 'sample_inc: C Fortran', 'sample_pbg: C Fortran', 'sample_item: C Fortran', 'sample_pbg: C']
+- name: variants, a group in a member's description
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1ad4e100aff6c2651a2ecbefa8bcefe5a2
+    all: true
+  expect: ['sample_member: C Fortran']
+# docsygen/markup/doc.html renders the groups: as Docsy's tabs where the site has its tabpane
+# (tests/docsy/check_docsy.py), else, as on this site, as the children in sequence.
+- name: variants, without tabpane, a group renders as its children in sequence
+  partial: test/doc-contains.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><itemizedlist><listitem><para>Step two, in two languages. <anchor id="variants_1sample_item"/><anchor id="variants_1sample_item-C"/> C source code: <programlisting filename=".C"><codeline><highlight class="normal">a;</highlight></codeline></programlisting> <anchor id="variants_1sample_item-Fortran"/> Fortran source code: <programlisting filename=".f"><codeline><highlight class="normal">b</highlight></codeline></programlisting></para></listitem></itemizedlist></para></detaileddescription>'
+    contains: ['<li>Step two, in two languages. <a id=""></a><a id=""></a> C source code: <div class="highlight">', '</div> <a id=""></a> Fortran source code: <div class="highlight">']
+    lacks: [nav-tabs, tab-pane]
+  expect: []
+# docsygen/markup/tabpane-ids.html: a workaround for docsy/docsy#2308.
+- name: tabpane ids, the context of every id and reference to one is the given one
+  partial: docsygen/markup/tabpane-ids.html
+  context:
+    context: 'f00d'
+    html: '<ul class="nav nav-tabs" id="tabs-00-tablist-0123abcd" role="tablist"><li class="nav-item"><button class="nav-link active" id="tabs-00-00-tab-0123abcd" data-bs-toggle="tab" data-bs-target="#tabs-00-00-0123abcd" role="tab" data-td-tp-persist="c" aria-controls="tabs-00-00-0123abcd" aria-selected="true">tabs-00-00-0123abcd</button></li><li class="nav-item"><button class="nav-link" id="tabs-00-01-tab-0123abcd" data-bs-toggle="tab" data-bs-target="#tabs-00-01-0123abcd" role="tab" aria-controls="tabs-00-01-0123abcd" aria-selected="false">F</button></li></ul><div class="tab-content" id="tabs-00-content-0123abcd"><div class="tab-body tab-pane fade show active" id="tabs-00-00-0123abcd" role="tabpanel" aria-labelledby="tabs-00-00-tab-0123abcd" tabindex="0"><a href="#tabs-00-01-0123abcd">x</a></div></div>'
+  expect: '<ul class="nav nav-tabs" id="tabs-00-tablist-f00d" role="tablist"><li class="nav-item"><button class="nav-link active" id="tabs-00-00-tab-f00d" data-bs-toggle="tab" data-bs-target="#tabs-00-00-f00d" role="tab" data-td-tp-persist="c" aria-controls="tabs-00-00-f00d" aria-selected="true">tabs-00-00-0123abcd</button></li><li class="nav-item"><button class="nav-link" id="tabs-00-01-tab-f00d" data-bs-toggle="tab" data-bs-target="#tabs-00-01-f00d" role="tab" aria-controls="tabs-00-01-f00d" aria-selected="false">F</button></li></ul><div class="tab-content" id="tabs-00-content-f00d"><div class="tab-body tab-pane fade show active" id="tabs-00-00-f00d" role="tabpanel" aria-labelledby="tabs-00-00-tab-f00d" tabindex="0"><a href="#tabs-00-01-f00d">x</a></div></div>'

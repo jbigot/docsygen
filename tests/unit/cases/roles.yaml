@@ -6,7 +6,7 @@
     model: sample
     match: {role: source}
   len: true
-  expect: 8
+  expect: 9
 - name: roles of the sample, the main page is a compound of the root
   partial: test/roles.html
   context:

@@ -29,12 +29,21 @@ Checks:
   - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
     guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
     demo::Box's page, with no diagram, does not;
+  - the example variants of the sample's page variants (six groups) and of demo::grow's
+    description are Docsy tabs, headed C and Fortran, whose ids are unique on their page and
+    whose tabs control their own panes; a list item's text outside its group stays before the
+    tabs; every anchor of a group, its variants' too, is at its head, before its tabs, not in its
+    panes; the links to a group and to one variant (page variant-links) land on these anchors;
+    the print page (Docsy's: the selected tab shows, the others' panes are in its HTML) and the
+    search index hold every variant's code;
+  - a hand-written page (/tabs/) with tabpanes of its own around an embedded group (demo::grow)
+    has three tabpanes, its ids unique, each tab controlling its own pane;
   - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
 Exit 1 on any failure.
 """
-import glob, html, json, os, re, sys
+import collections, glob, html, json, os, re, sys
 
 
 def read(*path):
@@ -51,6 +60,19 @@ def toc_entries(page):
             depth += 1 if tag == '<ul>' else -1
         else:
             out.append((depth, html.unescape(re.sub(r'<[^>]*>', '', text))))
+    return out
+
+
+def divs(page, cls):
+    """The inner HTML of each <div class="cls"> of page, up to its own closing tag."""
+    out = []
+    for m in re.finditer(f'<div class="{cls}">', page):
+        depth, pos = 1, m.end()
+        for t in re.finditer(r'<(/?)div\b', page[pos:]):
+            depth += -1 if t.group(1) else 1
+            if not depth:
+                out.append(page[pos:pos + t.start()])
+                break
     return out
 
 
@@ -170,6 +192,68 @@ def main(argv):
         errors.append("demo::Box's page, with no diagram, loads Mermaid")
     if 'data-docsy-plugin="mermaid"' not in read(public, 'docs/main/pages/guide/index.html'):
         errors.append("the guide page, with a <mermaid>, doesn't load Mermaid")
+    # Example variants: one tab per language, each tab controlling its own pane, the groups' ids
+    # unique on the page (Docsy's ids collide through RenderString, docsy/docsy#2308).
+    codes = ('demo_make_widget();', 'w = make_widget()', 'demo_resize(w, 5, 6);', 'call w%resize(5, 6)',
+             'demo_unused(w);', 'call unused(w)', 'w-&gt;resize(3, 4);', 'end program main',
+             'demo_resize(w, 9, 9);', 'call w%resize(9, 9)')
+    for page, groups in (('docs/latest/pages/variants/index.html', 6), ('docs/latest/api/demo/index.html', 1)):
+        text = read(public, page)
+        lists = re.findall(r'<ul class="nav nav-tabs[^"]*" id="([^"]+)" role="tablist">(.*?)</ul>', text, re.S)
+        headers = [[h.strip() for h in re.findall(r'<button[^>]*>(.*?)</button>', l, re.S)] for _, l in lists]
+        if headers != [['C', 'Fortran']] * groups:
+            errors.append(f'{page}: the variants are not {groups} groups of tabs C and Fortran: {headers}')
+        ids = collections.Counter(re.findall(r'\sid="([^"]*)"', text))
+        if any(k > 1 for k in ids.values()):
+            errors.append(f'{page}: repeated ids {sorted(i for i, k in ids.items() if k > 1)}')
+        for _, l in lists:
+            for target, controls in re.findall(r'data-bs-target="#([^"]+)"[^>]*?aria-controls="([^"]+)"', l, re.S):
+                if target != controls or f'id="{target}" role="tabpanel"' not in text:
+                    errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
+    # A hand-written page's own tabpanes beside an embedded group keep their ids apart.
+    text = read(public, 'tabs/index.html')
+    lists = re.findall(r'<ul class="nav nav-tabs[^"]*" id="([^"]+)" role="tablist">(.*?)</ul>', text, re.S)
+    headers = [[h.strip() for h in re.findall(r'<button[^>]*>(.*?)</button>', l, re.S)] for _, l in lists]
+    if headers != [['One', 'Two'], ['C', 'Fortran'], ['Three', 'Four']]:
+        errors.append(f'tabs/index.html: the tabs are {headers}, not the page\'s two tabpanes around the embedded group')
+    ids = collections.Counter(re.findall(r'\sid="([^"]*)"', text))
+    if any(k > 1 for k in ids.values()):
+        errors.append(f'tabs/index.html: repeated ids {sorted(i for i, k in ids.items() if k > 1)}')
+    for _, l in lists:
+        for target, controls in re.findall(r'data-bs-target="#([^"]+)"[^>]*?aria-controls="([^"]+)"', l, re.S):
+            pane = re.search(f'id="{re.escape(target)}" role="tabpanel"[^>]*>(.*?)</div>', text, re.S)
+            if target != controls or not pane:
+                errors.append(f'tabs/index.html: a tab controls {target!r}, {controls!r}, not a pane of the page')
+    variants = read(public, 'docs/latest/pages/variants/index.html')
+    # Every anchor of a group, its variants' too, is at its head, before its tabs, and nowhere in
+    # its panes, which are hidden when their tab isn't selected: those that start a variant's
+    # parblock (sample_pbg's own and sample_pbg_note) too. An anchor inside a variant
+    # (sample_pbg_inner, in its parblock's second paragraph) is in its pane, once.
+    heads = set()
+    for page, names in (('docs/latest/pages/variants/index.html', ('sample_ex', 'sample_shared', 'sample_pb', 'sample_inc', 'sample_item', 'sample_pbg')),
+                        ('docs/latest/api/demo/index.html', ('sample_member',))):
+        groups = divs(read(public, page), 'docsygen-variants')
+        got = [re.findall(r'<a id="([^"]+)"></a>', g[:g.find('<ul class="nav nav-tabs')]) for g in groups]
+        want = [[n] + (['sample_pbg_note'] if n == 'sample_pbg' else []) + [f'{n}-c', f'{n}-fortran'] for n in names]
+        if got != want:
+            errors.append(f"{page}: the groups' heads hold the anchors {got}, not {want}")
+        panes = [re.findall(r'\sid="(sample_[^"]*)"', g[g.find('<div class="tab-content"'):]) for g in groups]
+        if [p for p in panes if p] != ([['sample_pbg_inner']] if 'sample_pbg' in names else []):
+            errors.append(f"{page}: the groups' panes hold the anchors {panes}, not sample_pbg_inner only")
+        heads.update(i for g in got for i in g)
+    if not re.search(r'<li>Step two, in two languages\.\s*<div class="docsygen-variants"><a id="sample_item"></a>(?:<a id="[^"]+"></a>)*<ul class="nav nav-tabs', variants):
+        errors.append("the variants page's list item lacks its text before its tabs")
+    for href in re.findall(r'href="([^"]*sample_ex[^"]*)"', read(public, 'docs/latest/pages/variant-links/index.html')) or ['none']:
+        path, _, frag = href.partition('#')
+        if path != '/docs/latest/pages/variants/' or frag not in heads:
+            errors.append(f"the variant-links page links to {href}, not to an anchor at a group's head of the variants page")
+    printed = re.sub(r'<[^>]*>', '', read(public, '_print/docs/latest/index.html'))
+    plain = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/pages/variants/']
+    for code in codes:
+        if code not in printed:
+            errors.append(f'the print page of /docs/latest/ lacks the variant code {code!r}')
+        if not plain or html.unescape(code) not in plain[0]:
+            errors.append(f'the search index of the variants page lacks the variant code {code!r}')
     if not os.path.exists(os.path.join(public, 'llms.txt')):
         errors.append('no llms.txt')
     elif '/docs/latest/' not in read(public, 'llms.txt'):
