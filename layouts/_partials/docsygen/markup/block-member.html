@@ -7,8 +7,9 @@ SPDX-License-Identifier: MIT
        it, and where it is defined. Its declaration is the heading that the page's skeleton writes
        (docsygen/plan/details.html), or with .block.anchor, for a page whose skeleton writes no
        heading for it (docsygen/shortcode/full.html), the first line of the block, whose wrapper
-       then carries the member's anchor. The first member of an overload set under its
-       heading shows the set's description (.block.setDescription) first. */ -}}
+       then carries the member's anchor. Under an overload set's heading, the first member shows
+       the set's description (.block.setDescription) first, and each one (.block.inSet) its
+       declaration again, small, over its own documentation. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $id := .block.id -}}
@@ -45,7 +46,9 @@ SPDX-License-Identifier: MIT
 {{- $scope := cond (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") (index $m.ids $e.home).kind) $e.home "" -}}
 <div class="docsygen-member td-max-width-on-larger-screens"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
 {{- if .block.anchor -}}<p class="docsygen-declaration-line">{{ partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $id) }}</p>
-{{- else -}}{{- with .block.setDescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+{{- else -}}
+  {{- with .block.setDescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+  {{- if .block.inSet -}}<p class="docsygen-declaration-line small mt-3 mb-1">{{ partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $id) }}</p>{{- end -}}
 {{- end -}}
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="badge text-bg-secondary">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}

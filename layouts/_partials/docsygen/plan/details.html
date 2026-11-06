@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
        documents share one heading, at the first of them: a line per member (a block but the
        last), in the section's order, each but the first with its member's anchor, the first's on the heading; the
        first's block carries the set's description (setDescription), and the others have no
-       heading.
+       heading; each one's block is inSet, to repeat its declaration over its documentation.
        Usage: partial "docsygen/plan/details.html" (dict "ctx" $ctx "sections" $sections) */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
@@ -39,7 +39,7 @@ SPDX-License-Identifier: MIT
           {{- $lines := slice -}}
           {{- range $i, $mid := $ids -}}
             {{- $mark := "" -}}
-            {{- if $i -}}{{- $mark = printf `<a id="%s"></a>` (index (index $targets $mid | default dict) "anchor" | default "") -}}{{- end -}}
+            {{- if $i -}}{{- with index (index $targets $mid | default dict) "anchor" -}}{{- $mark = printf `<a id="%s"></a>` . -}}{{- end -}}{{- end -}}
             {{- $line := printf "%s%s" $mark (partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $mid)) -}}
             {{- /* The last line inline, so that what a site's heading hook appends (Docsy's
                    self-link) follows it rather than making a line of its own. */ -}}
@@ -52,9 +52,9 @@ SPDX-License-Identifier: MIT
         {{- range $i, $mid := $ids -}}
           {{- $done.Set $mid true -}}
           {{- if $i -}}
-            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid) -}}
+            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid "inSet" true) -}}
           {{- else -}}
-            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid
+            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid "inSet" (gt (len $ids) 1)
                 "setDescription" (cond (gt (len $ids) 1) (and $set $set.description) false)
                 "heading" (dict "level" 3 "text" $short "html" (string $html) "classes" $classes "anchorKey" $mid)) -}}
           {{- end -}}

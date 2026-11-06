@@ -115,6 +115,10 @@
     <member refid="namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c" kind="variable"><name>size_of&lt; void &gt;</name></member>
     <member refid="namespacedemo_1a61a455cdf092fb43ced09be7ff303914" kind="variable"><name>size_of&lt; T * &gt;</name></member>
     <member refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" kind="function"><name>box</name></member>
+    <member refid="namespacedemo_1a290fb11cb575f85ad1d285b4c6f2203c" kind="function"><name>count_args</name></member>
+    <member refid="namespacedemo_1a5f6024972f6d13e7c53c582aaedddc2f" kind="function"><name>twice</name></member>
+    <member refid="namespacedemo_1ab63db0526cdb8b4040871ace0c51771b" kind="function"><name>repeat</name></member>
+    <member refid="namespacedemo_1aa1dc060a3d43f9f2bd082b0d11bc8d2e" kind="function"><name>operator--</name></member>
     <member refid="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" kind="function"><name>scale</name></member>
     <member refid="namespacedemo_1aa5a0bbb6074f10c2781832da57db7545" kind="function"><name>scale</name></member>
     <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kind="function"><name>make_widget</name></member>

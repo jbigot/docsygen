@@ -115,3 +115,39 @@ template <typename T>
 constexpr int size_of<T*> = sizeof(void*);
 
 } // namespace demo
+
+namespace demo {
+
+/** @brief Counts its arguments, as a variadic template.
+ *  @tparam Args the types of the arguments
+ *  @param args the arguments
+ *  @return their number
+ */
+template <typename... Args>
+int count_args(Args... args);
+
+/** @brief Doubles an integral value, under a requires clause.
+ *  @tparam T an integral type
+ *  @param v the value
+ *  @return twice the value
+ */
+template <typename T>
+  requires std::integral<T>
+T twice(T v);
+
+/** @brief Repeats a value, with a default template argument.
+ *  @tparam T the type of the value
+ *  @tparam N the number of times
+ *  @param v the value
+ *  @return the last copy
+ */
+template <typename T, int N = 3>
+T repeat(T v);
+
+/** @brief Shrinks a widget by one, an operator whose name typography would rewrite.
+ *  @param w the widget
+ *  @return w
+ */
+Widget& operator--(Widget& w);
+
+} // namespace demo

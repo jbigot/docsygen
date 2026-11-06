@@ -18,7 +18,8 @@ Checks:
     keeps its id, and is in the page's table of contents;
   - the offline search index holds demo::Widget's description from /docs/latest/ only;
   - demo::Widget's members' headings, their declarations, are text in its table of contents,
-    with no id, and in the search index, with no markup or escaped character;
+    with no id, and in the search index, with no markup or escaped character; demo's keep their
+    ... and -- there, which goldmark's typographer would rewrite;
   - the sitemap lists the reference's pages under /docs/latest/ only;
   - the print page of /docs/main/ holds a member's declaration heading, and the print page of /docs/1.0/
     has the notice and one canonical link;
@@ -104,6 +105,16 @@ def main(argv):
             errors.append(f"the search index of demo::Widget lacks the declaration {want!r}")
     if bodies and re.search(r'&lt;|&amp;|<code|<span|<strong', bodies[0]):
         errors.append("the search index of demo::Widget holds markup or escaped characters")
+    # ... and -- survive goldmark's typographer, which would make them an ellipsis and a dash.
+    demo = read(public, 'docs/latest/api/demo/index.html')
+    toc = re.search(r'id="TableOfContents">(.*?)</nav>', demo, re.S)
+    entries = {html.unescape(re.sub(r'<[^>]*>', '', t)) for t in re.findall(r'<a href="#[^"]+">(.*?)</a>', toc.group(1) if toc else '', re.S)}
+    bodies = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/api/demo/']
+    for want in ('count_args<typename... Args>(Args... args) -> int', 'operator--(Widget &w) -> Widget &'):
+        if want not in entries:
+            errors.append(f"demo's table of contents has no entry {want!r}")
+        if not bodies or want not in bodies[0]:
+            errors.append(f"the search index of demo lacks the declaration {want!r}")
     locs = set(re.findall(r'<loc>https://example.org(/(?:docs/(?:main|latest|1\.0|2\.0)|archive/0\.9)/)', read(public, 'sitemap.xml')))
     if locs != {'/docs/latest/'}:
         errors.append(f'the sitemap lists {sorted(locs)} of the reference, not /docs/latest/ only')

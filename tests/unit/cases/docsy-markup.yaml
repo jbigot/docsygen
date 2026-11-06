@@ -123,6 +123,12 @@
     part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}, anchor: true}
     contains: ['<div class="docsygen-member td-max-width-on-larger-screens" id="resize" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd"><p class="docsygen-declaration-line"><code class="docsygen-declaration chroma bg-transparent text-body"><strong>resize</strong>']
   expect: []
+- name: docsy markup, an overload under its set's heading repeats its declaration, small, over its documentation
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca}}
+    contains: ['data-doxygen-id="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca"><p class="docsygen-declaration-line small mt-3 mb-1"><code class="docsygen-declaration chroma bg-transparent text-body"><strong>resize</strong>', '</code></p><div class="docsygen-labels"><span class="badge text-bg-secondary">noexcept</span>']
+  expect: []
 - name: docsy markup, the first member of an overload set under its heading shows the set's description
   partial: test/part-contains.html
   context:
@@ -155,6 +161,34 @@
     ctx: {model: sample}
     id: namespacedemo_1a21eb3c5cd4301a833876747ca01af22c
   expect: {text: "box<Boxable T>(T v) -> Box<T>", strong: box, highlighted: true}
+- name: declaration heading of a variadic function template, its dots kept by goldmark
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1a290fb11cb575f85ad1d285b4c6f2203c
+    fields: [text, rendered]
+  expect: {text: "count_args<typename... Args>(Args... args) -> int", rendered: "count_args<typename... Args>(Args... args) -> int"}
+- name: declaration heading of operator--, its dashes kept by goldmark
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1aa1dc060a3d43f9f2bd082b0d11bc8d2e
+    fields: [strong, rendered]
+  expect: {strong: "operator--", rendered: "operator--(Widget &w) -> Widget &"}
+- name: declaration heading of a function template, a requires clause after the qualifiers
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1a5f6024972f6d13e7c53c582aaedddc2f
+    fields: [text]
+  expect: {text: "twice<typename T>(T v) requires std::integral<T> -> T"}
+- name: declaration heading of a function template, default template arguments kept
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1ab63db0526cdb8b4040871ace0c51771b
+    fields: [text]
+  expect: {text: "repeat<typename T, int N = 3>(T v) -> T"}
 - name: declaration heading of a typedef
   partial: test/decl-heading.html
   context:

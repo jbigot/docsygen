@@ -295,6 +295,189 @@
         </inbodydescription>
         <location file="src/cxx/demo/templates.hpp" line="69" column="5" declfile="src/cxx/demo/templates.hpp" declline="69" declcolumn="5"/>
       </memberdef>
+      <memberdef kind="function" id="namespacedemo_1a290fb11cb575f85ad1d285b4c6f2203c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int demo::count_args</definition>
+        <argsstring>(Args... args)</argsstring>
+        <name>count_args</name>
+        <qualifiedname>demo::count_args</qualifiedname>
+        <param>
+          <type>Args...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Counts its arguments, as a variadic template. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>Args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the types of the arguments </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the arguments </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>their number </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="127" column="5" declfile="src/cxx/demo/templates.hpp" declline="127" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1a5f6024972f6d13e7c53c582aaedddc2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T demo::twice</definition>
+        <argsstring>(T v)</argsstring>
+        <name>twice</name>
+        <qualifiedname>demo::twice</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+    <requiresclause>std::integral&lt;T&gt;    </requiresclause>
+        <briefdescription>
+<para>Doubles an integral value, under a requires clause. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an integral type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>v</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>twice the value </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="136" column="3" declfile="src/cxx/demo/templates.hpp" declline="136" declcolumn="3"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1ab63db0526cdb8b4040871ace0c51771b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>N</declname>
+            <defname>N</defname>
+            <defval>3</defval>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T demo::repeat</definition>
+        <argsstring>(T v)</argsstring>
+        <name>repeat</name>
+        <qualifiedname>demo::repeat</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+<para>Repeats a value, with a default template argument. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the type of the value </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>N</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the number of times </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>v</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the last copy </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="145" column="3" declfile="src/cxx/demo/templates.hpp" declline="145" declcolumn="3"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1aa1dc060a3d43f9f2bd082b0d11bc8d2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classdemo_1_1Widget" kindref="compound">Widget</ref> &amp;</type>
+        <definition>Widget &amp; demo::operator--</definition>
+        <argsstring>(Widget &amp;w)</argsstring>
+        <name>operator--</name>
+        <qualifiedname>demo::operator--</qualifiedname>
+        <param>
+          <type><ref refid="classdemo_1_1Widget" kindref="compound">Widget</ref> &amp;</type>
+          <declname>w</declname>
+        </param>
+        <briefdescription>
+<para>Shrinks a widget by one, an operator whose name typography would rewrite. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the widget </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>w </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="151" column="8" declfile="src/cxx/demo/templates.hpp" declline="151" declcolumn="8"/>
+      </memberdef>
       <memberdef kind="function" id="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int demo::scale</definition>

@@ -2,17 +2,18 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* A member's declaration, for the heading of its documentation: inline HTML, on one line, safe in
-       a Markdown heading (no character that Markdown reads as markup), in a <code>. Not
-       necessarily valid C++: the name first, in <strong>, then its own template parameters,
-       its parameters and qualifiers, and its type last ("-> T" for a function, ": T" for a
-       variable or an enum's base); a typedef as "Name = definition"; a macro as its name and
-       parameters. No kind keyword, nor what the member's labels say (virtual, static, noexcept,
-       override, …: docsygen/markup/block-member.html), nor the enclosing scope, nor an
-       initializer (the documentation shows it, docsygen/markup/member-doc.html). What follows the
-       name is highlighted inline as C++ (transform.Highlight), with Chroma's classes or styles
-       as the site's markup.highlight asks; the <code> carries Chroma's class, its background
-       and colour left to the heading's.
+{{- /* A member's declaration, for the heading of its documentation: inline HTML, on one line,
+       safe in a Markdown heading (no character that Markdown, or its typographer, reads as
+       markup), in a <code>. Not necessarily valid C++: the name first, in <strong>, then its own
+       template parameters (with their defaults), its parameters, qualifiers and requires
+       clause, and its type last ("-> T" for a function, ": T" for a variable or an enum's base);
+       a typedef as "Name = definition"; a macro as its name and parameters. No kind keyword, nor
+       what the member's labels say (virtual, static, noexcept, override, …:
+       docsygen/markup/block-member.html), nor the enclosing scope, nor an initializer (the
+       documentation shows it, docsygen/markup/member-doc.html). What follows the name is
+       highlighted inline as C++ (transform.Highlight), with Chroma's classes or styles as the
+       site's markup.highlight asks; the <code> carries Chroma's class, its background and colour
+       left to the heading's.
        Usage: partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $memberId) */ -}}
 {{- $e := index .ctx.model.ids .id -}}
 {{- $kind := $e.kind -}}
@@ -44,9 +45,21 @@ SPDX-License-Identifier: MIT
 {{- $tparams := "" -}}
 {{- if not (strings.Contains $text.name "<") -}}
   {{- $texts := slice -}}
-  {{- range partial "docsygen/plan/list/params.html" $e.node -}}{{- $texts = $texts | append .text -}}{{- end -}}
+  {{- with $parts.templateparamlist -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+        {{- $p := dict -}}
+        {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (strings.TrimSpace (partial "docsygen/text/plain.html" .))) -}}{{- end -}}{{- end -}}
+        {{- $t := trim (printf "%s %s" ($p.type | default "") ($p.declname | default "")) " " -}}
+        {{- with $p.defval -}}{{- $t = printf "%s = %s" $t . -}}{{- end -}}
+        {{- $texts = $texts | append (replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $t)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
   {{- with $texts -}}{{- $tparams = printf "<%s>" (delimit . ", ") -}}{{- end -}}
 {{- end -}}
+{{- $requires := "" -}}
+{{- with $parts.requiresclause -}}{{- $requires = strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/plain.html" .)) -}}{{- end -}}
 {{- $rest := "" -}}
 {{- if or (in (slice "function" "slot" "signal" "prototype") $kind) (and (eq $kind "friend") (hasPrefix $text.argsstring "(")) -}}
   {{- $args := partial "docsygen/plan/argsstring.html" $text.argsstring -}}
@@ -54,6 +67,7 @@ SPDX-License-Identifier: MIT
   {{- $qualifiers := strings.TrimSpace (replaceRE `\s*(=\s*0|=\s*delete|=\s*default|\boverride\b|\bfinal\b|\bnoexcept(\([^)]*\))?)\s*` " " $args.rest) -}}
   {{- $rest = printf "%s%s" $tparams $args.params -}}
   {{- with $qualifiers -}}{{- $rest = printf "%s %s" $rest . -}}{{- end -}}
+  {{- with $requires -}}{{- $rest = printf "%s requires %s" $rest . -}}{{- end -}}
   {{- /* A trailing return type is the type already. */ -}}
   {{- if and $type (not (and (eq $type "auto") (strings.Contains $qualifiers "->"))) -}}{{- $rest = printf "%s -> %s" $rest $type -}}{{- end -}}
 {{- else if eq $kind "typedef" -}}
@@ -78,10 +92,19 @@ SPDX-License-Identifier: MIT
   {{- /* transform.Highlight's inline form, its <code> wrapper left out. */ -}}
   {{- $html = replaceRE `^<code[^>]*>|</code>$` "" (strings.TrimSpace (replace (string (transform.Highlight . "cpp" "hl_inline=true")) "\n" "")) -}}
 {{- end -}}
-{{- $html = printf `<code class="docsygen-declaration chroma bg-transparent text-body"><strong>%s</strong>%s</code>` (htmlEscape $name) $html -}}
-{{- /* Markdown's punctuation as character references: in a heading, goldmark would read it. The
-       markup's own attributes hold none of these. */ -}}
-{{- range $c, $r := dict "\\" "&#92;" "*" "&#42;" "_" "&#95;" "`" "&#96;" "[" "&#91;" "]" "&#93;" "{" "&#123;" "}" "&#125;" "~" "&#126;" "$" "&#36;" -}}
-  {{- $html = replace $html $c $r -}}
+{{- $html = printf `<strong>%s</strong>%s` (htmlEscape $name) $html -}}
+{{- /* In the text, out of the tags, Markdown's punctuation and what goldmark's typographer
+       rewrites (... and --) as character references: the HTML is a Markdown heading's. */ -}}
+{{- $chars := dict "\\" "&#92;" "*" "&#42;" "_" "&#95;" "`" "&#96;" "[" "&#91;" "]" "&#93;" "{" "&#123;" "}" "&#125;" "~" "&#126;" "$" "&#36;" "." "&#46;" "-" "&#45;" -}}
+{{- $out := "" -}}
+{{- range $i, $piece := split $html "<" -}}
+  {{- $tag := "" -}}
+  {{- $txt := $piece -}}
+  {{- if $i -}}
+    {{- with index (findRESubmatch `(?s)^([^>]*>)(.*)$` $piece 1) 0 -}}{{- $tag = printf "<%s" (index . 1) -}}{{- $txt = index . 2 -}}{{- end -}}
+  {{- end -}}
+  {{- range $c, $r := $chars -}}{{- $txt = replace $txt $c $r -}}{{- end -}}
+  {{- $out = printf "%s%s%s" $out $tag $txt -}}
 {{- end -}}
+{{- $html = printf `<code class="docsygen-declaration chroma bg-transparent text-body">%s</code>` $out -}}
 {{- return safeHTML $html -}}

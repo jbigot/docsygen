@@ -3,8 +3,9 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* A member's declaration heading (docsygen/markup/decl-heading.html) as {text, strong,
-       highlighted}, or only the keys of .fields when given: its text, tags left out and character
-       references resolved; the text of the <strong> that the <code> starts with, else ""; and
+       highlighted, rendered}, or only the keys of .fields when given (by default, all but
+       rendered): its text, tags left out and character references resolved; the same text
+       once goldmark has rendered it as a heading (its typographer on, as Hugo's default); the text of the <strong> that the <code> starts with, else ""; and
        whether a highlighted token (a <span>) follows it. */ -}}
 {{- $html := string (partial "docsygen/markup/decl-heading.html" .) -}}
 {{- $strong := "" -}}
@@ -13,7 +14,9 @@ SPDX-License-Identifier: MIT
   {{- $strong = index (index . 0) 1 -}}
   {{- $highlighted = strings.Contains (index (index . 0) 2) "<span" -}}
 {{- end -}}
-{{- $all := dict "text" (htmlUnescape (replaceRE `<[^>]*>` "" $html)) "strong" (htmlUnescape $strong) "highlighted" $highlighted -}}
+{{- $rendered := site.Home.RenderString (printf "### %s {#x}" $html) -}}
+{{- $all := dict "text" (htmlUnescape (replaceRE `<[^>]*>` "" $html)) "strong" (htmlUnescape $strong) "highlighted" $highlighted
+    "rendered" (strings.TrimSpace (htmlUnescape (replaceRE `<[^>]*>` "" (string $rendered)))) -}}
 {{- $out := dict -}}
 {{- range .fields | default (slice "text" "strong" "highlighted") -}}{{- $out = merge $out (dict . (index $all .)) -}}{{- end -}}
 {{- return $out -}}
