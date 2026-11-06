@@ -1,0 +1,213 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The example variants among the children of a block container (a description, a list item,
+       a parblock, a section…): one example given in several languages, which the anchors mark.
+       Nothing is guessed from text or listings.
+       - A variant of the group G starts at the anchor <G><sep><L> (sep: .ctx.variantSeparator,
+         "-" by default; L, its label, as written), and ends just before the next variant anchor
+         of G or at the end of the paragraph holding its anchor, whichever comes first. An anchor
+         that starts the first paragraph of a parblock, with only whitespace before it, starts the
+         parblock; a parblock that starts its paragraph, with only anchors or whitespace before
+         it, then ends with that paragraph.
+       - A group starts at G's anchor when it is the anchor just before its first variant, with
+         only whitespace between them (in the same paragraph or across paragraphs), and is the
+         variants that follow each other, with only whitespace between them: it ends at the first
+         content that isn't a variant of G.
+       Anchor names are the model's (docsygen/model/anchor-name.html): without .ctx.model, or for
+       an anchor it doesn't know, no group.
+       Returns a slice of items, in order, together covering .children; first and last are the
+       indexes in .children of the children that an item takes from:
+       - {node, first, last}: a child (first = last), or, where a group takes part of a
+         paragraph, a paragraph of what is left on either side of it (dropped if only
+         whitespace), to render as a child is;
+       - {group, anchor, first, last, variants: [{label, anchor, nodes}]}: group is G, anchor
+         its id; each variant's anchor is its id, and its nodes, the blocks to render as a
+         description's children, hold one paragraph: the child itself, or a paragraph of the
+         part of it that the variant takes, its anchor first. G's anchor is in no item.
+       Usage: partial "docsygen/markup/variants.html" (dict "ctx" $ctx "children" $node.children) */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $sep := $ctx.variantSeparator | default "-" -}}
+{{- $children := .children -}}
+{{- /* Most containers have no anchor in their paragraphs. */ -}}
+{{- $maybe := false -}}
+{{- if $m -}}
+  {{- range $children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "para") -}}
+      {{- range .children -}}{{- if and (reflect.IsMap .) (in (slice "anchor" "parblock") .tag) -}}{{- $maybe = true -}}{{- break -}}{{- end -}}{{- end -}}
+    {{- end -}}
+    {{- if $maybe -}}{{- break -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- /* The tokens: each child of a paragraph, other children whole. kind: space, anchor, carrier
+       (a parblock whose first paragraph starts with an anchor), other; name: the anchor's;
+       start: only anchors or whitespace before it in its paragraph; end: its paragraph's last
+       token. */ -}}
+{{- $toks := slice -}}
+{{- $named := 0 -}}
+{{- if $maybe -}}
+  {{- range $i, $c := $children -}}
+    {{- if and (reflect.IsMap $c) (eq $c.tag "para") $c.children -}}
+      {{- $end := sub (add (len $toks) (len $c.children)) 1 -}}
+      {{- $lead := true -}}
+      {{- range $x := $c.children -}}
+        {{- $kind := "other" -}}
+        {{- $id := "" -}}
+        {{- if not (reflect.IsMap $x) -}}
+          {{- if not (trim $x " \t\n\r") -}}{{- $kind = "space" -}}{{- end -}}
+        {{- else if eq $x.tag "anchor" -}}
+          {{- $kind = "anchor" -}}
+          {{- $id = $x.attributes.id -}}
+        {{- else if eq $x.tag "parblock" -}}
+          {{- range $x.children -}}
+            {{- if reflect.IsMap . -}}
+              {{- if eq .tag "para" -}}
+                {{- range .children -}}
+                  {{- if reflect.IsMap . -}}{{- if eq .tag "anchor" -}}{{- $id = .attributes.id -}}{{- end -}}{{- break -}}
+                  {{- else if trim . " \t\n\r" -}}{{- break -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+              {{- break -}}
+            {{- else if trim . " \t\n\r" -}}{{- break -}}
+            {{- end -}}
+          {{- end -}}
+          {{- if $id -}}{{- $kind = "carrier" -}}{{- end -}}
+        {{- end -}}
+        {{- $name := "" -}}
+        {{- with and $id (index $m.ids $id) -}}
+          {{- if eq .what "anchor" -}}
+            {{- $name = partial "docsygen/model/anchor-name.html" . -}}
+            {{- $named = add $named 1 -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $toks = $toks | append (dict "i" $i "kind" $kind "name" $name "id" $id "node" $x "start" $lead "end" $end) -}}
+        {{- if not (in (slice "space" "anchor") $kind) -}}{{- $lead = false -}}{{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $kind := "other" -}}
+      {{- if not (reflect.IsMap $c) -}}{{- if not (trim $c " \t\n\r") -}}{{- $kind = "space" -}}{{- end -}}{{- end -}}
+      {{- $toks = $toks | append (dict "i" $i "kind" $kind "name" "" "id" "" "node" $c "whole" true) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $items := slice -}}
+{{- if lt $named 2 -}}
+  {{- range $i, $c := $children -}}{{- $items = $items | append (dict "node" $c "first" $i "last" $i) -}}{{- end -}}
+{{- else -}}
+  {{- $n := len $toks -}}
+  {{- /* next: the first token after each that isn't whitespace ($n if none). */ -}}
+  {{- $next := newScratch -}}
+  {{- $nx := $n -}}
+  {{- range $x := seq (sub $n 1) 0 -}}
+    {{- $next.Set (string $x) $nx -}}
+    {{- if ne (index $toks $x).kind "space" -}}{{- $nx = $x -}}{{- end -}}
+  {{- end -}}
+  {{- /* The scan: label (group g, variant v, -1 for the group's own tokens) per token. */ -}}
+  {{- $label := newScratch -}}
+  {{- $groups := slice -}}
+  {{- $variants := newScratch -}}
+  {{- $k := 0 -}}
+  {{- range $x := seq 0 (sub $n 1) -}}
+    {{- $t := index $toks $x -}}
+    {{- $y := $next.Get (string $x) -}}
+    {{- if and (ge $x $k) (eq $t.kind "anchor") $t.name (lt $y $n) -}}
+      {{- $pre := printf "%s%s" $t.name $sep -}}
+      {{- $u := index $toks $y -}}
+      {{- if and (in (slice "anchor" "carrier") $u.kind) (hasPrefix $u.name $pre) (ne $u.name $pre) -}}
+        {{- $g := len $groups -}}
+        {{- $groups = $groups | append (dict "name" $t.name "id" $t.id) -}}
+        {{- $label.Set (string $x) (dict "g" $g "v" -1) -}}
+        {{- $cur := $y -}}
+        {{- $from := add $x 1 -}}
+        {{- $v := 0 -}}
+        {{- range $z := seq $y (sub $n 1) -}}
+          {{- if eq $z $cur -}}
+            {{- $s := index $toks $cur -}}
+            {{- /* The tokens between the previous part and this variant: the group's, or this
+                   variant's when in its paragraph. */ -}}
+            {{- if lt $from $cur -}}
+              {{- range $w := seq $from (sub $cur 1) -}}
+                {{- $label.Set (string $w) (dict "g" $g "v" (cond (eq (index $toks $w).i $s.i) $v -1)) -}}
+              {{- end -}}
+            {{- end -}}
+            {{- $end := $cur -}}
+            {{- if or (eq $s.kind "anchor") $s.start -}}
+              {{- $end = $s.end -}}
+              {{- if lt $cur $s.end -}}
+                {{- range $w := seq (add $cur 1) $s.end -}}
+                  {{- $o := index $toks $w -}}
+                  {{- if and (in (slice "anchor" "carrier") $o.kind) (hasPrefix $o.name $pre) (ne $o.name $pre) -}}{{- $end = sub $w 1 -}}{{- break -}}{{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+            {{- range $w := seq $cur $end -}}{{- $label.Set (string $w) (dict "g" $g "v" $v) -}}{{- end -}}
+            {{- $variants.Add (string $g) (slice (dict "label" (strings.TrimPrefix $pre $s.name) "anchor" $s.id)) -}}
+            {{- $k = add $end 1 -}}
+            {{- $from = $k -}}
+            {{- $p := $next.Get (string $end) -}}
+            {{- if lt $p $n -}}
+              {{- $o := index $toks $p -}}
+              {{- if and (in (slice "anchor" "carrier") $o.kind) (hasPrefix $o.name $pre) (ne $o.name $pre) -}}
+                {{- $cur = $p -}}
+                {{- $v = add $v 1 -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* Runs of tokens of one child and one label, then a sentinel. */ -}}
+  {{- $runs := slice -}}
+  {{- $prev := "" -}}
+  {{- range $x, $t := $toks -}}
+    {{- $l := $label.Get (string $x) | default (dict "g" -1 "v" -1) -}}
+    {{- $key := printf "%d/%d/%d" $t.i $l.g $l.v -}}
+    {{- if ne $key $prev -}}{{- $runs = $runs | append (dict "from" $x "i" $t.i "g" $l.g "v" $l.v) -}}{{- end -}}
+    {{- $prev = $key -}}
+  {{- end -}}
+  {{- $runs = $runs | append (dict "from" $n "g" -2) -}}
+  {{- $open := -1 -}}
+  {{- $group := dict -}}
+  {{- $parts := slice -}}
+  {{- range $r, $run := $runs -}}
+    {{- if and (ge $open 0) (ne $run.g $open) -}}
+      {{- $items = $items | append (merge $group (dict "variants" $parts)) -}}
+      {{- $open = -1 -}}
+    {{- end -}}
+    {{- if ne $run.g -2 -}}
+      {{- $to := sub (index $runs (add $r 1)).from 1 -}}
+      {{- $c := index $children $run.i -}}
+      {{- /* What the run holds: the child, or a paragraph of its part. */ -}}
+      {{- $node := $c -}}
+      {{- $split := false -}}
+      {{- $blank := true -}}
+      {{- if not (index $toks $run.from).whole -}}
+        {{- $nodes := slice -}}
+        {{- range $w := seq $run.from $to -}}
+          {{- $o := index $toks $w -}}
+          {{- $nodes = $nodes | append $o.node -}}
+          {{- if ne $o.kind "space" -}}{{- $blank = false -}}{{- end -}}
+        {{- end -}}
+        {{- if ne (len $nodes) (len $c.children) -}}{{- $split = true -}}{{- $node = dict "tag" "para" "attributes" ($c.attributes | default dict) "children" $nodes -}}{{- end -}}
+      {{- end -}}
+      {{- if lt $run.g 0 -}}
+        {{- if or (not $split) (not $blank) -}}{{- $items = $items | append (dict "node" $node "first" $run.i "last" $run.i) -}}{{- end -}}
+      {{- else -}}
+        {{- if lt $open 0 -}}
+          {{- $open = $run.g -}}
+          {{- $group = dict "group" (index $groups $open).name "anchor" (index $groups $open).id "first" $run.i -}}
+          {{- $parts = slice -}}
+        {{- end -}}
+        {{- $group = merge $group (dict "last" $run.i) -}}
+        {{- if ge $run.v 0 -}}
+          {{- $parts = $parts | append (merge (index ($variants.Get (string $run.g)) $run.v) (dict "nodes" (slice $node))) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $items -}}

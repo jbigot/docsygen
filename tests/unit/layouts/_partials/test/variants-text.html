@@ -1,0 +1,23 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A description node in short, for test/variants.html: a paragraph {…}, a parblock [pb …],
+       an anchor #ID, a listing [code], whitespace collapsed, a whitespace-only text "_". */ -}}
+{{- $out := "" -}}
+{{- if not (reflect.IsMap .) -}}
+  {{- $out = trim (replaceRE `\s+` " " .) " " | default "_" -}}
+{{- else if eq .tag "anchor" -}}
+  {{- $out = printf "#%s" .attributes.id -}}
+{{- else if eq .tag "programlisting" -}}
+  {{- $out = "[code]" -}}
+{{- else -}}
+  {{- $parts := slice -}}
+  {{- range .children -}}
+    {{- $t := partial "test/variants-text.html" . -}}
+    {{- if ne $t "_" -}}{{- $parts = $parts | append $t -}}{{- end -}}
+  {{- end -}}
+  {{- $inner := delimit $parts " " -}}
+  {{- $out = cond (eq .tag "para") (printf "{%s}" $inner) (cond (eq .tag "parblock") (printf "[pb %s]" $inner) $inner) -}}
+{{- end -}}
+{{- return $out -}}

@@ -564,7 +564,7 @@ SPDX-License-Identifier: MIT
   {{- range $what := slice "section" "anchor" -}}
     {{- range $found -}}
       {{- if and (eq (cond (eq .what "section") "section" "anchor") $what) (not (isset ($s.Get "homes") .id)) -}}
-        {{- $base := cond (eq $what "section") (partial "docsygen/text/anchor.html" .name) (partial "docsygen/text/anchor.html" (strings.TrimPrefix (printf "%s_1" .home) .id)) -}}
+        {{- $base := cond (eq $what "section") (partial "docsygen/text/anchor.html" .name) (partial "docsygen/text/anchor.html" (partial "docsygen/model/anchor-name.html" .)) -}}
         {{- $s.SetInMap "homes" .id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" $base "first" 1)) -}}
       {{- end -}}
     {{- end -}}

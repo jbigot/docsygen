@@ -90,11 +90,7 @@ SPDX-License-Identifier: MIT
       {{- partial "docsygen/markup/doc-heading.html" (dict "level" $level "node" . "id" (index $ctx.anchors $n.attributes.id) "md" $.mdheadings "sub" $sub) -}}
     {{- end -}}
   {{- end -}}
-  {{- range $i, $c := $n.children -}}
-    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
-      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false "mdheadings" $.mdheadings)) -}}
-    {{- end -}}
-  {{- end -}}
+  {{- partial "docsygen/markup/doc-children.html" (dict "parent" $n "sub" (merge $sub (dict "root" false "mdheadings" $.mdheadings)) "skip" (slice "title")) -}}
   {{- end -}}
 {{- else if eq $tag "heading" -}}
   {{- partial "docsygen/markup/doc-heading.html" (dict "level" (int $n.attributes.level) "node" $n "id" "" "md" .mdheadings "sub" $sub) -}}
@@ -105,11 +101,7 @@ SPDX-License-Identifier: MIT
   <div class="alert {{ cond (in (slice "note" "remark") $kind) "alert-info" "alert-warning" }}" role="alert"><div class="h4 alert-heading" role="heading">{{ with index $simplesects $kind }}{{ T . }}{{ end }}</div>
   {{- end -}}
   <div>
-  {{- range $i, $c := $n.children -}}
-    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
-      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
-    {{- end -}}
-  {{- end -}}
+  {{- partial "docsygen/markup/doc-children.html" (dict "parent" $n "sub" (merge $sub (dict "root" false)) "skip" (slice "title")) -}}
   </div>{{- if not .continues -}}</div>{{- end -}}
 {{- else if eq $tag "simplesect" -}}
   {{- $kind := $n.attributes.kind -}}
@@ -123,11 +115,7 @@ SPDX-License-Identifier: MIT
   {{- range $n.children -}}{{- if and (reflect.IsMap .) (eq .tag "title") -}}{{- partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) -}}{{- end -}}{{- end -}}
   </dt><dd>
   {{- end -}}
-  {{- range $i, $c := $n.children -}}
-    {{- if not (and (reflect.IsMap $c) (eq $c.tag "title")) -}}
-      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
-    {{- end -}}
-  {{- end -}}
+  {{- partial "docsygen/markup/doc-children.html" (dict "parent" $n "sub" (merge $sub (dict "root" false)) "skip" (slice "title")) -}}
   </dd>{{- if not .continues -}}</dl>{{- end -}}
 {{- else if eq $tag "xrefsect" -}}
   {{- $list := index (split $n.attributes.id "_1") 0 -}}
@@ -197,13 +185,13 @@ SPDX-License-Identifier: MIT
   {{- partial "docsygen/markup/doc-code.html" (merge $sub (dict "node" $n)) -}}
 {{- else if eq $tag "details" -}}
   <details>{{ "\n" }}
-  {{- range $i, $c := $n.children -}}
-    {{- if and (reflect.IsMap $c) (eq $c.tag "summary") -}}
-      <summary>{{ "\n" }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $c)) }}</summary>{{ "\n" }}
-    {{- else -}}
-      {{- partial "docsygen/markup/doc-node.html" (merge $sub (dict "node" $c "parent" $n "index" $i "root" false)) -}}
+  {{- /* Doxygen writes the summary first. */ -}}
+  {{- range $n.children -}}
+    {{- if and (reflect.IsMap .) (eq .tag "summary") -}}
+      <summary>{{ "\n" }}{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" .)) }}</summary>{{ "\n" }}
     {{- end -}}
   {{- end -}}
+  {{- partial "docsygen/markup/doc-children.html" (dict "parent" $n "sub" (merge $sub (dict "root" false)) "skip" (slice "summary")) -}}
   </details>
 {{- else if eq $tag "blockquote" -}}
   <blockquote>{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</blockquote>
