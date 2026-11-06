@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The HTML of Docsy's tabpane, .html, with .context for the context of its ids, in the ids and
+       references to them that tabpane writes (id, aria-controls, aria-labelledby, data-bs-target
+       and href="#…"), all of the form tabs-NN-…-CONTEXT. A workaround for docsy/docsy#2308: each
+       RenderString restarts the shortcodes' ordinals, so two tabpanes rendered apart on one page
+       get the same ids. Call it before anything else goes in the HTML.
+       Usage: partial "docsygen/markup/tabpane-ids.html" (dict "html" $html "context" $id) */ -}}
+{{- return replaceRE `(\s(?:id|aria-controls|aria-labelledby)="|\s(?:data-bs-target|href)="#)(tabs-\d{2,}-(?:\d{2,}-tab|\d{2,}|tablist|content))-[0-9a-f]+"`
+    (printf `${1}${2}-%s"` .context) (string .html) -}}

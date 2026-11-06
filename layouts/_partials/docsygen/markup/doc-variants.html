@@ -1,0 +1,29 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A group of example variants (docsygen/markup/variants.html) as Docsy's tabs, in a
+       div.docsygen-variants: the anchors of the group's head, then a tabpane, rendered by
+       .ctx.page.RenderString, with one tab per variant, headed by its label, whose pane holds the
+       variant's blocks as a description's children; the variants' own anchors are among them.
+       The tabs persist by header: the language chosen follows across the site. The panes are
+       rendered apart, with no group sought inside them (.ctx.variant), and put in the tabpane's
+       output in place of a placeholder, so that no listing goes through the shortcode parser.
+       The tabpane's ids take their context from the page and the group's anchor
+       (docsygen/markup/tabpane-ids.html).
+       Usage: partial "docsygen/markup/doc-variants.html" (dict "ctx" $ctx "group" $group) */ -}}
+{{- $ctx := .ctx -}}
+{{- $g := .group -}}
+{{- $in := merge $ctx (dict "variant" true) -}}
+{{- $head := "" -}}
+{{- range $g.anchors -}}{{- $head = printf `%s<a id="%s"></a>` $head (index $ctx.anchors .) -}}{{- end -}}
+{{- $panes := slice -}}
+{{- $tabs := "" -}}
+{{- range $v, $variant := $g.variants -}}
+  {{- $panes = $panes | append (string (partial "docsygen/markup/doc.html" (dict "node" (dict "tag" "docpart" "children" .nodes) "ctx" $in))) -}}
+  {{- $tabs = printf `%s{{< tab header="%s" text=true >}}docsygen:variant:%d:{{< /tab >}}` $tabs .label $v -}}
+{{- end -}}
+{{- $html := $ctx.page.RenderString (printf `{{< tabpane persist="header" >}}%s{{< /tabpane >}}` $tabs) -}}
+{{- $html = partial "docsygen/markup/tabpane-ids.html" (dict "html" $html "context" (hash.XxHash (printf "%s %s" $ctx.page.Path $g.anchor))) -}}
+{{- range $v, $pane := $panes -}}{{- $html = replace $html (printf "docsygen:variant:%d:" $v) $pane -}}{{- end -}}
+{{- return safeHTML (printf `<div class="docsygen-variants">%s%s</div>` $head $html) -}}

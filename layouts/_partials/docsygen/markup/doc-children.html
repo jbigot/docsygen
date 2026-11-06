@@ -4,19 +4,37 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The children of a block container .parent (a description, a list item, a section…), each
        through docsygen/markup/doc-node.html with .sub and its node, parent and index, but those
-       of a tag in .skip (a title rendered apart). The example variants among them
-       (docsygen/markup/variants.html) render their children in sequence, as the others.
+       of a tag in .skip (a title rendered apart). Where the site has Docsy's tabpane, the example
+       variants among them (docsygen/markup/variants.html) are tabs
+       (docsygen/markup/doc-variants.html), and what a group leaves of a paragraph renders as that
+       paragraph would, in its place among the parent's children; inside a variant (.sub.ctx.variant),
+       and without tabpane, the children render in sequence.
        Usage: partial "docsygen/markup/doc-children.html" (dict "parent" $node "sub" (dict "ctx" $ctx …) "skip" (slice "title")) */ -}}
 {{- $parent := .parent -}}
 {{- $skip := .skip | default slice -}}
-{{- $done := -1 -}}
-{{- range partial "docsygen/markup/variants.html" (dict "ctx" .sub.ctx "children" $parent.children) -}}
-  {{- range $i := seq .first .last -}}
-    {{- if gt $i $done -}}
-      {{- $done = $i -}}
+{{- if or .sub.ctx.variant (not (templates.Exists "_shortcodes/tabpane.html")) -}}
+  {{- range $i, $c := $parent.children -}}
+    {{- if not (and (reflect.IsMap $c) (in $skip $c.tag)) -}}
+      {{- partial "docsygen/markup/doc-node.html" (merge $.sub (dict "node" $c "parent" $parent "index" $i)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- range partial "docsygen/markup/variants.html" (dict "ctx" .sub.ctx "children" $parent.children) -}}
+    {{- if isset . "group" -}}
+      {{- partial "docsygen/markup/doc-variants.html" (dict "ctx" $.sub.ctx "group" .) -}}
+    {{- else -}}
+      {{- $i := .first -}}
+      {{- $node := .node -}}
       {{- $c := index $parent.children $i -}}
-      {{- if not (and (reflect.IsMap $c) (in $skip $c.tag)) -}}
-        {{- partial "docsygen/markup/doc-node.html" (merge $.sub (dict "node" $c "parent" $parent "index" $i)) -}}
+      {{- $in := $parent -}}
+      {{- if and (reflect.IsMap $node) (ne (len $node.children) (len $c.children)) -}}
+        {{- /* A part of a paragraph: the parent with the part in the paragraph's place. */ -}}
+        {{- $kids := slice -}}
+        {{- range $j, $k := $parent.children -}}{{- $kids = $kids | append (cond (eq $j $i) $node $k) -}}{{- end -}}
+        {{- $in = dict "tag" $parent.tag "attributes" $parent.attributes "children" $kids -}}
+      {{- end -}}
+      {{- if not (and (reflect.IsMap $node) (in $skip $node.tag)) -}}
+        {{- partial "docsygen/markup/doc-node.html" (merge $.sub (dict "node" $node "parent" $in "index" $i)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

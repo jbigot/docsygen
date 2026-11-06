@@ -29,12 +29,17 @@ Checks:
   - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
     guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
     demo::Box's page, with no diagram, does not;
+  - the example variants of the sample's page variants (five groups) and of demo::grow's
+    description are Docsy tabs, headed C and Fortran, whose ids are unique on their page and
+    whose tabs control their own panes; a list item's text outside its group stays before the
+    tabs; the links to a group and to one variant (page variant-links) land on ids of the page;
+    the print page and the search index hold every variant's code;
   - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
 Exit 1 on any failure.
 """
-import glob, html, json, os, re, sys
+import collections, glob, html, json, os, re, sys
 
 
 def read(*path):
@@ -170,6 +175,37 @@ def main(argv):
         errors.append("demo::Box's page, with no diagram, loads Mermaid")
     if 'data-docsy-plugin="mermaid"' not in read(public, 'docs/main/pages/guide/index.html'):
         errors.append("the guide page, with a <mermaid>, doesn't load Mermaid")
+    # Example variants: one tab per language, each tab controlling its own pane, the groups' ids
+    # unique on the page (Docsy's ids collide through RenderString, docsy/docsy#2308).
+    codes = ('demo_make_widget();', 'w = make_widget()', 'demo_resize(w, 5, 6);', 'call w%resize(5, 6)',
+             'demo_unused(w);', 'call unused(w)', 'w-&gt;resize(3, 4);', 'end program main')
+    for page, groups in (('docs/latest/pages/variants/index.html', 5), ('docs/latest/api/demo/index.html', 1)):
+        text = read(public, page)
+        lists = re.findall(r'<ul class="nav nav-tabs[^"]*" id="([^"]+)" role="tablist">(.*?)</ul>', text, re.S)
+        headers = [[h.strip() for h in re.findall(r'<button[^>]*>(.*?)</button>', l, re.S)] for _, l in lists]
+        if headers != [['C', 'Fortran']] * groups:
+            errors.append(f'{page}: the variants are not {groups} groups of tabs C and Fortran: {headers}')
+        ids = collections.Counter(re.findall(r'\sid="([^"]*)"', text))
+        if any(k > 1 for k in ids.values()):
+            errors.append(f'{page}: repeated ids {sorted(i for i, k in ids.items() if k > 1)}')
+        for _, l in lists:
+            for target, controls in re.findall(r'data-bs-target="#([^"]+)"[^>]*?aria-controls="([^"]+)"', l, re.S):
+                if target != controls or f'id="{target}" role="tabpanel"' not in text:
+                    errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
+    variants = read(public, 'docs/latest/pages/variants/index.html')
+    if not re.search(r'<li>Step two, in two languages\.\s*<div class="docsygen-variants"><a id="sample_item"></a><ul class="nav nav-tabs', variants):
+        errors.append("the variants page's list item lacks its text before its tabs")
+    for href in re.findall(r'href="([^"]*sample_ex[^"]*)"', read(public, 'docs/latest/pages/variant-links/index.html')) or ['none']:
+        path, _, frag = href.partition('#')
+        if path != '/docs/latest/pages/variants/' or f'id="{frag}"' not in variants:
+            errors.append(f'the variant-links page links to {href}, not to an id of the variants page')
+    printed = re.sub(r'<[^>]*>', '', read(public, '_print/docs/latest/index.html'))
+    plain = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/pages/variants/']
+    for code in codes:
+        if code not in printed:
+            errors.append(f'the print page of /docs/latest/ lacks the variant code {code!r}')
+        if not plain or html.unescape(code) not in plain[0]:
+            errors.append(f'the search index of the variants page lacks the variant code {code!r}')
     if not os.path.exists(os.path.join(public, 'llms.txt')):
         errors.append('no llms.txt')
     elif '/docs/latest/' not in read(public, 'llms.txt'):

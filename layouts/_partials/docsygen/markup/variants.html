@@ -173,13 +173,16 @@ SPDX-License-Identifier: MIT
             {{- $k = add $end 1 -}}
             {{- $from = $k -}}
             {{- $p := $next.Get (string $end) -}}
+            {{- $more := false -}}
             {{- if lt $p $n -}}
               {{- $o := index $toks $p -}}
               {{- if and (in (slice "anchor" "carrier") $o.kind) (hasPrefix $o.name $pre) (ne $o.name $pre) -}}
                 {{- $cur = $p -}}
                 {{- $v = add $v 1 -}}
+                {{- $more = true -}}
               {{- end -}}
             {{- end -}}
+            {{- if not $more -}}{{- break -}}{{- end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
