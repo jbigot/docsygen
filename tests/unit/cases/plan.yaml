@@ -118,3 +118,59 @@
   select: [9, members]
   expect: [classdemo_1_1Widget_1a34affe2d9f733dcb811f492d468a005d, classdemo_1_1Widget_1ad56d53bd603a1d81a5ad3623f5f873a8,
     classdemo_1_1Widget_1ac55324e57d7ec9c79000c44e232af788, classdemo_1_1Widget_1afe72a4d5472594d31c874d526806eec9]
+- name: overload set from a member group
+  partial: test/overload.html
+  context: {model: sample, id: namespacedemo, member: namespacedemo_1a74dde8fb93acece1f0b63c36266558d1}
+  expect:
+    set: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc
+    members: [namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, namespacedemo_1a74dde8fb93acece1f0b63c36266558d1]
+    described: true
+    group: user-defined-1
+- name: overload set without member group
+  partial: test/overload.html
+  context: {model: sample, id: namespacedemo, member: namespacedemo_1a164c0fd35e91775da3167ea50509e90c}
+  expect:
+    set: namespacedemo_1a164c0fd35e91775da3167ea50509e90c
+    members: [namespacedemo_1a164c0fd35e91775da3167ea50509e90c, namespacedemo_1aa5a0bbb6074f10c2781832da57db7545]
+    described: false
+    group: ""
+- name: overload set without member group, in a class
+  partial: test/overload.html
+  context: {model: sample, id: classdemo_1_1Widget, member: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
+  select: [members]
+  expect: [classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca]
+- name: thematic group is no overload set
+  partial: test/overload.html
+  context: {model: sample, id: classdemo_1_1Widget, member: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88}
+  expect: false
+- name: one-function group is no overload set
+  partial: test/overload.html
+  context: {model: sample, id: namespacedemo, member: namespacedemo_1ade370e56bfbec44e345e169aee817263}
+  expect: false
+- name: overload set of constructors
+  partial: test/overload.html
+  context: {model: sample, id: classdemo_1_1Gadget, member: classdemo_1_1Gadget_1a283192a367cbfe8f4e1b612dc38c0f4f}
+  expect:
+    set: classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb
+    members: [classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb, classdemo_1_1Gadget_1a17466d32c482a01f04d6614ffcd22fe7,
+      classdemo_1_1Gadget_1a283192a367cbfe8f4e1b612dc38c0f4f]
+    described: true
+    group: user-defined-1
+- name: overload set from a member group in a class
+  partial: test/overload.html
+  context: {model: sample, id: classdemo_1_1Gadget, member: classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2}
+  select: [group]
+  expect: user-defined-2
+- name: overloads of different protections are no overload set
+  partial: test/overload.html
+  context: {model: sample, id: classdemo_1_1Gadget, member: classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d}
+  expect: false
+- name: overload set of a variable template's specializations
+  partial: test/overload.html
+  context: {model: sample, id: namespacedemo, member: namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c}
+  expect:
+    set: namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c
+    members: [namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c, namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c,
+      namespacedemo_1a61a455cdf092fb43ced09be7ff303914]
+    described: false
+    group: ""

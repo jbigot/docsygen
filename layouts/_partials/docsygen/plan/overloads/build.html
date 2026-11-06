@@ -1,0 +1,59 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The overload sets (docsygen/plan/overloads.html) of every compound of a model, as
+       {refid: sets}, built once per model, in one partialCached entry like
+       docsygen/plan/sections/all.html. Only the compounds with a set are in it. */ -}}
+{{- $m := . -}}
+{{- /* Scratch maps: merge would fold the case of refids. */ -}}
+{{- $all := newScratch -}}
+{{- $all.Set "m" dict -}}
+{{- range $cid := $m.order -}}
+  {{- $out := newScratch -}}
+  {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $cid) -}}
+    {{- if eq .group "summary" -}}
+      {{- /* The members by what they overload, "function|name" or "variable|name". */ -}}
+      {{- $by := newScratch -}}
+      {{- $keys := slice -}}
+      {{- $others := false -}}
+      {{- range .members -}}
+        {{- $e := index $m.ids . -}}
+        {{- $name := "" -}}
+        {{- $args := "" -}}
+        {{- range $e.node.children -}}
+          {{- if not (reflect.IsMap .) -}}
+          {{- else if eq .tag "name" -}}{{- $name = delimit .children "" -}}
+          {{- else if eq .tag "argsstring" -}}{{- $args = delimit .children "" -}}
+          {{- end -}}
+        {{- end -}}
+        {{- /* A specialization's name holds its template arguments, an operator's name a < of its
+               own. */ -}}
+        {{- if not (hasPrefix $name "operator") -}}{{- $name = strings.TrimSpace (replaceRE `<.*$` "" $name) -}}{{- end -}}
+        {{- $what := "" -}}
+        {{- if or (in (slice "function" "slot" "signal") $e.kind) (and (eq $e.kind "friend") (hasPrefix $args "(")) -}}{{- $what = "function" -}}
+        {{- else if eq $e.kind "variable" -}}{{- $what = "variable" -}}
+        {{- end -}}
+        {{- if $what -}}
+          {{- $key := printf "%s|%s" $what $name -}}
+          {{- if not ($by.Get $key) -}}{{- $keys = $keys | append $key -}}{{- end -}}
+          {{- $by.Set $key (($by.Get $key | default slice) | append .) -}}
+        {{- else -}}
+          {{- $others = true -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $marked := and (hasPrefix .key "user-defined-") (not $others) (eq (len $keys) 1) -}}
+      {{- $description := cond $marked .description false -}}
+      {{- $group := cond $marked .key "" -}}
+      {{- range $keys -}}
+        {{- $members := $by.Get . -}}
+        {{- if ge (len $members) 2 -}}
+          {{- $set := dict "set" (index $members 0) "members" $members "description" ($description | default false) "group" $group -}}
+          {{- range $members -}}{{- $out.Set . $set -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $out.Values -}}{{- $all.SetInMap "m" $cid . -}}{{- end -}}
+{{- end -}}
+{{- return $all.Get "m" -}}

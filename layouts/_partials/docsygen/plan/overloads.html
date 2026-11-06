@@ -1,0 +1,20 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The overload sets of a compound's page, as {member id: {set, members, description, group}}
+       for each member of a set of two or more:
+         set          the id of the set's first member
+         members      the ids of the set's members, in the order of their section
+         description  the set's brief, the description node of its member group, or false
+         group        the key of its member group (user-defined-N), or ""
+       A member group (docsygen/plan/sections.html) whose members are all functions (function,
+       slot, signal, or a friend function) of one name is a set, described by the group: that is
+       how the sources mark a set and give it a brief. The other functions of one name in one
+       summary section are a set without a description: a section has one scope and protection,
+       and keeps friends and related functions apart from members. The specializations of a
+       variable template, of one name once their template arguments are left out, form a set the
+       same way. Built for every compound of the model at once, like docsygen/plan/sections.html.
+       Usage: partial "docsygen/plan/overloads.html" (dict "model" $model "id" $refid) */ -}}
+{{- $sets := index (partialCached "docsygen/plan/overloads/build.html" .model .model.dir) .id -}}
+{{- return ($sets | default dict) -}}

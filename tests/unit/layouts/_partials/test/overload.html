@@ -1,0 +1,12 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The overload set (docsygen/plan/overloads.html) of member .member in compound .id of .model,
+       its description replaced by whether it has one; false when the member is in no set. */ -}}
+{{- $set := index (partial "docsygen/plan/overloads.html" (dict "model" .model "id" .id)) .member -}}
+{{- $out := false -}}
+{{- with $set -}}
+  {{- $out = dict "set" .set "members" .members "described" (ne .description false) "group" .group -}}
+{{- end -}}
+{{- return $out -}}
