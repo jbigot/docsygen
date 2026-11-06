@@ -25,33 +25,36 @@
   font-weight: bold;
 }
 
-// Lists of declarations: the kind's word in its colour, from Bootstrap's palette.
+// Lists of declarations: the kind's word in its colour, from Bootstrap's palette, mixed with the
+// body colour so that it reaches a WCAG contrast of 4.5:1 against Bootstrap's light (#fff) and dark
+// (#212529) body backgrounds, the share of the palette's colour set per kind for that, and lower for
+// variables, whose green would otherwise be close to the types' teal.
 .docsygen-kind-namespace {
-  color: var(--bs-orange);
+  color: color-mix(in srgb, var(--bs-orange) 65%, var(--bs-body-color));
 }
 
 .docsygen-kind-concept {
-  color: var(--bs-purple);
+  color: color-mix(in srgb, var(--bs-purple) 60%, var(--bs-body-color));
 }
 
 .docsygen-kind-type {
-  color: var(--bs-teal);
+  color: color-mix(in srgb, var(--bs-teal) 55%, var(--bs-body-color));
 }
 
 .docsygen-kind-function {
-  color: var(--bs-blue);
+  color: color-mix(in srgb, var(--bs-blue) 75%, var(--bs-body-color));
 }
 
 .docsygen-kind-variable {
-  color: var(--bs-green);
+  color: color-mix(in srgb, var(--bs-green) 65%, var(--bs-body-color));
 }
 
 .docsygen-kind-macro {
-  color: var(--bs-red);
+  color: color-mix(in srgb, var(--bs-red) 70%, var(--bs-body-color));
 }
 
 .docsygen-kind-friend {
-  color: var(--bs-pink);
+  color: color-mix(in srgb, var(--bs-pink) 70%, var(--bs-body-color));
 }
 
 .docsygen-kind-topic,
