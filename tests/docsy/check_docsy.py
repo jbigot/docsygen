@@ -29,7 +29,7 @@ Checks:
   - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
     guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
     demo::Box's page, with no diagram, does not;
-  - the example variants of the sample's page variants (five groups) and of demo::grow's
+  - the example variants of the sample's page variants (six groups) and of demo::grow's
     description are Docsy tabs, headed C and Fortran, whose ids are unique on their page and
     whose tabs control their own panes; a list item's text outside its group stays before the
     tabs; every anchor of a group, its variants' too, is at its head, before its tabs, not in its
@@ -194,8 +194,9 @@ def main(argv):
     # Example variants: one tab per language, each tab controlling its own pane, the groups' ids
     # unique on the page (Docsy's ids collide through RenderString, docsy/docsy#2308).
     codes = ('demo_make_widget();', 'w = make_widget()', 'demo_resize(w, 5, 6);', 'call w%resize(5, 6)',
-             'demo_unused(w);', 'call unused(w)', 'w-&gt;resize(3, 4);', 'end program main')
-    for page, groups in (('docs/latest/pages/variants/index.html', 5), ('docs/latest/api/demo/index.html', 1)):
+             'demo_unused(w);', 'call unused(w)', 'w-&gt;resize(3, 4);', 'end program main',
+             'demo_resize(w, 9, 9);', 'call w%resize(9, 9)')
+    for page, groups in (('docs/latest/pages/variants/index.html', 6), ('docs/latest/api/demo/index.html', 1)):
         text = read(public, page)
         lists = re.findall(r'<ul class="nav nav-tabs[^"]*" id="([^"]+)" role="tablist">(.*?)</ul>', text, re.S)
         headers = [[h.strip() for h in re.findall(r'<button[^>]*>(.*?)</button>', l, re.S)] for _, l in lists]
@@ -210,21 +211,24 @@ def main(argv):
                     errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
     variants = read(public, 'docs/latest/pages/variants/index.html')
     # Every anchor of a group, its variants' too, is at its head, before its tabs, and nowhere in
-    # its panes, which are hidden when their tab isn't selected.
+    # its panes, which are hidden when their tab isn't selected: those that start a variant's
+    # parblock (sample_pbg's own and sample_pbg_note) too. An anchor inside a variant
+    # (sample_pbg_inner, in its parblock's second paragraph) is in its pane, once.
     heads = set()
-    for page, names in (('docs/latest/pages/variants/index.html', ('sample_ex', 'sample_shared', 'sample_pb', 'sample_inc', 'sample_item')),
+    for page, names in (('docs/latest/pages/variants/index.html', ('sample_ex', 'sample_shared', 'sample_pb', 'sample_inc', 'sample_item', 'sample_pbg')),
                         ('docs/latest/api/demo/index.html', ('sample_member',))):
         groups = divs(read(public, page), 'docsygen-variants')
         got = [re.findall(r'<a id="([^"]+)"></a>', g[:g.find('<ul class="nav nav-tabs')]) for g in groups]
-        want = [[n, f'{n}-c', f'{n}-fortran'] for n in names]
+        want = [[n] + (['sample_pbg_note'] if n == 'sample_pbg' else []) + [f'{n}-c', f'{n}-fortran'] for n in names]
         if got != want:
             errors.append(f"{page}: the groups' heads hold the anchors {got}, not {want}")
-        if any(re.search(r'\sid="sample_', g[g.find('<div class="tab-content"'):]) for g in groups):
-            errors.append(f"{page}: a group's pane holds one of its anchors")
+        panes = [re.findall(r'\sid="(sample_[^"]*)"', g[g.find('<div class="tab-content"'):]) for g in groups]
+        if [p for p in panes if p] != ([['sample_pbg_inner']] if 'sample_pbg' in names else []):
+            errors.append(f"{page}: the groups' panes hold the anchors {panes}, not sample_pbg_inner only")
         heads.update(i for g in got for i in g)
     copies = divs(variants, 'docsygen-variants-print')
-    if len(copies) != 5:
-        errors.append(f'the variants page has {len(copies)} copies of its groups for print, not 5')
+    if len(copies) != 6:
+        errors.append(f'the variants page has {len(copies)} copies of its groups for print, not 6')
     for c in copies:
         if re.search(r'\sid=', c) or 'nav-tabs' in c:
             errors.append('a copy of a group for print has an id or tabs')

@@ -104,6 +104,33 @@
 <codeline><highlight class="normal">```C</highlight></codeline>
 <codeline><highlight class="normal">demo_resize(w,<sp/>1,<sp/>1);</highlight></codeline>
 <codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">A<sp/>group<sp/>whose<sp/>anchor<sp/>starts<sp/>its<sp/>first<sp/>variant&apos;s<sp/>block,<sp/>with<sp/>another<sp/>anchor<sp/>before<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">variant&apos;s,<sp/>and<sp/>an<sp/>anchor<sp/>of<sp/>its<sp/>own<sp/>inside<sp/>it:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg_note</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg-C</highlight></codeline>
+<codeline><highlight class="normal">C<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_resize(w,<sp/>9,<sp/>9);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg_inner</highlight></codeline>
+<codeline><highlight class="normal">then:</highlight></codeline>
+<codeline><highlight class="normal">```C</highlight></codeline>
+<codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@parblock</highlight></codeline>
+<codeline><highlight class="normal">@anchor<sp/>sample_pbg-Fortran</highlight></codeline>
+<codeline><highlight class="normal">Fortran<sp/>source<sp/>code:</highlight></codeline>
+<codeline><highlight class="normal">```Fortran</highlight></codeline>
+<codeline><highlight class="normal">call<sp/>w%resize(9,<sp/>9)</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">@endparblock</highlight></codeline>
     </programlisting>
     <location file="src/pages/variants.md"/>
   </compounddef>

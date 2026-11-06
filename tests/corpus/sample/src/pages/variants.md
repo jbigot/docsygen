@@ -95,3 +95,30 @@ An anchor with no group before it:
 ```C
 demo_resize(w, 1, 1);
 ```
+
+A group whose anchor starts its first variant's block, with another anchor before the
+variant's, and an anchor of its own inside it:
+
+@parblock
+@anchor sample_pbg
+@anchor sample_pbg_note
+@anchor sample_pbg-C
+C source code:
+```C
+demo_resize(w, 9, 9);
+```
+
+@anchor sample_pbg_inner
+then:
+```C
+demo_unused(w);
+```
+@endparblock
+
+@parblock
+@anchor sample_pbg-Fortran
+Fortran source code:
+```Fortran
+call w%resize(9, 9)
+```
+@endparblock

@@ -58,7 +58,16 @@
 </para>
 <para>An anchor with no group before it:</para>
 <para><anchor id="variants_1plain-dashed"/><programlisting filename=".C"><codeline><highlight class="normal">demo_resize(w,<sp/>1,<sp/>1);</highlight></codeline>
+</programlisting></para>
+<para>A group whose anchor starts its first variant&apos;s block, with another anchor before the variant&apos;s, and an anchor of its own inside it:</para>
+<para><parblock><para><anchor id="variants_1sample_pbg"/><anchor id="variants_1sample_pbg_note"/><anchor id="variants_1sample_pbg-C"/>C source code: <programlisting filename=".C"><codeline><highlight class="normal">demo_resize(w,<sp/>9,<sp/>9);</highlight></codeline>
+</programlisting></para>
+<para><anchor id="variants_1sample_pbg_inner"/>then: <programlisting filename=".C"><codeline><highlight class="normal">demo_unused(w);</highlight></codeline>
 </programlisting> </para>
+</parblock></para>
+<para><parblock><para><anchor id="variants_1sample_pbg-Fortran"/>Fortran source code: <programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%resize(9,<sp/>9)</highlight></codeline>
+</programlisting> </para>
+</parblock></para>
     </detaileddescription>
     <location file="src/pages/variants.md"/>
   </compounddef>

@@ -88,7 +88,7 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><parblock><para><anchor id="variants_1sample_pb"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para><para>more <programlisting><codeline/></programlisting></para></parblock></para><para><parblock><para><anchor id="variants_1sample_pb-Fortran"/>F <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
   expect:
-    - '0-1 group sample_pb variants_1sample_pb []'
+    - '0-1 group sample_pb variants_1sample_pb [variants_1sample_pb]'
     - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb #variants_1sample_pb-C C [code]} {more [code]}]}'
     - '  Fortran variants_1sample_pb-Fortran: {[pb {#variants_1sample_pb-Fortran F [code]}]}'
 - name: variants, an unrelated anchor before a variant's at a parblock's start
@@ -97,7 +97,7 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1plain-dashed"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
   expect:
-    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb]'
+    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb variants_1plain-dashed]'
     - '  C variants_1sample_pb-C: {[pb {#variants_1plain-dashed #variants_1sample_pb-C C [code]}]}'
 - name: variants, an unrelated anchor between the group's and its first variant's
   partial: test/variants.html
@@ -140,7 +140,9 @@
     ctx: {model: sample}
     id: variants
     all: true
-  expect: ['sample_ex: C Fortran', 'sample_shared: C Fortran', 'sample_pb: C Fortran', 'sample_inc: C Fortran', 'sample_item: C Fortran']
+  # sample_pbg's anchor starts its first variant's parblock, which, looked into alone, also starts
+  # a group: rendering never looks for groups inside a variant (docsygen/markup/doc-children.html).
+  expect: ['sample_ex: C Fortran', 'sample_shared: C Fortran', 'sample_pb: C Fortran', 'sample_inc: C Fortran', 'sample_pbg: C Fortran', 'sample_item: C Fortran', 'sample_pbg: C']
 - name: variants, a group in a member's description
   partial: test/variants.html
   context:
