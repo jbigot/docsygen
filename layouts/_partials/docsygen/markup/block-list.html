@@ -54,6 +54,6 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 <div class="docsygen-list">
   {{- with $topics }}<ul class="mb-3">{{ . | safeHTML }}</ul><hr>{{ end -}}
-  {{- with $lines }}<div class="mb-3">{{ . | safeHTML }}</div>{{ end -}}
+  {{- with $lines }}{{ . | safeHTML }}{{ end -}}
   {{- partial "docsygen/markup/list-buckets.html" (dict "ctx" $ctx "buckets" $list.buckets "page" $b.id "anchors" $anchors) -}}
 </div>
