@@ -70,9 +70,9 @@ at `:` and `.`, which therefore can't separate.
 
 ## Links
 
-`@ref resize` links to the example, and `@ref resize-Fortran` to its Fortran variant. Both land
-on the example's tabs: a link to one language doesn't switch the tabs to it
-([docsy/docsy#1746](https://github.com/docsy/docsy/issues/1746)).
+`@ref resize` links to the example, and `@ref resize-Fortran` to its Fortran variant. Both
+scroll to the top of the example's tabs, whichever tab is selected: a link to one language
+doesn't select its tab, since Docsy can't select a tab from a link yet.
 
 ## Without Docsy
 

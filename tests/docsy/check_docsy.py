@@ -32,7 +32,8 @@ Checks:
   - the example variants of the sample's page variants (five groups) and of demo::grow's
     description are Docsy tabs, headed C and Fortran, whose ids are unique on their page and
     whose tabs control their own panes; a list item's text outside its group stays before the
-    tabs; the links to a group and to one variant (page variant-links) land on ids of the page;
+    tabs; every anchor of a group, its variants' too, is at its head, before its tabs, not in its
+    panes; the links to a group and to one variant (page variant-links) land on these anchors;
     the print page and the search index hold every variant's code; each group is followed by a
     copy of its variants in sequence (div.docsygen-variants-print), with no id, which the
     stylesheet shows only in print, where it hides the tabs;
@@ -208,6 +209,19 @@ def main(argv):
                 if target != controls or f'id="{target}" role="tabpanel"' not in text:
                     errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
     variants = read(public, 'docs/latest/pages/variants/index.html')
+    # Every anchor of a group, its variants' too, is at its head, before its tabs, and nowhere in
+    # its panes, which are hidden when their tab isn't selected.
+    heads = set()
+    for page, names in (('docs/latest/pages/variants/index.html', ('sample_ex', 'sample_shared', 'sample_pb', 'sample_inc', 'sample_item')),
+                        ('docs/latest/api/demo/index.html', ('sample_member',))):
+        groups = divs(read(public, page), 'docsygen-variants')
+        got = [re.findall(r'<a id="([^"]+)"></a>', g[:g.find('<ul class="nav nav-tabs')]) for g in groups]
+        want = [[n, f'{n}-c', f'{n}-fortran'] for n in names]
+        if got != want:
+            errors.append(f"{page}: the groups' heads hold the anchors {got}, not {want}")
+        if any(re.search(r'\sid="sample_', g[g.find('<div class="tab-content"'):]) for g in groups):
+            errors.append(f"{page}: a group's pane holds one of its anchors")
+        heads.update(i for g in got for i in g)
     copies = divs(variants, 'docsygen-variants-print')
     if len(copies) != 5:
         errors.append(f'the variants page has {len(copies)} copies of its groups for print, not 5')
@@ -221,12 +235,12 @@ def main(argv):
     if not re.search(r'\.docsygen-variants-print\s*\{\s*display:\s*none', css) or not re.search(
             r'@media print\s*\{\s*\.docsygen-variants\s*\{\s*display:\s*none;?\s*\}\s*\.docsygen-variants-print\s*\{\s*display:\s*block', css):
         errors.append("the stylesheet doesn't show the copies of the variants instead of the tabs in print only")
-    if not re.search(r'<li>Step two, in two languages\.\s*<div class="docsygen-variants"><a id="sample_item"></a><ul class="nav nav-tabs', variants):
+    if not re.search(r'<li>Step two, in two languages\.\s*<div class="docsygen-variants"><a id="sample_item"></a>(?:<a id="[^"]+"></a>)*<ul class="nav nav-tabs', variants):
         errors.append("the variants page's list item lacks its text before its tabs")
     for href in re.findall(r'href="([^"]*sample_ex[^"]*)"', read(public, 'docs/latest/pages/variant-links/index.html')) or ['none']:
         path, _, frag = href.partition('#')
-        if path != '/docs/latest/pages/variants/' or f'id="{frag}"' not in variants:
-            errors.append(f'the variant-links page links to {href}, not to an id of the variants page')
+        if path != '/docs/latest/pages/variants/' or frag not in heads:
+            errors.append(f"the variant-links page links to {href}, not to an anchor at a group's head of the variants page")
     printed = re.sub(r'<[^>]*>', '', read(public, '_print/docs/latest/index.html'))
     plain = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/pages/variants/']
     for code in codes:

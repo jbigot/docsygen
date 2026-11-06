@@ -5,7 +5,9 @@ SPDX-License-Identifier: MIT
 {{- /* A group of example variants (docsygen/markup/variants.html) as Docsy's tabs, in a
        div.docsygen-variants: the anchors of the group's head, then a tabpane, rendered by
        .ctx.page.RenderString, with one tab per variant, headed by its label, whose pane holds the
-       variant's blocks as a description's children; the variants' own anchors are among them.
+       variant's blocks as a description's children. The variants' own anchors are with the
+       head's, not in their panes (.ctx.skipanchors): an inactive pane is hidden, and a link to
+       one language lands on the group.
        The tabs persist by header: the language chosen follows across the site. The panes are
        rendered apart, with no group sought inside them (.ctx.variant), and put in the tabpane's
        output in place of a placeholder, so that no listing goes through the shortcode parser.
@@ -14,9 +16,11 @@ SPDX-License-Identifier: MIT
        Usage: partial "docsygen/markup/doc-variants.html" (dict "ctx" $ctx "group" $group) */ -}}
 {{- $ctx := .ctx -}}
 {{- $g := .group -}}
-{{- $in := merge $ctx (dict "variant" true) -}}
 {{- $head := "" -}}
-{{- range $g.anchors -}}{{- $head = printf `%s<a id="%s"></a>` $head (index $ctx.anchors .) -}}{{- end -}}
+{{- $own := slice -}}
+{{- range $g.variants -}}{{- $own = $own | append .anchor -}}{{- end -}}
+{{- range $g.anchors | append $own -}}{{- $head = printf `%s<a id="%s"></a>` $head (index $ctx.anchors .) -}}{{- end -}}
+{{- $in := merge $ctx (dict "variant" true "skipanchors" $own) -}}
 {{- $panes := slice -}}
 {{- $tabs := "" -}}
 {{- range $v, $variant := $g.variants -}}
