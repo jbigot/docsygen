@@ -3,7 +3,8 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* Every member that a compound's page documents in full, in the page's order, each as
-       docsygen/member shows it (form full, with its anchor: docsygen/shortcode/full.html). A
+       docsygen/member shows it (form full, with its anchor: docsygen/shortcode/full.html), an
+       overload set's description before its members (docsygen/markup/block-overloads.html). A
        page written by hand for a class, which claims it, so lists them all, and gets the
        members the class gains in later versions.
          item     the compound, a name as in doxygen: links (or id, a Doxygen id)
@@ -23,6 +24,8 @@ SPDX-License-Identifier: MIT
       {{- range partial "docsygen/plan.html" (dict "entry" . "ctx" $ctx) -}}
         {{- if eq .type "member" -}}
           {{- $html = $html | append (partial "docsygen/shortcode/full.html" (dict "shortcode" $ "ctx" $ctx "id" .id)) -}}
+        {{- else if eq .type "overloads" -}}
+          {{- $html = $html | append (partial "docsygen/part.html" (dict "address" (dict "type" "overloads" "id" .id) "ctx" $ctx)) -}}
         {{- end -}}
       {{- end -}}
       {{- partial "docsygen/markup/md-safe.html" (delimit $html "\n") -}}

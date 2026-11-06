@@ -21,9 +21,9 @@ Page skeletons
   `tree-<name>` or `source`. The template
   gets `{entry, paths, dir, pathMap, topicMembers, blocks}` and returns Markdown, with a shortcode per block that `partial "docsygen/skeleton/call.html" $block` writes.
   A block's `heading` is `{level, text, anchorKey}`; a member's adds `html`, its declaration as
-  inline HTML that is safe in a Markdown heading (an overload set's: a line per member, with its
-  anchor), and `classes`, which the default skeleton writes with the anchor as
-  `{#anchor .class …}`.
+  inline HTML that is safe in a Markdown heading, and `classes`, which the default skeleton writes
+  with the anchor as `{#anchor .class …}`. An overload set's block (`overloads`) has its name and
+  word as `html`, and its members' headings are one level down.
 
 The page tree
 : It comes from `docsygen/paths/scheme.html`.

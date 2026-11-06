@@ -13,8 +13,9 @@ SPDX-License-Identifier: MIT
        documentation shows it, docsygen/markup/member-doc.html). What follows the name is
        highlighted inline as C++ (transform.Highlight), with Chroma's classes or styles as the
        site's markup.highlight asks; the <code> carries Chroma's class, its background and colour
-       left to the heading's.
-       Usage: partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $memberId) */ -}}
+       left to the heading's. With .nameOnly, the name alone, for an overload set's heading
+       (docsygen/plan/details.html).
+       Usage: partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $memberId "nameOnly" false) */ -}}
 {{- $e := index .ctx.model.ids .id -}}
 {{- $kind := $e.kind -}}
 {{- $parts := dict -}}
@@ -34,6 +35,8 @@ SPDX-License-Identifier: MIT
 {{- else -}}
   {{- $name = replaceRE $tight "$1" $name -}}
 {{- end -}}
+{{- /* A set's name: a specialization's without its template arguments. */ -}}
+{{- if and .nameOnly (not (hasPrefix $name "operator")) -}}{{- $name = replaceRE `<.*$` "" $name -}}{{- end -}}
 {{- /* The type without the keywords that the labels say. */ -}}
 {{- $type := $text.type -}}
 {{- range seq 4 -}}
@@ -88,7 +91,7 @@ SPDX-License-Identifier: MIT
   {{- with $full -}}{{- $rest = printf "%s: %s" $rest . -}}{{- end -}}
 {{- end -}}
 {{- $html := "" -}}
-{{- with $rest -}}
+{{- with and (not .nameOnly) $rest -}}
   {{- /* transform.Highlight's inline form, its <code> wrapper left out. */ -}}
   {{- $html = replaceRE `^<code[^>]*>|</code>$` "" (strings.TrimSpace (replace (string (transform.Highlight . "cpp" "hl_inline=true")) "\n" "")) -}}
 {{- end -}}

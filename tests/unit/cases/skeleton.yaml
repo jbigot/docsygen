@@ -26,18 +26,25 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Functions {#doc-function}\n\n### ", " {#resize .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
+    contains: ["## Functions {#doc-function}\n\n### ", " {#resize-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
   expect: []
-- name: skeleton of a class, anchor of each overload in a set, the set's on its heading
+- name: skeleton of a class, an overload set's heading names it, its overloads' headings below
+  partial: test/skeleton.html
+  context:
+    model: sample
+    key: api/demo/gadget
+    contains:
+      - "### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong></code> overloads {#set-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/part id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" part=\"overloads\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
+      - "</code> {#set .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
+      - "</code> {#set-1 .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6\" %}}"
+  expect: []
+- name: skeleton of a class, an overload set's heading holds no declaration
   partial: test/skeleton.html
   context:
     model: sample
     key: api/demo/widget
-    contains:
-      - "### <span class=\"d-block\"><code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>resize</strong>"
-      - "</code></span> <a id=\"resize-1\"></a><code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>resize</strong>"
-      - "</code> {#resize .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd\" %}}\n\n{{% docsygen/member id=\"classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca\" %}}"
-  expect: []
+    contains: ['<span class="d-block">', '<a id="resize-1">']
+  expect: ['<span class="d-block">', '<a id="resize-1">']
 - name: skeleton of a class, no title block
   partial: test/skeleton.html
   context:

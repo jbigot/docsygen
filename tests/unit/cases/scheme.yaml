@@ -37,6 +37,26 @@
   context: {model: sample}
   select: [paths, targets, classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca, anchor]
   expect: resize-1
+- name: scheme, an overload set's anchor, after its members'
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api/demo/gadget, 'overloads:classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2']
+  expect: set-overloads
+- name: scheme, a class's overload set's anchor
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api/demo/widget, 'overloads:classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd']
+  expect: resize-overloads
+- name: scheme, a variable template's specializations' set anchor
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, anchors, api/demo, 'overloads:namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c']
+  expect: size_of-specializations
+- name: scheme, a set's members keep their anchors
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6, anchor]
+  expect: set-1
 - name: scheme, a section is named as Hugo names a heading
   partial: test/paths.html
   context: {model: sample}

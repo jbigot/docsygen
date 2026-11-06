@@ -1,0 +1,10 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* An overload set's description (.block.description, its member group's, or false: then
+       nothing), under the set's heading, which the page's skeleton writes, over its members'
+       (docsygen/plan/details.html). */ -}}
+{{- with .block.description -}}
+<div class="docsygen-overloads td-max-width-on-larger-screens">{{ partial "docsygen/markup/doc.html" (dict "node" . "ctx" $.ctx) }}</div>
+{{- end -}}

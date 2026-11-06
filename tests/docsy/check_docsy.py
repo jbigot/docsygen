@@ -20,9 +20,12 @@ Checks:
   - demo::Widget's members' headings, their declarations, are text in its table of contents,
     with no id, and in the search index, with no markup or escaped character; demo's keep their
     ... and -- there, which goldmark's typographer would rewrite;
+  - an overload set (demo::Gadget::set, demo::Widget's constructors) is one entry of the table of
+    contents beside the members, "<name> overloads", its overloads below it only (Hugo's default
+    endLevel, 3, leaves them out), and their declarations are still text in the search index;
   - the sitemap lists the reference's pages under /docs/latest/ only;
-  - the print page of /docs/main/ holds a member's declaration heading, and the print page of /docs/1.0/
-    has the notice and one canonical link;
+  - the print page of /docs/main/ holds a member's declaration heading and an overload's, and the
+    print page of /docs/1.0/ has the notice and one canonical link;
   - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
     guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
     demo::Box's page, with no diagram, does not;
@@ -37,6 +40,18 @@ import glob, html, json, os, re, sys
 def read(*path):
     with open(os.path.join(*path), encoding='utf-8') as f:
         return f.read()
+
+
+def toc_entries(page):
+    """The entries of page's table of contents, as [(depth, text)], depth 1 for the outer list."""
+    toc = re.search(r'id="TableOfContents">(.*?)</nav>', page, re.S)
+    out, depth = [], 0
+    for tag, text in re.findall(r'(<ul>|</ul>)|<a href="#[^"]+">(.*?)</a>', toc.group(1) if toc else '', re.S):
+        if tag:
+            depth += 1 if tag == '<ul>' else -1
+        else:
+            out.append((depth, html.unescape(re.sub(r'<[^>]*>', '', text))))
+    return out
 
 
 def main(argv):
@@ -89,22 +104,40 @@ def main(argv):
     if not refs or any(not r.startswith('/docs/latest/') for r in refs):
         errors.append(f"the search index has demo::Widget's description from {refs}, not from /docs/latest/ only")
     # Members' headings are their declarations, inline HTML: text in the table of contents and
-    # the search index, an overload set's lines words apart, with no markup left.
+    # the search index, with no markup left. An overload set's heading names it, its overloads'
+    # headings are below the table of contents' depth.
     widget = read(public, 'docs/latest/api/demo/widget/index.html')
     toc = re.search(r'id="TableOfContents">(.*?)</nav>', widget, re.S)
     toc = toc.group(1) if toc else ''
     entries = {i: html.unescape(re.sub(r'<[^>]*>', '', t)) for i, t in re.findall(r'<a href="#([^"]+)">(.*?)</a>', toc, re.S)}
-    for want in ('Widget() Widget(int side) Widget(const Widget &)', 'operator<(const Widget &other) const -> bool'):
+    for want in ('Widget overloads', 'operator<(const Widget &other) const -> bool'):
         if want not in entries.values():
             errors.append(f"demo::Widget's table of contents has no entry {want!r}: {sorted(entries.values())}")
+    toc_widget = toc_entries(widget)
+    sets = [d for d, t in toc_widget if t == 'Widget overloads']
+    if any(t.startswith('Widget(') and d <= sets[0] for d, t in toc_widget if sets):
+        errors.append(f"demo::Widget's table of contents lists its constructors beside their set: {toc_widget}")
     if re.search(r'\sid=', toc):
         errors.append("demo::Widget's table of contents repeats an id of its headings")
     bodies = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/api/demo/widget/']
-    for want in ('Widget() Widget(int side) Widget(const Widget &)', 'operator<(const Widget &other) const -> bool'):
+    for want in ('Widget()', 'Widget(int side)', 'Widget(const Widget &)', 'operator<(const Widget &other) const -> bool'):
         if not bodies or want not in bodies[0]:
             errors.append(f"the search index of demo::Widget lacks the declaration {want!r}")
     if bodies and re.search(r'&lt;|&amp;|<code|<span|<strong', bodies[0]):
         errors.append("the search index of demo::Widget holds markup or escaped characters")
+    # The set is one entry beside the members, its overloads only below it, as the site's
+    # endLevel (here 5) lists level 4 headings; Hugo's default (3) leaves them out.
+    entries = toc_entries(read(public, 'docs/latest/api/demo/gadget/index.html'))
+    sets = [d for d, t in entries if t == 'set overloads']
+    members = [d for d, t in entries if t == 'update() -> void']
+    if len(sets) != 1 or members != sets:
+        errors.append(f"demo::Gadget's table of contents has not one entry 'set overloads' beside its members: {entries}")
+    bodies = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/api/demo/gadget/']
+    for want in ('set(int value) -> void', 'set(double value) -> void'):
+        if any(t == want and (not sets or d <= sets[0]) for d, t in entries):
+            errors.append(f"demo::Gadget's table of contents lists the overload {want!r} beside its set")
+        if not bodies or want not in bodies[0]:
+            errors.append(f"the search index of demo::Gadget lacks the declaration {want!r}")
     # ... and -- survive goldmark's typographer, which would make them an ellipsis and a dash.
     demo = read(public, 'docs/latest/api/demo/index.html')
     toc = re.search(r'id="TableOfContents">(.*?)</nav>', demo, re.S)
@@ -120,6 +153,8 @@ def main(argv):
         errors.append(f'the sitemap lists {sorted(locs)} of the reference, not /docs/latest/ only')
     if not re.search(r'<h3 [^>]*><code class="docsygen-declaration', read(public, '_print/docs/main/index.html')):
         errors.append("the print page of /docs/main/ holds no member's declaration heading")
+    if not re.search(r'<h4 [^>]*><code class="docsygen-declaration[^"]*"><strong>set</strong>', read(public, '_print/docs/main/index.html')):
+        errors.append("the print page of /docs/main/ holds no overload's declaration heading")
     printed = read(public, '_print/docs/1.0/index.html')
     # Docsy's print heading doesn't call version-banner.html: no notice, until Docsy does.
     if 'docsygen-notice' in printed:

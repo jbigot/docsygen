@@ -59,6 +59,11 @@ docsygen-concept-definition: Concept definition
 docsygen-class-documentation: Class Documentation
 docsygen-source: Source
 
+# The heading of an overload set, and of a variable template's specializations, in the detailed
+# documentation; .name is HTML, built and escaped by docsygen (the name, as code).
+docsygen-overloads: "{{ .name }} overloads"
+docsygen-specializations: "{{ .name }} specializations"
+
 # The lists of declarations: the size of an overload set or of a variable template's
 # specializations, the labels over the lists, and the name of an anonymous namespace. The base of
 # docsygen-list-inherited-from and docsygen-list-inherited-labelled is HTML, built and escaped by

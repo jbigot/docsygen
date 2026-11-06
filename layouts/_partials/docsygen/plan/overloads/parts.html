@@ -1,0 +1,36 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The members of a detailed section, .members (docsygen/plan/sections.html), as the runs that
+       its documentation heads, in order: [{ids, set, key, word}]. A member of no overload set
+       (docsygen/plan/overloads.html, of its home) is a run of its own, set false; the members of
+       a set that the section documents are one run at the first of them, set the set, when there
+       are two or more. key is the anchorKey of a run of a set, overloads:<id> with the id of the
+       set's first member, or of the run's first if the run lacks it (a set split across
+       sections), as the page scheme names its anchor (docsygen/paths/scheme.html); word is
+       overloads, or specializations for a variable template's.
+       Usage: partial "docsygen/plan/overloads/parts.html" (dict "model" $model "members" $ids) */ -}}
+{{- $m := .model -}}
+{{- $members := .members -}}
+{{- $done := newScratch -}}
+{{- $out := slice -}}
+{{- range $members -}}
+  {{- $id := . -}}
+  {{- if not ($done.Get $id) -}}
+    {{- $set := index (partial "docsygen/plan/overloads.html" (dict "model" $m "id" (index $m.ids $id).home)) $id -}}
+    {{- $ids := slice $id -}}
+    {{- if $set -}}
+      {{- $ids = slice -}}
+      {{- range $members -}}{{- if in $set.members . -}}{{- $ids = $ids | append . -}}{{- end -}}{{- end -}}
+    {{- end -}}
+    {{- range $ids -}}{{- $done.Set . true -}}{{- end -}}
+    {{- if gt (len $ids) 1 -}}
+      {{- $word := cond (eq (index $m.ids $id).kind "variable") "specializations" "overloads" -}}
+      {{- $out = $out | append (dict "ids" $ids "set" $set "key" (printf "overloads:%s" (cond (in $ids $set.set) $set.set $id)) "word" $word) -}}
+    {{- else -}}
+      {{- $out = $out | append (dict "ids" $ids "set" false "key" "" "word" "") -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

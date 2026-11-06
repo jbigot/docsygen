@@ -123,17 +123,24 @@
     part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}, anchor: true}
     contains: ['<div class="docsygen-member td-max-width-on-larger-screens" id="resize" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd"><p class="docsygen-declaration-line"><code class="docsygen-declaration chroma bg-transparent text-body"><strong>resize</strong>']
   expect: []
-- name: docsy markup, an overload under its set's heading repeats its declaration, small, over its documentation
+- name: docsy markup, an overload under its own heading starts with its labels, no declaration repeated
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca}}
-    contains: ['data-doxygen-id="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca"><p class="docsygen-declaration-line small mt-3 mb-1"><code class="docsygen-declaration chroma bg-transparent text-body"><strong>resize</strong>', '</code></p><div class="docsygen-labels"><span class="badge text-bg-secondary">noexcept</span>']
+    contains: ['data-doxygen-id="classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca"><div class="docsygen-labels"><span class="badge text-bg-secondary">noexcept</span>']
+    lacks: [docsygen-declaration-line]
   expect: []
-- name: docsy markup, the first member of an overload set under its heading shows the set's description
+- name: docsy markup, an overload set's part is its description
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: overloads, id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc}}
+    contains: ['<p>An overload set, as a member group of a namespace.']
+  expect: []
+- name: docsy markup, the first member of an overload set leaves the set's description to the set
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: member, id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc}}
-    contains: ['data-doxygen-id="namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc"><p>An overload set, as a member group of a namespace.']
+    lacks: ['An overload set, as a member group of a namespace.']
   expect: []
 - name: docsy markup, a variable's initial value in its documentation
   partial: test/block-contains.html
@@ -228,17 +235,17 @@
 - name: list line of a variable template counts its specializations past the primary
   partial: docsygen/markup/list-line.html
   context:
-    ctx: {model: sample, links: {namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc: /api/demo/#size_of}}
+    ctx: {model: sample, links: {namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c: /api/demo/#size_of}}
     page: classdemo_1_1Widget
-    entry: {id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, ids: [namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, x, y], word: variable, name: size_of, count: 2, countKey: specializations, brief: false, children: []}
-  expect: '<li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-variable fw-bold">variable</code> <a href="/api/demo/#size_of"><code>size_of</code></a></span> (+2 specializations)</li>'
+    entry: {id: namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c, ids: [namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c, x, y], word: variable, name: size_of, count: 2, countKey: specializations, brief: false, children: []}
+  expect: '<li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-variable fw-bold">variable</code> <a href="/api/demo/#size_of-specializations"><code>size_of</code></a></span> (+2 specializations)</li>'
 - name: list line of an overload set shows its count
   partial: docsygen/markup/list-line.html
   context:
     ctx: {model: sample, links: {namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc: /api/demo/#to_string}}
     page: classdemo_1_1Widget
     entry: {id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, ids: [namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc, x], word: function, name: to_string, count: 2, countKey: overloads, brief: false, children: []}
-  expect: '<li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-function fw-bold">function</code> <a href="/api/demo/#to_string"><code>to_string</code></a></span> (2 overloads)</li>'
+  expect: '<li><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-function fw-bold">function</code> <a href="/api/demo/#to_string-overloads"><code>to_string</code></a></span> (2 overloads)</li>'
 - name: list line without brief has no dash
   partial: docsygen/markup/list-line.html
   context:
@@ -314,3 +321,17 @@
     ctx: {}
     xml: '<detaileddescription><para><itemizedlist><listitem override="checked"><para>a</para></listitem><listitem override="unchecked"><para>b</para></listitem></itemizedlist></para></detaileddescription>'
   expect: '<ul><li><input checked="" disabled="" type="checkbox"> a</li><li><input disabled="" type="checkbox"> b</li></ul>'
+- name: docsy markup, a member's sections are headings below its own
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624}
+    contains: ['#### A section of a member', '##### A subsection of a member']
+  expect: []
+- name: docsy markup, an overload's sections are headings below its own, one level down
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624, level: 4}
+    contains: ['##### A section of a member', '###### A subsection of a member']
+  expect: []

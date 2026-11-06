@@ -38,10 +38,10 @@ A member, with `form="full"` (the default), its documentation as its compound's 
 
 {{% docsygen/member item="demo::Widget::width" form="summary" %}}
 
-On its compound's page, a member's heading is its declaration, and an overload set has one heading
-for all its members. The full form shows the declaration first, and carries the member's anchor, so
-that links to the member can land on the page, unless the page already has it, from the member's
-heading or an earlier full form:
+On its compound's page, a member's heading is its declaration; an overload set has a heading of its
+own, its name and "overloads", over its description and its members' headings. The full form shows
+the declaration first, and carries the member's anchor, so that links to the member can land on
+the page, unless the page already has it, from the member's heading or an earlier full form:
 
 ```markdown
 {{%/* docsygen/member item="demo::Widget::width" */%}}
@@ -74,6 +74,7 @@ One part of a page, `part` being its type:
 | `description` | the detailed description, with its sections | |
 | `section` | one section of the description | |
 | `inline-classes` | the classes documented inline | |
+| `overloads` | the description of the overload set of a member (`item`), the first of the set | |
 | `member` | one member | |
 | `tree` | an index (no `item`) | `name`: `hierarchy`, `files`, `pages`, `topics` or `examples` |
 | `source` | a file's source listing | |

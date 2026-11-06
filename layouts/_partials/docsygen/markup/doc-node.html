@@ -81,8 +81,9 @@ SPDX-License-Identifier: MIT
   {{- /* In a compound's description, a section is a block of its own (docsygen/plan/compound.html,
          docsygen/markup/block-section.html); elsewhere, as Doxygen writes it. */ -}}
   {{- if not $ctx.sectionblocks -}}
-  {{- /* Below the member's own heading (h3): sectN as h(3+N), h6 at most. */ -}}
-  {{- $level := int (strings.TrimPrefix "sect" $tag) | add 3 -}}
+  {{- /* Below the member's own heading (h3, or h4 under an overload set's: .ctx.headinglevel):
+         sectN that many levels down, h6 at most. */ -}}
+  {{- $level := int (strings.TrimPrefix "sect" $tag) | add ($ctx.headinglevel | default 3) -}}
   {{- if gt $level 6 -}}{{- $level = 6 -}}{{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "title") -}}

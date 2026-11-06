@@ -24,10 +24,12 @@ SPDX-License-Identifier: MIT
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
        Anchors, per page, in this order: the fixed ones (details where the page has that
        heading, the section keys, slug(header) for member groups, conceptdef, inline-classes,
-       source), the members (the name), the enum values (<enum anchor>-<value>), the sections (the title), the anchors (the id without its
-       compound's prefix). An anchor is docsygen/text/anchor.html of its name, as Hugo names a
-       heading, with -1, -2, … on a collision, as goldmark numbers duplicate heading ids; a
-       page's path segment takes -2, ….
+       source), the members (the name), the enum values (<enum anchor>-<value>), the sections
+       (the title), the anchors (the id without its compound's prefix), the overload sets of the
+       detailed sections (<name>-overloads, or <name>-specializations for a variable template's,
+       kept with the fixed ones as overloads:<id>: docsygen/plan/overloads/parts.html). An anchor
+       is docsygen/text/anchor.html of its name, as Hugo names a heading, with -1, -2, … on a
+       collision, as goldmark numbers duplicate heading ids; a page's path segment takes -2, ….
        Usage: partial "docsygen/paths/scheme.html" (dict "model" $model "roles" $roles "pathMap" $pathMap) */ -}}
 {{- define "_partials/docsygen/paths/scheme/alloc.html" -}}
   {{- /* A name unique in .page of scratch .s: .base, or .base-<n> from n = .first (2 for a page's
@@ -420,6 +422,7 @@ SPDX-License-Identifier: MIT
 {{- $nsRootPage := $s.Get "nsRootPage" | default "" -}}
 {{- range $key := $s.Get "order" -}}
   {{- $fixed := slice -}}
+  {{- $docMembers := slice -}}
   {{- range index ($s.Get "roles") $key -}}
     {{- if eq .role "compound" -}}
       {{- /* The headings of docsygen/plan/compound.html: "Detailed Description" where it has one
@@ -429,14 +432,20 @@ SPDX-License-Identifier: MIT
       {{- end -}}
       {{- if not (and $nsRootPage (eq (index $m.ids .id).kind "file")) -}}
         {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
-          {{- if eq .group "doc" -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
+          {{- if eq .group "doc" -}}
+            {{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}
+            {{- $docMembers = $docMembers | append (dict "members" .members) -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
       {{- range slice "conceptdef" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
     {{- else if eq .role "source" -}}
       {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
     {{- else if eq .role "namespace-root" -}}
-      {{- range partial "docsygen/plan/root-sections.html" $m -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
+      {{- range partial "docsygen/plan/root-sections.html" $m -}}
+        {{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}
+        {{- if eq .group "doc" -}}{{- $docMembers = $docMembers | append (dict "members" .members) -}}{{- end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- range $fixed -}}
@@ -503,6 +512,17 @@ SPDX-License-Identifier: MIT
       {{- if and (eq (cond (eq .what "section") "section" "anchor") $what) (not (isset ($s.Get "homes") .id)) -}}
         {{- $base := cond (eq $what "section") (partial "docsygen/text/anchor.html" .name) (partial "docsygen/text/anchor.html" (strings.TrimPrefix (printf "%s_1" .home) .id)) -}}
         {{- $s.SetInMap "homes" .id (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" $base "first" 1)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* The overload sets of the detailed sections, last: the set's name and word. */ -}}
+  {{- range $docMembers -}}
+    {{- range partial "docsygen/plan/overloads/parts.html" (dict "model" $m "members" .members) -}}
+      {{- if and .set (not (index ($s.Get "anchor") (printf "%s\x00%s" $key .key))) -}}
+        {{- $n := index (split (index $m.ids (index .ids 0)).name "::") (sub (len (split (index $m.ids (index .ids 0)).name "::")) 1) -}}
+        {{- if not (hasPrefix $n "operator") -}}{{- $n = replaceRE `<.*$` "" $n -}}{{- end -}}
+        {{- $s.SetInMap "anchor" (printf "%s\x00%s" $key .key) (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key
+            "base" (printf "%s-%s" (partial "docsygen/text/anchor.html" $n) .word) "first" 1)) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

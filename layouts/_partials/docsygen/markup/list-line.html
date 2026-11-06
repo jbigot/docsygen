@@ -4,7 +4,8 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* One line of a page's list (docsygen/plan/list.html), an <li>: the kind's word in its colour
        (docsygen-kind-<kind>) and the name, as code, the name linked to the entity's canonical
-       place, then the size of a set, and the brief as plain text after a dash (left out with the dash when there is none),
+       place (an overload set's heading, docsygen/plan/details.html, where it has one), then the
+       size of a set, and the brief as plain text after a dash (left out with the dash when there is none),
        then the buckets nested under the entry. A member that the page documents nowhere else
        (its target is .ctx.key's page, or without one, its home is .page) gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
        such an enum.
@@ -21,6 +22,14 @@ SPDX-License-Identifier: MIT
 {{- $name := $en.name -}}
 {{- if hasPrefix $name "(anonymous)" -}}{{- $name = printf "%s%s" (T "docsygen-anonymous") (strings.TrimPrefix "(anonymous)" $name) -}}{{- end -}}
 {{- $url := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $en.id) -}}
+{{- /* An overload set's heading, where its page's detailed documentation has one. */ -}}
+{{- if and $url $ctx.paths (gt (len $en.ids) 1) -}}
+  {{- with index $ctx.paths.targets $en.id -}}
+    {{- with index (index $ctx.paths.anchors .page | default dict) (printf "overloads:%s" $en.id) -}}
+      {{- $url = printf "%s#%s" (index (split $url "#") 0) . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- /* A file without a page of its own (its source page only) isn't linked. */ -}}
 {{- if and $ctx.paths (eq (index $m.ids $en.id).kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $en.id))))) -}}{{- $url = "" -}}{{- end -}}
 {{- /* Only the name is the link, underlined as the site's other links, the kind's word in its
