@@ -14,14 +14,15 @@ formula through the site's math code-block hook (Docsy's).
 ## A formula KaTeX can't render
 
 KaTeX lacks some of LaTeX: `eqnarray*`, for one, or a macro of the project's own. Such a formula
-stops the build, with a message that quotes it as the XML writes it and says where it is:
+gets a message that quotes it as the XML writes it, on one line, and says where it is. An inline
+formula stops the build with it:
 
 ```text
-docsygen: formula "\begin{eqnarray*} a &=& b \end{eqnarray*}" can't be rendered (KaTeX parse error: No such environment: eqnarray* at position 7: …), on page /docs/latest/api/demo/markup, member formulas. Fix it in the documentation that generates the XML, or show its source instead: list it in sourceFormulas, an option of the adapter call or of the page's params.docsygen.
+docsygen: formula "$ \nosuchmacro $" can't be rendered (KaTeX parse error: Undefined control sequence: \nosuchmacro at position 1: …), on page /docs/reference/latest/api/mylib, member area. Fix it in the documentation that generates the XML, or show its source instead: list it in sourceFormulas, an option of the adapter call or of the page's params.docsygen.
 ```
 
-For a display formula, the message is a warning just before the error of the math hook, which
-stops the build on Docsy; a site whose hook doesn't use KaTeX only gets the warning.
+For a display formula, it is a warning, just before the error of the site's math hook, which stops
+the build on Docsy; a site whose hook doesn't use KaTeX only gets the warning.
 
 There are two ways out:
 
@@ -50,6 +51,8 @@ params:
       - '$ \nosuchmacro $'
 ```
 
-In YAML, single quotes keep the backslashes as they are. A listed formula shows as written,
+In YAML, single quotes keep the backslashes as they are. A formula written over several lines is
+listed on one line, as the message quotes it: runs of spaces and line breaks count as one space.
+A listed formula shows as written,
 Doxygen's delimiters (`$…$`, `\[…\]`) included, in a LaTeX listing for a display formula and as
 inline code for an inline one.

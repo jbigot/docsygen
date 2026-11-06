@@ -169,14 +169,17 @@ SPDX-License-Identifier: MIT
       {{- $tex = printf "\\begin{%s}%s\\end{%s}" (index . 0 1) (index . 0 2) (index . 0 1) -}}
     {{- end -}}
   {{- end -}}
+  {{- /* The formula as sourceFormulas lists it and the messages quote it: its whitespace runs
+         collapsed, since Doxygen keeps a formula's line breaks, which YAML folds. */ -}}
+  {{- $quoted := replaceRE `\s+` " " $text -}}
   {{- $listed := $ctx.sourceFormulas | default slice -}}
-  {{- if or (eq $listed true) (in $listed $text) -}}
+  {{- if or (eq $listed true) (in $listed $quoted) -}}
     {{- /* A formula of sourceFormulas shows as written, Doxygen's delimiters included, highlighted
            as LaTeX: a listing, or inline code, never through KaTeX. */ -}}
     {{- if $display -}}
       {{- partial "docsygen/markup/fence.html" (dict "info" "latex" "code" $text "ctx" $ctx) -}}
     {{- else -}}
-      {{- safeHTML (strings.TrimSpace (replace (string (transform.Highlight $text "latex" "hl_inline=true")) "\n" "")) -}}
+      {{- safeHTML (strings.TrimSpace (replace (string (transform.Highlight $quoted "latex" "hl_inline=true")) "\n" "")) -}}
     {{- end -}}
   {{- else if $display -}}
     {{- /* A display formula goes through the site's math code-block hook, which decides what
@@ -185,14 +188,14 @@ SPDX-License-Identifier: MIT
            it checks the formula with Docsy's options, which Hugo's cache then serves to Docsy's
            hook, and warns with what it knows, just before Docsy's error. */ -}}
     {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" true)) -}}
-      {{- with .Err -}}{{- warnf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $text "err" .)) -}}{{- end -}}
+      {{- with .Err -}}{{- warnf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $quoted "err" .)) -}}{{- end -}}
     {{- end -}}
     {{- partial "docsygen/markup/fence.html" (dict "info" "math" "code" $tex "ctx" $ctx) -}}
   {{- else -}}
     {{- /* Docsy has no hook for inline math: done as its scripts/math.html does, whose key makes
            Docsy load KaTeX's CSS. */ -}}
     {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" false)) -}}
-      {{- with .Err -}}{{- errorf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $text "err" .)) -}}{{- end -}}
+      {{- with .Err -}}{{- errorf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $quoted "err" .)) -}}{{- end -}}
       {{- .Value -}}
       {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
     {{- end -}}

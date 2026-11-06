@@ -490,3 +490,11 @@
     contains: ['language-latex', '<li>Two.</li>']
     lacks: ["\n\n", 'katex']
   expect: []
+- name: sourceFormulas, a formula written over several lines matches its entry on one line
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['\begin{eqnarray*} a &= b \\ c &= d \end{eqnarray*}']}
+    xml: "<detaileddescription><para><formula id=\"5\">\\begin{eqnarray*}\n  a &amp;= b \\\\\n  c &amp;= d\n\\end{eqnarray*}</formula></para></detaileddescription>"
+    contains: ['data-lang="latex"']
+    lacks: ['data-test-hook="math"']
+  expect: []

@@ -35,3 +35,11 @@
     contains: ['<pre data-test-hook="math">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</pre>']
     lacks: []
   warning: 'docsygen: formula "\begin{eqnarray*} a &=& b \end{eqnarray*}" can''t be rendered (KaTeX parse error: No such environment: eqnarray*'
+- name: a formula KaTeX rejects, written over several lines, is quoted on one line
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: "<detaileddescription><para>Inline <formula id=\"6\">$ a +\n  \\nosuchmacro $</formula>.</para></detaileddescription>"
+    contains: []
+    lacks: []
+  error: 'docsygen: formula "$ a + \nosuchmacro $" can''t be rendered'
