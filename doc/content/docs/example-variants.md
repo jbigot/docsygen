@@ -10,7 +10,10 @@ weight: 75
 An example given in several languages, C and Fortran for instance, shows as Docsy's tabs, one
 per language: [](doxygen:variants) has a few. The language a reader picks is remembered, and
 every tabbed example of the site then shows it. Printed, the page shows the variants one after
-the other, as Doxygen's own HTML does: it shows no anchor.
+the other, with no tabs, as Doxygen's own HTML does, where anchors are invisible.
+
+Since neither a printed page nor Doxygen's HTML shows the tabs' headers, name the language in
+each variant's own text, as in "C source code:" below.
 
 ## Mark the variants
 
