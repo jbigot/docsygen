@@ -64,9 +64,9 @@
 }
 
 // A namespace page's lines naming its sub-namespaces and itself: each spaced as the kind lists are
-// from one another (Bootstrap's mb-3).
+// from one another, but by half.
 .docsygen-list-namespace {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 // Trees: lists, nested, with the kind of each node and its brief.
