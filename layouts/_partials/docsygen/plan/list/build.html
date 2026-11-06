@@ -96,10 +96,12 @@ SPDX-License-Identifier: MIT
       {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- if eq $kind "namespace" -}}
-    {{- /* By compoundname: the model names an anonymous namespace "". */ -}}
-    {{- $raw := "" -}}
-    {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "compoundname") -}}{{- $raw = delimit .children "" -}}{{- end -}}{{- end -}}
+  {{- /* By compoundname: the model names an anonymous namespace "". An anonymous namespace
+         whose compoundname is empty or its parent's, as some Doxygen versions give it, can't be
+         told from its siblings: it nests none, or they would nest each other endlessly. */ -}}
+  {{- $raw := "" -}}
+  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "compoundname") -}}{{- $raw = delimit .children "" -}}{{- end -}}{{- end -}}
+  {{- if and (eq $kind "namespace") (or $e.name (hasPrefix (index (split $raw "::") (sub (len (split $raw "::")) 1)) "@")) -}}
     {{- range $m.order -}}
       {{- $c := index $m.ids . -}}
       {{- if and (eq $c.kind "namespace") (not $c.name) (ne . $id) (eq (partial "docsygen/plan/list/anonymous-scope.html" $c) $raw) -}}{{- $nested = $nested | append . -}}{{- end -}}
