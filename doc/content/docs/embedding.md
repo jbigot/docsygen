@@ -38,8 +38,10 @@ A member, with `form="full"` (the default), its documentation as its compound's 
 
 {{% docsygen/member item="demo::Widget::width" form="summary" %}}
 
-The full form carries the member's anchor, so that links to the member can land on the page,
-unless the page already has it, from the member's heading or an earlier full form:
+On its compound's page, a member's heading is its declaration, and an overload set has one heading
+for all its members. The full form shows the declaration first, and carries the member's anchor, so
+that links to the member can land on the page, unless the page already has it, from the member's
+heading or an earlier full form:
 
 ```markdown
 {{%/* docsygen/member item="demo::Widget::width" */%}}

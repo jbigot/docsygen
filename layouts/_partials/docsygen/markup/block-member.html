@@ -2,11 +2,13 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* A member's documentation (memberdef.cpp, writeDocumentation), its heading in the page's
-       skeleton: its signature, its labels (getLabels), and its documentation:
-       brief, details, enum values, what it reimplements or what reimplements it, and where it
-       is defined. With .block.anchor, the wrapper carries the member's anchor, for a page whose
-       skeleton writes no heading for it (docsygen/part.html). */ -}}
+{{- /* A member's documentation (memberdef.cpp, writeDocumentation): its labels (getLabels), and
+       its documentation: brief, details, enum values, what it reimplements or what reimplements
+       it, and where it is defined. Its declaration is the heading that the page's skeleton writes
+       (docsygen/plan/details.html), or with .block.anchor, for a page whose skeleton writes no
+       heading for it (docsygen/shortcode/full.html), the first line of the block, whose wrapper
+       then carries the member's anchor. The first member of an overload set under its
+       heading shows the set's description (.block.setDescription) first. */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $id := .block.id -}}
@@ -15,13 +17,9 @@ SPDX-License-Identifier: MIT
 {{- $anchor := index $ctx.anchors $id -}}
 {{- $parts := dict -}}
 {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (not (isset $parts .tag)) -}}{{- $parts = merge $parts (dict .tag .) -}}{{- end -}}{{- end -}}
-{{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
 {{- $kind := $e.kind -}}
-{{- $isFunction := in (slice "function" "slot" "signal") $kind -}}
 {{- $argsText := "" -}}
 {{- with $parts.argsstring -}}{{- $argsText = delimit .children "" -}}{{- end -}}
-{{- /* A friend function has a parameter list but no () in its title. */ -}}
-{{- $hasParams := or $isFunction (and (eq $kind "friend") (hasPrefix $argsText "(")) -}}
 {{- /* The section the member is documented in, for the labels of a related member. */ -}}
 {{- $section := "" -}}
 {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" $e.home) -}}
@@ -45,11 +43,10 @@ SPDX-License-Identifier: MIT
 {{- if eq $a.noexcept "yes" -}}{{- $labels = $labels | append "noexcept" -}}{{- end -}}
 {{- end -}}
 {{- $scope := cond (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") (index $m.ids $e.home).kind) $e.home "" -}}
-{{- $proto := partial "docsygen/markup/signature.html" (dict "ctx" $ctx "id" $id "parts" $parts "scope" $scope "hasParams" $hasParams) -}}
-{{- $templates := $proto.templates -}}
-{{- $proto = $proto.proto -}}
 <div class="docsygen-member td-max-width-on-larger-screens"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
-<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>{{ range $templates }}{{ . | safeHTML }}{{ "\n" }}{{ end }}{{ $proto | safeHTML }}</code></pre></div>
+{{- if .block.anchor -}}<p class="docsygen-declaration-line">{{ partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $id) }}</p>
+{{- else -}}{{- with .block.setDescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx) -}}{{- end -}}
+{{- end -}}
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="badge text-bg-secondary">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor)) "id" $id "parts" $parts "scope" $scope) -}}
 </div>

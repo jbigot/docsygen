@@ -3,16 +3,63 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The blocks of the detailed sections among .sections (docsygen/plan/sections.html): a heading
-       block each, followed by one member block per member.
-       Usage: partial "docsygen/plan/details.html" (dict "model" $model "sections" $sections) */ -}}
-{{- $m := .model -}}
+       block each, followed by one member block per member. A member's heading is its
+       declaration (html, docsygen/markup/decl-heading.html), set apart by Bootstrap's utilities
+       (classes); text, its short name, stays for skeletons that write text. The members of an
+       overload set (docsygen/plan/overloads.html, of the member's home) that the section
+       documents share one heading, at the first of them: a line per member (a block but the
+       last), in the section's order, each but the first with its member's anchor, the first's on the heading; the
+       first's block carries the set's description (setDescription), and the others have no
+       heading.
+       Usage: partial "docsygen/plan/details.html" (dict "ctx" $ctx "sections" $sections) */ -}}
+{{- $ctx := .ctx -}}
+{{- $m := $ctx.model -}}
+{{- $targets := dict -}}
+{{- with $ctx.paths -}}{{- $targets = .targets -}}{{- end -}}
+{{- $classes := slice "border-top" "pt-3" "mt-4" "fs-5" "fw-normal" -}}
 {{- $blocks := slice -}}
 {{- range .sections -}}
   {{- if eq .group "doc" -}}
     {{- $blocks = $blocks | append (dict "type" "heading" "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
-    {{- range .members -}}
-      {{- $name := (index $m.ids .).name -}}
-      {{- $blocks = $blocks | append (dict "type" "member" "id" . "heading" (dict "level" 3 "text" (index (split $name "::") (sub (len (split $name "::")) 1)) "anchorKey" .)) -}}
+    {{- $members := .members -}}
+    {{- $done := newScratch -}}
+    {{- range $members -}}
+      {{- $id := . -}}
+      {{- $e := index $m.ids $id -}}
+      {{- if not ($done.Get $id) -}}
+        {{- $short := index (split $e.name "::") (sub (len (split $e.name "::")) 1) -}}
+        {{- $set := index (partial "docsygen/plan/overloads.html" (dict "model" $m "id" $e.home)) $id -}}
+        {{- $ids := slice $id -}}
+        {{- if $set -}}
+          {{- $ids = slice -}}
+          {{- range $members -}}{{- if in $set.members . -}}{{- $ids = $ids | append . -}}{{- end -}}{{- end -}}
+        {{- end -}}
+        {{- $html := partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $id) -}}
+        {{- if gt (len $ids) 1 -}}
+          {{- $lines := slice -}}
+          {{- range $i, $mid := $ids -}}
+            {{- $mark := "" -}}
+            {{- if $i -}}{{- $mark = printf `<a id="%s"></a>` (index (index $targets $mid | default dict) "anchor" | default "") -}}{{- end -}}
+            {{- $line := printf "%s%s" $mark (partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $mid)) -}}
+            {{- /* The last line inline, so that what a site's heading hook appends (Docsy's
+                   self-link) follows it rather than making a line of its own. */ -}}
+            {{- if lt $i (sub (len $ids) 1) -}}{{- $line = printf `<span class="d-block">%s</span>` $line -}}{{- end -}}
+            {{- $lines = $lines | append $line -}}
+          {{- end -}}
+          {{- /* Spaced, so that the lines stay words apart in the page's text (search). */ -}}
+          {{- $html = delimit $lines " " -}}
+        {{- end -}}
+        {{- range $i, $mid := $ids -}}
+          {{- $done.Set $mid true -}}
+          {{- if $i -}}
+            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid) -}}
+          {{- else -}}
+            {{- $blocks = $blocks | append (dict "type" "member" "id" $mid
+                "setDescription" (cond (gt (len $ids) 1) (and $set $set.description) false)
+                "heading" (dict "level" 3 "text" $short "html" (string $html) "classes" $classes "anchorKey" $mid)) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

@@ -3,8 +3,10 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The blocks of a page, the concatenation of the plans of its roles (docsygen/plan/<role>.html),
-       as [{type, …, heading?}]. heading is {level, text, anchorKey}, where anchorKey is a model id
-       or a key of the page's fixed anchors (docsygen/paths.html, anchors).
+       as [{type, …, heading?}]. heading is {level, text, anchorKey, node?, html?, classes?}, where
+       anchorKey is a model id or a key of the page's fixed anchors (docsygen/paths.html,
+       anchors), node the XML of its text, html its inline HTML, safe in Markdown, and classes
+       those of the heading element.
        Memoized per page (docsygen/memo.html), in the scope of the page's paths and of
        .ctx.topicMembers (default true): the same key may have other roles under another pathMap,
        and another list under another topicMembers.

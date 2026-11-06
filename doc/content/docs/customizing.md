@@ -10,8 +10,9 @@ weight: 80
 Rendered blocks
 : Each block goes through a partial named `docsygen/markup/block-<type>.html`, and descriptions
   through `docsygen/markup/doc.html` and `docsygen/markup/doc-node.html`. Override one with a file
-  of the same name in your `layouts/_partials/docsygen/markup/`. The markup only uses
-  `docsygen-*` classes, which `_docsygen.scss` styles with Bootstrap's `--bs-*` variables.
+  of the same name in your `layouts/_partials/docsygen/markup/`. The markup uses
+  `docsygen-*` classes, which `_docsygen.scss` styles with Bootstrap's `--bs-*` variables, and
+  Bootstrap's utilities.
 
 Page skeletons
 : The Markdown of a page comes from `docsygen/skeleton/<kind>.html`, else from
@@ -19,6 +20,10 @@ Page skeletons
   `file`, `group`, `page`, …), or `root`, `namespace-root` (the API reference's root),
   `tree-<name>` or `source`. The template
   gets `{entry, paths, dir, pathMap, topicMembers, blocks}` and returns Markdown, with a shortcode per block that `partial "docsygen/skeleton/call.html" $block` writes.
+  A block's `heading` is `{level, text, anchorKey}`; a member's adds `html`, its declaration as
+  inline HTML that is safe in a Markdown heading (an overload set's: a line per member, with its
+  anchor), and `classes`, which the default skeleton writes with the anchor as
+  `{#anchor .class …}`.
 
 The page tree
 : It comes from `docsygen/paths/scheme.html`.

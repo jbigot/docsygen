@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 {{- if or $list.subs $list.buckets -}}
   {{- $blocks = $blocks | append (dict "type" "list" "id" "" "list" $list) -}}
 {{- end -}}
-{{- range partial "docsygen/plan/details.html" (dict "model" $m "sections" (partial "docsygen/plan/root-sections.html" $m)) -}}
+{{- range partial "docsygen/plan/details.html" (dict "ctx" .ctx "sections" (partial "docsygen/plan/root-sections.html" $m)) -}}
   {{- $blocks = $blocks | append . -}}
 {{- end -}}
 {{- return $blocks -}}

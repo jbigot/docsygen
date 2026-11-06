@@ -17,13 +17,15 @@ Checks:
   - a section in a member's documentation (demo::Escapes::sections) is a heading of the page that
     keeps its id, and is in the page's table of contents;
   - the offline search index holds demo::Widget's description from /docs/latest/ only;
+  - demo::Widget's members' headings, their declarations, are text in its table of contents,
+    with no id, and in the search index, with no markup or escaped character;
   - the sitemap lists the reference's pages under /docs/latest/ only;
-  - the print page of /docs/main/ holds a member's signature, and the print page of /docs/1.0/
+  - the print page of /docs/main/ holds a member's declaration heading, and the print page of /docs/1.0/
     has the notice and one canonical link;
   - a class page with an inheritance diagram (demo::Button) and a page with a <mermaid> (the
     guide) load Docsy's Mermaid script, which the render-codeblock-mermaid hook asks for, and
     demo::Box's page, with no diagram, does not;
-  - llms.txt lists pages of /docs/latest/;
+  - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
 Exit 1 on any failure.
@@ -85,11 +87,28 @@ def main(argv):
     refs = sorted({e['ref'] for i in index for e in json.load(open(i)) if 'to build one' in e['body']})
     if not refs or any(not r.startswith('/docs/latest/') for r in refs):
         errors.append(f"the search index has demo::Widget's description from {refs}, not from /docs/latest/ only")
+    # Members' headings are their declarations, inline HTML: text in the table of contents and
+    # the search index, an overload set's lines words apart, with no markup left.
+    widget = read(public, 'docs/latest/api/demo/widget/index.html')
+    toc = re.search(r'id="TableOfContents">(.*?)</nav>', widget, re.S)
+    toc = toc.group(1) if toc else ''
+    entries = {i: html.unescape(re.sub(r'<[^>]*>', '', t)) for i, t in re.findall(r'<a href="#([^"]+)">(.*?)</a>', toc, re.S)}
+    for want in ('Widget() Widget(int side) Widget(const Widget &)', 'operator<(const Widget &other) const -> bool'):
+        if want not in entries.values():
+            errors.append(f"demo::Widget's table of contents has no entry {want!r}: {sorted(entries.values())}")
+    if re.search(r'\sid=', toc):
+        errors.append("demo::Widget's table of contents repeats an id of its headings")
+    bodies = [e['body'] for i in index for e in json.load(open(i)) if e['ref'] == '/docs/latest/api/demo/widget/']
+    for want in ('Widget() Widget(int side) Widget(const Widget &)', 'operator<(const Widget &other) const -> bool'):
+        if not bodies or want not in bodies[0]:
+            errors.append(f"the search index of demo::Widget lacks the declaration {want!r}")
+    if bodies and re.search(r'&lt;|&amp;|<code|<span|<strong', bodies[0]):
+        errors.append("the search index of demo::Widget holds markup or escaped characters")
     locs = set(re.findall(r'<loc>https://example.org(/(?:docs/(?:main|latest|1\.0|2\.0)|archive/0\.9)/)', read(public, 'sitemap.xml')))
     if locs != {'/docs/latest/'}:
         errors.append(f'the sitemap lists {sorted(locs)} of the reference, not /docs/latest/ only')
-    if 'docsygen-signature' not in read(public, '_print/docs/main/index.html'):
-        errors.append('the print page of /docs/main/ holds no member signature')
+    if not re.search(r'<h3 [^>]*><code class="docsygen-declaration', read(public, '_print/docs/main/index.html')):
+        errors.append("the print page of /docs/main/ holds no member's declaration heading")
     printed = read(public, '_print/docs/1.0/index.html')
     # Docsy's print heading doesn't call version-banner.html: no notice, until Docsy does.
     if 'docsygen-notice' in printed:
@@ -109,6 +128,8 @@ def main(argv):
         errors.append('no llms.txt')
     elif '/docs/latest/' not in read(public, 'llms.txt'):
         errors.append('llms.txt lists no page of /docs/latest/')
+    elif re.search(r'&lt;|<code|<span|<strong', read(public, 'llms.txt')):
+        errors.append('llms.txt holds markup or escaped characters')
     images = 0
     for d, _, files in os.walk(based):
         for f in files:

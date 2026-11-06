@@ -103,6 +103,7 @@ docsygen-return-values: Return values
 docsygen-exceptions: Exceptions
 docsygen-template-parameters: Template Parameters
 docsygen-value: "Value:"
+docsygen-initial-value: "Initial value:"
 docsygen-enumerator: Enumerator
 
 # Sentences. The text is HTML, and so are the arguments, built and escaped by docsygen (with links):

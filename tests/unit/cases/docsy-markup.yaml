@@ -100,23 +100,14 @@
     ctx: {model: sample}
     block: {type: diagram, id: classdemo_1_1Button}
   expect: "<figure class=\"docsygen-diagram figure d-block td-max-width-on-larger-screens\"><figcaption class=\"figure-caption\">Inheritance diagram for demo::Button:</figcaption><pre data-test-hook=\"mermaid\">flowchart BT\n  n1[&#34;demo::Button&#34;]\n  n2[&#34;demo::Widget&#34;]\n  n1 --&gt; n2\n  class n1 docsygen-current</pre>\n</figure>"
-- name: docsy markup, a member with its signature
+- name: docsy markup, a member under its heading has no declaration of its own
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
     block: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}
     contains:
       - '<div class="docsygen-member td-max-width-on-larger-screens" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd">'
-      - '<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>void demo::Widget::resize(int side)</code></pre></div>'
-    lacks: [memitem, memname, memtitle, memproto, memdoc]
-  expect: []
-- name: docsy markup, a member's signature is a code block without highlighting
-  partial: test/block-contains.html
-  context:
-    ctx: {model: sample}
-    block: {type: member, id: classdemo_1_1Widget_1a5b9f4a77fe6b1e9d995477d7732b938b}
-    contains: ['<div class="highlight"><pre tabindex="0" class="chroma docsygen-signature"><code>bool demo::Widget::operator&lt;(const ']
-    lacks: ['<span', 'class="line"']
+    lacks: [memitem, memname, memtitle, memproto, memdoc, docsygen-signature, docsygen-declaration, '<pre']
   expect: []
 - name: docsy markup, a member's labels are Bootstrap badges, and its heading has no overload counter
   partial: test/block-contains.html
@@ -126,13 +117,63 @@
     contains: ['<span class="badge text-bg-secondary">noexcept</span>']
     lacks: ['class="docsygen-label"', '[1/2]', '[2/2]']
   expect: []
-- name: docsy markup, a member's template line in its signature
+- name: docsy markup, a member without a heading shows its declaration first, with its anchor
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}, anchor: true}
+    contains: ['<div class="docsygen-member td-max-width-on-larger-screens" id="resize" data-doxygen-id="classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd"><p class="docsygen-declaration-line"><code class="docsygen-declaration chroma bg-transparent text-body"><strong>resize</strong>']
+  expect: []
+- name: docsy markup, the first member of an overload set under its heading shows the set's description
+  partial: test/part-contains.html
+  context:
+    part: {model: sample, address: {type: member, id: namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc}}
+    contains: ['data-doxygen-id="namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc"><p>An overload set, as a member group of a namespace.']
+  expect: []
+- name: docsy markup, a variable's initial value in its documentation
   partial: test/block-contains.html
   context:
     ctx: {model: sample}
-    block: {type: member, id: classdemo_1_1Box_1a232f9746a516991b656b17dcb4629bf2}
-    contains: ["<div class=\"highlight\"><pre tabindex=\"0\" class=\"chroma docsygen-signature\"><code>template&lt;typename T, int N = 3&gt;\nconst T &amp; demo::Box&lt; T, N &gt;::front("]
+    block: {type: member, id: classdemo_1_1Widget_1a42666e9d461341cec6ea4e1a6e39e5b2}
+    contains: ['<b>Initial value:</b><pre class="docsygen-value"><code>10</code></pre>']
   expect: []
+- name: docsy markup, an object-like macro's value in its documentation
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample-c}
+    block: {type: member, id: group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d}
+    contains: ['<b>Value:</b><pre class="docsygen-value"><code>3</code></pre>']
+  expect: []
+- name: declaration heading of a function, type last
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca
+  expect: {text: "resize(int w, int h) const -> bool", strong: resize, highlighted: true}
+- name: declaration heading of a function template, parameters after the name
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1a21eb3c5cd4301a833876747ca01af22c
+  expect: {text: "box<Boxable T>(T v) -> Box<T>", strong: box, highlighted: true}
+- name: declaration heading of a typedef
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample-c}
+    id: group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79
+  expect: {text: "ccallback = int(*)(void *data, int code)", strong: ccallback, highlighted: true}
+- name: declaration heading of a variable
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1ac4647333ca0e72f254fe67592d1aff01
+  expect: {text: "version: const char *", strong: version, highlighted: true}
+- name: declaration heading, the name is strong and first, the rest highlighted
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: classdemo_1_1Widget_1aa038e7bf4d6f3abd216f8fd94a5d5bca
+    fields: [strong, highlighted]
+  expect: {strong: resize, highlighted: true}
 - name: docsy markup, an enum's values
   partial: test/block-contains.html
   context:

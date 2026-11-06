@@ -10,11 +10,12 @@ SPDX-License-Identifier: MIT
 {{- $m := $ctx.model -}}
 {{- $p := .parts -}}
 {{- $e := index $m.ids .id -}}
-{{- /* A function-like macro shows its value first. */ -}}
-{{- if and (eq $e.kind "define") $p.initializer -}}
-  {{- $params := false -}}
-  {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = true -}}{{- end -}}{{- end -}}
-  {{- if $params -}}<b>{{ T "docsygen-value" }}</b><pre class="docsygen-value"><code>{{ partial "docsygen/text/plain.html" $p.initializer }}</code></pre>{{- end -}}
+{{- /* A macro shows its value first, a variable its initial value (memberdef.cpp,
+       writeDocumentation): its heading leaves them out (docsygen/markup/decl-heading.html). */ -}}
+{{- if and (in (slice "define" "variable") $e.kind) $p.initializer -}}
+  {{- $value := strings.TrimSpace (partial "docsygen/text/plain.html" $p.initializer) -}}
+  {{- if eq $e.kind "variable" -}}{{- $value = strings.TrimSpace (strings.TrimPrefix "=" $value) -}}{{- end -}}
+  {{- with $value -}}<b>{{ T (cond (eq $e.kind "define") "docsygen-value" "docsygen-initial-value") }}</b><pre class="docsygen-value"><code>{{ . }}</code></pre>{{- end -}}
 {{- end -}}
 {{- range slice "briefdescription" "detaileddescription" "inbodydescription" -}}
   {{- with index $p . -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "mdheadings" true) -}}{{- end -}}

@@ -97,7 +97,7 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- /* The members a file documents go to the root namespace's page. */ -}}
 {{- if not (and (eq $kind "file") .ctx.paths .ctx.paths.nsRoot) -}}
-  {{- range partial "docsygen/plan/details.html" (dict "model" $m "sections" $sections) -}}{{- $blocks = $blocks | append . -}}{{- end -}}
+  {{- range partial "docsygen/plan/details.html" (dict "ctx" .ctx "sections" $sections) -}}{{- $blocks = $blocks | append . -}}{{- end -}}
 {{- end -}}
 {{- /* classdef.cpp, showUsedFiles */ -}}
 {{- if and $classLike (eq (index ((index $m.options "SHOW_USED_FILES") | default (slice "YES")) 0) "YES") -}}

@@ -1,0 +1,19 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A member's declaration heading (docsygen/markup/decl-heading.html) as {text, strong,
+       highlighted}, or only the keys of .fields when given: its text, tags left out and character
+       references resolved; the text of the <strong> that the <code> starts with, else ""; and
+       whether a highlighted token (a <span>) follows it. */ -}}
+{{- $html := string (partial "docsygen/markup/decl-heading.html" .) -}}
+{{- $strong := "" -}}
+{{- $highlighted := false -}}
+{{- with findRESubmatch `^<code[^>]*><strong>([^<]*)</strong>(.*)$` $html 1 -}}
+  {{- $strong = index (index . 0) 1 -}}
+  {{- $highlighted = strings.Contains (index (index . 0) 2) "<span" -}}
+{{- end -}}
+{{- $all := dict "text" (htmlUnescape (replaceRE `<[^>]*>` "" $html)) "strong" (htmlUnescape $strong) "highlighted" $highlighted -}}
+{{- $out := dict -}}
+{{- range .fields | default (slice "text" "strong" "highlighted") -}}{{- $out = merge $out (dict . (index $all .)) -}}{{- end -}}
+{{- return $out -}}
