@@ -54,7 +54,8 @@
   context:
     model: sample
     id: namespacedemo
-  expect: [inner-namespace, inner-class, inner-concept, enum, func, var, doc-enum, doc-function, doc-variable]
+  expect: [inner-namespace, inner-class, inner-concept, enum, func, var, user-defined-1, user-defined-2, doc-enum,
+    doc-function, doc-variable]
 - name: title of a class template
   partial: docsygen/plan/title.html
   context:

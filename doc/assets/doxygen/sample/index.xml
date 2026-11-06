@@ -32,6 +32,23 @@
   <compound refid="classdemo_1_1Foo_3_01int_01_4" kind="class"><name>demo::Foo&lt; int &gt;</name>
     <member refid="classdemo_1_1Foo_3_01int_01_4_1aa5cca3774856c3b24c117f10a5d6b011" kind="variable"><name>value</name></member>
   </compound>
+  <compound refid="classdemo_1_1Foo_3_01T_01_5_01_4" kind="class"><name>demo::Foo&lt; T * &gt;</name>
+    <member refid="classdemo_1_1Foo_3_01T_01_5_01_4_1a63f2bcd07847222f880ae8c2ed012462" kind="variable"><name>value</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Gadget" kind="class"><name>demo::Gadget</name>
+    <member refid="classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb" kind="function"><name>Gadget</name></member>
+    <member refid="classdemo_1_1Gadget_1a17466d32c482a01f04d6614ffcd22fe7" kind="function"><name>Gadget</name></member>
+    <member refid="classdemo_1_1Gadget_1a283192a367cbfe8f4e1b612dc38c0f4f" kind="function"><name>Gadget</name></member>
+    <member refid="classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2" kind="function"><name>set</name></member>
+    <member refid="classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6" kind="function"><name>set</name></member>
+    <member refid="classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d" kind="function"><name>update</name></member>
+    <member refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" kind="function"><name>update</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Outer_1_1Inner" kind="class"><name>demo::Outer::Inner</name>
+  </compound>
+  <compound refid="classdemo_1_1Outer_1_1Inner_1_1Innermost" kind="class"><name>demo::Outer::Inner::Innermost</name>
+    <member refid="classdemo_1_1Outer_1_1Inner_1_1Innermost_1a6c98bfd1b26269a9f0deb9e9f918bee3" kind="variable"><name>depth</name></member>
+  </compound>
   <compound refid="classdemo_1_1Box_1_1Iterator" kind="class"><name>demo::Box::Iterator</name>
     <member refid="classdemo_1_1Box_1_1Iterator_1a20e48dbb94e0c1806aa4f07f607cf79c" kind="function"><name>operator++</name></member>
   </compound>
@@ -42,6 +59,8 @@
   </compound>
   <compound refid="classdemo_1_1Named" kind="class"><name>demo::Named</name>
     <member refid="classdemo_1_1Named_1ab4419765d9c4381e94af15b5f169b775" kind="function"><name>name</name></member>
+  </compound>
+  <compound refid="classdemo_1_1Outer" kind="class"><name>demo::Outer</name>
   </compound>
   <compound refid="classdemo_1_1Right" kind="class"><name>demo::Right</name>
   </compound>
@@ -78,6 +97,9 @@
   <compound refid="conceptdemo_1_1Boxable" kind="concept"><name>demo::Boxable</name>
   </compound>
   <compound refid="namespacedemo" kind="namespace"><name>demo</name>
+    <member refid="namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc" kind="function"><name>to_string</name></member>
+    <member refid="namespacedemo_1a74dde8fb93acece1f0b63c36266558d1" kind="function"><name>to_string</name></member>
+    <member refid="namespacedemo_1ade370e56bfbec44e345e169aee817263" kind="function"><name>find_widget</name></member>
     <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966d" kind="enum"><name>Color</name></member>
     <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966dabda9643ac6601722a28f238714274da4" kind="enumvalue"><name>red</name></member>
     <member refid="namespacedemo_1a51fd45e2c1747ad809621bc76892966da9f27410725ab8cc8854a2769c7a516b8" kind="enumvalue"><name>green</name></member>
@@ -86,7 +108,12 @@
     <member refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571a160440f776dde778afe29811f753ed00" kind="enumvalue"><name>low</name></member>
     <member refid="namespacedemo_1ae9778f0783c0e3b676de0743e2c68571af98da2da86c6a46817e8cca52816be43" kind="enumvalue"><name>high</name></member>
     <member refid="namespacedemo_1ac4647333ca0e72f254fe67592d1aff01" kind="variable"><name>version</name></member>
+    <member refid="namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c" kind="variable"><name>size_of</name></member>
+    <member refid="namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c" kind="variable"><name>size_of&lt; void &gt;</name></member>
+    <member refid="namespacedemo_1a61a455cdf092fb43ced09be7ff303914" kind="variable"><name>size_of&lt; T * &gt;</name></member>
     <member refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" kind="function"><name>box</name></member>
+    <member refid="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" kind="function"><name>scale</name></member>
+    <member refid="namespacedemo_1aa5a0bbb6074f10c2781832da57db7545" kind="function"><name>scale</name></member>
     <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kind="function"><name>make_widget</name></member>
   </compound>
   <compound refid="namespacedemo_1_1_0d120023002357274100006257004322307273101100025142" kind="namespace"><name>demo::@120023002357274100006257004322307273101100025142</name>
@@ -116,10 +143,13 @@
     <member refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kind="function"><name>cdemo_finalize</name></member>
     <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
     <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
+    <member refid="cdemo_8h_1aa7722aab32b136c00b28af531e070b78" kind="define"><name>CMIN</name></member>
     <member refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kind="enum"><name>cstatus</name></member>
     <member refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kind="typedef"><name>cpoint_t</name></member>
     <member refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kind="typedef"><name>ccallback</name></member>
     <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+    <member refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" kind="function"><name>cdemo_version</name></member>
+    <member refid="cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8" kind="function"><name>cdemo_reset</name></member>
   </compound>
   <compound refid="io_8hpp" kind="file"><name>io.hpp</name>
   </compound>
@@ -150,6 +180,7 @@
     <member refid="group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4" kind="typedef"><name>cpoint_t</name></member>
     <member refid="group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79" kind="typedef"><name>ccallback</name></member>
     <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+    <member refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" kind="function"><name>cdemo_version</name></member>
     <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
     <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
   </compound>

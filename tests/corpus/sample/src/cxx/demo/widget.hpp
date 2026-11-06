@@ -115,3 +115,64 @@ public:
  */
 
 } // namespace demo
+
+namespace demo {
+
+/** @name Conversions
+ *  An overload set, as a member group of a namespace.
+ *  @{
+ */
+/// Converts an int to a string.
+const char* to_string(int value);
+/// Converts a double to a string.
+const char* to_string(double value);
+/** @} */
+
+/// Scales an int, overloaded outside any group.
+int scale(int value);
+/// Scales a double, overloaded outside any group.
+double scale(double value);
+
+/** @name Lookup
+ *  A member group of one function.
+ *  @{
+ */
+/// Finds a widget by name.
+Widget* find_widget(const char* name);
+/** @} */
+
+/** @brief A gadget, whose member groups hold overload sets.
+ */
+class Gadget {
+public:
+  /** @name Construction
+   *  The constructors, as a member group.
+   *  @{
+   */
+  /// Builds an empty gadget.
+  Gadget();
+  /// Builds a gadget of a size.
+  explicit Gadget(int size);
+  /// Builds a gadget from a name.
+  explicit Gadget(const char* name);
+  /** @} */
+
+  /** @name Setters
+   *  An overload set, as a member group.
+   *  @{
+   */
+  /// Sets an int.
+  void set(int value);
+  /// Sets a double.
+  void set(double value);
+  /** @} */
+
+  /// Updates the whole gadget; its other overload is private.
+  void update();
+
+private:
+  /// Updates a part of the gadget.
+  void update(int part);
+};
+
+} // namespace demo

@@ -139,6 +139,25 @@
         <location file="src/c/cdemo.h" line="54" column="12" declfile="src/c/cdemo.h" declline="54" declcolumn="12"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int cdemo_version</definition>
+        <argsstring>(void)</argsstring>
+        <name>cdemo_version</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>The version of the library, a function in the group outside its member groups. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="71" column="5" declfile="src/c/cdemo.h" declline="71" declcolumn="5"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="define">
       <memberdef kind="define" id="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" prot="public" static="no">
         <name>CMAX</name>

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Outer_1_1Inner" kind="class" language="C++" prot="public">
+    <compoundname>demo::Outer::Inner</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <innerclass refid="classdemo_1_1Outer_1_1Inner_1_1Innermost" prot="public">demo::Outer::Inner::Innermost</innerclass>
+    <briefdescription>
+<para>A class nested in <ref refid="classdemo_1_1Outer" kindref="compound">Outer</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="94" column="3" bodyfile="src/cxx/demo/templates.hpp" bodystart="94" bodyend="102"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -91,7 +91,7 @@
   context:
     model: sample-c
     file: cdemo_8h
-  expect: [cstatus, cpoint_t, ccallback, CMAX, CDEMO_VERSION, cdemo_counter, cdemo_init, cdemo_finalize]
+  expect: [cstatus, cpoint_t, ccallback, CMAX, CDEMO_VERSION, cdemo_counter, cdemo_init, cdemo_finalize, cdemo_version]
 - name: linkable, a private member hidden by EXTRACT_PRIVATE=NO
   partial: docsygen/model/linkable.html
   context:

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Outer_1_1Inner_1_1Innermost" kind="class" language="C++" prot="public">
+    <compoundname>demo::Outer::Inner::Innermost</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classdemo_1_1Outer_1_1Inner_1_1Innermost_1a6c98bfd1b26269a9f0deb9e9f918bee3" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int demo::Outer::Inner::Innermost::depth</definition>
+        <argsstring></argsstring>
+        <name>depth</name>
+        <qualifiedname>demo::Outer::Inner::Innermost::depth</qualifiedname>
+        <briefdescription>
+<para>The depth. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="100" column="11" bodyfile="src/cxx/demo/templates.hpp" bodystart="100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class nested in a nested class. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="97" column="5" bodyfile="src/cxx/demo/templates.hpp" bodystart="97" bodyend="101"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Outer_1_1Inner_1_1Innermost_1a6c98bfd1b26269a9f0deb9e9f918bee3" prot="public" virt="non-virtual"><scope>demo::Outer::Inner::Innermost</scope><name>depth</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

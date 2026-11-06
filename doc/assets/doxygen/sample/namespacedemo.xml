@@ -9,9 +9,12 @@
     <innerclass refid="classdemo_1_1Escapes" prot="public">demo::Escapes</innerclass>
     <innerclass refid="classdemo_1_1Foo" prot="public">demo::Foo</innerclass>
     <innerclass refid="classdemo_1_1Foo_3_01int_01_4" prot="public">demo::Foo&lt; int &gt;</innerclass>
+    <innerclass refid="classdemo_1_1Foo_3_01T_01_5_01_4" prot="public">demo::Foo&lt; T * &gt;</innerclass>
+    <innerclass refid="classdemo_1_1Gadget" prot="public">demo::Gadget</innerclass>
     <innerclass refid="classdemo_1_1LabelledCircle" prot="public">demo::LabelledCircle</innerclass>
     <innerclass refid="classdemo_1_1Left" prot="public">demo::Left</innerclass>
     <innerclass refid="classdemo_1_1Named" prot="public">demo::Named</innerclass>
+    <innerclass refid="classdemo_1_1Outer" prot="public">demo::Outer</innerclass>
     <innerclass refid="classdemo_1_1Right" prot="public">demo::Right</innerclass>
     <innerclass refid="classdemo_1_1Shape" prot="public">demo::Shape</innerclass>
     <innerclass refid="classdemo_1_1Widget" prot="public">demo::Widget</innerclass>
@@ -19,6 +22,73 @@
     <innerconcept refid="conceptdemo_1_1Boxable">demo::Boxable</innerconcept>
     <innernamespace refid="namespacedemo_1_1io">demo::io</innernamespace>
     <innernamespace refid="namespacedemo_1_1markup">demo::markup</innernamespace>
+    <sectiondef kind="user-defined">
+      <header>Conversions</header>
+      <description><para>An overload set, as a member group of a namespace. </para>
+</description>
+      <memberdef kind="function" id="namespacedemo_1a6a916f609cc49c0e67acd1a5c468adbc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * demo::to_string</definition>
+        <argsstring>(int value)</argsstring>
+        <name>to_string</name>
+        <qualifiedname>demo::to_string</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Converts an int to a string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="126" column="12" declfile="src/cxx/demo/widget.hpp" declline="126" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1a74dde8fb93acece1f0b63c36266558d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * demo::to_string</definition>
+        <argsstring>(double value)</argsstring>
+        <name>to_string</name>
+        <qualifiedname>demo::to_string</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Converts a double to a string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="128" column="12" declfile="src/cxx/demo/widget.hpp" declline="128" declcolumn="12"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="user-defined">
+      <header>Lookup</header>
+      <description><para>A member group of one function. </para>
+</description>
+      <memberdef kind="function" id="namespacedemo_1ade370e56bfbec44e345e169aee817263" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classdemo_1_1Widget" kindref="compound">Widget</ref> *</type>
+        <definition>Widget * demo::find_widget</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>find_widget</name>
+        <qualifiedname>demo::find_widget</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Finds a widget by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="141" column="8" declfile="src/cxx/demo/widget.hpp" declline="141" declcolumn="8"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="namespacedemo_1a51fd45e2c1747ad809621bc76892966d" prot="public" static="no" strong="yes">
         <type></type>
@@ -105,6 +175,76 @@
         </inbodydescription>
         <location file="src/build/gen/cxx/demo/version.hpp" line="8" column="22" bodyfile="src/build/gen/cxx/demo/version.hpp" bodystart="8" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int demo::size_of</definition>
+        <argsstring></argsstring>
+        <name>size_of</name>
+        <qualifiedname>demo::size_of</qualifiedname>
+        <initializer>= sizeof(T)</initializer>
+        <briefdescription>
+<para>The size of a type, as a variable template. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="109" column="15" bodyfile="src/cxx/demo/templates.hpp" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int demo::size_of&lt; void &gt;</definition>
+        <argsstring></argsstring>
+        <name>size_of&lt; void &gt;</name>
+        <qualifiedname>demo::size_of&lt; void &gt;</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>The full specialization of size_of for void. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="112" column="11" bodyfile="src/cxx/demo/templates.hpp" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacedemo_1a61a455cdf092fb43ced09be7ff303914" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int demo::size_of&lt; T * &gt;</definition>
+        <argsstring></argsstring>
+        <name>size_of&lt; T * &gt;</name>
+        <qualifiedname>demo::size_of&lt; T * &gt;</qualifiedname>
+        <initializer>= sizeof(void*)</initializer>
+        <briefdescription>
+<para>The partial specialization of size_of for pointers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="115" column="11" bodyfile="src/cxx/demo/templates.hpp" bodystart="115" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="func">
       <memberdef kind="function" id="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -153,6 +293,44 @@
         <inbodydescription>
         </inbodydescription>
         <location file="src/cxx/demo/templates.hpp" line="69" column="5" declfile="src/cxx/demo/templates.hpp" declline="69" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int demo::scale</definition>
+        <argsstring>(int value)</argsstring>
+        <name>scale</name>
+        <qualifiedname>demo::scale</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Scales an int, overloaded outside any group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="132" column="5" declfile="src/cxx/demo/widget.hpp" declline="132" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacedemo_1aa5a0bbb6074f10c2781832da57db7545" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double demo::scale</definition>
+        <argsstring>(double value)</argsstring>
+        <name>scale</name>
+        <qualifiedname>demo::scale</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Scales a double, overloaded outside any group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="134" column="8" declfile="src/cxx/demo/widget.hpp" declline="134" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classdemo_1_1Widget" kindref="compound">Widget</ref> *</type>

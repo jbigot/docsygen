@@ -65,4 +65,15 @@ void cdemo_finalize(void);
 
 /** @} */
 
+/** @brief The version of the library, a function in the group outside its member groups.
+ *  @ingroup cdemo
+ */
+int cdemo_version(void);
+
+/// Resets the library, a function outside any group.
+void cdemo_reset(void);
+
+/// The smaller of two values, a macro outside any group.
+#define CMIN(a, b) ((a) < (b) ? (a) : (b))
+
 #endif

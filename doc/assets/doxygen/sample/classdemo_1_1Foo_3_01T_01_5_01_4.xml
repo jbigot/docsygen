@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="classdemo_1_1Foo_3_01T_01_5_01_4" kind="class" language="C++" prot="public">
+    <compoundname>demo::Foo&lt; T * &gt;</compoundname>
+    <includes refid="templates_8hpp" local="no">templates.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classdemo_1_1Foo_3_01T_01_5_01_4_1a63f2bcd07847222f880ae8c2ed012462" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* demo::Foo&lt; T * &gt;::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>demo::Foo&lt; T * &gt;::value</qualifiedname>
+        <briefdescription>
+<para>The value, as a pointer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/templates.hpp" line="87" column="5" bodyfile="src/cxx/demo/templates.hpp" bodystart="87" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The partial specialization of <ref refid="classdemo_1_1Foo" kindref="compound">Foo</ref> for pointers. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the pointed type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="src/cxx/demo/templates.hpp" line="84" column="1" bodyfile="src/cxx/demo/templates.hpp" bodystart="84" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classdemo_1_1Foo_3_01T_01_5_01_4_1a63f2bcd07847222f880ae8c2ed012462" prot="public" virt="non-virtual"><scope>demo::Foo&lt; T * &gt;</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

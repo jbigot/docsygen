@@ -74,3 +74,44 @@ int helper();
 } // namespace
 
 } // namespace demo
+
+namespace demo {
+
+/** @brief The partial specialization of Foo for pointers.
+ *  @tparam T the pointed type
+ */
+template <typename T>
+class Foo<T*> {
+public:
+  /// The value, as a pointer.
+  T* value;
+};
+
+/// A class whose nested class has a nested class.
+class Outer {
+public:
+  /// A class nested in Outer.
+  class Inner {
+  public:
+    /// A class nested in a nested class.
+    class Innermost {
+    public:
+      /// The depth.
+      int depth;
+    };
+  };
+};
+
+/** @brief The size of a type, as a variable template.
+ *  @tparam T the type
+ */
+template <typename T>
+constexpr int size_of = sizeof(T);
+/// The full specialization of size_of for void.
+template <>
+constexpr int size_of<void> = 0;
+/// The partial specialization of size_of for pointers.
+template <typename T>
+constexpr int size_of<T*> = sizeof(void*);
+
+} // namespace demo

@@ -14,6 +14,20 @@
     <sectiondef kind="define">
       <member refid="group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff" kind="define"><name>CMAX</name></member>
       <member refid="group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d" kind="define"><name>CDEMO_VERSION</name></member>
+      <memberdef kind="define" id="cdemo_8h_1aa7722aab32b136c00b28af531e070b78" prot="public" static="no">
+        <name>CMIN</name>
+        <param><defname>a</defname></param>
+        <param><defname>b</defname></param>
+        <initializer>((a) &lt; (b) ? (a) : (b))</initializer>
+        <briefdescription>
+<para>The smaller of two values, a macro outside any group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="77" column="9" bodyfile="src/c/cdemo.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="enum">
       <member refid="group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9" kind="enum"><name>cstatus</name></member>
@@ -24,6 +38,26 @@
     </sectiondef>
     <sectiondef kind="var">
       <member refid="group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9" kind="variable"><name>cdemo_counter</name></member>
+    </sectiondef>
+    <sectiondef kind="func">
+      <member refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" kind="function"><name>cdemo_version</name></member>
+      <memberdef kind="function" id="cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void cdemo_reset</definition>
+        <argsstring>(void)</argsstring>
+        <name>cdemo_reset</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Resets the library, a function outside any group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/c/cdemo.h" line="74" column="6" declfile="src/c/cdemo.h" declline="74" declcolumn="6"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
 <para>A C API. </para>
@@ -67,7 +101,13 @@
 <codeline lineno="63" refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1ga9b34ff196787489aa77570d392fee501" kindref="member">cdemo_finalize</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="71" refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" kindref="member">cdemo_version</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8" kindref="member">cdemo_reset</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="cdemo_8h_1aa7722aab32b136c00b28af531e070b78" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CMIN(a,<sp/>b)<sp/>((a)<sp/>&lt;<sp/>(b)<sp/>?<sp/>(a)<sp/>:<sp/>(b))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/c/cdemo.h"/>
   </compounddef>
