@@ -63,6 +63,12 @@
   color: var(--bs-secondary-color);
 }
 
+// A namespace page's lines naming its sub-namespaces and itself: each spaced as the kind lists are
+// from one another (Bootstrap's mb-3).
+.docsygen-list-namespace {
+  margin-bottom: 1rem;
+}
+
 // Trees: lists, nested, with the kind of each node and its brief.
 .docsygen-tree {
   ul {
