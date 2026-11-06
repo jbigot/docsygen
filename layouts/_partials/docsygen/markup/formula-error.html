@@ -1,0 +1,17 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* What to say about a formula that KaTeX can't render: the formula as the XML gives it (what
+       sourceFormulas lists), KaTeX's error, where it is (the page, and the member in a member's
+       documentation) and the two ways out.
+       Usage: partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $text "err" $err)
+       with $err the error of a try of transform.ToMath. */ -}}
+{{- $err := string .err -}}
+{{- /* try's error is the whole template error: keep KaTeX's own message. */ -}}
+{{- $parts := split $err "error calling ToMath: " -}}
+{{- if gt (len $parts) 1 -}}{{- $err = index $parts 1 -}}{{- end -}}
+{{- $where := "an unknown page" -}}
+{{- with .ctx.page -}}{{- $where = printf "page %s" .Path -}}{{- end -}}
+{{- with .ctx.member -}}{{- $where = printf "%s, member %s" $where . -}}{{- end -}}
+{{- return printf "docsygen: formula \"%s\" can't be rendered (%s), on %s. Fix it in the documentation that generates the XML, or show its source instead: list it in sourceFormulas, an option of the adapter call or of the page's params.docsygen." .formula $err $where -}}

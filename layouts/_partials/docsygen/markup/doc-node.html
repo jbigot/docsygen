@@ -171,13 +171,19 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- if $display -}}
     {{- /* A display formula goes through the site's math code-block hook, which decides what
-           it accepts (Docsy's stops the build on a formula KaTeX rejects). */ -}}
+           it accepts (Docsy's stops the build on a formula KaTeX rejects, saying only that a
+           code block failed). docsygen can't catch the hook's error, nor know that it uses KaTeX:
+           it checks the formula with Docsy's options, which Hugo's cache then serves to Docsy's
+           hook, and warns with what it knows, just before Docsy's error. */ -}}
+    {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" true)) -}}
+      {{- with .Err -}}{{- warnf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $text "err" .)) -}}{{- end -}}
+    {{- end -}}
     {{- partial "docsygen/markup/fence.html" (dict "info" "math" "code" $tex "ctx" $ctx) -}}
   {{- else -}}
     {{- /* Docsy has no hook for inline math: done as its scripts/math.html does, whose key makes
            Docsy load KaTeX's CSS. */ -}}
     {{- with try (transform.ToMath $tex (dict "output" "htmlAndMathml" "displayMode" false)) -}}
-      {{- with .Err -}}{{- errorf "docsygen: formula %q: %s" $text . -}}{{- end -}}
+      {{- with .Err -}}{{- errorf "%s" (partial "docsygen/markup/formula-error.html" (dict "ctx" $ctx "formula" $text "err" .)) -}}{{- end -}}
       {{- .Value -}}
       {{- with $ctx.page -}}{{- .Store.Set "hasMath" true -}}{{- end -}}
     {{- end -}}

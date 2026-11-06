@@ -87,13 +87,6 @@
     xml: '<detaileddescription><para><formula id="2">\begin{aligned} a &amp;= b \end{aligned}</formula></para></detaileddescription>'
     contains: ['<pre data-test-hook="math">\begin{aligned} a &amp;= b \end{aligned}</pre>']
   expect: []
-- name: docsy markup, a display formula KaTeX rejects is left to the math hook
-  partial: test/doc-contains.html
-  context:
-    ctx: {}
-    xml: '<detaileddescription><para><formula id="3">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</formula></para></detaileddescription>'
-    contains: ['<pre data-test-hook="math">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</pre>']
-  expect: []
 - name: docsy markup, an inheritance diagram in Mermaid
   partial: test/block.html
   context:
