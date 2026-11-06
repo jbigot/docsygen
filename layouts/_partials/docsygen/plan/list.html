@@ -9,7 +9,9 @@ SPDX-License-Identifier: MIT
          buckets  [{label, kind, entries, description}], one list per kind and label, in the
                   page's order:
            label  "", or what sets the list apart: "static", "protected", "private", "package",
-                  "related", a thematic member group's heading, or "inherited:<base id>"
+                  "related", a thematic member group's heading, "inherited:<base id>" for
+                  public members inherited, or "inherited-<label>:<base id>" for the others,
+                  <label> one of the above
            description  a thematic member group's description node, or false
            kind   namespace, concept, type, function, variable, macro, friend, topic, file or dir
            entries  [{id, ids, word, name, count, countKey, brief, children}], sorted by name

@@ -43,6 +43,7 @@
     <member refid="classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6" kind="function"><name>set</name></member>
     <member refid="classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d" kind="function"><name>update</name></member>
     <member refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" kind="function"><name>update</name></member>
+    <member refid="classdemo_1_1Gadget_1a9e92ac2891e454d05076553497e32eb5" kind="function"><name>update</name></member>
   </compound>
   <compound refid="classdemo_1_1Gizmo" kind="class"><name>demo::Gizmo</name>
     <member refid="classdemo_1_1Gizmo_1ae581229d34c5e203998b7775fd5c49c0" kind="function"><name>spin</name></member>

@@ -61,7 +61,8 @@ docsygen-source: Source
 
 # The lists of declarations: the size of an overload set or of a variable template's
 # specializations, the labels over the lists, and the name of an anonymous namespace. The base of
-# docsygen-list-inherited-from is HTML, built and escaped by docsygen (a link).
+# docsygen-list-inherited-from and docsygen-list-inherited-labelled is HTML, built and escaped by
+# docsygen (a link); the label of the latter is one of docsygen-list-static to -related.
 docsygen-list-overloads:
   one: "({{ .count }} overload)"
   other: "({{ .count }} overloads)"
@@ -74,6 +75,7 @@ docsygen-list-private: private
 docsygen-list-package: package
 docsygen-list-related: related
 docsygen-list-inherited-from: "inherited from {{ .base }}"
+docsygen-list-inherited-labelled: "{{ .label }}, inherited from {{ .base }}"
 docsygen-anonymous: (anonymous)
 
 # The titles of the blocks of a description: the simple sections (@see, @return, …), the parameter

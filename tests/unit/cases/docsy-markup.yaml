@@ -255,7 +255,7 @@
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: list, id: classdemo_1_1LabelledCircle}}
-    contains: ['<p class="small text-body-secondary mb-0">inherited from demo::Circle</p><ul class="mb-3"><li>', '<p class="small text-body-secondary mb-0">inherited from demo::Named</p>']
+    contains: ['<p class="small text-body-secondary mb-0">inherited from demo::Circle</p><ul class="mb-3"><li>', '<p class="small text-body-secondary mb-0">protected, inherited from demo::Named</p>']
   expect: []
 - name: docsy markup, a block image is a figure
   partial: test/doc.html

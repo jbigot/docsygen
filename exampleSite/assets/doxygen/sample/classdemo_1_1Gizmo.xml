@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/cxx/demo/widget.hpp" line="182" column="8"/>
+        <location file="src/cxx/demo/widget.hpp" line="186" column="8"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -50,7 +50,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="src/cxx/demo/widget.hpp" line="179" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="179" bodyend="183"/>
+    <location file="src/cxx/demo/widget.hpp" line="183" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="183" bodyend="187"/>
     <listofallmembers>
       <member refid="classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb" prot="public" virt="non-virtual"><scope>demo::Gizmo</scope><name>Gadget</name></member>
       <member refid="classdemo_1_1Gadget_1a17466d32c482a01f04d6614ffcd22fe7" prot="public" virt="non-virtual"><scope>demo::Gizmo</scope><name>Gadget</name></member>
@@ -60,6 +60,7 @@
       <member refid="classdemo_1_1Gizmo_1ae581229d34c5e203998b7775fd5c49c0" prot="public" virt="non-virtual"><scope>demo::Gizmo</scope><name>spin</name></member>
       <member refid="classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d" prot="public" virt="non-virtual"><scope>demo::Gizmo</scope><name>update</name></member>
       <member refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" prot="private" virt="non-virtual"><scope>demo::Gizmo</scope><name>update</name></member>
+      <member refid="classdemo_1_1Gadget_1a9e92ac2891e454d05076553497e32eb5" prot="protected" virt="non-virtual"><scope>demo::Gizmo</scope><name>update</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

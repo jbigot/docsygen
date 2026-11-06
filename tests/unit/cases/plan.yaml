@@ -233,12 +233,17 @@
   partial: test/list.html
   context: {model: sample, id: classdemo_1_1LabelledCircle, match: '^[^- ]'}
   expect: [function, 'inherited:classdemo_1_1Circle function', 'inherited:classdemo_1_1Circle variable',
-    'inherited:classdemo_1_1Shape function', 'inherited:classdemo_1_1Named function']
+    'inherited:classdemo_1_1Shape function', 'inherited-protected:classdemo_1_1Named function']
 - name: list of a class, overloads split by protection
   partial: test/list.html
   context: {model: sample, id: classdemo_1_1Gadget}
   expect: [function, '- function Gadget (3 overloads) +', '- function set (2 overloads) +', '- function update',
-    private function, '- function update']
+    protected function, '- function update', private function, '- function update']
+- name: list of a class, an inherited set split by the protection of its members
+  partial: test/list.html
+  context: {model: sample, id: classdemo_1_1Gizmo, match: '^[^- ]|update'}
+  expect: [function, 'inherited:classdemo_1_1Gadget function', '- function update',
+    'inherited-protected:classdemo_1_1Gadget function', '- function update']
 - name: list, a partial specialization names its parameters' kinds
   partial: test/list.html
   context: {model: sample, id: namespacedemo, match: '\*'}

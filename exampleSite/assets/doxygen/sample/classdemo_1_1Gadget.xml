@@ -143,6 +143,27 @@
         <location file="src/cxx/demo/widget.hpp" line="175" column="8"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classdemo_1_1Gadget_1a9e92ac2891e454d05076553497e32eb5" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::Gadget::update</definition>
+        <argsstring>(double ratio)</argsstring>
+        <name>update</name>
+        <qualifiedname>demo::Gadget::update</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>ratio</declname>
+        </param>
+        <briefdescription>
+<para>Updates the gadget by a ratio, for derived gadgets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/widget.hpp" line="179" column="8"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
 <para>A gadget, whose member groups hold overload sets. </para>
     </briefdescription>
@@ -160,7 +181,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="src/cxx/demo/widget.hpp" line="146" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="146" bodyend="176"/>
+    <location file="src/cxx/demo/widget.hpp" line="146" column="1" bodyfile="src/cxx/demo/widget.hpp" bodystart="146" bodyend="180"/>
     <listofallmembers>
       <member refid="classdemo_1_1Gadget_1aaea1f69b3bd987d1576704c9253feccb" prot="public" virt="non-virtual"><scope>demo::Gadget</scope><name>Gadget</name></member>
       <member refid="classdemo_1_1Gadget_1a17466d32c482a01f04d6614ffcd22fe7" prot="public" virt="non-virtual"><scope>demo::Gadget</scope><name>Gadget</name></member>
@@ -169,6 +190,7 @@
       <member refid="classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6" prot="public" virt="non-virtual"><scope>demo::Gadget</scope><name>set</name></member>
       <member refid="classdemo_1_1Gadget_1a637aebe6d2fe1876d55248e94014997d" prot="public" virt="non-virtual"><scope>demo::Gadget</scope><name>update</name></member>
       <member refid="classdemo_1_1Gadget_1aafa61a595992726121863fbf3adc901e" prot="private" virt="non-virtual"><scope>demo::Gadget</scope><name>update</name></member>
+      <member refid="classdemo_1_1Gadget_1a9e92ac2891e454d05076553497e32eb5" prot="protected" virt="non-virtual"><scope>demo::Gadget</scope><name>update</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

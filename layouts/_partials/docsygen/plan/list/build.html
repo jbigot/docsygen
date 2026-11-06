@@ -105,27 +105,42 @@ SPDX-License-Identifier: MIT
       {{- if and (eq $c.kind "namespace") (not $c.name) (ne . $id) (eq (partial "docsygen/plan/list/anonymous-scope.html" $c) $raw) -}}{{- $nested = $nested | append . -}}{{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- /* What a class inherits, per base and section, its sets formed as its own are, with the
-         description the base gives a set when it inherits that whole set. */ -}}
+  {{- /* What a class inherits, per base and per label its members' protection and staticness give
+         them once inherited (public first, as the class's own), its sets formed as its own are,
+         with the description the base gives a set when it inherits that whole set. */ -}}
   {{- if $isClass -}}
+    {{- $bases := slice -}}
+    {{- $byBase := newScratch -}}
     {{- range partial "docsygen/plan/inherited.html" (dict "model" $m "id" $id) -}}
-      {{- $label := printf "inherited:%s" .base -}}
-      {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
-      {{- $baseSets := partial "docsygen/plan/overloads.html" (dict "model" $m "id" .base) -}}
-      {{- $g := partial "docsygen/plan/overloads/group.html" (dict "model" $m "members" .members) -}}
-      {{- $sets := newScratch -}}
-      {{- range $g.keys -}}
-        {{- $ids := index $g.by . -}}
-        {{- if ge (len $ids) 2 -}}
-          {{- $description := false -}}
-          {{- with index $baseSets (index $ids 0) -}}
-            {{- if eq (jsonify .members) (jsonify $ids) -}}{{- $description = .description -}}{{- end -}}
+      {{- if not (in $bases .base) -}}{{- $bases = $bases | append .base -}}{{- end -}}
+      {{- $key := printf "%s %s" .base (partial "docsygen/plan/list/label.html" .key) -}}
+      {{- $ids := $byBase.Get $key | default slice -}}
+      {{- range .members -}}{{- $ids = $ids | append . -}}{{- end -}}
+      {{- $byBase.Set $key $ids -}}
+    {{- end -}}
+    {{- range $base := $bases -}}
+      {{- $baseSets := partial "docsygen/plan/overloads.html" (dict "model" $m "id" $base) -}}
+      {{- range $sub := slice "" "static" "protected" "private" "package" "related" -}}
+        {{- with $byBase.Get (printf "%s %s" $base $sub) -}}
+          {{- $ids := . -}}
+          {{- $label := cond (eq $sub "") (printf "inherited:%s" $base) (printf "inherited-%s:%s" $sub $base) -}}
+          {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
+          {{- $g := partial "docsygen/plan/overloads/group.html" (dict "model" $m "members" $ids) -}}
+          {{- $sets := newScratch -}}
+          {{- range $g.keys -}}
+            {{- $set := index $g.by . -}}
+            {{- if ge (len $set) 2 -}}
+              {{- $description := false -}}
+              {{- with index $baseSets (index $set 0) -}}
+                {{- if eq (jsonify .members) (jsonify $set) -}}{{- $description = .description -}}{{- end -}}
+              {{- end -}}
+              {{- $entry := dict "set" (index $set 0) "members" $set "description" $description "group" "" -}}
+              {{- range $set -}}{{- $sets.Set . $entry -}}{{- end -}}
+            {{- end -}}
           {{- end -}}
-          {{- $set := dict "set" (index $ids 0) "members" $ids "description" $description "group" "" -}}
-          {{- range $ids -}}{{- $sets.Set . $set -}}{{- end -}}
+          {{- range $ids -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets.Values) -}}{{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets.Values) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

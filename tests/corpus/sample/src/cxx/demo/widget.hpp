@@ -173,6 +173,10 @@ public:
 private:
   /// Updates a part of the gadget.
   void update(int part);
+
+protected:
+  /// Updates the gadget by a ratio, for derived gadgets.
+  void update(double ratio);
 };
 
 /// A gadget that inherits the set of setters its base describes.
