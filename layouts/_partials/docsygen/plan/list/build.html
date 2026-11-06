@@ -19,6 +19,7 @@ SPDX-License-Identifier: MIT
 {{- $members := slice -}}
 {{- $nested := slice -}}
 {{- $subs := slice -}}
+{{- $descriptions := newScratch -}}
 
 {{- if eq $id "" -}}
   {{- /* The root: what no namespace or class holds. */ -}}
@@ -86,6 +87,7 @@ SPDX-License-Identifier: MIT
       {{- else -}}
         {{- $label := .heading -}}
         {{- if not (in $labels $label) -}}{{- $labels = $labels | append $label -}}{{- end -}}
+        {{- with .description -}}{{- $descriptions.Set $label . -}}{{- end -}}
         {{- range .members -}}{{- $members = $members | append (dict "id" . "label" $label "sets" $sets) -}}{{- end -}}
       {{- end -}}
     {{- else -}}
@@ -142,7 +144,7 @@ SPDX-License-Identifier: MIT
 
 {{- $kinds := cond $isClass (slice "friend" "function" "type" "variable" "concept" "macro")
     (slice "concept" "type" "function" "variable" "macro" "friend" "namespace" "file" "dir") -}}
-{{- $buckets := partial "docsygen/plan/list/group.html" (dict "items" $items "labels" $labels "kinds" $kinds) -}}
+{{- $buckets := partial "docsygen/plan/list/group.html" (dict "items" $items "labels" $labels "kinds" $kinds "descriptions" $descriptions.Values) -}}
 
 {{- /* The nested namespaces or sub-topics, last, by name, the anonymous ones after the others. */ -}}
 {{- if $nested -}}
@@ -168,7 +170,7 @@ SPDX-License-Identifier: MIT
   {{- $entries := slice -}}
   {{- range sort $named "name" -}}{{- $entries = $entries | append . -}}{{- end -}}
   {{- range $anonymous -}}{{- $entries = $entries | append . -}}{{- end -}}
-  {{- $buckets = $buckets | append (dict "label" "" "kind" (index (index $entries 0) "word") "entries" $entries) -}}
+  {{- $buckets = $buckets | append (dict "label" "" "kind" (index (index $entries 0) "word") "entries" $entries "description" false) -}}
   {{- $sorted := slice -}}
   {{- range $entries -}}{{- if in $subs .id -}}{{- $sorted = $sorted | append .id -}}{{- end -}}{{- end -}}
   {{- $subs = $sorted -}}

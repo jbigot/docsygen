@@ -3,8 +3,8 @@
 # The words of the generated reference. A site rewords or translates them in its own
 # i18n/<lang>.yaml, keeping the keys: docsygen-<the English text, in lowercase and hyphens>, one
 # per kind of section for the headings. The arguments are named fields ({{ .name }}), and
-# the plural forms (one, other) depend on .count. A key left out of a language's file is empty
-# there: translate them all. Doxygen's own wording, from translator_en.h, is the model.
+# the plural forms (one, other) depend on .count. A key left out of a site's file keeps the
+# default language's wording. Doxygen's own wording, from translator_en.h, is the model.
 
 # Page titles and the titles of the lists (Doxygen's translator_en.h); a title with a name takes
 # {{ .name }}.
@@ -44,51 +44,8 @@ docsygen-api: API
 docsygen-indexes: Indexes
 docsygen-other: Other
 
-# The headings of the summary sections (public-func, …) and of the detailed ones (doc-…) of a page;
-# -c: with OPTIMIZE_OUTPUT_FOR_C; -class: on a class's page.
-docsygen-section-inner-class: Classes
-docsygen-section-inner-class-c: Data Structures
-docsygen-section-inner-namespace: Namespaces
-docsygen-section-inner-concept: Concepts
-docsygen-section-inner-group: Topics
-docsygen-section-inner-dir: Directories
-docsygen-section-inner-file: Files
-docsygen-section-public-type: Public Types
-docsygen-section-public-slot: Public Slots
-docsygen-section-signal: Signals
-docsygen-section-public-func: Public Member Functions
-docsygen-section-public-static-func: Static Public Member Functions
-docsygen-section-public-attrib: Public Attributes
-docsygen-section-public-attrib-c: Data Fields
-docsygen-section-public-static-attrib: Static Public Attributes
-docsygen-section-protected-type: Protected Types
-docsygen-section-protected-slot: Protected Slots
-docsygen-section-protected-func: Protected Member Functions
-docsygen-section-protected-static-func: Static Protected Member Functions
-docsygen-section-protected-attrib: Protected Attributes
-docsygen-section-protected-static-attrib: Static Protected Attributes
-docsygen-section-package-type: Package Types
-docsygen-section-package-func: Package Functions
-docsygen-section-package-static-func: Static Package Functions
-docsygen-section-package-attrib: Package Attributes
-docsygen-section-package-static-attrib: Static Package Attributes
-docsygen-section-property: Properties
-docsygen-section-event: Events
-docsygen-section-private-type: Private Types
-docsygen-section-private-slot: Private Slots
-docsygen-section-private-func: Private Member Functions
-docsygen-section-private-static-func: Static Private Member Functions
-docsygen-section-private-attrib: Private Attributes
-docsygen-section-private-static-attrib: Static Private Attributes
-docsygen-section-friend: Friends
-docsygen-section-related: Related Symbols
-docsygen-section-define: Macros
-docsygen-section-typedef: Typedefs
-docsygen-section-enum: Enumerations
-docsygen-section-enumvalue: Enumerator
-docsygen-section-func: Functions
-docsygen-section-var: Variables
-docsygen-note-that-these-are-not-member-symbols: (Note that these are not member symbols.)
+# The headings of the detailed sections (doc-…) of a page; -c: with OPTIMIZE_OUTPUT_FOR_C;
+# -class: on a class's page.
 docsygen-section-doc-typedef: Typedef Documentation
 docsygen-section-doc-typedef-class: Member Typedef Documentation
 docsygen-section-doc-enum: Enumeration Type Documentation

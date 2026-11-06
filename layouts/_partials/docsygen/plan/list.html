@@ -6,9 +6,11 @@ SPDX-License-Identifier: MIT
        buckets}:
          subs     the ids of the direct sub-namespaces (or sub-topics), sorted by name, for the
                   list at the top of the page
-         buckets  [{label, kind, entries}], one list per kind and label, in the page's order:
+         buckets  [{label, kind, entries, description}], one list per kind and label, in the
+                  page's order:
            label  "", or what sets the list apart: "static", "protected", "private", "package",
                   "related", a thematic member group's heading, or "inherited:<base id>"
+           description  a thematic member group's description node, or false
            kind   namespace, concept, type, function, variable, macro, friend, topic, file or dir
            entries  [{id, ids, word, name, count, countKey, brief, children}], sorted by name
                   (on a class's page, constructors and destructor first):

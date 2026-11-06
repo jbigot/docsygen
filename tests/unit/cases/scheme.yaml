@@ -42,6 +42,11 @@
   context: {model: sample}
   select: [paths, targets, guide_1first-section, anchor]
   expect: first-section
+- name: scheme, a member named like a member group keeps its plain anchor
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2, anchor]
+  expect: set
 - name: scheme, a member named details yields to the fixed anchor
   partial: test/paths.html
   context: {model: sample}

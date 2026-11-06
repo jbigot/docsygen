@@ -25,6 +25,41 @@
   font-weight: bold;
 }
 
+// Lists of declarations: the kind's word in its colour, from Bootstrap's palette.
+.docsygen-kind-namespace {
+  color: var(--bs-orange);
+}
+
+.docsygen-kind-concept {
+  color: var(--bs-purple);
+}
+
+.docsygen-kind-type {
+  color: var(--bs-teal);
+}
+
+.docsygen-kind-function {
+  color: var(--bs-blue);
+}
+
+.docsygen-kind-variable {
+  color: var(--bs-green);
+}
+
+.docsygen-kind-macro {
+  color: var(--bs-red);
+}
+
+.docsygen-kind-friend {
+  color: var(--bs-pink);
+}
+
+.docsygen-kind-topic,
+.docsygen-kind-file,
+.docsygen-kind-dir {
+  color: var(--bs-secondary-color);
+}
+
 // Trees: lists, nested, with the kind of each node and its brief.
 .docsygen-tree {
   ul {

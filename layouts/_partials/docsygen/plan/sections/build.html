@@ -104,36 +104,19 @@ SPDX-License-Identifier: MIT
 {{- else if eq $kind "dir" -}}
   {{- $order = slice "inner-dir" "inner-file" -}}
 {{- end -}}
-{{- /* SUBGROUPING: but on a group's page, a member group whose members share a section is shown
-       in that section, which exists for it if need be (without a summary link). */ -}}
-{{- $in := dict -}}
-{{- if ne $kind "group" -}}
-  {{- range $i, $g := $groups -}}
-    {{- $keys := dict -}}
-    {{- range $g.members -}}{{- $keys = merge $keys (dict (partial "docsygen/plan/member-section.html" (dict "member" (index $m.ids .) "kind" (cond $isClass "class" $kind))) true) -}}{{- end -}}
-    {{- if eq (len $keys) 1 -}}
-      {{- range $k, $_ := $keys -}}
-        {{- $in = merge $in (dict (printf "user-defined-%d" (add $i 1)) $k) -}}
-        {{- if not ($found.Get $k) -}}{{- $found.Set $k slice -}}{{- $found.Set (printf "only-%s" $k) true -}}{{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
 {{- $sections := slice -}}
 {{- range $order -}}
   {{- $key := . -}}
   {{- $list := $found.Get $key -}}
-  {{- if or $list ($found.Get (printf "only-%s" $key)) -}}
+  {{- if $list -}}
     {{- $inner := hasPrefix $key "inner-" -}}
-    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" (cond (eq $key "related") (T "docsygen-note-that-these-are-not-member-symbols") "")
-        "group" "summary" "members" (cond $inner slice ($list | default slice)) "inner" (cond $inner $list slice)
-        "groupsOnly" (not $list)) -}}
+    {{- $sections = $sections | append (dict "key" $key "group" "summary" "members" (cond $inner slice $list) "inner" (cond $inner $list slice)) -}}
   {{- end -}}
 {{- end -}}
 {{- range $i, $g := $groups -}}
   {{- $key := printf "user-defined-%d" (add $i 1) -}}
-  {{- $sections = $sections | append (dict "key" $key "heading" $g.heading "subtitle" ""
-      "description" $g.description "group" "summary" "members" $g.members "inner" slice "in" (index $in $key | default "")) -}}
+  {{- $sections = $sections | append (dict "key" $key "heading" $g.heading
+      "description" $g.description "group" "summary" "members" $g.members "inner" slice) -}}
 {{- end -}}
 
 {{- /* The detailed sections, in the layout's order: every member that has a detailed entry, from
@@ -184,7 +167,7 @@ SPDX-License-Identifier: MIT
     {{- $doc.Set $key $sorted -}}
   {{- end -}}
   {{- with $doc.Get $key -}}
-    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "subtitle" "" "group" "doc" "members" . "inner" slice) -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" $kind)) "group" "doc" "members" . "inner" slice) -}}
   {{- end -}}
 {{- end -}}
 {{- return $sections -}}

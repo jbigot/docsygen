@@ -25,11 +25,11 @@ The page tree
 Wording
 : Every word docsygen writes goes through Hugo's `i18n`, with keys in
   [`i18n/en.yaml`](https://github.com/jbigot/docsygen/blob/main/i18n/en.yaml): headings
-  (`docsygen-section-public-func`), titles (`docsygen-class-reference`), sentences
-  (`docsygen-definition-at-line`), and the notice of other versions. Reword or translate them in
-  your own `i18n/<lang>.yaml`, keeping the keys; a language's file must hold them all. The
-  arguments are named fields (`{{ .name }}`), and a string that depends on a number has plural
-  forms (`one`, `other`).
+  (`docsygen-section-doc-function`), labels (`docsygen-list-private`), titles
+  (`docsygen-class-reference`), sentences (`docsygen-definition-at-line`), and the notice of other
+  versions. Reword or translate them in your own `i18n/<lang>.yaml`, keeping the keys; a key you
+  leave out keeps the default language's wording, as Hugo's `i18n` does. The arguments are named
+  fields (`{{ .name }}`), and a string that depends on a number has plural forms (`one`, `other`).
 
 For example, a class page without its list of members, in `layouts/_partials/docsygen/skeleton/class.html`:
 

@@ -63,8 +63,8 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="user-defined">
-      <header>Setters</header>
-      <description><para>An overload set, as a member group. </para>
+      <header>set</header>
+      <description><para>An overload set, as a member group named after its function, as PDI&apos;s are. </para>
 </description>
       <memberdef kind="function" id="classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

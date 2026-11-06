@@ -157,8 +157,8 @@ public:
   explicit Gadget(const char* name);
   /** @} */
 
-  /** @name Setters
-   *  An overload set, as a member group.
+  /** @name set
+   *  An overload set, as a member group named after its function, as PDI's are.
    *  @{
    */
   /// Sets an int.

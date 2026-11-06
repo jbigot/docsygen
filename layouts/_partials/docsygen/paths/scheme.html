@@ -413,13 +413,11 @@ SPDX-License-Identifier: MIT
   {{- $fixed := slice (dict "key" "details" "base" "details") -}}
   {{- range index ($s.Get "roles") $key -}}
     {{- if eq .role "compound" -}}
+      {{- /* The headings of docsygen/plan/compound.html: its detailed sections and the others. */ -}}
       {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
-        {{- $base := .key -}}
-        {{- if hasPrefix .key "user-defined-" -}}{{- $base = anchorize .heading | default .key -}}{{- end -}}
-        {{- $fixed = $fixed | append (dict "key" .key "base" $base) -}}
+        {{- if eq .group "doc" -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
       {{- end -}}
-      {{- /* The other headings of docsygen/plan/compound.html. */ -}}
-      {{- range slice "conceptdef" "inherited" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
+      {{- range slice "conceptdef" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
     {{- else if eq .role "source" -}}
       {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
     {{- end -}}

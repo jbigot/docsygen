@@ -3,8 +3,8 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* One line of a page's list (docsygen/plan/list.html), an <li>: the kind's word in its colour
-       and the name, as code, linked together to the entity's canonical place, the size of a set,
-       then the brief as plain text after a dash (left out with the dash when there is none),
+       (docsygen-kind-<kind>) and the name, as code, linked together to the entity's canonical
+       place, then the size of a set, and the brief as plain text after a dash (left out with the dash when there is none),
        then the buckets nested under the entry. A member that page .page documents nowhere else
        gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
        such an enum.
@@ -13,18 +13,19 @@ SPDX-License-Identifier: MIT
 {{- $m := $ctx.model -}}
 {{- $en := .entry -}}
 {{- $page := .page -}}
-{{- /* Bootstrap's emphasis text colours, which follow its light and dark modes. */ -}}
+{{- /* The kind that gives the word its colour: types together, an unknown member kind's word as
+       a variable (docsygen/plan/list/member.html). */ -}}
 {{- $types := slice "class" "struct" "union" "interface" "protocol" "category" "exception" "enum" "typedef" -}}
-{{- $colour := cond (in $types $en.word) "success" (index (dict "namespace" "warning" "concept" "info" "function" "primary"
-    "macro" "danger" "friend" "dark") $en.word | default "secondary") -}}
+{{- $kind := cond (in $types $en.word) "type" $en.word -}}
+{{- if not (in (slice "type" "namespace" "concept" "function" "variable" "macro" "friend" "topic" "file" "dir") $kind) -}}{{- $kind = "variable" -}}{{- end -}}
 {{- $name := $en.name -}}
 {{- if hasPrefix $name "(anonymous)" -}}{{- $name = printf "%s%s" (T "docsygen-anonymous") (strings.TrimPrefix "(anonymous)" $name) -}}{{- end -}}
-{{- $text := printf `<code><span class="docsygen-kind text-%s-emphasis fw-bold">%s</span> %s</code>` $colour $en.word (htmlEscape $name) -}}
-{{- with $en.count -}}{{- $text = printf "%s %s" $text (T (printf "docsygen-list-%s" $en.countKey) (dict "count" .)) -}}{{- end -}}
+{{- $text := printf `<code><span class="docsygen-kind docsygen-kind-%s fw-bold">%s</span> %s</code>` $kind $en.word (htmlEscape $name) -}}
 {{- $url := partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $en.id) -}}
 {{- /* A file without a page of its own (its source page only) isn't linked. */ -}}
 {{- if and $ctx.paths (eq (index $m.ids $en.id).kind "file") (not (index $ctx.paths.pageOf (string (jsonify (dict "role" "compound" "id" $en.id))))) -}}{{- $url = "" -}}{{- end -}}
 {{- with $url -}}{{- $text = printf `<a href="%s">%s</a>` (htmlEscape .) $text -}}{{- end -}}
+{{- with $en.count -}}{{- $text = printf "%s %s" $text (T (printf "docsygen-list-%s" $en.countKey) (dict "count" .)) -}}{{- end -}}
 {{- $marks := "" -}}
 {{- range $en.ids -}}
   {{- $e := index $m.ids . -}}
