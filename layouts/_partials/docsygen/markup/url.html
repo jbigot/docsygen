@@ -3,13 +3,14 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The URL of target .id in the version of .ctx (its links), or "". A target that no page of
-       the version holds warns, naming the page and the target: the caller writes its text alone.
-       Usage: partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $id) */ -}}
+       the version holds warns, naming the page and the target, unless .quiet: the caller writes
+       its text alone.
+       Usage: partial "docsygen/markup/url.html" (dict "ctx" $ctx "id" $id ["quiet" true]) */ -}}
 {{- $ctx := .ctx -}}
 {{- $url := "" -}}
 {{- if and .id (isset $ctx.links .id) -}}
   {{- $url = index $ctx.links .id -}}
-  {{- if eq $url "" -}}
+  {{- if and (eq $url "") (not .quiet) -}}
     {{- $name := .id -}}
     {{- with index $ctx.model.ids .id -}}{{- $name = .name | default $name -}}{{- end -}}
     {{- $page := "" -}}
