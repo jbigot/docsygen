@@ -204,7 +204,7 @@
 - name: list of a namespace, functions with their overload sets
   partial: test/list.html
   context: {model: sample, id: namespacedemo, only: function}
-  expect: ['- function box', '- function count_args', '- function details', '- function make_widget', '- function operator--', '- function repeat', '- function scale (2 overloads)', '- function to_string (2 overloads) +', '- function twice']
+  expect: ['- function box', '- function count_args', '- function details', '- function grow', '- function make_widget', '- function operator--', '- function repeat', '- function scale (2 overloads)', '- function to_string (2 overloads) +', '- function twice']
 - name: list counts a variable template's specializations
   partial: test/list.html
   context: {model: sample, id: namespacedemo, only: variable}

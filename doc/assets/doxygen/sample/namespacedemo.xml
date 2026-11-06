@@ -497,6 +497,24 @@
         </inbodydescription>
         <location file="src/cxx/demo/templates.hpp" line="151" column="8" declfile="src/cxx/demo/templates.hpp" declline="151" declcolumn="8"/>
       </memberdef>
+      <memberdef kind="function" id="namespacedemo_1ad4e100aff6c2651a2ecbefa8bcefe5a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void demo::grow</definition>
+        <argsstring>()</argsstring>
+        <name>grow</name>
+        <qualifiedname>demo::grow</qualifiedname>
+        <briefdescription>
+<para>Grows a widget. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><anchor id="namespacedemo_1sample_member"/><anchor id="namespacedemo_1sample_member-C"/> C source code: <programlisting filename=".C"><codeline><highlight class="normal">demo_grow(w);</highlight></codeline>
+</programlisting> <anchor id="namespacedemo_1sample_member-Fortran"/> Fortran source code: <programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">w%grow()</highlight></codeline>
+</programlisting> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/variants.hpp" line="22" column="6" declfile="src/cxx/demo/variants.hpp" declline="22" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int demo::scale</definition>

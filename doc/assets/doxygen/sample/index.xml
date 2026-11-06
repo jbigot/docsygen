@@ -121,6 +121,7 @@
     <member refid="namespacedemo_1a5f6024972f6d13e7c53c582aaedddc2f" kind="function"><name>twice</name></member>
     <member refid="namespacedemo_1ab63db0526cdb8b4040871ace0c51771b" kind="function"><name>repeat</name></member>
     <member refid="namespacedemo_1aa1dc060a3d43f9f2bd082b0d11bc8d2e" kind="function"><name>operator--</name></member>
+    <member refid="namespacedemo_1ad4e100aff6c2651a2ecbefa8bcefe5a2" kind="function"><name>grow</name></member>
     <member refid="namespacedemo_1a164c0fd35e91775da3167ea50509e90c" kind="function"><name>scale</name></member>
     <member refid="namespacedemo_1aa5a0bbb6074f10c2781832da57db7545" kind="function"><name>scale</name></member>
     <member refid="classdemo_1_1Widget_1a3b3d3a64a2128b4ab2259848749fae2c" kind="function"><name>make_widget</name></member>
@@ -170,6 +171,8 @@
   </compound>
   <compound refid="templates_8hpp" kind="file"><name>templates.hpp</name>
   </compound>
+  <compound refid="variants_8hpp" kind="file"><name>variants.hpp</name>
+  </compound>
   <compound refid="widget_8hpp" kind="file"><name>widget.hpp</name>
   </compound>
   <compound refid="details_8md" kind="file"><name>details.md</name>
@@ -179,6 +182,10 @@
   <compound refid="guide_8md" kind="file"><name>guide.md</name>
   </compound>
   <compound refid="mainpage_8md" kind="file"><name>mainpage.md</name>
+  </compound>
+  <compound refid="variant-links_8md" kind="file"><name>variant-links.md</name>
+  </compound>
+  <compound refid="variants_8md" kind="file"><name>variants.md</name>
   </compound>
   <compound refid="group__cdemo" kind="group"><name>cdemo</name>
     <member refid="group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c" kind="function"><name>cdemo_init</name></member>
@@ -200,6 +207,10 @@
   <compound refid="escapes" kind="page"><name>escapes</name>
   </compound>
   <compound refid="guide" kind="page"><name>guide</name>
+  </compound>
+  <compound refid="variant-links" kind="page"><name>variant-links</name>
+  </compound>
+  <compound refid="variants" kind="page"><name>variants</name>
   </compound>
   <compound refid="todo" kind="page"><name>todo</name>
   </compound>

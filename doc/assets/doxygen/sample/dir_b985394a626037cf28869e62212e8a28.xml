@@ -7,6 +7,7 @@
     <innerfile refid="print_8hpp">print.hpp</innerfile>
     <innerfile refid="shapes_8hpp">shapes.hpp</innerfile>
     <innerfile refid="templates_8hpp">templates.hpp</innerfile>
+    <innerfile refid="variants_8hpp">variants.hpp</innerfile>
     <innerfile refid="widget_8hpp">widget.hpp</innerfile>
     <briefdescription>
     </briefdescription>
