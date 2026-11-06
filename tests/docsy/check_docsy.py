@@ -37,6 +37,8 @@ Checks:
     the print page and the search index hold every variant's code; each group is followed by a
     copy of its variants in sequence (div.docsygen-variants-print), with no id, which the
     stylesheet shows only in print, where it hides the tabs;
+  - a hand-written page (/tabs/) with tabpanes of its own around an embedded group (demo::grow)
+    has three tabpanes, its ids unique, each tab controlling its own pane;
   - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
@@ -209,6 +211,20 @@ def main(argv):
             for target, controls in re.findall(r'data-bs-target="#([^"]+)"[^>]*?aria-controls="([^"]+)"', l, re.S):
                 if target != controls or f'id="{target}" role="tabpanel"' not in text:
                     errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
+    # A hand-written page's own tabpanes beside an embedded group keep their ids apart.
+    text = read(public, 'tabs/index.html')
+    lists = re.findall(r'<ul class="nav nav-tabs[^"]*" id="([^"]+)" role="tablist">(.*?)</ul>', text, re.S)
+    headers = [[h.strip() for h in re.findall(r'<button[^>]*>(.*?)</button>', l, re.S)] for _, l in lists]
+    if headers != [['One', 'Two'], ['C', 'Fortran'], ['Three', 'Four']]:
+        errors.append(f'tabs/index.html: the tabs are {headers}, not the page\'s two tabpanes around the embedded group')
+    ids = collections.Counter(re.findall(r'\sid="([^"]*)"', text))
+    if any(k > 1 for k in ids.values()):
+        errors.append(f'tabs/index.html: repeated ids {sorted(i for i, k in ids.items() if k > 1)}')
+    for _, l in lists:
+        for target, controls in re.findall(r'data-bs-target="#([^"]+)"[^>]*?aria-controls="([^"]+)"', l, re.S):
+            pane = re.search(f'id="{re.escape(target)}" role="tabpanel"[^>]*>(.*?)</div>', text, re.S)
+            if target != controls or not pane:
+                errors.append(f'tabs/index.html: a tab controls {target!r}, {controls!r}, not a pane of the page')
     variants = read(public, 'docs/latest/pages/variants/index.html')
     # Every anchor of a group, its variants' too, is at its head, before its tabs, and nowhere in
     # its panes, which are hidden when their tab isn't selected: those that start a variant's
