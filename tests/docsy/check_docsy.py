@@ -33,7 +33,9 @@ Checks:
     description are Docsy tabs, headed C and Fortran, whose ids are unique on their page and
     whose tabs control their own panes; a list item's text outside its group stays before the
     tabs; the links to a group and to one variant (page variant-links) land on ids of the page;
-    the print page and the search index hold every variant's code;
+    the print page and the search index hold every variant's code; each group is followed by a
+    copy of its variants in sequence (div.docsygen-variants-print), with no id, which the
+    stylesheet shows only in print, where it hides the tabs;
   - llms.txt lists pages of /docs/latest/, with no markup or escaped character;
   - in BASED, every image of the reference exists where its src points, and every root-relative
     href or src of a page starts with /sub/ and leads to a file.
@@ -56,6 +58,19 @@ def toc_entries(page):
             depth += 1 if tag == '<ul>' else -1
         else:
             out.append((depth, html.unescape(re.sub(r'<[^>]*>', '', text))))
+    return out
+
+
+def divs(page, cls):
+    """The inner HTML of each <div class="cls"> of page, up to its own closing tag."""
+    out = []
+    for m in re.finditer(f'<div class="{cls}">', page):
+        depth, pos = 1, m.end()
+        for t in re.finditer(r'<(/?)div\b', page[pos:]):
+            depth += -1 if t.group(1) else 1
+            if not depth:
+                out.append(page[pos:pos + t.start()])
+                break
     return out
 
 
@@ -193,6 +208,19 @@ def main(argv):
                 if target != controls or f'id="{target}" role="tabpanel"' not in text:
                     errors.append(f'{page}: a tab controls {target!r}, {controls!r}, not a pane of the page')
     variants = read(public, 'docs/latest/pages/variants/index.html')
+    copies = divs(variants, 'docsygen-variants-print')
+    if len(copies) != 5:
+        errors.append(f'the variants page has {len(copies)} copies of its groups for print, not 5')
+    for c in copies:
+        if re.search(r'\sid=', c) or 'nav-tabs' in c:
+            errors.append('a copy of a group for print has an id or tabs')
+    printed_copies = re.sub(r'<[^>]*>', '', ''.join(copies))
+    for code in codes:
+        if code not in printed_copies:
+            errors.append(f"the variants page's copies for print lack the variant code {code!r}")
+    if not re.search(r'\.docsygen-variants-print\s*\{\s*display:\s*none', css) or not re.search(
+            r'@media print\s*\{\s*\.docsygen-variants\s*\{\s*display:\s*none;?\s*\}\s*\.docsygen-variants-print\s*\{\s*display:\s*block', css):
+        errors.append("the stylesheet doesn't show the copies of the variants instead of the tabs in print only")
     if not re.search(r'<li>Step two, in two languages\.\s*<div class="docsygen-variants"><a id="sample_item"></a><ul class="nav nav-tabs', variants):
         errors.append("the variants page's list item lacks its text before its tabs")
     for href in re.findall(r'href="([^"]*sample_ex[^"]*)"', read(public, 'docs/latest/pages/variant-links/index.html')) or ['none']:

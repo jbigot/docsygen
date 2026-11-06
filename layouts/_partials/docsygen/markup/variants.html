@@ -23,10 +23,11 @@ SPDX-License-Identifier: MIT
        - {node, first, last}: a child (first = last), or, where a group takes part of a
          paragraph, a paragraph of what is left on either side of it (dropped if only
          whitespace), to render as a child is;
-       - {group, anchor, anchors, first, last, variants: [{label, anchor, nodes}]}: group is G,
-         anchor its id; each variant's anchor is its id, and its nodes, the blocks to render as a
-         description's children, hold one paragraph: the child itself, or a paragraph of the
-         part of it that the variant takes, from its anchor (or its parblock). anchors: the ids
+       - {group, anchor, anchors, first, last, variants: [{label, anchor, nodes, index}]}: group
+         is G, anchor its id; each variant's anchor is its id, and its nodes, the blocks to render
+         as a description's children, hold one paragraph: the child itself, or a paragraph of the
+         part of it that the variant takes, from its anchor (or its parblock); index is that
+         child's index. anchors: the ids
          of the anchors between the group's start and its first variant that no item holds (G's
          own, unless it is inside the first variant's parblock), to render with the group.
        Usage: partial "docsygen/markup/variants.html" (dict "ctx" $ctx "children" $node.children) */ -}}
@@ -235,7 +236,7 @@ SPDX-License-Identifier: MIT
         {{- end -}}
         {{- $group = merge $group (dict "last" $run.i) -}}
         {{- if ge $run.v 0 -}}
-          {{- $parts = $parts | append (merge (index ($variants.Get (string $run.g)) $run.v) (dict "nodes" (slice $node))) -}}
+          {{- $parts = $parts | append (merge (index ($variants.Get (string $run.g)) $run.v) (dict "nodes" (slice $node) "index" $run.i)) -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}

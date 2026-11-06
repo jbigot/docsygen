@@ -21,6 +21,8 @@ SPDX-License-Identifier: MIT
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- /* No line anchors in a copy that mustn't repeat the page's ids (.ctx.noids). */ -}}
+{{- if $ctx.noids -}}{{- $numbered = false -}}{{- end -}}
 {{- /* The code, a line per codeline; a numbered listing is padded with empty lines where the XML
        omits some (the lines of documentation comments), so that every line has its own number. */ -}}
 {{- $first := 0 -}}

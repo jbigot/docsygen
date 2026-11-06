@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
 {{- $tabs := "" -}}
 {{- range $v, $variant := $g.variants -}}
   {{- $panes = $panes | append (string (partial "docsygen/markup/doc.html" (dict "node" (dict "tag" "docpart" "children" .nodes) "ctx" $in))) -}}
-  {{- $tabs = printf `%s{{< tab header="%s" text=true >}}docsygen:variant:%d:{{< /tab >}}` $tabs .label $v -}}
+  {{- $tabs = printf `%s{{< tab header=%q text=true >}}docsygen:variant:%d:{{< /tab >}}` $tabs .label $v -}}
 {{- end -}}
 {{- $html := $ctx.page.RenderString (printf `{{< tabpane persist="header" >}}%s{{< /tabpane >}}` $tabs) -}}
 {{- $html = partial "docsygen/markup/tabpane-ids.html" (dict "html" $html "context" (hash.XxHash (printf "%s %s" $ctx.page.Path $g.anchor))) -}}
