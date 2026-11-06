@@ -42,7 +42,7 @@
 }
 
 .docsygen-kind-function {
-  color: color-mix(in srgb, var(--bs-blue) 75%, var(--bs-body-color));
+  color: color-mix(in srgb, var(--bs-red) 70%, var(--bs-body-color));
 }
 
 .docsygen-kind-variable {
@@ -50,7 +50,7 @@
 }
 
 .docsygen-kind-macro {
-  color: color-mix(in srgb, var(--bs-red) 70%, var(--bs-body-color));
+  color: color-mix(in srgb, var(--bs-blue) 75%, var(--bs-body-color));
 }
 
 .docsygen-kind-friend {
