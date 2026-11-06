@@ -142,12 +142,13 @@ To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 - **Model**: one model per XML directory, built once per build from `index.xml`, with an id→page
   map and a name→id map. `partialCached` is an LRU of 1000 entries: it holds O(versions) entries,
   and what is computed per compound (sections, inherited members) is one map per model in one
-  entry (`plan/sections/all.html`, `plan/inherited/all.html`). Only the plans, one per page and
+  entry (`plan/sections/all.html`, `plan/inherited/all.html`, `plan/overloads/build.html`). Only the plans, one per page and
   expensive, go in a per-model table (`docsygen/memo.html`), scoped by the dir and pathMap.
 - **Paths**: the page scheme (`docsygen/paths/scheme.html`) gives each page a key, unique after
   Hugo's path normalization; placements (`docsygen/adapter.html`, one call per part of a version)
   put the keys at paths.
-- **Rendering**: a page's plan lists its blocks in Doxygen's order. A skeleton
+- **Rendering**: a page's plan lists its blocks (its declarations are one `list` block,
+  `plan/list.html`) in Doxygen's order. A skeleton
   (`docsygen/skeleton/<kind>.html`) turns it into Markdown, with real headings and one shortcode
   per block, so that search, print and `llms.txt` work. Generated pages are built from the
   public shortcodes, called as `{{% %}}` (goldmark reads their output, so it needs `unsafe: true`,
