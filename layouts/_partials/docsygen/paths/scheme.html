@@ -22,10 +22,9 @@ SPDX-License-Identifier: MIT
        {from, to} whose from starts it, then stripped of the new common leading directories.
        Dirs mapped to one path share the first one's page; a dir with no file under its path
        goes to its nearest kept ancestor's page, or to files/: both are in merged.
-       Anchors, per page, in this order: the fixed ones (details, the section keys, slug(header)
-       for member groups, conceptdef, inherited, inline-classes, source), the members (the name),
-       the enum
-       values (<enum anchor>-<value>), the sections (the title), the anchors (the id without its
+       Anchors, per page, in this order: the fixed ones (details where the page has that
+       heading, the section keys, slug(header) for member groups, conceptdef, inline-classes,
+       source), the members (the name), the enum values (<enum anchor>-<value>), the sections (the title), the anchors (the id without its
        compound's prefix). An anchor is docsygen/text/anchor.html of its name, as Hugo names a
        heading, with -1, -2, … on a collision, as goldmark numbers duplicate heading ids; a
        page's path segment takes -2, ….
@@ -420,10 +419,14 @@ SPDX-License-Identifier: MIT
        every model with such members. */ -}}
 {{- $nsRootPage := $s.Get "nsRootPage" | default "" -}}
 {{- range $key := $s.Get "order" -}}
-  {{- $fixed := slice (dict "key" "details" "base" "details") -}}
+  {{- $fixed := slice -}}
   {{- range index ($s.Get "roles") $key -}}
     {{- if eq .role "compound" -}}
-      {{- /* The headings of docsygen/plan/compound.html: its detailed sections and the others. */ -}}
+      {{- /* The headings of docsygen/plan/compound.html: "Detailed Description" where it has one
+             (not on a page, namespace, topic or file), its detailed sections and the others. */ -}}
+      {{- if not (in (slice "page" "namespace" "group" "file") (index $m.ids .id).kind) -}}
+        {{- $fixed = $fixed | append (dict "key" "details" "base" "details") -}}
+      {{- end -}}
       {{- if not (and $nsRootPage (eq (index $m.ids .id).kind "file")) -}}
         {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
           {{- if eq .group "doc" -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}

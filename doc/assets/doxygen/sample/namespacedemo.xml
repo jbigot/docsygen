@@ -248,6 +248,25 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
+      <memberdef kind="function" id="namespacedemo_1a8ebe94248e5e9593f24e3805184421ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * demo::details</definition>
+        <argsstring>(const Shape &amp;shape)</argsstring>
+        <name>details</name>
+        <qualifiedname>demo::details</qualifiedname>
+        <param>
+          <type>const <ref refid="classdemo_1_1Shape" kindref="compound">Shape</ref> &amp;</type>
+          <declname>shape</declname>
+        </param>
+        <briefdescription>
+<para>Describes a shape, on a page with no &quot;Detailed Description&quot; heading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/shapes.hpp" line="64" column="12" declfile="src/cxx/demo/shapes.hpp" declline="64" declcolumn="12"/>
+      </memberdef>
       <memberdef kind="function" id="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>

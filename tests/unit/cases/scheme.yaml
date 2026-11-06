@@ -52,6 +52,11 @@
   context: {model: sample}
   select: [paths, targets, classdemo_1_1Widget_1a70145e8cbd4b3b77b2b35509ff5cab68, anchor]
   expect: details-1
+- name: scheme, a member named details keeps its plain anchor on a page without that heading
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, namespacedemo_1a8ebe94248e5e9593f24e3805184421ef, anchor]
+  expect: details
 - name: scheme, the C sample has no pages section
   partial: test/paths.html
   context: {model: sample-c}

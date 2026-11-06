@@ -60,4 +60,7 @@ public:
   void press();
 };
 
+/// Describes a shape, on a page with no "Detailed Description" heading.
+const char* details(const Shape& shape);
+
 } // namespace demo

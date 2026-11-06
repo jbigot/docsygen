@@ -115,6 +115,7 @@
     <member refid="namespacedemo_1a9f21d87b86cbf7af86b278a322d92b2c" kind="variable"><name>size_of</name></member>
     <member refid="namespacedemo_1a4fb8892e109b8ec8aefc5cabe2ee8e0c" kind="variable"><name>size_of&lt; void &gt;</name></member>
     <member refid="namespacedemo_1a61a455cdf092fb43ced09be7ff303914" kind="variable"><name>size_of&lt; T * &gt;</name></member>
+    <member refid="namespacedemo_1a8ebe94248e5e9593f24e3805184421ef" kind="function"><name>details</name></member>
     <member refid="namespacedemo_1a21eb3c5cd4301a833876747ca01af22c" kind="function"><name>box</name></member>
     <member refid="namespacedemo_1a290fb11cb575f85ad1d285b4c6f2203c" kind="function"><name>count_args</name></member>
     <member refid="namespacedemo_1a5f6024972f6d13e7c53c582aaedddc2f" kind="function"><name>twice</name></member>

@@ -78,7 +78,9 @@
 <codeline lineno="60" refid="classdemo_1_1Button_1a267fd51369e4aaab067f908989d50cdb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Button_1a267fd51369e4aaab067f908989d50cdb" kindref="member">press</ref>();</highlight></codeline>
 <codeline lineno="61"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="namespacedemo_1a8ebe94248e5e9593f24e3805184421ef" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespacedemo_1a8ebe94248e5e9593f24e3805184421ef" kindref="member">details</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classdemo_1_1Shape" kindref="compound">Shape</ref>&amp;<sp/>shape);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>demo</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="src/cxx/demo/shapes.hpp"/>
   </compounddef>
