@@ -92,22 +92,6 @@
   column-width: 14rem;
 }
 
-// Example variants: Docsy's tabs on screen; printed, the variants one after the other, since
-// Docsy prints only the selected tab.
-.docsygen-variants-print {
-  display: none;
-}
-
-@media print {
-  .docsygen-variants {
-    display: none;
-  }
-
-  .docsygen-variants-print {
-    display: block;
-  }
-}
-
 // Docsy's navbar writes the version menu's item whenever params.versions is set, which
 // docsygen's hugo.yaml does for every page; on hand-written pages, docsygen's menu renders
 // nothing in it. Hide that empty item, and its padding, until Docsy leaves it out.

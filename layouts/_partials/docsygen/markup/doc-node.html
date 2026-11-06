@@ -48,9 +48,8 @@ SPDX-License-Identifier: MIT
 {{- else if eq $tag "ulink" -}}
   <a class="docsygen-ulink" href="{{ $n.attributes.url }}">{{ partial "docsygen/markup/doc.html" (merge $sub (dict "node" $n)) }}</a>
 {{- else if eq $tag "anchor" -}}
-  {{- /* None in a copy that mustn't repeat the page's ids (.ctx.noids, docsygen/markup/doc-children.html),
-         nor for those written elsewhere (.ctx.skipanchors, docsygen/markup/doc-variants.html). */ -}}
-  {{- if not (or $ctx.noids (in ($ctx.skipanchors | default slice) $n.attributes.id)) -}}<a id="{{ index $ctx.anchors $n.attributes.id }}"></a>{{- end -}}
+  {{- /* None for those written elsewhere (.ctx.skipanchors, docsygen/markup/doc-variants.html). */ -}}
+  {{- if not (in ($ctx.skipanchors | default slice) $n.attributes.id) -}}<a id="{{ index $ctx.anchors $n.attributes.id }}"></a>{{- end -}}
 {{- else if eq $tag "linebreak" -}}
   <br />
 {{- else if eq $tag "hruler" -}}
@@ -89,7 +88,7 @@ SPDX-License-Identifier: MIT
   {{- if gt $level 6 -}}{{- $level = 6 -}}{{- end -}}
   {{- range $n.children -}}
     {{- if and (reflect.IsMap .) (eq .tag "title") -}}
-      {{- partial "docsygen/markup/doc-heading.html" (dict "level" $level "node" . "id" (cond (ne $ctx.noids true) (index $ctx.anchors $n.attributes.id | default "") "") "md" $.mdheadings "sub" $sub) -}}
+      {{- partial "docsygen/markup/doc-heading.html" (dict "level" $level "node" . "id" (index $ctx.anchors $n.attributes.id) "md" $.mdheadings "sub" $sub) -}}
     {{- end -}}
   {{- end -}}
   {{- partial "docsygen/markup/doc-children.html" (dict "parent" $n "sub" (merge $sub (dict "root" false "mdheadings" $.mdheadings)) "skip" (slice "title")) -}}

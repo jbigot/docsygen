@@ -6,13 +6,10 @@ SPDX-License-Identifier: MIT
        through docsygen/markup/doc-node.html with .sub and its node, parent and index, but those
        of a tag in .skip (a title rendered apart). Where the site has Docsy's tabpane, the example
        variants among them (docsygen/markup/variants.html) are tabs
-       (docsygen/markup/doc-variants.html), followed by a copy for print,
-       div.docsygen-variants-print: the variants in sequence (docsygen/markup/doc-variant.html), as
-       without tabpane, with no id (.ctx.noids), so that ids stay unique and links land on the
-       tabs. What a group leaves of a paragraph renders as that paragraph would, in its place
-       among the parent's children (docsygen/markup/doc-stand-in.html). Inside a variant
-       (.sub.ctx.variant), without tabpane, and where there is no group, the children render in
-       sequence.
+       (docsygen/markup/doc-variants.html). What a group leaves of a paragraph renders as that
+       paragraph would, in its place among the parent's children
+       (docsygen/markup/doc-stand-in.html). Inside a variant (.sub.ctx.variant), without tabpane,
+       and where there is no group, the children render in sequence.
        Usage: partial "docsygen/markup/doc-children.html" (dict "parent" $node "sub" (dict "ctx" $ctx …) "skip" (slice "title")) */ -}}
 {{- $parent := .parent -}}
 {{- $skip := .skip | default slice -}}
@@ -32,10 +29,6 @@ SPDX-License-Identifier: MIT
   {{- range $items -}}
     {{- if isset . "group" -}}
       {{- partial "docsygen/markup/doc-variants.html" (dict "group" . "parent" $parent "sub" $.sub) -}}
-      {{- $print := partial "docsygen/with.html" (dict "map" $.sub "set" (dict "ctx" (partial "docsygen/with.html" (dict "map" $.sub.ctx "set" (dict "variant" true "noids" true))) "mdheadings" false)) -}}
-      <div class="docsygen-variants-print">
-      {{- range .variants -}}{{- partial "docsygen/markup/doc-variant.html" (dict "variant" . "parent" $parent "sub" $print) -}}{{- end -}}
-      </div>
     {{- else -}}
       {{- $node := .node -}}
       {{- if not (and (reflect.IsMap $node) (in $skip $node.tag)) -}}

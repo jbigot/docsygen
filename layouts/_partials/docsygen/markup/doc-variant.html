@@ -4,8 +4,8 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* One example variant (docsygen/markup/variants.html) of the children of .parent, as it renders
        in sequence there: its blocks through docsygen/markup/doc-node.html with .sub, in the place
-       of the child they come from (docsygen/markup/doc-stand-in.html). Both a tab's pane and the
-       copy for print (docsygen/markup/doc-children.html) render it so, with their own .sub.ctx.
+       of the child they come from (docsygen/markup/doc-stand-in.html). A tab's pane renders it so
+       (docsygen/markup/doc-variants.html).
        Usage: partial "docsygen/markup/doc-variant.html" (dict "variant" $variant "parent" $parent "sub" $sub) */ -}}
 {{- $i := .variant.index -}}
 {{- range .variant.nodes -}}
