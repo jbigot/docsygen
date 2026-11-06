@@ -34,6 +34,16 @@ website](https://pdi.dev/) is arranged that way, from its `content/_content.gotm
   between the `:version` segment and a deeper root are sections that docsygen adds, with no
   content; the segments above it are your site's own sections.
 
+`topicMembers`
+: Whether the pages of the placement list, besides the entities they document, those that a
+  topic (a Doxygen group) documents (default `true`). Every entity is listed in the namespace it
+  belongs to, the API reference's root (`api`) being the root namespace's page, and links to its
+  canonical page: its topic's when it is in one, its namespace's otherwise. A namespace page
+  documents in detail only what has no other canonical page. With `topicMembers: false`, the
+  namespace pages leave out the entities of topics, for a site that places its topics as an API
+  of their own: a C API's functions are then not listed again under `api`. Topic pages always
+  list their members.
+
 Titles
 : The placement's root keeps the selected page's title unless `title` or `linkTitle` are given. A
   root at the `:version` segment is its version's section: its menu title stays the version

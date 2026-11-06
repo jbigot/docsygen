@@ -20,9 +20,9 @@
   partial: test/part.html
   context: {model: sample, key: api/demo/widget, address: {type: member, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd}}
   expect: true
-- name: part, a list is its block's markup
+- name: part, the root namespace's list is its block's markup
   partial: test/part.html
-  context: {model: sample, key: api, address: {type: tree, name: annotated}}
+  context: {model: sample, key: api, address: {type: list}}
   expect: true
 - name: part, a member with its anchor carries it on its wrapper
   partial: test/part-contains.html

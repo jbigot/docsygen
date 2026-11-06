@@ -6,10 +6,13 @@ SPDX-License-Identifier: MIT
          pages    [{key, path, kind, parent, title, linkTitle, weight, description, summary,
                     roles}], parents first. path is relative to the version root ("" for the
                     root), description plain text, summary Markdown.
-         targets  {id: {page: key, anchor}}: where each id of the model is documented
+         targets  {id: {page: key, anchor}}: where each id of the model is documented, its
+                  home compound's page, or for a member that a file documents, the root
+                  namespace's page when there is one
          anchors  {key: {anchorKey: anchor}}: the fixed anchors of each page
          merged   {refid: key}: compounds that another page absorbed
          pageOf   {role: key}: the page of each role, keyed by the role's jsonify
+         nsRoot   the key of the root namespace's page, or ""
          scope    the model's dir and the pathMap: what the pages depend on, the scope of the
                   results that depend on them (docsygen/memo.html)
        The flavor's docsygen/paths/scheme.html decides the pages, paths and anchors.

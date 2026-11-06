@@ -21,13 +21,13 @@
     match: {role: compound, id: namespacedemo_1_1_0d120023002357274100006257004322307273101100025142}
   len: true
   expect: 0
-- name: roles of the C sample, no namespace list
+- name: roles of the C sample, the root namespace
   partial: test/roles.html
   context:
     model: sample-c
-    match: {role: tree, name: namespaces}
+    match: {role: namespace-root}
   len: true
-  expect: 0
+  expect: 1
 - name: roles of the C sample, no alphabetical index
   partial: test/roles.html
   context:

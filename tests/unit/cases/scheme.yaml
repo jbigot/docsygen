@@ -101,3 +101,18 @@
   context: {model: pdi}
   select: [has, files]
   expect: true
+- name: scheme, the api page holds the root namespace
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, pageOf, '{"role":"namespace-root"}']
+  expect: api
+- name: scheme, the root namespace page is a global function's canonical page
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8]
+  expect: {anchor: cdemo_reset, page: api}
+- name: scheme, a topic page stays a grouped global function's canonical page
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, group__cdemo_1gafb6e4f5923c7789aa992802c474085d9, page]
+  expect: topics/cdemo

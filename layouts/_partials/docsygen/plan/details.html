@@ -1,0 +1,19 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The blocks of the detailed sections among .sections (docsygen/plan/sections.html): a heading
+       block each, followed by one member block per member.
+       Usage: partial "docsygen/plan/details.html" (dict "model" $model "sections" $sections) */ -}}
+{{- $m := .model -}}
+{{- $blocks := slice -}}
+{{- range .sections -}}
+  {{- if eq .group "doc" -}}
+    {{- $blocks = $blocks | append (dict "type" "heading" "key" .key "heading" (dict "level" 2 "text" .heading "anchorKey" .key)) -}}
+    {{- range .members -}}
+      {{- $name := (index $m.ids .).name -}}
+      {{- $blocks = $blocks | append (dict "type" "member" "id" . "heading" (dict "level" 3 "text" (index (split $name "::") (sub (len (split $name "::")) 1)) "anchorKey" .)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $blocks -}}

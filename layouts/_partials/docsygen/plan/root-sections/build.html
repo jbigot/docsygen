@@ -1,0 +1,34 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The body of docsygen/plan/root-sections.html. */ -}}
+{{- $m := . -}}
+{{- $sort := eq (index ((index $m.options "SORT_MEMBER_DOCS") | default (slice "YES")) 0) "YES" -}}
+{{- $doc := newScratch -}}
+{{- range $m.order -}}
+  {{- if eq (index $m.ids .).kind "file" -}}
+    {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .) -}}
+      {{- if eq .group "doc" -}}{{- $doc.Set .key (($doc.Get .key | default slice) | append .members) -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $sections := slice -}}
+{{- range slice "doc-define" "doc-typedef" "doc-enum" "doc-function" "doc-variable" "doc-property" "doc-event" -}}
+  {{- $key := . -}}
+  {{- with $doc.Get $key -}}
+    {{- $members := . -}}
+    {{- if $sort -}}
+      {{- $keyed := slice -}}
+      {{- range $members -}}
+        {{- $name := (index $m.ids .).name -}}
+        {{- $keyed = $keyed | append (dict "id" . "key" (index (split $name "::") (sub (len (split $name "::")) 1))) -}}
+      {{- end -}}
+      {{- $members = slice -}}
+      {{- range sort $keyed "key" -}}{{- $members = $members | append .id -}}{{- end -}}
+    {{- end -}}
+    {{- $sections = $sections | append (dict "key" $key "heading" (partial "docsygen/plan/section-heading.html" (dict "model" $m "key" $key "kind" "namespace"))
+        "description" false "group" "doc" "members" $members "inner" slice) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $sections -}}

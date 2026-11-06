@@ -5,8 +5,8 @@ SPDX-License-Identifier: MIT
 {{- /* One line of a page's list (docsygen/plan/list.html), an <li>: the kind's word in its colour
        (docsygen-kind-<kind>) and the name, as code, linked together to the entity's canonical
        place, then the size of a set, and the brief as plain text after a dash (left out with the dash when there is none),
-       then the buckets nested under the entry. A member that page .page documents nowhere else
-       gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
+       then the buckets nested under the entry. A member that the page documents nowhere else
+       (its target is .ctx.key's page, or without one, its home is .page) gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
        such an enum.
        Usage: partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $pageId) */ -}}
 {{- $ctx := .ctx -}}
@@ -29,7 +29,12 @@ SPDX-License-Identifier: MIT
 {{- $marks := "" -}}
 {{- range $en.ids -}}
   {{- $e := index $m.ids . -}}
-  {{- if and $e (eq $e.what "member") (eq $e.home $page) (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) -}}
+  {{- /* Documented on this page: its target's page is the page rendered, else its home is .page. */ -}}
+  {{- $here := false -}}
+  {{- if and $e $ctx.paths $ctx.key -}}{{- $here = eq (index (index $ctx.paths.targets . | default dict) "page") $ctx.key -}}
+  {{- else if $e -}}{{- $here = eq $e.home $page -}}
+  {{- end -}}
+  {{- if and $e (eq $e.what "member") $here (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) -}}
     {{- $marks = printf `%s<a id="%s" data-doxygen-id="%s"></a>` $marks (index $ctx.anchors . | default "") . -}}
     {{- range $e.node.children -}}
       {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}{{- $marks = printf `%s<a id="%s" data-doxygen-id="%s"></a>` $marks (index $ctx.anchors .attributes.id | default "") .attributes.id -}}{{- end -}}

@@ -5,7 +5,9 @@ SPDX-License-Identifier: MIT
 {{- /* The blocks of a page, the concatenation of the plans of its roles (docsygen/plan/<role>.html),
        as [{type, …, heading?}]. heading is {level, text, anchorKey}, where anchorKey is a model id
        or a key of the page's fixed anchors (docsygen/paths.html, anchors).
-       Memoized per page (docsygen/memo.html), in the scope of the page's paths: the same key may have
-       other roles under another pathMap.
+       Memoized per page (docsygen/memo.html), in the scope of the page's paths and of
+       .ctx.topicMembers (default true): the same key may have other roles under another pathMap,
+       and another list under another topicMembers.
        Usage: partial "docsygen/plan.html" (dict "entry" $pageEntry "ctx" $ctx) */ -}}
-{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/build.html" "context" . "scope" .ctx.paths.scope "key" .entry.key) -}}
+{{- $tm := cond (isset .ctx "topicMembers") .ctx.topicMembers true -}}
+{{- return partial "docsygen/memo.html" (dict "name" "docsygen/plan/build.html" "context" . "scope" (printf "%s|%t" .ctx.paths.scope $tm) "key" .entry.key) -}}

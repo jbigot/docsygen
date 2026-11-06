@@ -6,8 +6,9 @@ SPDX-License-Identifier: MIT
          {role: root}
          {role: compound, id}       every compound that has a page in Doxygen's HTML, followed by
          {role: source, id}         and its source listing (files Doxygen writes one for)
-         {role: tree, name}         annotated, hierarchy, namespaces, concepts, files, pages,
-                                    topics, examples
+         {role: namespace-root}     the root namespace: the namespaces, and the classes,
+                                    concepts and members out of any namespace
+         {role: tree, name}         hierarchy, files, pages, topics, examples
        Only what Doxygen 1.18 generates is listed (src/index.cpp, classdef.cpp, filedef.cpp,
        namespacedef.cpp), honouring the Doxyfile options that decide it: those of
        docsygen/paths/has-page.html for the compounds, OPTIMIZE_OUTPUT_FOR_C, SOURCE_BROWSER,
@@ -50,9 +51,14 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 
+{{- /* The root namespace, when it holds anything. */ -}}
+{{- $global := false -}}
+{{- range slice "namespace" "concept" -}}{{- if $count.Get . -}}{{- $global = true -}}{{- end -}}{{- end -}}
+{{- range $classLike -}}{{- if $count.Get . -}}{{- $global = true -}}{{- end -}}{{- end -}}
+{{- range $_, $members := $m.fileMembers -}}{{- if $members -}}{{- $global = true -}}{{- end -}}{{- end -}}
+{{- if $global -}}{{- $roles = $roles | append (dict "role" "namespace-root") -}}{{- end -}}
+
 {{- /* The lists. */ -}}
-{{- $hasClasses := false -}}
-{{- range $classLike -}}{{- if $count.Get . -}}{{- $hasClasses = true -}}{{- end -}}{{- end -}}
 {{- $hierarchy := false -}}
 {{- range $m.order -}}
   {{- $e := index $m.ids . -}}
@@ -70,8 +76,7 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $pages := 0 -}}
 {{- range $m.order -}}{{- if and (eq (index $m.ids .).kind "page") (ne . "indexpage") -}}{{- $pages = add $pages 1 -}}{{- end -}}{{- end -}}
-{{- range $name, $present := dict "annotated" $hasClasses "hierarchy" $hierarchy "namespaces" ($count.Get "namespace")
-    "concepts" ($count.Get "concept") "files" ($count.Get "file") "pages" $pages "topics" ($count.Get "group")
+{{- range $name, $present := dict "hierarchy" $hierarchy "files" ($count.Get "file") "pages" $pages "topics" ($count.Get "group")
     "examples" ($count.Get "example") -}}
   {{- if $present -}}{{- $roles = $roles | append (dict "role" "tree" "name" $name) -}}{{- end -}}
 {{- end -}}

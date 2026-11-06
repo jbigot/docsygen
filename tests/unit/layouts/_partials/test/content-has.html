@@ -1,0 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Whether the content of page .page of a build case's site contains .text, as one warning:
+       "content-has TEXT: true|false". */ -}}
+{{- with site.GetPage .page -}}{{- warnf "content-has %s: %t" $.text (strings.Contains (string .Content) $.text) -}}{{- end -}}

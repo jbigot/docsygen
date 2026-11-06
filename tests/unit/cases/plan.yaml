@@ -267,3 +267,38 @@
   partial: test/list.html
   context: {model: sample, id: classdemo_1_1Gizmo, only: 'inherited:classdemo_1_1Gadget function'}
   expect: ['- function Gadget (3 overloads) +', '- function set (2 overloads) +', '- function update']
+- name: plan, the root plan lists global entities and documents those of no topic
+  partial: test/plan-outline.html
+  context:
+    ctx: {model: sample}
+    key: api
+  expect: [title, list, heading doc-define, member cdemo_8h_1aa7722aab32b136c00b28af531e070b78, heading doc-function,
+    member cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8]
+- name: plan, the root plan lists global entities
+  partial: test/list.html
+  context: {model: sample, id: "", match: '^- (function cdemo_reset|macro CMIN)'}
+  expect: ['- function cdemo_reset', '- macro CMIN(a, b)']
+- name: plan, topic page, description, then list, then details
+  partial: test/plan-outline.html
+  context:
+    ctx: {model: sample}
+    key: topics/cdemo
+  expect: [title, description, list, heading doc-define, member group__cdemo_1gac15cee1df8c474319fe1b7ea2d1ae28d,
+    member group__cdemo_1ga2dfc1a58a5d476a56308b55752bca8ff, heading doc-typedef, member group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79,
+    member group__cdemo_1gae3e32fac2fd1655bb869b265e7e078c4, heading doc-enum, member group__cdemo_1ga317deb2e01c0d6b3eae5679de58590c9,
+    heading doc-function, member group__cdemo_1ga9b34ff196787489aa77570d392fee501, member group__cdemo_1ga6db9517fdbbd421e69698b947e577c7c,
+    member group__cdemo_1gafb6e4f5923c7789aa992802c474085d9, heading doc-variable, member group__cdemo_1ga4c548a2e03c004166918bf3ee67b6ad9]
+- name: plan, namespace page, description first
+  partial: test/plan.html
+  context:
+    ctx: {model: sample}
+    key: api/demo
+    n: 3
+  expect: [{type: title, text: demo Namespace Reference}, {type: description, text: ""}, {type: list, text: ""}]
+- name: plan, a file page lists the global entities of no topic without documenting them
+  partial: test/plan-types.html
+  context:
+    ctx: {model: sample}
+    key: files/c/cdemo-h
+    type: member
+  expect: []

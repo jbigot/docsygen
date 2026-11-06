@@ -29,6 +29,8 @@ SPDX-License-Identifier: MIT
                    alias at the same place with its label, which redirects to it
          search    whether the pages are in the site's search index (default: latest)
          pathMap   rewrites of file locations, [{from, to}] (default [])
+         topicMembers  whether namespace pages, and the other pages but topic pages, also list
+                   the entities that a topic (Doxygen group) page documents (default true)
        store, dir, version and path are required; the label latest, and a segment latest in the
        path, are reserved for the latest release. The pages of the other versions are left out of
        the sitemap, since their canonical page is usually under latest.
@@ -77,7 +79,7 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
-  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap") $k) -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap" "topicMembers") $k) -}}
     {{- errorf "docsygen: unknown adapter option %q" $k -}}
     {{- $ok = false -}}
   {{- end -}}
@@ -106,6 +108,7 @@ SPDX-License-Identifier: MIT
   {{- $children := cond (isset . "children") .children true -}}
   {{- $pattern := partial "docsygen/placement/pattern.html" (dict "path" .path "version" .version "latest" $latest) -}}
   {{- $pathMap := .pathMap | default slice -}}
+  {{- $topicMembers := cond (isset . "topicMembers") .topicMembers true -}}
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
   {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
   {{- $menuWeight := partial "docsygen/versions/weight.html" (dict "version" .version "latest" $latest "weight" .weight) -}}
@@ -176,7 +179,7 @@ SPDX-License-Identifier: MIT
       {{- end -}}
     {{- end -}}
     {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $pattern.numbered
-        "release" $release "search" $search -}}
+        "release" $release "search" $search "topicMembers" $topicMembers -}}
     {{- with .weight -}}{{- $docsygen = merge $docsygen (dict "weight" .) -}}{{- end -}}
     {{- range $paths.pages -}}
       {{- if in $selected.keys .key -}}
@@ -189,7 +192,7 @@ SPDX-License-Identifier: MIT
         {{- $title := .title -}}
         {{- $linkTitle := .linkTitle -}}
         {{- $pageWeight := .weight -}}
-        {{- $content := partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap) -}}
+        {{- $content := partial "docsygen/skeleton.html" (dict "entry" . "paths" $paths "dir" $dir "pathMap" $pathMap "topicMembers" $topicMembers) -}}
         {{- if eq .key $selected.root -}}
           {{- $params = merge $params (dict "docsygen" (merge $docsygen (dict "key" .key "root" true "select" $selected.root
               "pattern" $.path "children" $children))) -}}

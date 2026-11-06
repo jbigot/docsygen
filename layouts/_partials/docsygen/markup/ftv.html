@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
        children in a list of their own, all shown (Doxygen's levels and folding need its
        scripts). A node is {id, name, url, src, kind, children}: id the compound it
        shows ("" for none), name its HTML label, url its link ("" for none), src a file's source
-       listing, kind its kind (namespace, class, concept, dir, file, or none). An item shows the
+       listing, kind its kind (class, dir, file, group, page, example, or none). An item shows the
        compound's abbreviated brief.
        Usage: partial "docsygen/markup/ftv.html" (dict "ctx" $ctx "nodes" $nodes) */ -}}
 {{- define "_partials/docsygen/markup/inline/ftv-items.html" -}}

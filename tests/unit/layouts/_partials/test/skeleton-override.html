@@ -3,8 +3,9 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* With a site's override of docsygen/skeleton/<kind>.html (fixtures/skeleton-override), on
-       model .model (test/context.html reads it): the skeleton of page .reversed has its description before its list, and
-       that of page .same is the default skeleton's. Warns "skeleton-override: ok", errorf
+       model .model (test/context.html reads it): the skeleton of page .reversed has its part .first
+       (default description) before its part .second (default list), the reverse of their order in
+       the plan, and that of page .same is the default skeleton's. Warns "skeleton-override: ok", errorf
        otherwise. */ -}}
 {{- $m := .model -}}
 {{- $paths := partial "docsygen/paths.html" (dict "model" $m "pathMap" slice) -}}
@@ -19,7 +20,7 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- $r := index $skeleton .reversed -}}
-{{- if not (findRE `part="description"[\s\S]*part="list"` $r 1) -}}
+{{- if not (findRE (printf `part="%s"[\s\S]*part="%s"` (.first | default "description") (.second | default "list")) $r 1) -}}
   {{- errorf "skeleton-override: %s is not reversed:\n%s" .reversed $r -}}
 {{- else if ne (index $skeleton .same) $default -}}
   {{- errorf "skeleton-override: %s is not the default skeleton:\n%s" .same (index $skeleton .same) -}}

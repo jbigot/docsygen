@@ -7,6 +7,6 @@
   warning: 'skeleton-override: ok'
 - name: a site's namespace skeleton replaces the namespace page's, and only it
   partial: test/skeleton-override.html
-  context: {model: sample, reversed: api/demo, same: api/demo/widget}
+  context: {model: sample, reversed: api/demo, same: api/demo/widget, first: list, second: description}
   mounts: {fixtures/skeleton-override/namespace: layouts}
   warning: 'skeleton-override: ok'

@@ -16,8 +16,9 @@ Rendered blocks
 Page skeletons
 : The Markdown of a page comes from `docsygen/skeleton/<kind>.html`, else from
   `docsygen/skeleton/default.html`. The kind is the page's compound kind (`class`, `namespace`,
-  `file`, `group`, `page`, …), or `root`, `tree-<name>` or `source`. The template
-  gets `{entry, paths, dir, pathMap, blocks}` and returns Markdown, with a shortcode per block that `partial "docsygen/skeleton/call.html" $block` writes.
+  `file`, `group`, `page`, …), or `root`, `namespace-root` (the API reference's root),
+  `tree-<name>` or `source`. The template
+  gets `{entry, paths, dir, pathMap, topicMembers, blocks}` and returns Markdown, with a shortcode per block that `partial "docsygen/skeleton/call.html" $block` writes.
 
 The page tree
 : It comes from `docsygen/paths/scheme.html`.

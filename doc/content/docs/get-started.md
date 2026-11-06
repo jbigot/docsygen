@@ -121,9 +121,11 @@ directory of its `_content.gotmpl`.
 | `latest` | no | whether this is the latest release (default `false`): see [Versions]({{< relref "versions" >}}) |
 | `search` | no | whether its pages are in Docsy's search index (default: the value of `latest`) |
 | `pathMap` | no | rewrites of file locations for the file tree, `[{from, to}]` (default `[]`) |
+| `topicMembers` | no | whether namespace pages also list the entities that topic pages document (default `true`): see [Place parts of the reference]({{< relref "placements" >}}) |
 
 The whole tree holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections (the class hierarchy),
-each only when Doxygen has something for it.
+each only when Doxygen has something for it. `api/` is the root namespace's page: the namespaces,
+and the classes, concepts, functions, variables and macros out of any namespace.
 
 `pathMap` matches each file location after the common leading directories are stripped, and
 rewrites it with the first `from` that starts it: `[{from: "build/gen/", to: ""}]` moves

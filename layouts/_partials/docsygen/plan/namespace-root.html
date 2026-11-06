@@ -1,0 +1,18 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The blocks of the root namespace's page, as a namespace's (docsygen/plan/compound.html):
+       its title, the list of what it holds (docsygen/plan/list.html with id ""), then the detailed
+       documentation of the members that files document, the global entities of no topic
+       (docsygen/plan/root-sections.html). */ -}}
+{{- $m := .ctx.model -}}
+{{- $blocks := slice (dict "type" "title" "id" "" "labels" slice "groups" slice "text" (T "docsygen-api-reference")) -}}
+{{- $list := partial "docsygen/plan/list.html" (dict "model" $m "id" "" "topicMembers" (cond (isset .ctx "topicMembers") .ctx.topicMembers true)) -}}
+{{- if or $list.subs $list.buckets -}}
+  {{- $blocks = $blocks | append (dict "type" "list" "id" "" "list" $list) -}}
+{{- end -}}
+{{- range partial "docsygen/plan/details.html" (dict "model" $m "sections" (partial "docsygen/plan/root-sections.html" $m)) -}}
+  {{- $blocks = $blocks | append . -}}
+{{- end -}}
+{{- return $blocks -}}

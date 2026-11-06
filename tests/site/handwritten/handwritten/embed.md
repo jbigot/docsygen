@@ -20,6 +20,6 @@ The same member in full, twice: only the first one carries its anchor.
 
 {{% docsygen/member item="demo::Widget::width" %}}
 
-The class list:
+The root namespace's list:
 
-{{% docsygen/part part="tree" name="annotated" %}}
+{{% docsygen/part part="list" %}}

@@ -6,11 +6,14 @@ SPDX-License-Identifier: MIT
          ""          the root and the main page (indexpage), titled from it or PROJECT_NAME
          pages/      (10) the pages, nested by innerpage, the main page's subpages at the top
          topics/     (20) the groups, nested by innergroup
-         api/        (30) "API reference": namespaces, classes and concepts, nested by scope
+         api/        (30) "API reference", the root namespace's page: namespaces, classes and
+                          concepts, nested by scope
          files/      (40) directories and files, by location (pathMap), dirs before files
          examples/   (50) the examples
          indexes/    (60) hierarchy
          other/      (70) compounds of other kinds
+       The members a file documents (the global entities of no topic) are documented on api/,
+       the root namespace's page, which the result names as nsRoot ("" without one).
        A section or page exists only with roles. A file page holds its source role. A segment is docsygen/paths/segment.html of the name
        (relative to the parent's in api/), with -2, … on a collision, in index order. Weights
        follow innerpage and innergroup, the name ignoring case in api/, and dirs then files by
@@ -156,8 +159,10 @@ SPDX-License-Identifier: MIT
   {{- else if eq .role "compound" -}}{{- $s.SetInMap "crole" .id . -}}
   {{- else if eq .role "source" -}}{{- $more.SetInMap .role .id . -}}
   {{- else if eq .role "tree" -}}{{- $more.SetInMap "tree" .name . -}}
+  {{- else if eq .role "namespace-root" -}}{{- $more.Set "nsRoot" . -}}
   {{- end -}}
 {{- end -}}
+{{- $nsRoot := $more.Get "nsRoot" | default false -}}
 {{- $tree := $more.Get "tree" | default dict -}}
 {{- $crole := $s.Get "crole" -}}
 
@@ -230,10 +235,10 @@ SPDX-License-Identifier: MIT
     {{- $api = $api | append (dict "id" $id "parent" $parent "order" (printf "%03d%06d" $depth $i)) -}}
   {{- end -}}
 {{- end -}}
-{{- if or $api (index $tree "annotated") (index $tree "namespaces") (index $tree "concepts") -}}
-  {{- $treeRoles := slice -}}
-  {{- range slice "annotated" "namespaces" "concepts" -}}{{- with index $tree . -}}{{- $treeRoles = $treeRoles | append . -}}{{- end -}}{{- end -}}
-  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "api" "title" (T "docsygen-api-reference") "linkTitle" (T "docsygen-api") "weight" 30 "roles" $treeRoles) -}}
+{{- if or $api $nsRoot -}}
+  {{- $sec := partial "docsygen/paths/scheme/section.html" (dict "s" $s "name" "api" "title" (T "docsygen-api-reference") "linkTitle" (T "docsygen-api") "weight" 30
+      "roles" (cond (ne $nsRoot false) (slice $nsRoot) slice)) -}}
+  {{- if ne $nsRoot false -}}{{- $s.Set "nsRootPage" $sec -}}{{- end -}}
   {{- range sort $api "order" -}}
     {{- $e := index $m.ids .id -}}
     {{- $rel := $e.name -}}
@@ -396,7 +401,8 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 
 {{- /* Anchors: on the page that shows each compound, its own or, for a class without one (INLINE_SIMPLE_STRUCTS), its
-       scope's or group's. Members that Doxygen hides (docsygen/model/linkable.html) get none. */ -}}
+       scope's or group's; those of the members a file documents on the root namespace's page.
+       Members that Doxygen hides (docsygen/model/linkable.html) get none. */ -}}
 {{- $groupsMap := partialCached "docsygen/plan/groups/map.html" $m $m.dir -}}
 {{- $shown := newScratch -}}
 {{- $rolePage := $s.Get "rolePage" -}}
@@ -409,17 +415,24 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $withIds := newScratch -}}
 {{- range $id, $e := $m.ids -}}{{- if in (slice "section" "anchor" "xrefsect") $e.what -}}{{- $withIds.Set $e.home true -}}{{- end -}}{{- end -}}
+{{- /* The members a file documents, global entities of no topic, are documented on the root
+       namespace's page when it has one (docsygen/plan/namespace-root.html). */ -}}
+{{- $nsRootPage := $s.Get "nsRootPage" | default "" -}}
 {{- range $key := $s.Get "order" -}}
   {{- $fixed := slice (dict "key" "details" "base" "details") -}}
   {{- range index ($s.Get "roles") $key -}}
     {{- if eq .role "compound" -}}
       {{- /* The headings of docsygen/plan/compound.html: its detailed sections and the others. */ -}}
-      {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
-        {{- if eq .group "doc" -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
+      {{- if not (and $nsRootPage (eq (index $m.ids .id).kind "file")) -}}
+        {{- range partial "docsygen/plan/sections.html" (dict "model" $m "id" .id) -}}
+          {{- if eq .group "doc" -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
+        {{- end -}}
       {{- end -}}
       {{- range slice "conceptdef" "inline-classes" -}}{{- $fixed = $fixed | append (dict "key" . "base" .) -}}{{- end -}}
     {{- else if eq .role "source" -}}
       {{- $fixed = $fixed | append (dict "key" .role "base" .role) -}}
+    {{- else if eq .role "namespace-root" -}}
+      {{- range partial "docsygen/plan/root-sections.html" $m -}}{{- $fixed = $fixed | append (dict "key" .key "base" .key) -}}{{- end -}}
     {{- end -}}
   {{- end -}}
   {{- range $fixed -}}
@@ -436,8 +449,14 @@ SPDX-License-Identifier: MIT
       {{- $s.SetInMap "homes" . (partial "docsygen/paths/scheme/alloc.html" (dict "s" $s "page" $key "base" (partial "docsygen/text/anchor.html" $n) "first" 1)) -}}
     {{- end -}}
   {{- end -}}
+  {{- /* The compounds whose members this page documents. */ -}}
+  {{- $homes := slice -}}
+  {{- range $compounds -}}{{- if not (and $nsRootPage (eq (index $m.ids .).kind "file")) -}}{{- $homes = $homes | append . -}}{{- end -}}{{- end -}}
+  {{- if and $nsRootPage (eq $key $nsRootPage) -}}
+    {{- range $m.order -}}{{- if eq (index $m.ids .).kind "file" -}}{{- $homes = $homes | append . -}}{{- end -}}{{- end -}}
+  {{- end -}}
   {{- $enums := slice -}}
-  {{- range $c := $compounds -}}
+  {{- range $c := $homes -}}
     {{- range (index $m.ids $c).node.children -}}
       {{- if and (reflect.IsMap .) (eq .tag "sectiondef") -}}
         {{- range .children -}}
@@ -510,4 +529,4 @@ SPDX-License-Identifier: MIT
   {{- $parts := split $k "\x00" -}}
   {{- $anchors.SetInMap (index $parts 0) (index $parts 1) $a -}}
 {{- end -}}
-{{- return dict "pages" $pages "anchors" $anchors.Values "merged" ($s.Get "merged") "homes" ($s.Get "homes") -}}
+{{- return dict "pages" $pages "anchors" $anchors.Values "merged" ($s.Get "merged") "homes" ($s.Get "homes") "nsRoot" $nsRootPage -}}

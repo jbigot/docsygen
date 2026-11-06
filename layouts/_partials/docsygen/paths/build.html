@@ -28,11 +28,17 @@ SPDX-License-Identifier: MIT
 {{- range $roles -}}
   {{- if not ($pageOf.Get (jsonify .)) -}}{{- errorf "docsygen: role %s is on no page" (jsonify .) -}}{{- end -}}
 {{- end -}}
-{{- /* An id is documented on the page of its home compound. */ -}}
+{{- /* An id is documented on the page of its home compound; a member a file documents, on the
+       root namespace's page when there is one (scheme.nsRoot). */ -}}
 {{- $targets := newScratch -}}
 {{- $targets.Set "m" dict -}}
 {{- range $id, $anchor := $scheme.homes -}}
-  {{- $home := (index $m.ids $id).home -}}
+  {{- $e := index $m.ids $id -}}
+  {{- $home := $e.home -}}
+  {{- if and $scheme.nsRoot (in (slice "member" "enumvalue") $e.what) (eq (index $m.ids $home).kind "file") -}}
+    {{- $targets.SetInMap "m" $id (dict "page" $scheme.nsRoot "anchor" $anchor) -}}
+    {{- continue -}}
+  {{- end -}}
   {{- /* A file without a page of its own, with SHOW_FILES=NO, is linked to its source listing. */ -}}
   {{- $source := cond (eq $id $home) ($pageOf.Get (jsonify (dict "role" "source" "id" $home))) "" -}}
   {{- $page := $pageOf.Get (jsonify (dict "role" "compound" "id" $home)) | default $source -}}
@@ -46,4 +52,5 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- return dict "pages" $scheme.pages "targets" ($targets.Get "m") "anchors" $scheme.anchors "merged" $scheme.merged "pageOf" $pageOf.Values
+    "nsRoot" $scheme.nsRoot
     "scope" (printf "%s|%s" $m.dir (jsonify (.pathMap | default slice))) -}}

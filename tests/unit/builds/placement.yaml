@@ -65,3 +65,13 @@
   context: {page: /ref/latest/api}
   mounts: {fixtures/placement-deeper: content, fixtures/placement/layouts: layouts}
   warning: 'page-facts: title=demo linkTitle=demo canonical=https://example.org/ref/latest/api/ menu=/ref/old/api/ /ref/latest/api/ notice='
+- name: placement, topicMembers false, a grouped function leaves the namespace page
+  partial: test/content-has.html
+  context: {page: /ref/1.0, text: cdemo_init}
+  mounts: {fixtures/placement-topic-members: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has cdemo_init: false'
+- name: placement, topicMembers false, an entity of no topic stays on the namespace page
+  partial: test/content-has.html
+  context: {page: /ref/1.0, text: cdemo_reset}
+  mounts: {fixtures/placement-topic-members: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has cdemo_reset: true'

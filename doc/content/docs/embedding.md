@@ -68,12 +68,12 @@ One part of a page, `part` being its type:
 | `includes` | the `#include` lines | |
 | `diagram` | the inheritance diagram | |
 | `concept-definition` | a concept's definition | |
-| `list` | the list of a namespace's, topic's, file's, directory's or class's declarations | |
+| `list` | the list of a namespace's, topic's, file's, directory's or class's declarations; without `item`, the root namespace's | |
 | `description` | the detailed description, with its sections | |
 | `section` | one section of the description | |
 | `inline-classes` | the classes documented inline | |
 | `member` | one member | |
-| `tree` | a list (no `item`) | `name`: `annotated`, `namespaces`, `files`, … |
+| `tree` | an index (no `item`) | `name`: `hierarchy`, `files`, `pages`, `topics` or `examples` |
 | `source` | a file's source listing | |
 | `generated-from` | the files a compound's documentation comes from | |
 
