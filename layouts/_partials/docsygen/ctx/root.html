@@ -4,9 +4,9 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* What the renderers need on page .page, for the version of root page .root:
        {model, paths, topicMembers (the placement's, docsygen/adapter.html), anchors: {id: anchor},
-       links: {id: url} (docsygen/links.html),
-       urls: {page key: url} (docsygen/urls.html), page, version, key}: version is the root's label, key the page's own key when it is a page of
-       that version (docsygen/part.html looks there first), else "".
+       links: {id: url} (docsygen/links.html), urls: {page key: url} (docsygen/urls.html), page,
+       version, key}: version is the root's label, key the page's own key when it is a page of that
+       version (docsygen/part.html looks there first), else "".
        Usage: partial "docsygen/ctx/root.html" (dict "root" $root "page" .Page) */ -}}
 {{- $root := .root -}}
 {{- $p := $root.Params.docsygen -}}
