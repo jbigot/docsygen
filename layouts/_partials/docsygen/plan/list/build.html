@@ -205,12 +205,16 @@ SPDX-License-Identifier: MIT
   {{- range $entries -}}{{- if in $subs .id -}}{{- $sorted = $sorted | append .id -}}{{- end -}}{{- end -}}
   {{- $subs = $sorted -}}
 {{- end -}}
-{{- /* A namespace's qualified name and "::", an anonymous one's "<scope>::(anonymous)::". */ -}}
+{{- /* A namespace's full name, between "::" and "::" ("::<scope>::(anonymous)::" for an anonymous
+       one); the root's "::", only when it lists namespaces, which come last. */ -}}
 {{- $namespace := "" -}}
 {{- if eq $kind "namespace" -}}
-  {{- $namespace = printf "%s::" ($e.name | default "") -}}
+  {{- $path := $e.name | default "" -}}
   {{- if and $id (not $e.name) -}}
-    {{- $namespace = strings.TrimPrefix "::" (printf "%s::(anonymous)::" (partial "docsygen/plan/list/anonymous-scope.html" $e)) -}}
+    {{- $path = strings.TrimPrefix "::" (printf "%s::(anonymous)" (partial "docsygen/plan/list/anonymous-scope.html" $e)) -}}
+  {{- end -}}
+  {{- if $path -}}{{- $namespace = printf "::%s::" $path -}}
+  {{- else if gt (len $buckets) $own -}}{{- $namespace = "::" -}}
   {{- end -}}
 {{- end -}}
 {{- return dict "subs" $subs "buckets" $buckets "own" $own "namespace" $namespace -}}

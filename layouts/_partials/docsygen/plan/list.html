@@ -33,8 +33,9 @@ SPDX-License-Identifier: MIT
                        namespace's or sub-topic's own buckets
          own      how many of the buckets are the page's own entries, before the nested
                   namespaces or sub-topics, which come last
-         namespace  on a namespace's list, its qualified name followed by "::" ("::" for the
-                  root, "<scope>::(anonymous)::" for an anonymous one); "" on any other
+         namespace  on a namespace's list, its full name between "::" and "::" ("::demo::io::",
+                  "::<scope>::(anonymous)::" for an anonymous one); on the root's, "::" when it
+                  lists namespaces, "" otherwise; "" on any other list
        A namespace's buckets: concepts, types, functions, variables, then thematic member groups,
        then its nested namespaces (the anonymous ones last). A class's: friends, functions, types,
        variables, for each label in order, then its member groups, then what it inherits, per

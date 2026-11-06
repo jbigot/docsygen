@@ -70,7 +70,7 @@ One part of a page, `part` being its type:
 | `includes` | the `#include` lines | |
 | `diagram` | the inheritance diagram | |
 | `concept-definition` | a concept's definition | |
-| `list` | the list of a namespace's, topic's, file's, directory's or class's declarations; without `item`, the root namespace's; its sub-namespaces link to their own pages, not to their place further down the list as on the namespace's page | |
+| `list` | the list of a namespace's, topic's, file's, directory's or class's declarations; without `item`, the root namespace's; the sub-namespaces named at its top link to their own pages, not to their place further down the list as on the namespace's page | |
 | `description` | the detailed description, with its sections | |
 | `section` | one section of the description | |
 | `inline-classes` | the classes documented inline | |
