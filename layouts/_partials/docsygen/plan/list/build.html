@@ -182,13 +182,24 @@ SPDX-License-Identifier: MIT
       {{- $name = "(anonymous)::" -}}
     {{- end -}}
     {{- $children := (partial "docsygen/plan/list/build.html" (dict "model" $m "id" . "topicMembers" $tm)).buckets -}}
-    {{- $entry := dict "id" . "ids" (slice .) "word" $word "name" $name "count" 0 "countKey" "" "brief" . "children" $children -}}
-    {{- if or $c.name (eq $c.kind "group") -}}{{- $named = $named | append $entry -}}{{- else -}}{{- $anonymous = $anonymous | append $entry -}}{{- end -}}
+    {{- /* A namespace with nothing to list and no documentation, as one Doxygen makes up for a
+           base class from outside the sources (testing:: for testing::Test), has no page:
+           listing it would show a line that leads nowhere. */ -}}
+    {{- $documented := false -}}
+    {{- range $c.node.children -}}
+      {{- if and (reflect.IsMap .) (in (slice "briefdescription" "detaileddescription") .tag) -}}
+        {{- range .children -}}{{- if reflect.IsMap . -}}{{- $documented = true -}}{{- end -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if or $children $documented (eq $c.kind "group") -}}
+      {{- $entry := dict "id" . "ids" (slice .) "word" $word "name" $name "count" 0 "countKey" "" "brief" . "children" $children -}}
+      {{- if or $c.name (eq $c.kind "group") -}}{{- $named = $named | append $entry -}}{{- else -}}{{- $anonymous = $anonymous | append $entry -}}{{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- $entries := slice -}}
   {{- range sort $named "name" -}}{{- $entries = $entries | append . -}}{{- end -}}
   {{- range $anonymous -}}{{- $entries = $entries | append . -}}{{- end -}}
-  {{- $buckets = $buckets | append (dict "label" "" "kind" (index (index $entries 0) "word") "entries" $entries "description" false) -}}
+  {{- with $entries -}}{{- $buckets = $buckets | append (dict "label" "" "kind" (index (index . 0) "word") "entries" . "description" false) -}}{{- end -}}
   {{- $sorted := slice -}}
   {{- range $entries -}}{{- if in $subs .id -}}{{- $sorted = $sorted | append .id -}}{{- end -}}{{- end -}}
   {{- $subs = $sorted -}}

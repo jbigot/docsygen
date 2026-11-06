@@ -256,10 +256,10 @@
   partial: test/list.html
   context: {model: sample, id: "", topicMembers: false, match: '^- (function cdemo_|macro)'}
   expect: ['- function cdemo_reset', '- macro CMIN(a, b)']
-- name: list, anonymous namespace last
+- name: list, an anonymous namespace Doxygen leaves empty is left out
   partial: test/list.html
   context: {model: sample, id: namespacedemo, match: '^- namespace'}
-  expect: ['- namespace io::', '- namespace markup::', '- namespace (anonymous)::']
+  expect: ['- namespace io::', '- namespace markup::']
 - name: list, a conversion operator spaced as class names are
   partial: test/list.html
   context: {model: pdi, id: classPDI_1_1Ref__any, match: 'operator ref'}
@@ -276,6 +276,10 @@
   partial: test/list.html
   context: {model: pdi, id: "", match: 'PDI_PLUGIN\('}
   expect: ['- macro PDI_PLUGIN(name)']
+- name: list, an empty and undocumented namespace is left out
+  partial: test/list.html
+  context: {model: pdi, id: "", match: '^- namespace'}
+  expect: ['- namespace PDI::', '- namespace std::']
 - name: list, a topic nests its sub-topics last
   partial: test/list.html
   context: {model: sample, id: group__cdemo, match: '^[^- ]'}
