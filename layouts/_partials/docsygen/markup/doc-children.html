@@ -32,7 +32,7 @@ SPDX-License-Identifier: MIT
   {{- range $items -}}
     {{- if isset . "group" -}}
       {{- partial "docsygen/markup/doc-variants.html" (dict "group" . "parent" $parent "sub" $.sub) -}}
-      {{- $print := merge $.sub (dict "ctx" (merge $.sub.ctx (dict "variant" true "noids" true)) "mdheadings" false) -}}
+      {{- $print := partial "docsygen/with.html" (dict "map" $.sub "set" (dict "ctx" (partial "docsygen/with.html" (dict "map" $.sub.ctx "set" (dict "variant" true "noids" true))) "mdheadings" false)) -}}
       <div class="docsygen-variants-print">
       {{- range .variants -}}{{- partial "docsygen/markup/doc-variant.html" (dict "variant" . "parent" $parent "sub" $print) -}}{{- end -}}
       </div>

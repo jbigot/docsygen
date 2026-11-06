@@ -20,7 +20,7 @@ SPDX-License-Identifier: MIT
 {{- range $g.variants -}}{{- $ids = $ids | append .anchor -}}{{- end -}}
 {{- $head := "" -}}
 {{- range $ids -}}{{- with index $ctx.anchors . -}}{{- $head = printf `%s<a id="%s"></a>` $head . -}}{{- end -}}{{- end -}}
-{{- $in := merge .sub (dict "ctx" (merge $ctx (dict "variant" true "skipanchors" $ids)) "mdheadings" false) -}}
+{{- $in := partial "docsygen/with.html" (dict "map" .sub "set" (dict "ctx" (partial "docsygen/with.html" (dict "map" $ctx "set" (dict "variant" true "skipanchors" $ids))) "mdheadings" false)) -}}
 {{- $panes := slice -}}
 {{- $tabs := "" -}}
 {{- range $v, $variant := $g.variants -}}
