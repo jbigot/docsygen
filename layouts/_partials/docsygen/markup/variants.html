@@ -7,14 +7,15 @@ SPDX-License-Identifier: MIT
        Nothing is guessed from text or listings.
        - A variant of the group G starts at the anchor <G><sep><L> (sep: .ctx.variantSeparator,
          "-" by default; L, its label, as written), and ends just before the next variant anchor
-         of G or at the end of the paragraph holding its anchor, whichever comes first. An anchor
-         that starts the first paragraph of a parblock, with only whitespace before it, starts the
-         parblock; a parblock that starts its paragraph, with only anchors or whitespace before
-         it, then ends with that paragraph.
-       - A group starts at G's anchor when it is the anchor just before its first variant, with
-         only whitespace between them (in the same paragraph or across paragraphs), and is the
-         variants that follow each other, with only whitespace between them: it ends at the first
-         content that isn't a variant of G.
+         of G or at the end of the paragraph holding its anchor, whichever comes first. The
+         anchors that start the first paragraph of a parblock, with only whitespace before them,
+         start the parblock: they count as anchors just before it, and the last one as the
+         parblock's own. A parblock that starts its paragraph, with only anchors or whitespace
+         before it, then ends with that paragraph.
+       - A group starts at G's anchor when only whitespace or anchors come between it and its
+         first variant (in the same paragraph or across paragraphs, G inside a parblock's start
+         too), and is the variants that follow each other, with only whitespace between them: it
+         ends at the first content that isn't a variant of G.
        Anchor names are the model's (docsygen/model/anchor-name.html): without .ctx.model, or for
        an anchor it doesn't know, no group.
        Returns a slice of items, in order, together covering .children; first and last are the
@@ -22,10 +23,12 @@ SPDX-License-Identifier: MIT
        - {node, first, last}: a child (first = last), or, where a group takes part of a
          paragraph, a paragraph of what is left on either side of it (dropped if only
          whitespace), to render as a child is;
-       - {group, anchor, first, last, variants: [{label, anchor, nodes}]}: group is G, anchor
-         its id; each variant's anchor is its id, and its nodes, the blocks to render as a
+       - {group, anchor, anchors, first, last, variants: [{label, anchor, nodes}]}: group is G,
+         anchor its id; each variant's anchor is its id, and its nodes, the blocks to render as a
          description's children, hold one paragraph: the child itself, or a paragraph of the
-         part of it that the variant takes, its anchor first. G's anchor is in no item.
+         part of it that the variant takes, from its anchor (or its parblock). anchors: the ids
+         of the anchors between the group's start and its first variant that no item holds (G's
+         own, unless it is inside the first variant's parblock), to render with the group.
        Usage: partial "docsygen/markup/variants.html" (dict "ctx" $ctx "children" $node.children) */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
@@ -42,30 +45,33 @@ SPDX-License-Identifier: MIT
   {{- end -}}
 {{- end -}}
 {{- /* The tokens: each child of a paragraph, other children whole. kind: space, anchor, carrier
-       (a parblock whose first paragraph starts with an anchor), other; name: the anchor's;
-       start: only anchors or whitespace before it in its paragraph; end: its paragraph's last
-       token. */ -}}
+       (a parblock whose first paragraph starts with anchors: the anchors but its last one are
+       lifted before it, as anchor tokens without a node, and it carries the last), other; name:
+       the anchor's; start: only anchors or whitespace before it in its paragraph; end: its
+       paragraph's last token. */ -}}
 {{- $toks := slice -}}
 {{- $named := 0 -}}
 {{- if $maybe -}}
   {{- range $i, $c := $children -}}
     {{- if and (reflect.IsMap $c) (eq $c.tag "para") $c.children -}}
-      {{- $end := sub (add (len $toks) (len $c.children)) 1 -}}
+      {{- $pt := slice -}}
       {{- $lead := true -}}
       {{- range $x := $c.children -}}
         {{- $kind := "other" -}}
-        {{- $id := "" -}}
+        {{- $ids := slice -}}
         {{- if not (reflect.IsMap $x) -}}
           {{- if not (trim $x " \t\n\r") -}}{{- $kind = "space" -}}{{- end -}}
         {{- else if eq $x.tag "anchor" -}}
           {{- $kind = "anchor" -}}
-          {{- $id = $x.attributes.id -}}
+          {{- $ids = slice $x.attributes.id -}}
         {{- else if eq $x.tag "parblock" -}}
           {{- range $x.children -}}
             {{- if reflect.IsMap . -}}
               {{- if eq .tag "para" -}}
                 {{- range .children -}}
-                  {{- if reflect.IsMap . -}}{{- if eq .tag "anchor" -}}{{- $id = .attributes.id -}}{{- end -}}{{- break -}}
+                  {{- if reflect.IsMap . -}}
+                    {{- if ne .tag "anchor" -}}{{- break -}}{{- end -}}
+                    {{- $ids = $ids | append .attributes.id -}}
                   {{- else if trim . " \t\n\r" -}}{{- break -}}
                   {{- end -}}
                 {{- end -}}
@@ -74,18 +80,28 @@ SPDX-License-Identifier: MIT
             {{- else if trim . " \t\n\r" -}}{{- break -}}
             {{- end -}}
           {{- end -}}
-          {{- if $id -}}{{- $kind = "carrier" -}}{{- end -}}
+          {{- if $ids -}}{{- $kind = "carrier" -}}{{- end -}}
         {{- end -}}
-        {{- $name := "" -}}
-        {{- with and $id (index $m.ids $id) -}}
-          {{- if eq .what "anchor" -}}
-            {{- $name = partial "docsygen/model/anchor-name.html" . -}}
-            {{- $named = add $named 1 -}}
+        {{- range $a, $id := $ids -}}
+          {{- $name := "" -}}
+          {{- with index $m.ids $id -}}
+            {{- if eq .what "anchor" -}}
+              {{- $name = partial "docsygen/model/anchor-name.html" . -}}
+              {{- $named = add $named 1 -}}
+            {{- end -}}
+          {{- end -}}
+          {{- if lt $a (sub (len $ids) 1) -}}
+            {{- $pt = $pt | append (dict "i" $i "kind" "anchor" "name" $name "id" $id "start" $lead "lifted" true) -}}
+          {{- else -}}
+            {{- $kind = cond (eq $kind "carrier") "carrier" "anchor" -}}
+            {{- $pt = $pt | append (dict "i" $i "kind" $kind "name" $name "id" $id "node" $x "start" $lead) -}}
           {{- end -}}
         {{- end -}}
-        {{- $toks = $toks | append (dict "i" $i "kind" $kind "name" $name "id" $id "node" $x "start" $lead "end" $end) -}}
+        {{- if not $ids -}}{{- $pt = $pt | append (dict "i" $i "kind" $kind "name" "" "id" "" "node" $x "start" $lead) -}}{{- end -}}
         {{- if not (in (slice "space" "anchor") $kind) -}}{{- $lead = false -}}{{- end -}}
       {{- end -}}
+      {{- $end := sub (add (len $toks) (len $pt)) 1 -}}
+      {{- range $pt -}}{{- $toks = $toks | append (merge . (dict "end" $end)) -}}{{- end -}}
     {{- else -}}
       {{- $kind := "other" -}}
       {{- if not (reflect.IsMap $c) -}}{{- if not (trim $c " \t\n\r") -}}{{- $kind = "space" -}}{{- end -}}{{- end -}}
@@ -109,17 +125,24 @@ SPDX-License-Identifier: MIT
   {{- $label := newScratch -}}
   {{- $groups := slice -}}
   {{- $variants := newScratch -}}
+  {{- $heads := newScratch -}}
   {{- $k := 0 -}}
   {{- range $x := seq 0 (sub $n 1) -}}
     {{- $t := index $toks $x -}}
-    {{- $y := $next.Get (string $x) -}}
-    {{- if and (ge $x $k) (eq $t.kind "anchor") $t.name (lt $y $n) -}}
+    {{- if and (ge $x $k) (eq $t.kind "anchor") $t.name (lt $x (sub $n 1)) -}}
       {{- $pre := printf "%s%s" $t.name $sep -}}
-      {{- $u := index $toks $y -}}
-      {{- if and (in (slice "anchor" "carrier") $u.kind) (hasPrefix $u.name $pre) (ne $u.name $pre) -}}
+      {{- /* Its first variant: after whitespace or anchors only. */ -}}
+      {{- $y := -1 -}}
+      {{- range $z := seq (add $x 1) (sub $n 1) -}}
+        {{- $o := index $toks $z -}}
+        {{- if and (in (slice "anchor" "carrier") $o.kind) (hasPrefix $o.name $pre) (ne $o.name $pre) -}}{{- $y = $z -}}{{- break -}}{{- end -}}
+        {{- if not (in (slice "space" "anchor") $o.kind) -}}{{- break -}}{{- end -}}
+      {{- end -}}
+      {{- if ge $y 0 -}}
         {{- $g := len $groups -}}
         {{- $groups = $groups | append (dict "name" $t.name "id" $t.id) -}}
         {{- $label.Set (string $x) (dict "g" $g "v" -1) -}}
+        {{- if not $t.lifted -}}{{- $heads.Add (string $g) (slice $t.id) -}}{{- end -}}
         {{- $cur := $y -}}
         {{- $from := add $x 1 -}}
         {{- $v := 0 -}}
@@ -127,10 +150,12 @@ SPDX-License-Identifier: MIT
           {{- if eq $z $cur -}}
             {{- $s := index $toks $cur -}}
             {{- /* The tokens between the previous part and this variant: the group's, or this
-                   variant's when in its paragraph. */ -}}
+                   variant's for whitespace in its paragraph. */ -}}
             {{- if lt $from $cur -}}
               {{- range $w := seq $from (sub $cur 1) -}}
-                {{- $label.Set (string $w) (dict "g" $g "v" (cond (eq (index $toks $w).i $s.i) $v -1)) -}}
+                {{- $o := index $toks $w -}}
+                {{- $label.Set (string $w) (dict "g" $g "v" (cond (and (eq $o.i $s.i) (eq $o.kind "space")) $v -1)) -}}
+                {{- if and (eq $o.kind "anchor") (not $o.lifted) -}}{{- $heads.Add (string $g) (slice $o.id) -}}{{- end -}}
               {{- end -}}
             {{- end -}}
             {{- $end := $cur -}}
@@ -189,8 +214,10 @@ SPDX-License-Identifier: MIT
         {{- $nodes := slice -}}
         {{- range $w := seq $run.from $to -}}
           {{- $o := index $toks $w -}}
-          {{- $nodes = $nodes | append $o.node -}}
-          {{- if ne $o.kind "space" -}}{{- $blank = false -}}{{- end -}}
+          {{- if not $o.lifted -}}
+            {{- $nodes = $nodes | append $o.node -}}
+            {{- if ne $o.kind "space" -}}{{- $blank = false -}}{{- end -}}
+          {{- end -}}
         {{- end -}}
         {{- if ne (len $nodes) (len $c.children) -}}{{- $split = true -}}{{- $node = dict "tag" "para" "attributes" ($c.attributes | default dict) "children" $nodes -}}{{- end -}}
       {{- end -}}
@@ -199,7 +226,8 @@ SPDX-License-Identifier: MIT
       {{- else -}}
         {{- if lt $open 0 -}}
           {{- $open = $run.g -}}
-          {{- $group = dict "group" (index $groups $open).name "anchor" (index $groups $open).id "first" $run.i -}}
+          {{- $group = dict "group" (index $groups $open).name "anchor" (index $groups $open).id
+              "anchors" ($heads.Get (string $open) | default slice) "first" $run.i -}}
           {{- $parts = slice -}}
         {{- end -}}
         {{- $group = merge $group (dict "last" $run.i) -}}

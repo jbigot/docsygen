@@ -4,7 +4,7 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* docsygen/markup/variants.html on the children of the parsed .xml, or of the detailed
        description of the model's entry .id, as lines: an item "FIRST-LAST TEXT", a group
-       "FIRST-LAST group NAME ANCHOR" then "  LABEL ANCHOR: TEXT" per variant, TEXT as
+       "FIRST-LAST group NAME ANCHOR [ANCHORS]" then "  LABEL ANCHOR: TEXT" per variant, TEXT as
        test/variants-text.html writes it. With .all, the groups found in every element below
        instead, "NAME: LABEL…". Context: {ctx, xml | id, all?}. */ -}}
 {{- $node := .node -}}
@@ -17,7 +17,7 @@ SPDX-License-Identifier: MIT
 {{- else -}}
   {{- range partial "docsygen/markup/variants.html" (dict "ctx" .ctx "children" $node.children) -}}
     {{- if isset . "group" -}}
-      {{- $out = $out | append (printf "%d-%d group %s %s" .first .last .group .anchor) -}}
+      {{- $out = $out | append (printf "%d-%d group %s %s [%s]" .first .last .group .anchor (delimit .anchors " ")) -}}
       {{- range .variants -}}
         {{- $text := slice -}}
         {{- range .nodes -}}{{- $text = $text | append (partial "test/variants-text.html" .) -}}{{- end -}}

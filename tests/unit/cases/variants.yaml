@@ -10,7 +10,7 @@
   expect:
     - '0-0 {Intro.}'
     - '1-1 _'
-    - '2-4 group sample_ex variants_1sample_ex'
+    - '2-4 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C source code: [code]}'
     - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran Fortran source code: [code]}'
     - '5-5 _'
@@ -20,7 +20,7 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para><para>After.</para></detaileddescription>'
   expect:
-    - '0-1 group sample_ex variants_1sample_ex'
+    - '0-1 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
     - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
     - '2-2 {After.}'
@@ -30,10 +30,10 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_shared-C"/>C <programlisting><codeline/></programlisting> <anchor id="variants_1sample_shared-Fortran"/>F <programlisting><codeline/></programlisting></para></detaileddescription>'
   expect:
-    - '0-1 group sample_ex variants_1sample_ex'
+    - '0-1 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
     - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
-    - '2-2 group sample_shared variants_1sample_shared'
+    - '2-2 group sample_shared variants_1sample_shared [variants_1sample_shared]'
     - '  C variants_1sample_shared-C: {#variants_1sample_shared-C C [code]}'
     - '  Fortran variants_1sample_shared-Fortran: {#variants_1sample_shared-Fortran F [code]}'
 - name: variants, dashed anchor without group is no variant
@@ -51,7 +51,7 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para><para><anchor id="variants_1sample_shared"/><anchor id="variants_1sample_ex-Fortran"/>F <programlisting><codeline/></programlisting></para></detaileddescription>'
   expect:
-    - '0-0 group sample_ex variants_1sample_ex'
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
     - '1-1 {#variants_1sample_shared #variants_1sample_ex-Fortran F [code]}'
 - name: variants, group inside a list item
@@ -61,7 +61,7 @@
     xml: '<listitem><para>Step two, in two languages. <anchor id="variants_1sample_item"/><anchor id="variants_1sample_item-C"/> C source code: <programlisting><codeline/></programlisting> <anchor id="variants_1sample_item-Fortran"/> Fortran source code: <programlisting><codeline/></programlisting></para></listitem>'
   expect:
     - '0-0 {Step two, in two languages.}'
-    - '0-0 group sample_item variants_1sample_item'
+    - '0-0 group sample_item variants_1sample_item [variants_1sample_item]'
     - '  C variants_1sample_item-C: {#variants_1sample_item-C C source code: [code]}'
     - '  Fortran variants_1sample_item-Fortran: {#variants_1sample_item-Fortran Fortran source code: [code]}'
 - name: variants, a lone variant (one language) is still a group of one
@@ -70,7 +70,7 @@
     ctx: {model: sample}
     xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
   expect:
-    - '0-0 group sample_ex variants_1sample_ex'
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
 - name: variants, a variant is its parblock
   partial: test/variants.html
@@ -78,10 +78,35 @@
     ctx: {model: sample}
     xml: "<detaileddescription><para><anchor id=\"variants_1sample_pb\"/><parblock><para><anchor id=\"variants_1sample_pb-C\"/>C source code: <programlisting><codeline/></programlisting></para>\n<para>is the same as: <programlisting><codeline/></programlisting> </para>\n</parblock></para>\n<para><parblock><para><anchor id=\"variants_1sample_pb-Fortran\"/>Fortran source code: <programlisting><codeline/></programlisting></para>\n<para>is the same as: <programlisting><codeline/></programlisting> </para>\n</parblock></para>\n</detaileddescription>"
   expect:
-    - '0-2 group sample_pb variants_1sample_pb'
+    - '0-2 group sample_pb variants_1sample_pb [variants_1sample_pb]'
     - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb-C C source code: [code]} {is the same as: [code]}]}'
     - '  Fortran variants_1sample_pb-Fortran: {[pb {#variants_1sample_pb-Fortran Fortran source code: [code]} {is the same as: [code]}]}'
     - '3-3 _'
+- name: variants, a group anchor at a parblock's start
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><parblock><para><anchor id="variants_1sample_pb"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para><para>more <programlisting><codeline/></programlisting></para></parblock></para><para><parblock><para><anchor id="variants_1sample_pb-Fortran"/>F <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
+  expect:
+    - '0-1 group sample_pb variants_1sample_pb []'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb #variants_1sample_pb-C C [code]} {more [code]}]}'
+    - '  Fortran variants_1sample_pb-Fortran: {[pb {#variants_1sample_pb-Fortran F [code]}]}'
+- name: variants, an unrelated anchor before a variant's at a parblock's start
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1plain-dashed"/><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para></parblock></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb]'
+    - '  C variants_1sample_pb-C: {[pb {#variants_1plain-dashed #variants_1sample_pb-C C [code]}]}'
+- name: variants, an unrelated anchor between the group's and its first variant's
+  partial: test/variants.html
+  context:
+    ctx: {model: sample}
+    xml: '<detaileddescription><para><anchor id="variants_1sample_ex"/><anchor id="variants_1plain-dashed"/><anchor id="variants_1sample_ex-C"/>C <programlisting><codeline/></programlisting></para></detaileddescription>'
+  expect:
+    - '0-0 group sample_ex variants_1sample_ex [variants_1sample_ex variants_1plain-dashed]'
+    - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
 - name: variants, a parblock not at its paragraph's start is the variant alone
   partial: test/variants.html
   context:
@@ -89,7 +114,7 @@
     xml: '<detaileddescription><para>Before <anchor id="variants_1sample_pb"/><parblock><para><anchor id="variants_1sample_pb-C"/>C <programlisting><codeline/></programlisting></para></parblock>After.</para></detaileddescription>'
   expect:
     - '0-0 {Before}'
-    - '0-0 group sample_pb variants_1sample_pb'
+    - '0-0 group sample_pb variants_1sample_pb [variants_1sample_pb]'
     - '  C variants_1sample_pb-C: {[pb {#variants_1sample_pb-C C [code]}]}'
     - '0-0 {After.}'
 - name: variants, the group anchor ends the previous paragraph
@@ -99,7 +124,7 @@
     xml: "<detaileddescription><para>Before. <anchor id=\"variants_1sample_ex\"/></para>\n<para><anchor id=\"variants_1sample_ex-C\"/>C <programlisting><codeline/></programlisting></para>\n<para><anchor id=\"variants_1sample_ex-Fortran\"/>F <programlisting><codeline/></programlisting></para></detaileddescription>"
   expect:
     - '0-0 {Before.}'
-    - '0-4 group sample_ex variants_1sample_ex'
+    - '0-4 group sample_ex variants_1sample_ex [variants_1sample_ex]'
     - '  C variants_1sample_ex-C: {#variants_1sample_ex-C C [code]}'
     - '  Fortran variants_1sample_ex-Fortran: {#variants_1sample_ex-Fortran F [code]}'
 - name: variants, no group without the model's anchors
