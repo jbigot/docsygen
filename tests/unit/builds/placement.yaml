@@ -178,3 +178,13 @@
   context: {page: /embed-full, id: dg-press}
   mounts: {fixtures/full-twice: content, fixtures/versions/layouts: layouts}
   warning: 'id-count dg-press: 1'
+- name: placement, duplicate true makes every page a duplicate
+  partial: test/page-params.html
+  context: {page: /latest/api/demo/widget}
+  mounts: {fixtures/placement-duplicate-all: content, fixtures/placement/layouts: layouts}
+  warning: 'duplicate=true exclude_search=true sitemap=false'
+- name: placement, linkTitle and weight on a placement's root
+  partial: test/page-params.html
+  context: {page: /ref/latest/api}
+  mounts: {fixtures/placement-options: content, fixtures/placement/layouts: layouts}
+  warning: 'page-params: weight=7 linkTitle=Demo API duplicate=false'

@@ -24,3 +24,10 @@ in a page, and what a docsygen shortcode leaves when it is called as `{{</* */>}
 
 `go list -m` finds docsygen's module in Go's cache, at the version the site's `go.mod` requires;
 a site that replaces the module with a checkout runs `tools/check.py` from it.
+
+A site with versions checks that every page of its latest release has a redirect at its numbered
+path, which Hugo's aliases give and a site's own redirects could shadow:
+
+```sh
+python3 -I "$(go list -m -f '{{.Dir}}' github.com/jbigot/docsygen)/tools/check_redirects.py" public /docs/latest/ /docs/2.1/
+```

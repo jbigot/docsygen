@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 # Build the Docsy-flavor test site from each corpus entry and check its output: check.py on its
 # two version roots, /ref/ and /latest/ (tests/site/content/_content.gotmpl), and the redirects
-# from /1.0/ to /latest/ (check_redirects.py).
+# from /1.0/ to /latest/ (tools/check_redirects.py).
 #
 # Usage: sh tests/site/run.sh [NAME ...]
 #   NAME   sample, sample-c, pdi (the corpus, tests/lib.sh), versions (sample as 1.0, sample-next as
@@ -60,13 +60,13 @@ for name; do
       if grep -rqF "data-doxygen-id=\"$2\"" "$work/public/$1"; then found=yes; fi
       [ "$found" = "$3" ] || { echo "run.sh: $2 is $found in $1, expected $3" >&2; status=1; }
     done
-    python3 -I "$here/check_redirects.py" "$work/public" /latest/ /2.0/ || status=1
+    python3 -I "$root/tools/check_redirects.py" "$work/public" /latest/ /2.0/ || status=1
     continue
   fi
   if [ "$name" = nested ]; then
     # An absolute alias from the adapter's directory, not the site's root.
     python3 -I "$root/tools/check.py" "$work/public" "$xml" /deep/er/latest/ || status=1
-    python3 -I "$here/check_redirects.py" "$work/public" /deep/er/latest/ /deep/er/1.0/ || status=1
+    python3 -I "$root/tools/check_redirects.py" "$work/public" /deep/er/latest/ /deep/er/1.0/ || status=1
     continue
   fi
   links=
@@ -79,6 +79,6 @@ for name; do
   if [ "$name" = sample ] && [ "$(grep -o 'id="dg-width"' "$work/public/handwritten/embed/index.html" | wc -l)" -ne 1 ]; then
     echo "run.sh: the anchor of demo::Widget::width is not on the embed page exactly once" >&2; status=1
   fi
-  python3 -I "$here/check_redirects.py" "$work/public" /latest/ /1.0/ || status=1
+  python3 -I "$root/tools/check_redirects.py" "$work/public" /latest/ /1.0/ || status=1
 done
 exit $status
