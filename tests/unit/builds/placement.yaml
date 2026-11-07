@@ -80,3 +80,18 @@
   context: {}
   mounts: {fixtures/placement-files-only: content, fixtures/placement/layouts: layouts}
   warning: 'links to CMIN, which no page of version 1.0 holds: rendered as text'
+- name: placement, the main page alone as the version's section
+  partial: test/page-facts.html
+  context: {page: /ref/old}
+  mounts: {fixtures/placement-landing: content, fixtures/placement/layouts: layouts}
+  warning: 'page-facts: title=docsygen sample old linkTitle=old canonical=https://example.org/ref/latest/ menu=/ref/old/ /ref/latest/ notice=/ref/latest/'
+- name: placement, the main page alone as the version's section shows it
+  partial: test/content-has.html
+  context: {page: /ref/old, text: The docsygen sample}
+  mounts: {fixtures/placement-landing: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has The docsygen sample: true'
+- name: placement, the main page placed after the pages below it
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-landing-late: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: the page "ref/old" of version "old", select "", path "ref/:version" is a section that version "old", select "api/demo", path "ref/:version/api" added above its pages: make this call before that one'

@@ -203,8 +203,8 @@ Pitfalls met so far:
 - `append` nests a slice whose element type differs: append elements one at a time.
 - `where $pages "key" ""` matches nothing: compare in a `range`.
 - `return` must end its pipeline: `return safeHTML (printf …)`.
-- Two `AddPage` calls with one path keep the later page silently, even with
-  `--printPathWarnings`.
+- Two `AddPage` calls with one path keep the later page, with a warning under
+  `--printPathWarnings` only.
 - Shortcodes can't mix positional and named arguments.
 - `html/template` drops HTML comments, in alias templates too.
 - A resource's target path is relative to the site root; Hugo prefixes `baseURL`'s path.

@@ -28,6 +28,14 @@ website](https://pdi.dev/) is arranged that way, from its `content/_content.gotm
   one by one: its installation page is `page:Installation` at `docs/:version/installation`. A member has no page of its own: [embed it]({{< relref "embedding" >}})
   instead.
 
+Landing pages
+: The section of a deeper root's `:version` segment, `docs/1.0/` for a root at
+  `docs/:version/api`, has no content unless a call places a page there: `select: ""` with
+  `children: false` places the main page, `select: "page:intro"` with `children: false` another
+  page. That call must come before the calls that place pages below it, which would otherwise
+  have added the section already: the build stops, naming both calls. PDI's example above places
+  its main page first.
+
 `path`
 : a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
   `docs/:version/api`. The placed pages keep their place below the selected one. The pages
