@@ -11,11 +11,35 @@
     lacks: []
   mounts: {fixtures/listing-hook: layouts}
   warning: 'a listing has no line anchors (id="l-12")'
-- name: an inline formula KaTeX rejects stops the build
+- name: an inline formula KaTeX rejects stops the build, named with its page and member
+  partial: test/doc-contains.html
+  context:
+    ctx: {member: frob}
+    xml: '<detaileddescription><para><formula id="3">$ \nosuchmacro $</formula></para></detaileddescription>'
+    contains: []
+    lacks: []
+  error: 'docsygen: formula "$ \nosuchmacro $" can''t be rendered (KaTeX parse error: Undefined control sequence: \nosuchmacro at position 1: \̲n̲o̲s̲u̲c̲h̲m̲a̲c̲r̲o̲), on page /, member frob. Fix it in the documentation that generates the XML, or show its source instead: list it in sourceFormulas, an option of the adapter call or of the page''s params.docsygen.'
+- name: an inline formula KaTeX rejects on a Doxygen page names the page only
   partial: test/doc-contains.html
   context:
     ctx: {}
     xml: '<detaileddescription><para><formula id="3">$ \nosuchmacro $</formula></para></detaileddescription>'
     contains: []
     lacks: []
-  error: 'docsygen: formula "$ \\nosuchmacro $"'
+  error: 'can''t be rendered (KaTeX parse error: Undefined control sequence: \nosuchmacro at position 1: \̲n̲o̲s̲u̲c̲h̲m̲a̲c̲r̲o̲), on page /. Fix it'
+- name: a display formula KaTeX rejects warns, named, then the math hook decides
+  partial: test/doc-contains.html
+  context:
+    ctx: {member: frob}
+    xml: '<detaileddescription><para><formula id="3">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</formula></para></detaileddescription>'
+    contains: ['<pre data-test-hook="math">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</pre>']
+    lacks: []
+  warning: 'docsygen: formula "\begin{eqnarray*} a &=& b \end{eqnarray*}" can''t be rendered (KaTeX parse error: No such environment: eqnarray*'
+- name: a formula KaTeX rejects, written over several lines, is quoted on one line
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: "<detaileddescription><para>Inline <formula id=\"6\">$ a +\n  \\nosuchmacro $</formula>.</para></detaileddescription>"
+    contains: []
+    lacks: []
+  error: 'docsygen: formula "$ a + \nosuchmacro $" can''t be rendered'

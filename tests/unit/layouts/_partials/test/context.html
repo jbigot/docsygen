@@ -5,9 +5,9 @@ SPDX-License-Identifier: MIT
 {{- /* Prepare a case's context. A map's keys are kept, except:
          xml: STRING          becomes node, the string parsed with xmldoc/parse.html;
          model: NAME          becomes model, the model of assets/doxygen/NAME;
-         ctx: {model?, links?, anchors?}  becomes ctx, as docsygen/ctx.html returns it for a
+         ctx: {model?, links?, anchors?, …}  becomes ctx, as docsygen/ctx.html returns it for a
                               page, with page the home page, empty maps for what is not given, and
-                              paths when model is given.
+                              paths when model is given; its other keys are kept.
        Any other context is passed as is. */ -}}
 {{- $c := . -}}
 {{- if reflect.IsMap $c -}}
@@ -21,6 +21,7 @@ SPDX-License-Identifier: MIT
     {{- else if eq $k "ctx" -}}
       {{- $ctx := newScratch -}}
       {{- $ctx.Set "m" (dict "page" site.Home "links" ($v.links | default dict) "anchors" ($v.anchors | default dict)) -}}
+      {{- range $k, $x := $v -}}{{- if not (in (slice "model" "links" "anchors") $k) -}}{{- $ctx.SetInMap "m" $k $x -}}{{- end -}}{{- end -}}
       {{- with $v.model -}}
         {{- $model := partial "docsygen/model.html" (printf "doxygen/%s" .) -}}
         {{- $ctx.SetInMap "m" "model" $model -}}

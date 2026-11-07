@@ -87,13 +87,6 @@
     xml: '<detaileddescription><para><formula id="2">\begin{aligned} a &amp;= b \end{aligned}</formula></para></detaileddescription>'
     contains: ['<pre data-test-hook="math">\begin{aligned} a &amp;= b \end{aligned}</pre>']
   expect: []
-- name: docsy markup, a display formula KaTeX rejects is left to the math hook
-  partial: test/doc-contains.html
-  context:
-    ctx: {}
-    xml: '<detaileddescription><para><formula id="3">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</formula></para></detaileddescription>'
-    contains: ['<pre data-test-hook="math">\begin{eqnarray*} a &amp;=&amp; b \end{eqnarray*}</pre>']
-  expect: []
 - name: docsy markup, an inheritance diagram in Mermaid
   partial: test/block.html
   context:
@@ -444,4 +437,64 @@
     ctx: {model: sample}
     block: {type: member, id: classdemo_1_1Escapes_1a12f4a924d77bc77b9adb5b330eae7624, level: 4}
     contains: ['##### A section of a member', '###### A subsection of a member']
+  expect: []
+- name: sourceFormulas, nothing listed
+  partial: docsygen/ctx/source-formulas.html
+  context: {}
+  expect: []
+- name: sourceFormulas, the adapter call's and the page's lists add up
+  partial: docsygen/ctx/source-formulas.html
+  context: {root: ['$ a $'], page: ['\[ b \]']}
+  expect: ['$ a $', '\[ b \]']
+- name: sourceFormulas, true in either wins
+  partial: docsygen/ctx/source-formulas.html
+  context: {root: ['$ a $'], page: true}
+  expect: true
+- name: sourceFormulas, a listed inline formula renders as highlighted LaTeX
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['$ \nosuchmacro $']}
+    xml: '<detaileddescription><para>Inline <formula id="3">$ \nosuchmacro $</formula>.</para></detaileddescription>'
+    contains: ['<code class="code-inline language-latex">', 'nosuchmacro']
+    lacks: ['katex']
+  expect: []
+- name: sourceFormulas, a listed display formula renders as a LaTeX listing
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['\[ x \]']}
+    xml: '<detaileddescription><para><formula id="1">\[ x \]</formula></para></detaileddescription>'
+    contains: ['data-lang="latex"']
+    lacks: ['data-test-hook="math"', 'katex']
+  expect: []
+- name: sourceFormulas, true shows every formula as source
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: true}
+    xml: '<detaileddescription><para>Inline <formula id="0">$ a^2 $</formula>.</para></detaileddescription>'
+    contains: ['language-latex']
+    lacks: ['katex']
+  expect: []
+- name: sourceFormulas, a listed formula with a backslash and a < matches and is escaped
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['$ \frac{a}{b} < c $']}
+    xml: '<detaileddescription><para><formula id="4">$ \frac{a}{b} &lt; c $</formula></para></detaileddescription>'
+    contains: ['language-latex', '&lt;']
+    lacks: ['katex', '< c']
+  expect: []
+- name: sourceFormulas, a listed formula in a list item keeps the list intact
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['$ \nosuchmacro $']}
+    xml: '<detaileddescription><para><itemizedlist><listitem><para>One <formula id="3">$ \nosuchmacro $</formula>.</para></listitem><listitem><para>Two.</para></listitem></itemizedlist></para></detaileddescription>'
+    contains: ['language-latex', '<li>Two.</li>']
+    lacks: ["\n\n", 'katex']
+  expect: []
+- name: sourceFormulas, a formula written over several lines matches its entry on one line
+  partial: test/doc-contains.html
+  context:
+    ctx: {sourceFormulas: ['\begin{eqnarray*} a &= b \\ c &= d \end{eqnarray*}']}
+    xml: "<detaileddescription><para><formula id=\"5\">\\begin{eqnarray*}\n  a &amp;= b \\\\\n  c &amp;= d\n\\end{eqnarray*}</formula></para></detaileddescription>"
+    contains: ['data-lang="latex"']
+    lacks: ['data-test-hook="math"']
   expect: []
