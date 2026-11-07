@@ -79,6 +79,11 @@ for name; do
   if [ "$name" = sample ] && [ "$(grep -o 'id="dg-width"' "$work/public/handwritten/embed/index.html" | wc -l)" -ne 1 ]; then
     echo "run.sh: the anchor of demo::Widget::width is not on the embed page exactly once" >&2; status=1
   fi
+  # The sample's sections page links to its anchor print, which Docsy's print link moves to
+  # print-1 (docsygen/paths/reserved-ids.html); check.py checks that the fragment resolves.
+  if [ "$name" = sample ] && ! grep -rlqF '#print-1"' "$work/public/ref"; then
+    echo "run.sh: no link to the anchor print-1" >&2; status=1
+  fi
   python3 -I "$root/tools/check_redirects.py" "$work/public" /latest/ /1.0/ || status=1
 done
 exit $status

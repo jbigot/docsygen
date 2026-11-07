@@ -10,9 +10,10 @@ SPDX-License-Identifier: MIT
        (its target is .ctx.key's page, or without one, its home is .page) gets its anchor, and its marker for tests/site/check.py, in its line, as do the values of
        such an enum. A nested namespace's or sub-topic's line carries its anchor from .anchors
        ({namespace:<id> or topic:<id>: anchor}, default none), and .url (default the entity's) replaces the name's link.
-       In a shortcode's summary line (.shortcode, the shortcode), a member's anchor is written
-       only where the page doesn't have it yet (docsygen/shortcode/anchored.html).
-       Usage: partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $pageId "anchors" $anchors "url" "" "shortcode" .) */ -}}
+       In a shortcode's line, its summary or its list's (.ctx.shortcode, the shortcode), a
+       member's anchor is written only where the page doesn't have it yet
+       (docsygen/shortcode/anchored.html).
+       Usage: partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $entry "page" $pageId "anchors" $anchors "url" "") */ -}}
 {{- $ctx := .ctx -}}
 {{- $m := $ctx.model -}}
 {{- $en := .entry -}}
@@ -50,11 +51,11 @@ SPDX-License-Identifier: MIT
   {{- if and $e $ctx.paths $ctx.key -}}{{- $here = eq (index (index $ctx.paths.targets . | default dict) "page") $ctx.key -}}
   {{- else if $e -}}{{- $here = eq $e.home $page -}}
   {{- end -}}
-  {{- /* In a shortcode (.shortcode), unless the page has the anchor already
+  {{- /* In a shortcode (.ctx.shortcode), unless the page has the anchor already
          (docsygen/shortcode/anchored.html, asked only here, since asking takes it). */ -}}
   {{- $anchored := true -}}
-  {{- if and $e (eq $e.what "member") $here (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) $.shortcode -}}
-    {{- $anchored = partial "docsygen/shortcode/anchored.html" (dict "shortcode" $.shortcode "ctx" $ctx "id" .) -}}
+  {{- if and $e (eq $e.what "member") $here (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) $ctx.shortcode -}}
+    {{- $anchored = partial "docsygen/shortcode/anchored.html" (dict "shortcode" $ctx.shortcode "ctx" $ctx "id" .) -}}
   {{- end -}}
   {{- if and $e (eq $e.what "member") $here $anchored (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) -}}
     {{- $marks = printf `%s<a id="%s" data-doxygen-id="%s"></a>` $marks (index $ctx.anchors . | default "") . -}}

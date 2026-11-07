@@ -7,13 +7,14 @@
     </briefdescription>
     <detaileddescription>
 <para><anchor id="sections_1print"/>A page with an anchor named as Docsy names its print link, and sections at every depth.</para>
+<para><anchor id="sections_1content-mobile"/>An anchor named as Docsy&apos;s sidebar search names its mobile box.</para>
 <sect1 id="sections_1level-one">
 <title>Level one</title><sect2 id="sections_1level-two">
 <title>Level two</title><sect3 id="sections_1level-three">
 <title>Level three</title><sect4 id="sections_1level-four">
 <title>Level four</title><sect5 id="sections_1level-five">
 <title>Level five</title><sect6 id="sections_1level-six">
-<title>Level six</title><para>The deepest section. </para>
+<title>Level six</title><para>The deepest section. Back to <ref refid="sections_1print" kindref="member">the top of the page</ref>. </para>
 </sect6>
 </sect5>
 </sect4>

@@ -173,6 +173,11 @@
   context: {page: /embed, id: dg-press}
   mounts: {fixtures/extract-all-no: doxygen/sample, fixtures/summary-twice: content, fixtures/versions/layouts: layouts}
   warning: 'id-count dg-press: 1'
+- name: shortcodes, a member's summary line, then its class's list embedded, carry its anchor once
+  partial: test/id-count.html
+  context: {page: /embed, id: dg-press}
+  mounts: {fixtures/extract-all-no: doxygen/sample, fixtures/list-twice: content, fixtures/versions/layouts: layouts}
+  warning: 'id-count dg-press: 1'
 - name: shortcodes, a member embedded twice in full, first on its page, carries its anchor once
   partial: test/id-count.html
   context: {page: /embed-full, id: dg-press}

@@ -28,7 +28,8 @@ Checks:
   - no <p> holds a block element;
   - no class but docsygen-*, Docsy's alert classes, mermaid, Chroma's chroma and the Bootstrap
     classes docsygen uses (badge, bg-transparent, border-top, d-block, figure, figure-caption,
-    fs-5, fs-6, fw-bold, fw-normal, mb-0, mb-3, mt-3, mt-4, pt-3, small, text-bg-secondary, text-body,
+    fs-5, fs-6, fw-bold, fw-normal, mb-0, mb-3, mt-3, mt-4, pt-3, small, text-bg-secondary,
+    text-body,
     text-body-secondary, text-reset),
     outside KaTeX's output (.katex*), the highlighted code (div.highlight, the tokens inside an
     inline .chroma) and the language-* class of
@@ -48,11 +49,17 @@ import collections, glob, json, os, re, sys, urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import htmltree
 
-BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'}
+BLOCKS = {'div', 'table', 'ul', 'ol', 'dl', 'pre', 'p', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5',
+          'h6', 'hr'}
 LEFTOVERS = ('{{<', '{{%', 'HAHAHUGOSHORTCODE', 'ZgotmplZ')
-# A heading that Markdown didn't read: a shortcode called as {{< >}} returns the Markdown it holds as text.
+# A heading that Markdown didn't read: a shortcode called as {{< >}} returns the Markdown it holds
+# as text.
 HEADING_LEFT = re.compile(r'#{1,6} [^\n<]*\{#[\w:.-]+\}')
-ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|language-.*|badge|bg-transparent|border-top|chroma|d-block|figure|figure-caption|fs-5|fs-6|fw-bold|fw-normal|mb-0|mb-3|mt-3|mt-4|pt-3|small|td-max-width-on-larger-screens|text-bg-secondary|text-body|text-body-secondary|text-reset)$')
+ALLOWED = re.compile(r'^(docsygen-.*|alert|alert-.*|h4|mermaid|katex.*|language-.*|badge'
+                     r'|bg-transparent|border-top|chroma|d-block|figure|figure-caption|fs-5|fs-6'
+                     r'|fw-bold|fw-normal|mb-0|mb-3|mt-3|mt-4|pt-3|small'
+                     r'|td-max-width-on-larger-screens|text-bg-secondary|text-body'
+                     r'|text-body-secondary|text-reset)$')
 
 
 def foreign_classes(node, out):
@@ -95,8 +102,10 @@ def main(argv):
     member_ids = set()
     for name in glob.glob(os.path.join(xmldir, '*.xml')) if xmldir != '-' else []:
         with open(name, encoding='utf-8') as f:
-            member_ids.update(re.findall(r'<(?:memberdef|enumvalue)\b[^>]*\bid="([^"]+)"', f.read()))
-    expected = {r['id'] for p in paths['pages'].values() for r in p['roles'] if r.get('role') == 'compound'}
+            member_ids.update(
+                re.findall(r'<(?:memberdef|enumvalue)\b[^>]*\bid="([^"]+)"', f.read()))
+    expected = {r['id'] for p in paths['pages'].values() for r in p['roles']
+                if r.get('role') == 'compound'}
     expected |= {i for i in paths.get('targets', {}) if i in member_ids}
     errors = []
     marks = collections.Counter()
@@ -155,7 +164,8 @@ def main(argv):
         for n in walk(tree):
             href = n.attrs.get('href') if n.tag == 'a' else None
             # docsygen-ulink: a link its author wrote, which docsygen leaves as is.
-            if not href or htmltree.EXTERNAL.match(href) or href.startswith('javascript:') or 'docsygen-ulink' in htmltree.classes(n):
+            if (not href or htmltree.EXTERNAL.match(href) or href.startswith('javascript:')
+                    or 'docsygen-ulink' in htmltree.classes(n)):
                 continue
             url = urllib.parse.urljoin(base, href)
             target, _, fragment = url.partition('#')
@@ -172,7 +182,8 @@ def main(argv):
         page, want_file = links
         with open(want_file) as f:
             want = json.load(f)
-        got = [n.attrs.get('href') for m in htmltree.find(trees[page], 'main') for n in walk(m) if n.tag == 'a' and 'href' in n.attrs]
+        got = [n.attrs.get('href') for m in htmltree.find(trees[page], 'main') for n in walk(m)
+               if n.tag == 'a' and 'href' in n.attrs]
         if got != want:
             errors.append(f'{page}: links {got} instead of {want}')
     if not trees:

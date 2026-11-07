@@ -12,6 +12,9 @@
 <codeline><highlight class="normal">@anchor<sp/>print</highlight></codeline>
 <codeline><highlight class="normal">A<sp/>page<sp/>with<sp/>an<sp/>anchor<sp/>named<sp/>as<sp/>Docsy<sp/>names<sp/>its<sp/>print<sp/>link,<sp/>and<sp/>sections<sp/>at<sp/>every<sp/>depth.</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>content-mobile</highlight></codeline>
+<codeline><highlight class="normal">An<sp/>anchor<sp/>named<sp/>as<sp/>Docsy&apos;s<sp/>sidebar<sp/>search<sp/>names<sp/>its<sp/>mobile<sp/>box.</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">@section<sp/>level-one<sp/>Level<sp/>one</highlight></codeline>
 <codeline><highlight class="normal">@subsection<sp/>level-two<sp/>Level<sp/>two</highlight></codeline>
 <codeline><highlight class="normal">@subsubsection<sp/>level-three<sp/>Level<sp/>three</highlight></codeline>
@@ -19,7 +22,7 @@
 <codeline><highlight class="normal">@subparagraph<sp/>level-five<sp/>Level<sp/>five</highlight></codeline>
 <codeline><highlight class="normal">@subsubparagraph<sp/>level-six<sp/>Level<sp/>six</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">The<sp/>deepest<sp/>section.</highlight></codeline>
+<codeline><highlight class="normal">The<sp/>deepest<sp/>section.<sp/>Back<sp/>to<sp/>@ref<sp/>print<sp/>&quot;the<sp/>top<sp/>of<sp/>the<sp/>page&quot;.</highlight></codeline>
     </programlisting>
     <location file="src/pages/sections.md"/>
   </compounddef>

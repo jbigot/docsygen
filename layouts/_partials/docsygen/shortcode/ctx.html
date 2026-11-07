@@ -3,7 +3,9 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* What the docsygen/part and docsygen/member shortcodes share: their version, their item's
-       id and the context of that version on their page, as {ctx, id, ok}. The version is the
+       id and the context of that version on their page, as {ctx, id, ok}; the context carries
+       the shortcode as .shortcode, so that the lines of a list it renders take a member's
+       anchor only once per page (docsygen/shortcode/anchored.html). The version is the
        version argument, else the page's own (params.docsygen.version, or that of the version root
        above it), else latest. The item is the item argument, a name in the syntax of doxygen:
        links (docsygen/resolve.html), or the id argument, a Doxygen id. A version that development
@@ -43,6 +45,6 @@ SPDX-License-Identifier: MIT
     {{- if not $r.ok -}}{{- errorf "docsygen: %s: cannot resolve %q in version %s" $page.Path . $v.version -}}{{- end -}}
     {{- $id = $r.id -}}
   {{- end -}}
-  {{- $out = dict "ok" true "id" $id "ctx" (partial "docsygen/ctx/root.html" (dict "root" $v.page "page" $page)) -}}
+  {{- $out = dict "ok" true "id" $id "ctx" (merge (partial "docsygen/ctx/root.html" (dict "root" $v.page "page" $page)) (dict "shortcode" .)) -}}
 {{- end -}}
 {{- return $out -}}

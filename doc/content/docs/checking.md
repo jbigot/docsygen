@@ -19,10 +19,21 @@ docsygen=$(hugo config mounts | awk '/"path": "github.com\/jbigot\/docsygen"/ {f
 python3 -I "$docsygen/tools/check.py" public - -
 ```
 
-It reports every internal link whose page or fragment doesn't exist, every id that appears twice
-in a page, and what a docsygen shortcode leaves when it is called as `{{</* */>}}` rather than
-`{{%/* */%}}`, then exits with 1. The anchors that docsygen derives from the code start with
-`dg-` (`#dg-width`), so a hand-written heading only meets one when it starts with `dg-` too.
+It reports, then exits with 1:
+
+- every internal link whose page or fragment doesn't exist, but those that the documentation's
+  authors wrote as URLs, which docsygen leaves as they are;
+- every id that appears twice in a page;
+- an `<a name>`, or an id of Doxygen's own anchors (`a12_…`, `r_…`), which nothing links to;
+- a paragraph that holds a block, such as a list or a table;
+- what a docsygen shortcode leaves when it is called as `{{</* */>}}` rather than `{{%/* */%}}`:
+  shortcode delimiters out of code, or a heading with its `{#id}` as text;
+- a site without any page.
+
+The anchors that docsygen derives from the code start with `dg-` (`#dg-width`), so a hand-written
+heading only meets one when it starts with `dg-` too. docsygen's own tests run more checks, which
+need the XML of a version root and a site without Docsy's layout: that each documented entity
+appears once, and that pages use no class but docsygen's.
 
 `hugo config mounts` says where Hugo found docsygen: in its module cache, at the version the
 site's `go.mod` requires, or in the checkout that replaces it.
