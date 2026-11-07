@@ -260,6 +260,22 @@
   partial: test/list.html
   context: {model: sample, id: "", topicMembers: false, match: '^- (function cdemo_|macro)'}
   expect: ['- function cdemo_reset', '- macro CMIN(a, b)']
+- name: list, the root lists a class of a topic
+  partial: test/list.html
+  context: {model: sample, id: "", match: 'cpoint$'}
+  expect: ['- struct cpoint']
+- name: list, topicMembers false leaves out a class of a topic
+  partial: test/list.html
+  context: {model: sample, id: "", topicMembers: false, match: 'cpoint$'}
+  expect: []
+- name: list, a namespace lists a class of a topic
+  partial: test/list.html
+  context: {model: topic-member, id: namespacens, match: '^- class'}
+  expect: ['- class Grouped', '- class Plain']
+- name: list, topicMembers false leaves out a class of a topic from its namespace
+  partial: test/list.html
+  context: {model: topic-member, id: namespacens, topicMembers: false, match: '^- class'}
+  expect: ['- class Plain']
 - name: list, an anonymous namespace Doxygen leaves empty is left out
   partial: test/list.html
   context: {model: sample, id: namespacedemo, match: '^- namespace'}

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!--
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+-->
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="namespacens" kind="namespace" language="C++">
+    <compoundname>ns</compoundname>
+    <innerclass refid="classns_1_1Grouped" prot="public">ns::Grouped</innerclass>
+    <innerclass refid="classns_1_1Plain" prot="public">ns::Plain</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A namespace with a class in a topic. </para>
+    </detaileddescription>
+    <location file="w.hpp" line="18" column="1"/>
+  </compounddef>
+</doxygen>

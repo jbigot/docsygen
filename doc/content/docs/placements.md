@@ -64,8 +64,8 @@ Landing pages
   canonical page: its topic's when it is in one, its namespace's otherwise. A namespace page
   documents in detail only what has no other canonical page. With `topicMembers: false`, the
   namespace pages leave out the entities of topics, for a site that places its topics as an API
-  of their own: a C API's functions are then not listed again under `api`; when every global
-  entity is in a topic, the root then lists only the namespaces and global classes, or nothing.
+  of their own: a C API's functions and structs are then not listed again under `api`; when
+  every global entity is in a topic, the root then lists only the namespaces, or nothing.
   Topic and class pages always list their members.
 
 {{% alert title="Global entities live on the API reference's root" color="warning" %}}

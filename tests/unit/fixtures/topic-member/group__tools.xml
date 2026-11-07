@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
   <compounddef id="group__tools" kind="group">
     <compoundname>tools</compoundname>
     <title>Tools</title>
+    <innerclass refid="classns_1_1Grouped" prot="public">ns::Grouped</innerclass>
     <sectiondef kind="func">
       <memberdef kind="function" id="group__tools_1gaa62eca81f20465829b39d81312c0bcff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
