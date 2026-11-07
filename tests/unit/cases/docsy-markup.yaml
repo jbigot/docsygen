@@ -189,12 +189,35 @@
     id: namespacedemo_1ab63db0526cdb8b4040871ace0c51771b
     fields: [text]
   expect: {text: "repeat<typename T, int N = 3>(T v) -> T"}
-- name: declaration heading of a typedef
+- name: declaration heading of a typedef, its name alone
   partial: test/decl-heading.html
   context:
     ctx: {model: sample-c}
     id: group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79
-  expect: {text: "ccallback = int(*)(void *data, int code)", strong: ccallback, highlighted: true}
+  expect: {text: "ccallback", strong: ccallback, highlighted: false}
+- name: docsy markup, a typedef's definition is a code block
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample-c}
+    block: {type: member, id: group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79}
+    contains: ['data-lang="c"', 'ccallback</span>']
+  expect: []
+- name: typedef definition, Doxygen's, without the scope qualifier
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "using PDI::Value_error = impl::Error_impl<PDI_ERR_VALUE>", qualifiedname: "PDI::Value_error", name: Value_error}
+  expect: "using Value_error = impl::Error_impl<PDI_ERR_VALUE>"
+- name: typedef definition, a class's typedef keeps its keyword
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "typedef std::function<Datatype_template_sptr(Context&, PC_tree_t)> PDI::Context::Datatype_template_parser", qualifiedname: "PDI::Context::Datatype_template_parser", name: Datatype_template_parser}
+  expect: "typedef std::function<Datatype_template_sptr(Context&, PC_tree_t)> Datatype_template_parser"
+- name: typedef definition, an alias template's parameters on a line of their own
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "using demo::Vec = std::vector<T>", qualifiedname: "demo::Vec", name: Vec, tparams: "<typename T>"}
+  expect: "template<typename T>\nusing Vec = std::vector<T>"
+- name: typedef definition, a function pointer as Doxygen writes it
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)", qualifiedname: PDI_errfunc_f, name: PDI_errfunc_f}
+  expect: "typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)"
 - name: declaration heading of a variable
   partial: test/decl-heading.html
   context:
@@ -624,4 +647,11 @@
     xml: '<detaileddescription><para><programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">foo(x)</highlight></codeline></programlisting></para></detaileddescription>'
     contains: ['data-lang="fortran"']
     lacks: ['data-lang="f"', 'data-lang="fortranfixed"']
+  expect: []
+- name: docsy markup, a class template's description opens with its template declaration
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: description, id: classdemo_1_1Box}
+    contains: ['<div class="docsygen-template">template&lt;typename T, int N = 3&gt;']
   expect: []

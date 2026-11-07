@@ -1,0 +1,25 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A member's own template parameters as C++ writes them, "<typename T, int N = 3>" (their
+       defaults kept), or "" for none, and for a specialization, whose name holds its arguments.
+       Usage: partial "docsygen/markup/member-template-params.html" (dict "parts" $parts "name" $name)
+       with $parts the memberdef's children by tag and $name its name as text. */ -}}
+{{- $tparams := "" -}}
+{{- if not (strings.Contains .name "<") -}}
+  {{- $texts := slice -}}
+  {{- with .parts.templateparamlist -}}
+    {{- range .children -}}
+      {{- if and (reflect.IsMap .) (eq .tag "param") -}}
+        {{- $p := dict -}}
+        {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (strings.TrimSpace (partial "docsygen/text/plain.html" .))) -}}{{- end -}}{{- end -}}
+        {{- $t := trim (printf "%s %s" ($p.type | default "") ($p.declname | default "")) " " -}}
+        {{- with $p.defval -}}{{- $t = printf "%s = %s" $t . -}}{{- end -}}
+        {{- $texts = $texts | append (replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $t)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $texts -}}{{- $tparams = printf "<%s>" (delimit . ", ") -}}{{- end -}}
+{{- end -}}
+{{- return $tparams -}}

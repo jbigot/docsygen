@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
        markup), in a <code>. Not necessarily valid C++: the name first, in <strong>, then its own
        template parameters (with their defaults), its parameters, qualifiers and requires
        clause, and its type last ("-> T" for a function, ": T" for a variable or an enum's base);
-       a typedef as "Name = definition"; a macro as its name and parameters. No kind keyword, nor
+       a typedef as its name and template parameters; a macro as its name and parameters. No kind keyword, nor
        what the member's labels say (virtual, static, noexcept, override, …:
        docsygen/markup/block-member.html), nor the enclosing scope, nor an initializer (the
        documentation shows it, docsygen/markup/member-doc.html). What follows the name is
@@ -45,22 +45,7 @@ SPDX-License-Identifier: MIT
 {{- $type = replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $type) -}}
 {{- /* The member's own template parameters, but in a specialization, whose name holds its
        arguments. */ -}}
-{{- $tparams := "" -}}
-{{- if not (strings.Contains $text.name "<") -}}
-  {{- $texts := slice -}}
-  {{- with $parts.templateparamlist -}}
-    {{- range .children -}}
-      {{- if and (reflect.IsMap .) (eq .tag "param") -}}
-        {{- $p := dict -}}
-        {{- range .children -}}{{- if and (reflect.IsMap .) (not (isset $p .tag)) -}}{{- $p = merge $p (dict .tag (strings.TrimSpace (partial "docsygen/text/plain.html" .))) -}}{{- end -}}{{- end -}}
-        {{- $t := trim (printf "%s %s" ($p.type | default "") ($p.declname | default "")) " " -}}
-        {{- with $p.defval -}}{{- $t = printf "%s = %s" $t . -}}{{- end -}}
-        {{- $texts = $texts | append (replaceRE `\s+>` ">" (replaceRE `<\s+` "<" $t)) -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- with $texts -}}{{- $tparams = printf "<%s>" (delimit . ", ") -}}{{- end -}}
-{{- end -}}
+{{- $tparams := partial "docsygen/markup/member-template-params.html" (dict "parts" $parts "name" $text.name) -}}
 {{- $requires := "" -}}
 {{- with $parts.requiresclause -}}{{- $requires = strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/plain.html" .)) -}}{{- end -}}
 {{- $rest := "" -}}
@@ -74,8 +59,8 @@ SPDX-License-Identifier: MIT
   {{- /* A trailing return type is the type already. */ -}}
   {{- if and $type (not (and (eq $type "auto") (strings.Contains $qualifiers "->"))) -}}{{- $rest = printf "%s -> %s" $rest $type -}}{{- end -}}
 {{- else if eq $kind "typedef" -}}
-  {{- /* A function pointer's type ends in its argsstring: int(*)(void *data). */ -}}
-  {{- $rest = printf "%s = %s%s" $tparams (strings.TrimPrefix "typedef " (strings.TrimPrefix "using " $type)) $text.argsstring -}}
+  {{- /* Its definition is a code block of its documentation (docsygen/markup/block-member.html). */ -}}
+  {{- $rest = $tparams -}}
 {{- else if eq $kind "define" -}}
   {{- $params := slice -}}
   {{- range $e.node.children -}}{{- if and (reflect.IsMap .) (eq .tag "param") -}}{{- $params = $params | append (partial "docsygen/text/plain.html" .) -}}{{- end -}}{{- end -}}
