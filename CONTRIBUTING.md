@@ -108,7 +108,8 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
 - `reference`: what changed since the previous commit. It builds the test site of every corpus
   entry and Doxygen version (1.17, 1.18; the entries whose XML doesn't depend on it, with 1.18
   only) with the module of `REF` (default `HEAD`: the working tree against the last commit;
-  `REF=main` for a branch) and with the working tree's, prints the number of identical, changed,
+  `REF=main` for a branch) and with the working tree's, and `doc/` and `exampleSite/` from each
+  tree, content included (`doc` and `example`), prints the number of identical, changed,
   added and removed files, and writes a `diff -r` per changed site into
   `/var/tmp/docsygen-reference`. A change doesn't fail it: `sh tests/reference-summary.sh` groups
   the changes by kind, so that an expected change is checked at a glance, and
