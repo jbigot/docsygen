@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-"""HTML trees and CSS-like selectors, for the checks of tests/site.
+"""HTML trees and CSS-like selectors, for docsygen's checks of a built site (tools/check.py,
+check_redirects.py) and its tests' checks.
 
 A tree is a Node('#document'), with Node elements and str text as children (parse()).
 A SELECTOR is TAG, TAG.CLASS, TAG#ID, .CLASS or #ID, each optionally followed by [ATTR],
@@ -73,14 +74,16 @@ def classes(node):
 def _simple(node, selector):
     """Whether node matches TAG, TAG.CLASS[.CLASS…], TAG#ID, .CLASS or #ID, each optionally
     followed by [ATTR], [ATTR=VALUE] or [ATTR^=PREFIX] and by :contains(TEXT), or those alone."""
-    m = re.fullmatch(r'([a-z0-9]*)((?:\.[^.#\[:]+)*)(?:#([^\[:]+))?(?:\[([a-z-]+)(?:(\^?=)([^\]]*))?\])?'
+    m = re.fullmatch(r'([a-z0-9]*)((?:\.[^.#\[:]+)*)(?:#([^\[:]+))?'
+                     r'(?:\[([a-z-]+)(?:(\^?=)([^\]]*))?\])?'
                      r'(?::contains\((.*)\))?', selector)
     if not m or not selector:
         raise ValueError(f'unsupported selector {selector!r}')
     tag, cls, ident, attr, op, value, contained = m.groups()
     if attr is not None:
         actual = node.attrs.get(attr)
-        if actual is None or (op is not None and not (actual.startswith(value) if op == '^=' else actual == value)):
+        if actual is None or (op is not None and not (
+                actual.startswith(value) if op == '^=' else actual == value)):
             return False
     if contained is not None and contained not in text(node):
         return False

@@ -43,7 +43,9 @@ The destination is `[VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT]`:
   member's (`dg-width`), an overload set's (`dg-resize-overloads`), the detailed description's
   (`dg-details`), so that none meets an id of Docsy's or a heading of a hand-written page. The ones
   an author names, `\anchor` and `\section`, keep their names, but for Docsy's own ids (`print`,
-  `TableOfContents`, …), which they leave to Docsy (`print-1`).
+  `TableOfContents`, …), which they leave to Docsy (`print-1`). A fragment written by hand, in a
+  Markdown link (`#width`, the anchor before `dg-`), isn't checked by the build: `tools/check.py`
+  reports one that its page lacks ([Checking a site]({{< relref "checking" >}})).
 
 {{% alert title="Broken links stop the build" color="warning" %}}
 A destination that resolves to nothing stops the build. A target that exists but that no page

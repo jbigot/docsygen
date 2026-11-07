@@ -32,10 +32,12 @@ def main(argv):
             text = f.read()
         canonical = re.search(r'<link rel="?canonical"? href="?([^" >]+)', text)
         if not canonical or not canonical[1].endswith(latest + rel):
-            errors.append(f'{numbered}{rel}: canonical {canonical and canonical[1]!r}, not {latest}{rel}')
+            errors.append(
+                f'{numbered}{rel}: canonical {canonical and canonical[1]!r}, not {latest}{rel}')
         refresh = re.search(r'<meta http-equiv="?refresh"? content="?0; url=([^" >]+)', text)
         if not refresh or not refresh[1].endswith(latest + rel):
-            errors.append(f'{numbered}{rel}: meta refresh {refresh and refresh[1]!r}, not to {latest}{rel}')
+            errors.append(
+                f'{numbered}{rel}: meta refresh {refresh and refresh[1]!r}, not to {latest}{rel}')
         if '<script' in text:
             errors.append(f'{numbered}{rel}: a script, Hugo\'s alias page has none')
     for e in errors:
