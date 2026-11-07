@@ -60,15 +60,24 @@ build_date = re.compile(rb'var buildDate = new Date\((?:"|&#34;)[^"&]*(?:"|&#34;
 def files(top):
     return {os.path.relpath(os.path.join(d, f), top) for d, _, fs in os.walk(top) for f in fs}
 def content(top, f):
-    with open(os.path.join(top, f), 'rb') as h:
-        return build_date.sub(b'', h.read())
+    # Without the build date, written back so that diff -r below sees the same files.
+    path = os.path.join(top, f)
+    with open(path, 'rb') as h:
+        data = h.read()
+    clean = build_date.sub(b'', data)
+    if clean != data:
+        with open(path, 'wb') as h:
+            h.write(clean)
+    return clean
 a, b = files(base), files(work)
+for f in a: content(base, f)
+for f in b: content(work, f)
 same = [f for f in a & b if content(base, f) == content(work, f)]
 changed = len(a & b) - len(same)
 print(f'reference.sh: {name}: {len(same)} identical, {changed} changed, {len(b - a)} added, {len(a - b)} removed')
 sys.exit(1 if changed or a != b else 0)
 PY
-  diff -r -I 'var buildDate = new Date(' "$tmp/$1-$2-base/public" "$tmp/$1-$2-work/public" > "$out/$1-$2.diff" || true
+  diff -r "$tmp/$1-$2-base/public" "$tmp/$1-$2-work/public" > "$out/$1-$2.diff" || true
   [ -z "$strict" ] || status=1
 }
 last=${doxygens##* }
