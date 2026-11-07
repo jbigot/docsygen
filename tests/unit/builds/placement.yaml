@@ -157,3 +157,14 @@
   context: {}
   mounts: {fixtures/placement-duplicate-outside: content, fixtures/placement/layouts: layouts}
   error: 'docsygen: version "1.0", select "topics", path ":version": duplicate "demo::Circle" names nothing that the call places'
+- name: placement, one call made twice
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-twice: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0", select "api", path ":version" is called twice'
+- name: placement, a call run once per language
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-languages: content, fixtures/placement/layouts: layouts}
+  config: {defaultContentLanguage: en, languages: {en: {weight: 1}, fr: {weight: 2}}}
+  warning: '/fr/1.0/['

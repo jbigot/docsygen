@@ -73,7 +73,8 @@ SPDX-License-Identifier: MIT
        call that places a page there must come before the calls that place pages below it. */ -}}
 {{- define "_partials/docsygen/adapter/add.html" -}}
   {{- $key := lower .page.path -}}
-  {{- $paths := .store.Store.Get "docsygen-paths" | default dict -}}
+  {{- $records := partial "docsygen/adapter/records.html" .store -}}
+  {{- $paths := .store.Store.Get $records | default dict -}}
   {{- $was := index $paths $key -}}
   {{- $add := true -}}
   {{- if .intermediate -}}
@@ -87,9 +88,17 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- if $add -}}
     {{- .store.AddPage .page -}}
-    {{- .store.Store.SetInMap "docsygen-paths" $key (dict "call" .call "intermediate" (.intermediate | default false)) -}}
+    {{- .store.Store.SetInMap $records $key (dict "call" .call "intermediate" (.intermediate | default false)) -}}
   {{- end -}}
   {{- return $add -}}
+{{- end -}}
+{{- /* records: the key of the store's records of this execution of the adapter file. The store
+       outlives it: Hugo keeps it across an adapter file's runs for each language and across
+       hugo server's rebuilds, where a record of an earlier run would make an edited call collide
+       with its former self. The context, ., is new for each run (Hugo's pagesfromgotmpl.go,
+       Execute): its address tells the runs apart. */ -}}
+{{- define "_partials/docsygen/adapter/records.html" -}}
+  {{- return printf "docsygen-paths %p" . -}}
 {{- end -}}
 {{- /* aliases: the page at path p of the latest release, also at its numbered path, an absolute
        alias from the adapter's directory, which is that of the outermost template running
@@ -135,6 +144,12 @@ SPDX-License-Identifier: MIT
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
   {{- $hasContent := isset . "content" -}}
   {{- if and $hasContent (not (isset . "select")) -}}{{- $call = printf "version %q, content, path %q" .version .path -}}{{- end -}}
+  {{- $calls := printf "docsygen-calls %s" (partial "docsygen/adapter/records.html" .store) -}}
+  {{- if index (.store.Store.Get $calls | default dict) $call -}}
+    {{- errorf "docsygen: %s is called twice" $call -}}
+    {{- $ok = false -}}
+  {{- end -}}
+  {{- .store.Store.SetInMap $calls $call true -}}
   {{- if $hasContent -}}
     {{- range slice "select" "children" "duplicate" "topicMembers" -}}
       {{- if and $ok (isset $ .) -}}

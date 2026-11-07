@@ -81,7 +81,9 @@ Titles
   unless `linkTitle` is given, and its weight orders it as the version menu does.
 
 {{% alert title="One page per item" color="warning" %}}
-Two placements of one adapter file that generate the same page stop the build, naming both.
+Two placements of one adapter file that generate the same page stop the build, naming both, and
+so does a call made twice. An adapter file that runs once per language (`EnableAllLanguages`) runs
+its calls once in each, which is fine.
 Calls in different adapter files can't see each other: when one adapter file is in a directory
 below another's, they must not generate the same paths.
 {{% /alert %}}
