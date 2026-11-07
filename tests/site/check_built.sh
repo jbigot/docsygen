@@ -11,9 +11,10 @@
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
+root=$(cd "$here/../.." && pwd)
 log=$(mktemp)
 trap 'rm -f "$log"' EXIT
-if ! python3 -I "$here/check.py" "$@" > "$log" 2>&1; then
+if ! python3 -I "$root/tools/check.py" "$@" > "$log" 2>&1; then
   cat "$log" >&2; exit 1
 fi
 tail -n 1 "$log"

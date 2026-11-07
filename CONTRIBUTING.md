@@ -90,8 +90,11 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
 - `unit` (`tests/unit/`): unit cases of partials, and builds that must fail or warn.
 - `site` (`tests/site/`): a test site without Docsy on each corpus entry, on `versions`
   (`sample` as 1.0 and `sample-next` as 2.0, the latest) and on `versions-mixed` (the same, with
-  1.0 from Doxygen 1.17.0), checked by `check.py` (links, ids, roles, foreign classes) and for its
+  1.0 from Doxygen 1.17.0), checked by `tools/check.py` (links, ids, roles, foreign classes; also
+  the check docsygen offers sites, `doc/content/docs/checking.md`) and for its
   redirects.
+- `tools` (`tests/tools/`): `tools/check.py` reports a link to a missing fragment and an id that
+  appears twice, on a two-page fixture.
 - `snapshot`: the copies of the sample's XML in `doc/` and `exampleSite/` are current
   (`tests/corpus/snapshot.sh --check`).
 - `doc`, `example`: the documentation and example sites build, with `--printPathWarnings`, and
@@ -124,8 +127,7 @@ the tree while it runs: later suites would test the edit. When a build fails, ru
 The tests use internal partials of hugo-xml-document, which its README lists as stable for its
 dependents' tests: `xmldoc/read.html` and `xmldoc/parse.html` to force the template reader, and
 `xmldoc/native.html`. The tests set aside `HUGO_MODULE_REPLACEMENTS`: test sites import docsygen
-through the `replace` of a `go.mod`. [pdi-docsygen](https://github.com/jbigot/pdi-docsygen) keeps
-copies of `tests/site/check.py` and `htmltree.py`: update them there too.
+through the `replace` of a `go.mod`. [pdi-docsygen](https://github.com/jbigot/pdi-docsygen) runs `tools/check.py` from its docsygen checkout.
 
 To probe an edge case, build a minimal site without Docsy: a `hugo.yaml` with
 `module.replacements: "github.com/jbigot/docsygen -> <tree>"`, mounts for `content`, `layouts`

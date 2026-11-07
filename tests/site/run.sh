@@ -52,8 +52,8 @@ for name; do
   fi
   if [ "${name%-mixed}" = versions ]; then
     # 1.0 and 2.0 (the latest, at /latest/): io.hpp only in 1.0, demo::Extra only in 2.0, each root consistent.
-    python3 -I "$here/check.py" "$work/public" "$xml" /1.0/ || status=1
-    python3 -I "$here/check.py" "$work/public" "$next" /latest/ || status=1
+    python3 -I "$root/tools/check.py" "$work/public" "$xml" /1.0/ || status=1
+    python3 -I "$root/tools/check.py" "$work/public" "$next" /latest/ || status=1
     for want in "1.0 io_8hpp yes" "latest io_8hpp no" "1.0 classdemo_1_1Extra no" "latest classdemo_1_1Extra yes"; do
       set -- $want
       found=no
@@ -65,15 +65,15 @@ for name; do
   fi
   if [ "$name" = nested ]; then
     # An absolute alias from the adapter's directory, not the site's root.
-    python3 -I "$here/check.py" "$work/public" "$xml" /deep/er/latest/ || status=1
+    python3 -I "$root/tools/check.py" "$work/public" "$xml" /deep/er/latest/ || status=1
     python3 -I "$here/check_redirects.py" "$work/public" /deep/er/latest/ /deep/er/1.0/ || status=1
     continue
   fi
   links=
   if [ "$name" = sample ]; then links="--links handwritten/index.html $here/expected-links.json"; fi
   # shellcheck disable=SC2086 # links is words
-  python3 -I "$here/check.py" "$work/public" "$xml" /ref/ $links || status=1
-  python3 -I "$here/check.py" "$work/public" "$xml" /latest/ || status=1
+  python3 -I "$root/tools/check.py" "$work/public" "$xml" /ref/ $links || status=1
+  python3 -I "$root/tools/check.py" "$work/public" "$xml" /latest/ || status=1
   # tests/site/handwritten/handwritten/embed.md embeds demo::Widget::width in full twice: its
   # anchor once.
   if [ "$name" = sample ] && [ "$(grep -o 'id="dg-width"' "$work/public/handwritten/embed/index.html" | wc -l)" -ne 1 ]; then
