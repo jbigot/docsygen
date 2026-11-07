@@ -197,7 +197,7 @@
 - name: list of a namespace, its sub-namespaces
   partial: test/list.html
   context: {model: sample, id: namespacedemo, subs: true}
-  expect: [namespacedemo_1_1io, namespacedemo_1_1markup]
+  expect: [namespacedemo_1_1aliases, namespacedemo_1_1io, namespacedemo_1_1markup]
 - name: list sorts types by name across kinds
   partial: test/list.html
   context: {model: sample, id: namespacedemo, only: type, flat: true}
@@ -263,7 +263,7 @@
 - name: list, an anonymous namespace Doxygen leaves empty is left out
   partial: test/list.html
   context: {model: sample, id: namespacedemo, match: '^- namespace'}
-  expect: ['- namespace io::', '- namespace markup::']
+  expect: ['- namespace aliases::', '- namespace io::', '- namespace markup::']
 - name: list, a conversion operator spaced as class names are
   partial: test/list.html
   context: {model: pdi, id: classPDI_1_1Ref__any, match: 'operator ref'}

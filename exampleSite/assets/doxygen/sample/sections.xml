@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="sections" kind="page">
+    <compoundname>sections</compoundname>
+    <title>Sections</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="sections_1print"/>A page with an anchor named as Docsy names its print link, and sections at every depth.</para>
+<sect1 id="sections_1level-one">
+<title>Level one</title><sect2 id="sections_1level-two">
+<title>Level two</title><sect3 id="sections_1level-three">
+<title>Level three</title><sect4 id="sections_1level-four">
+<title>Level four</title><sect5 id="sections_1level-five">
+<title>Level five</title><sect6 id="sections_1level-six">
+<title>Level six</title><para>The deepest section. </para>
+</sect6>
+</sect5>
+</sect4>
+</sect3>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="src/pages/sections.md"/>
+  </compounddef>
+</doxygen>

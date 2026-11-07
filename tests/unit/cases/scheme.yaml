@@ -181,3 +181,8 @@
   context: {model: sample}
   select: [paths, targets, escapes_1escapes-section, anchor]
   expect: a-section-titled-ab-c-and-d
+- name: scheme, an author's anchor named as one of Docsy's ids takes a suffix
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, sections_1print, anchor]
+  expect: print-1

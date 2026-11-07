@@ -21,6 +21,7 @@
     <innerclass refid="classdemo_1_1Widget" prot="public">demo::Widget</innerclass>
     <innerclass refid="classdemo_1_1widget" prot="public">demo::widget</innerclass>
     <innerconcept refid="conceptdemo_1_1Boxable">demo::Boxable</innerconcept>
+    <innernamespace refid="namespacedemo_1_1aliases">demo::aliases</innernamespace>
     <innernamespace refid="namespacedemo_1_1io">demo::io</innernamespace>
     <innernamespace refid="namespacedemo_1_1markup">demo::markup</innernamespace>
     <sectiondef kind="user-defined">

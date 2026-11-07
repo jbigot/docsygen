@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="sections_8md" kind="file" language="Markdown">
+    <compoundname>sections.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@page<sp/>sections<sp/>Sections</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@anchor<sp/>print</highlight></codeline>
+<codeline><highlight class="normal">A<sp/>page<sp/>with<sp/>an<sp/>anchor<sp/>named<sp/>as<sp/>Docsy<sp/>names<sp/>its<sp/>print<sp/>link,<sp/>and<sp/>sections<sp/>at<sp/>every<sp/>depth.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">@section<sp/>level-one<sp/>Level<sp/>one</highlight></codeline>
+<codeline><highlight class="normal">@subsection<sp/>level-two<sp/>Level<sp/>two</highlight></codeline>
+<codeline><highlight class="normal">@subsubsection<sp/>level-three<sp/>Level<sp/>three</highlight></codeline>
+<codeline><highlight class="normal">@paragraph<sp/>level-four<sp/>Level<sp/>four</highlight></codeline>
+<codeline><highlight class="normal">@subparagraph<sp/>level-five<sp/>Level<sp/>five</highlight></codeline>
+<codeline><highlight class="normal">@subsubparagraph<sp/>level-six<sp/>Level<sp/>six</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>deepest<sp/>section.</highlight></codeline>
+    </programlisting>
+    <location file="src/pages/sections.md"/>
+  </compounddef>
+</doxygen>

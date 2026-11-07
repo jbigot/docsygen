@@ -273,7 +273,7 @@
   partial: test/part-contains.html
   context:
     part: {model: sample, address: {type: list, id: namespacedemo}}
-    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::markup</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div>', '<p class="small text-body-secondary mb-0">Lookup</p><div class="small text-body-secondary">A member group of one function.</div><ul class="mb-3"><li>', '<code class="text-reset">io::</code></span>', '<ul class="mb-3"><li>']
+    contains: ['<div class="docsygen-list"><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::aliases</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::io</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::markup</code></span></div><div class="docsygen-list-scope"><span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-namespace fw-bold">namespace</code> <code class="text-reset">::demo::</code></span></div>', '<p class="small text-body-secondary mb-0">Lookup</p><div class="small text-body-secondary">A member group of one function.</div><ul class="mb-3"><li>', '<code class="text-reset">io::</code></span>', '<ul class="mb-3"><li>']
   expect: []
 - name: list of a namespace on its page, its sub-namespaces link to their nested entries, which carry the anchors
   partial: test/part-contains.html
@@ -654,4 +654,19 @@
     ctx: {model: sample}
     block: {type: description, id: classdemo_1_1Box}
     contains: ['<div class="docsygen-template">template&lt;typename T, int N = 3&gt;']
+  expect: []
+- name: declaration heading of an alias template, its name and template parameters
+  partial: test/decl-heading.html
+  context:
+    ctx: {model: sample}
+    id: namespacedemo_1_1aliases_1a4e81d1f71859e319b401765c03df0c9d
+    fields: [text, strong]
+  expect: {text: "Vec<typename T>", strong: Vec}
+- name: docsy markup, an alias template's definition after its template line, its scope left out
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: member, id: namespacedemo_1_1aliases_1a4e81d1f71859e319b401765c03df0c9d}
+    contains: ['data-lang="cpp"', '>template<', '> Vec <']
+    lacks: ['aliases::Vec']
   expect: []
