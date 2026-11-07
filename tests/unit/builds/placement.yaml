@@ -188,3 +188,8 @@
   context: {page: /ref/latest/api}
   mounts: {fixtures/placement-options: content, fixtures/placement/layouts: layouts}
   warning: 'page-params: weight=7 linkTitle=Demo API duplicate=false'
+- name: shortcodes, a member embedded twice in full, each inside another shortcode, carries its anchor once
+  partial: test/id-count.html
+  context: {page: /embed-nested, id: dg-press}
+  mounts: {fixtures/full-nested/content: content, fixtures/versions/layouts: layouts, fixtures/full-nested/layouts: layouts}
+  warning: 'id-count dg-press: 1'

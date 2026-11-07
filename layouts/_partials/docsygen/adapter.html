@@ -96,7 +96,8 @@ SPDX-License-Identifier: MIT
        outlives it: Hugo keeps it across an adapter file's runs for each language and across
        hugo server's rebuilds, where a record of an earlier run would make an edited call collide
        with its former self. The context, ., is new for each run (Hugo's pagesfromgotmpl.go,
-       Execute): its address tells the runs apart. */ -}}
+       Execute): its address tells the runs apart, and the store keeps the context, so that the
+       garbage collector can't give the address to a later run. */ -}}
 {{- define "_partials/docsygen/adapter/records.html" -}}
   {{- return printf "docsygen-paths %p" . -}}
 {{- end -}}
@@ -145,6 +146,8 @@ SPDX-License-Identifier: MIT
   {{- $hasContent := isset . "content" -}}
   {{- if and $hasContent (not (isset . "select")) -}}{{- $call = printf "version %q, content, path %q" .version .path -}}{{- end -}}
   {{- $calls := printf "docsygen-calls %s" (partial "docsygen/adapter/records.html" .store) -}}
+  {{- /* The context stays reachable from the store, so that no later run gets its address. */ -}}
+  {{- .store.Store.SetInMap "docsygen-contexts" $calls .store -}}
   {{- if index (.store.Store.Get $calls | default dict) $call -}}
     {{- errorf "docsygen: %s is called twice" $call -}}
     {{- $ok = false -}}

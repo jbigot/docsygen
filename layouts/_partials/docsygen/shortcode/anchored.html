@@ -12,8 +12,13 @@ SPDX-License-Identifier: MIT
 {{- $taken := printf "docsygen-anchor|%s|%s" .ctx.version .id -}}
 {{- $raw := $page.RawContent -}}
 {{- $headed := or (strings.Contains $raw (printf "{#%s}" $anchor)) (strings.Contains $raw (printf "{#%s " $anchor)) -}}
-{{- /* The taker's ordinal plus one: the first shortcode of a page is 0, which reads as none. */ -}}
-{{- $mine := add .shortcode.Ordinal 1 -}}
+{{- /* The taker: its ordinal path from the page down (2.0 for the first shortcode inside the
+       third), since Hugo counts a shortcode's ordinal among its parent's, not the page's. */ -}}
+{{- $mine := printf "%d" .shortcode.Ordinal -}}
+{{- $up := .shortcode.Parent -}}
+{{- range seq 100 -}}
+  {{- if $up -}}{{- $mine = printf "%d.%s" $up.Ordinal $mine -}}{{- $up = $up.Parent -}}{{- end -}}
+{{- end -}}
 {{- if not (or $headed ($page.Store.Get $taken)) -}}
   {{- $page.Store.Set $taken $mine -}}
 {{- end -}}
