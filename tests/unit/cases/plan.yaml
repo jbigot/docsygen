@@ -190,6 +190,10 @@
   partial: test/list.html
   context: {model: sample, id: namespacedemo, match: '^[^- ]'}
   expect: [concept, type, function, variable, Lookup function, namespace]
+- name: list of a namespace, a concept without its parameters, as a function
+  partial: test/list.html
+  context: {model: sample, id: namespacedemo, only: concept, flat: true}
+  expect: ['- concept Boxable']
 - name: list of a namespace, its sub-namespaces
   partial: test/list.html
   context: {model: sample, id: namespacedemo, subs: true}

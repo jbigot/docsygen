@@ -4,7 +4,8 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* The item ({label, kind, rank, entry}, docsygen/plan/list/group.html) of a class, concept,
        namespace (not nested), file or directory listed in .scope ("" for none), with label .label.
-       A class's entry nests its nested classes, under the label of their protection.
+       A class template's name has its parameters, a concept's doesn't (they are its arguments, as
+       a function's). A class's entry nests its nested classes, under the label of their protection.
        Usage: partial "docsygen/plan/list/compound.html" (dict "model" $model "id" $refid "scope" "demo" "label" "") */ -}}
 {{- $m := .model -}}
 {{- $e := index $m.ids .id -}}
@@ -29,7 +30,9 @@ SPDX-License-Identifier: MIT
       {{- $out = printf "%s%s" $out (cond (and $t (not (hasSuffix $out "::"))) $t .) -}}
     {{- end -}}
     {{- $name = $out -}}
-  {{- else if $params -}}
+  {{- else if and $params (ne $e.kind "concept") -}}
+    {{- /* A class template's parameters; not a concept's, which are its arguments, as a
+           function's are: the list names it alone. */ -}}
     {{- $texts := slice -}}
     {{- range $params -}}{{- $texts = $texts | append .text -}}{{- end -}}
     {{- $name = printf "%s<%s>" $name (delimit $texts ", ") -}}

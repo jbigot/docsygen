@@ -1,0 +1,15 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A typedef's definition, for the code block of its documentation: Doxygen's <definition> as
+       it writes it (typedef or using, as the source has it), the name without the scope that
+       qualifies it, after "template<…>" on a line of its own for an alias template.
+       Usage: partial "docsygen/markup/typedef-definition.html" (dict "definition" $text
+       "qualifiedname" $qualified "name" $name "tparams" "<typename T>") */ -}}
+{{- $def := .definition -}}
+{{- if and .qualifiedname (ne .qualifiedname .name) -}}
+  {{- $def = replace $def .qualifiedname .name 1 -}}
+{{- end -}}
+{{- with .tparams -}}{{- $def = printf "template%s\n%s" . $def -}}{{- end -}}
+{{- return $def -}}

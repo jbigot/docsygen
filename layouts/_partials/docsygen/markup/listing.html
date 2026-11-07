@@ -4,7 +4,8 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* A program listing as a fenced code block, rendered by .ctx.page.RenderString: Hugo's
        highlighter, the site's markup.highlight settings and any render-codeblock hook apply.
-       The language is .lang, or the extension of the listing's filename, else text. A .numbered
+       The language is .lang, or the extension of the listing's filename, else text, Fortran's
+       form decided as Doxygen does (docsygen/markup/listing-lang.html). A .numbered
        listing, and an example's own listing, has line numbers from its first codeline's lineno
        (1 without), each line the anchor l-<number> (Chroma's lineanchors), which links to a
        line target (docsygen/plan/examples.html, docsygen/markup/definition.html); a site whose
@@ -37,6 +38,8 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $first = $first | default 1 -}}
 {{- $code := delimit $lines "\n" -}}
+{{- $options := dict -}}{{- with $ctx.model -}}{{- $options = .options -}}{{- end -}}
+{{- $lang = partial "docsygen/markup/listing-lang.html" (dict "lang" $lang "code" $code "options" $options) -}}
 {{- $info := $lang -}}
 {{- if $numbered -}}{{- $info = printf `%s {linenos=inline, anchorlinenos=true, lineanchors="l", linenostart=%d}` $lang $first -}}{{- end -}}
 {{- $html := partial "docsygen/markup/fence.html" (dict "info" $info "code" $code "ctx" $ctx) -}}

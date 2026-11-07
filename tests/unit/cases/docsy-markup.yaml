@@ -189,12 +189,35 @@
     id: namespacedemo_1ab63db0526cdb8b4040871ace0c51771b
     fields: [text]
   expect: {text: "repeat<typename T, int N = 3>(T v) -> T"}
-- name: declaration heading of a typedef
+- name: declaration heading of a typedef, its name alone
   partial: test/decl-heading.html
   context:
     ctx: {model: sample-c}
     id: group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79
-  expect: {text: "ccallback = int(*)(void *data, int code)", strong: ccallback, highlighted: true}
+  expect: {text: "ccallback", strong: ccallback, highlighted: false}
+- name: docsy markup, a typedef's definition is a code block
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample-c}
+    block: {type: member, id: group__cdemo_1gafbf9e64e7c7987b89ae407bd816d0b79}
+    contains: ['data-lang="c"', 'ccallback</span>']
+  expect: []
+- name: typedef definition, Doxygen's, without the scope qualifier
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "using PDI::Value_error = impl::Error_impl<PDI_ERR_VALUE>", qualifiedname: "PDI::Value_error", name: Value_error}
+  expect: "using Value_error = impl::Error_impl<PDI_ERR_VALUE>"
+- name: typedef definition, a class's typedef keeps its keyword
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "typedef std::function<Datatype_template_sptr(Context&, PC_tree_t)> PDI::Context::Datatype_template_parser", qualifiedname: "PDI::Context::Datatype_template_parser", name: Datatype_template_parser}
+  expect: "typedef std::function<Datatype_template_sptr(Context&, PC_tree_t)> Datatype_template_parser"
+- name: typedef definition, an alias template's parameters on a line of their own
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "using demo::Vec = std::vector<T>", qualifiedname: "demo::Vec", name: Vec, tparams: "<typename T>"}
+  expect: "template<typename T>\nusing Vec = std::vector<T>"
+- name: typedef definition, a function pointer as Doxygen writes it
+  partial: docsygen/markup/typedef-definition.html
+  context: {definition: "typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)", qualifiedname: PDI_errfunc_f, name: PDI_errfunc_f}
+  expect: "typedef void(* PDI_errfunc_f) (PDI_status_t status, const char *message, void *context)"
 - name: declaration heading of a variable
   partial: test/decl-heading.html
   context:
@@ -497,4 +520,138 @@
     xml: "<detaileddescription><para><formula id=\"5\">\\begin{eqnarray*}\n  a &amp;= b \\\\\n  c &amp;= d\n\\end{eqnarray*}</formula></para></detaileddescription>"
     contains: ['data-lang="latex"']
     lacks: ['data-test-hook="math"']
+  expect: []
+- name: listing lang, a free-form statement in a .f listing is free form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "call foo(x)"
+  expect: fortran
+- name: listing lang, a statement from column 7 in a .f listing is fixed form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "      x = foo(1)"
+  expect: fortranfixed
+- name: listing lang, a c out of column 1 is free form, as Doxygen reads it
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "      call foo(x)"
+  expect: fortran
+- name: listing lang, a C comment in column 1 is fixed form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "C comment\n      x = 1"
+  expect: fortranfixed
+- name: listing lang, a C keyword in column 1 is free form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "Call foo(x)"
+  expect: fortran
+- name: listing lang, a star in column 1 is fixed form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "* comment\n      x = 1"
+  expect: fortranfixed
+- name: listing lang, a ! comment is skipped, the next statement decides
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "! note\n      x = 1"
+  expect: fortranfixed
+- name: listing lang, a ! in column 6 doesn't skip the line
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "     !x = 1"
+  expect: fortranfixed
+- name: listing lang, a preprocessor line is skipped
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "#include \"a.h\"\nx = 1"
+  expect: fortran
+- name: listing lang, an empty listing is free form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: ""
+  expect: fortran
+- name: listing lang, a .f90 listing is guessed too, as Doxygen does
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f90
+    code: "      x = 1"
+  expect: fortranfixed
+- name: listing lang, the extension's case doesn't matter
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: F90
+    code: "x = 1"
+  expect: fortran
+- name: listing lang, EXTENSION_MAPPING to FortranFree forces free form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "      x = 1"
+    options: {EXTENSION_MAPPING: ["f=FortranFree"]}
+  expect: fortran
+- name: listing lang, EXTENSION_MAPPING to fortranfixed forces fixed form
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f90
+    code: "x = 1"
+    options: {EXTENSION_MAPPING: ["inc=fortran", "f90=fortranfixed"]}
+  expect: fortranfixed
+- name: listing lang, EXTENSION_MAPPING makes another extension Fortran
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: inc
+    code: "      x = 1"
+    options: {EXTENSION_MAPPING: [".inc=Fortran"]}
+  expect: fortranfixed
+- name: listing lang, EXTENSION_MAPPING can take Fortran's extension away
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "      x = 1"
+    options: {EXTENSION_MAPPING: ["f=C"]}
+  expect: f
+- name: listing lang, a tab counts TAB_SIZE columns
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "\tx = 1"
+    options: {TAB_SIZE: ["8"]}
+  expect: fortranfixed
+- name: listing lang, a tab counts 4 columns by default
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: f
+    code: "\tx = 1"
+  expect: fortran
+- name: listing lang, another language is left as it is
+  partial: docsygen/markup/listing-lang.html
+  context:
+    lang: C
+    code: "      int x;"
+  expect: C
+- name: docsy markup, a Fortran fence of free-form code is highlighted as free form
+  partial: test/doc-contains.html
+  context:
+    ctx: {}
+    xml: '<detaileddescription><para><programlisting filename=".f"><codeline><highlight class="keyword">call<sp/></highlight><highlight class="normal">foo(x)</highlight></codeline></programlisting></para></detaileddescription>'
+    contains: ['data-lang="fortran"']
+    lacks: ['data-lang="f"', 'data-lang="fortranfixed"']
+  expect: []
+- name: docsy markup, a class template's description opens with its template declaration
+  partial: test/block-contains.html
+  context:
+    ctx: {model: sample}
+    block: {type: description, id: classdemo_1_1Box}
+    contains: ['<div class="docsygen-template">template&lt;typename T, int N = 3&gt;']
   expect: []

@@ -1,0 +1,65 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The language Hugo's highlighter gets for a listing whose language is .lang, an extension
+       (the listing's filename's, or a file's): .lang itself, but for an extension that Doxygen
+       parses as Fortran, which is Chroma's fortranfixed or fortran (free form) as Doxygen
+       decides it. Doxygen maps an extension to a parser through its defaults (.f, .for, .f90,
+       .f95, .f03, .f08 and .f18 to fortran) and the Doxyfile's EXTENSION_MAPPING (ext=language),
+       case aside; fortranfixed and fortranfree set the form, fortran leaves it to the code, which
+       Doxygen reads as fixed form when its first significant character is a C or c in column 1
+       that doesn't start one of a few keywords (call, character…), a * in column 1, or any other
+       one from column 7 on; a line that starts with #, or with a ! out of column 6, is skipped,
+       and a tab counts TAB_SIZE columns (Doxygen 1.18's util.cpp, recognizeFixedForm). A fence
+       written ```Fortran is a .f listing, and free-form code in it must not be read as fixed
+       form, which Chroma does for f.
+       Usage: partial "docsygen/markup/listing-lang.html" (dict "lang" "f" "code" $code "options" $model.options) */ -}}
+{{- $lang := .lang -}}
+{{- $parsers := dict "f" "fortran" "for" "fortran" "f90" "fortran" "f95" "fortran" "f03" "fortran" "f08" "fortran" "f18" "fortran" -}}
+{{- $options := .options | default dict -}}
+{{- range (index $options "EXTENSION_MAPPING") | default slice -}}
+  {{- $kv := split (string .) "=" -}}
+  {{- if eq (len $kv) 2 -}}
+    {{- $parsers = merge $parsers (dict (strings.TrimPrefix "." (lower (strings.TrimSpace (index $kv 0)))) (lower (strings.TrimSpace (index $kv 1)))) -}}
+  {{- end -}}
+{{- end -}}
+{{- $parser := index $parsers (lower $lang) -}}
+{{- if eq $parser "fortranfixed" -}}
+  {{- $lang = "fortranfixed" -}}
+{{- else if eq $parser "fortranfree" -}}
+  {{- $lang = "fortran" -}}
+{{- else if eq $parser "fortran" -}}
+  {{- $tab := int (index ((index $options "TAB_SIZE") | default (slice "4")) 0) -}}
+  {{- $keywords := slice "character" "call" "close" "common" "continue" "case" "contains" "cycle" "class" "codimension" "concurrent" "contiguous" "critical" -}}
+  {{- $chars := split (string .code) "" -}}
+  {{- $fixed := false -}}
+  {{- $done := false -}}
+  {{- $column := 0 -}}
+  {{- $skip := false -}}
+  {{- range $i, $c := $chars -}}
+    {{- if not $done -}}
+      {{- $column = add $column 1 -}}
+      {{- if eq $c "\n" -}}
+        {{- $column = 0 -}}{{- $skip = false -}}
+      {{- else if eq $c "\t" -}}
+        {{- $column = add $column (sub $tab 1) -}}
+      {{- else if eq $c " " -}}
+      {{- else if eq $c "#" -}}
+        {{- $skip = true -}}
+      {{- else if and (in (slice "C" "c") $c) (eq $column 1) -}}
+        {{- $word := lower (index (split (delimit (after $i $chars) "") " ") 0) -}}
+        {{- $fixed = not (in $keywords $word) -}}{{- $done = true -}}
+      {{- else if in (slice "C" "c" "*") $c -}}
+        {{- if eq $column 1 -}}{{- $fixed = true -}}{{- $done = true -}}
+        {{- else if not $skip -}}{{- $done = true -}}{{- end -}}
+      {{- else if eq $c "!" -}}
+        {{- if ne $column 6 -}}{{- $skip = true -}}{{- end -}}
+      {{- else if not $skip -}}
+        {{- $fixed = ge $column 7 -}}{{- $done = true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $lang = cond $fixed "fortranfixed" "fortran" -}}
+{{- end -}}
+{{- return $lang -}}

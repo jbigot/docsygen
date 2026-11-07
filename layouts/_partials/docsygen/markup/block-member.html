@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* A member's documentation (memberdef.cpp, writeDocumentation): its labels (getLabels), and
-       its documentation: brief, details, enum values, what it reimplements or what reimplements
+       its documentation: a typedef's definition as a code block, brief, details, enum values, what it reimplements or what reimplements
        it, and where it is defined. Its declaration is the heading that the page's skeleton writes
        (docsygen/plan/details.html), or with .block.anchor, for a page whose skeleton writes no
        heading for it (docsygen/shortcode/full.html), the first line of the block, whose wrapper
@@ -46,6 +46,18 @@ SPDX-License-Identifier: MIT
 {{- $scope := cond (in (slice "class" "struct" "union" "interface" "protocol" "category" "exception") (index $m.ids $e.home).kind) $e.home "" -}}
 <div class="docsygen-member td-max-width-on-larger-screens"{{ if .block.anchor }} id="{{ $anchor }}"{{ end }} data-doxygen-id="{{ $id }}">
 {{- if .block.anchor -}}<p class="docsygen-declaration-line">{{ partial "docsygen/markup/decl-heading.html" (dict "ctx" $ctx "id" $id) }}</p>{{- end -}}
+{{- if eq $kind "typedef" -}}
+  {{- /* Its definition, as Doxygen gives it; the heading has its name alone. */ -}}
+  {{- $text := dict -}}
+  {{- range slice "definition" "qualifiedname" "name" -}}
+    {{- $t := "" -}}{{- with index $parts . -}}{{- $t = strings.TrimSpace (replaceRE `\s+` " " (partial "docsygen/text/plain.html" .)) -}}{{- end -}}
+    {{- $text = merge $text (dict . $t) -}}
+  {{- end -}}
+  {{- $code := partial "docsygen/markup/typedef-definition.html" (dict "definition" $text.definition "qualifiedname" $text.qualifiedname
+      "name" $text.name "tparams" (partial "docsygen/markup/member-template-params.html" (dict "parts" $parts "name" $text.name))) -}}
+  {{- $cmode := eq (index ((index $m.options "OPTIMIZE_OUTPUT_FOR_C") | default (slice "NO")) 0) "YES" -}}
+  {{- partial "docsygen/markup/fence.html" (dict "info" (cond $cmode "c" "cpp") "code" $code "ctx" $ctx) -}}
+{{- end -}}
 {{- with $labels -}}<div class="docsygen-labels">{{ range . }}<span class="badge text-bg-secondary">{{ . }}</span>{{ end }}</div>{{- end -}}
 {{- partial "docsygen/markup/member-doc.html" (dict "ctx" (merge $ctx (dict "member" $anchor "headinglevel" (.block.level | default 3))) "id" $id "parts" $parts "scope" $scope) -}}
 </div>
