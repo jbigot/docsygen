@@ -136,6 +136,17 @@
   mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
   params: {docsygen: {versions: [latest]}}
   warning: 'page-facts: title=docsygen sample 1.0 '
+- name: placement, hand-written content in a version that development mode skips renders no page
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  params: {docsygen: {versions: [latest]}}
+  warning: '/ref/latest/api/widget/[demo::Widget] |'
+- name: placement, hand-written content and a placement at one path
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-content-collide: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: the page "ref/old" of version "old", select "", path "ref/:version" is already that of version "old", content, path "ref/:version"'
 - name: placement, hand-written content placed after the pages below it
   partial: test/placement-pages.html
   context: {}
