@@ -152,3 +152,8 @@
   context: {}
   mounts: {fixtures/placement-content-late: content, fixtures/placement/layouts: layouts}
   error: 'docsygen: the page "ref/old" of version "old", content, path "ref/:version" is a section that version "old", select "api/demo", path "ref/:version/api" added above its pages'
+- name: placement, a duplicate that names nothing the call places
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-duplicate-outside: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0", select "topics", path ":version": duplicate "demo::Circle" names nothing that the call places'

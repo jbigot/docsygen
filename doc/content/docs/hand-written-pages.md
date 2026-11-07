@@ -35,7 +35,7 @@ keys and names for those pages and the pages below them:
     "path" "docs/:version/api" "select" "api" "duplicate" (slice "demo::Circle")) -}}
 ```
 
-A duplicate is still a page of the site, but no link goes to it, it is out of the search index
+Each entry must name a page that the call places, or the build stops. A duplicate is still a page of the site, but no link goes to it, it is out of the search index
 and the sitemap, and its canonical link is that of the page that holds its item.
 
 {{% alert title="Nested classes" color="info" %}}

@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
                    a root below the :version segment
          duplicate whether the placement's pages are duplicates (default false): true for all of
                    them, or a list of page keys and names (as select) for those pages and the pages
-                   below them. A duplicate is never a link's target, is left out of search and the sitemap,
+                   below them, at least one of which the call places. A duplicate is never a link's target, is left out of search and the sitemap,
                    and its canonical link is that of the page that holds its key (another
                    placement, or a hand-written page that claims it, docsygen/claims.html)
          latest    whether this is the latest release, which unversioned links go to (default
@@ -183,9 +183,14 @@ SPDX-License-Identifier: MIT
     {{- $duplicate := .duplicate | default false -}}
     {{- if reflect.IsSlice $duplicate -}}
       {{- $keys := slice -}}
-      {{- range $duplicate -}}
-        {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" . "children" true "version" $.version)).keys -}}
+      {{- range $d := $duplicate -}}
+        {{- $placed := false -}}
+        {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" $d "children" true "version" $.version)).keys -}}
           {{- $keys = $keys | append . -}}
+          {{- if in $selected.keys . -}}{{- $placed = true -}}{{- end -}}
+        {{- end -}}
+        {{- if not $placed -}}
+          {{- errorf "docsygen: %s: duplicate %q names nothing that the call places" $call $d -}}
         {{- end -}}
       {{- end -}}
       {{- $duplicate = $keys -}}
