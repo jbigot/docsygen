@@ -1,0 +1,17 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The body of docsygen/model/topic-compounds.html. */ -}}
+{{- $m := . -}}
+{{- $s := newScratch -}}
+{{- $s.Set "m" dict -}}
+{{- range $m.order -}}
+  {{- $e := index $m.ids . -}}
+  {{- if eq $e.kind "group" -}}
+    {{- range $e.node.children -}}
+      {{- if and (reflect.IsMap .) (in (slice "innerclass" "innerconcept") .tag) -}}{{- $s.SetInMap "m" .attributes.refid $e.id -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s.Get "m" -}}

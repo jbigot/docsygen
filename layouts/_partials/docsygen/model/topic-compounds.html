@@ -1,0 +1,9 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* {refid: topic refid} from each class and concept that a topic lists (innerclass,
+       innerconcept) to that topic, cached per model: what a topic page documents besides its
+       members.
+       Usage: partial "docsygen/model/topic-compounds.html" $model */ -}}
+{{- return partialCached "docsygen/model/topic-compounds/build.html" . .dir -}}

@@ -4,9 +4,15 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 -->
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.18.0" xml:lang="en-US">
+  <compound refid="classns_1_1Grouped" kind="class"><name>ns::Grouped</name>
+  </compound>
+  <compound refid="classns_1_1Plain" kind="class"><name>ns::Plain</name>
+  </compound>
   <compound refid="classW" kind="class"><name>W</name>
     <member refid="group__tools_1gaa62eca81f20465829b39d81312c0bcff" kind="function"><name>grouped</name></member>
     <member refid="classW_1aa3ea445671ede4f9523749ad4ebcc46b" kind="function"><name>plain</name></member>
+  </compound>
+  <compound refid="namespacens" kind="namespace"><name>ns</name>
   </compound>
   <compound refid="w_8hpp" kind="file"><name>w.hpp</name>
   </compound>

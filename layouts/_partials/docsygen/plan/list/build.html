@@ -12,8 +12,10 @@ SPDX-License-Identifier: MIT
 {{- $kind := cond (eq $id "") "namespace" $e.kind -}}
 {{- $isClass := in $classLike $kind -}}
 {{- $scope := cond (or $isClass (eq $kind "namespace")) ($e.name | default "") "" -}}
-{{- /* topicMembers false thins namespace pages only, the root's included. */ -}}
+{{- /* topicMembers false thins namespace pages only, the root's included: it leaves out the
+       members whose home is a topic, and the classes and concepts a topic lists. */ -}}
 {{- $keepTopic := or $tm (ne $kind "namespace") -}}
+{{- $inTopic := cond $keepTopic dict (partial "docsygen/model/topic-compounds.html" $m) -}}
 {{- $labels := slice "" "static" "protected" "private" "package" "related" -}}
 {{- /* Items, {label, kind, rank, entry}, and the members to make items of, {id, label, sets}. */ -}}
 {{- $items := slice -}}
@@ -37,7 +39,7 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- range $m.order -}}
     {{- $c := index $m.ids . -}}
-    {{- if and (or (in $classLike $c.kind) (eq $c.kind "concept")) (not (index $scopes .)) (not ($inNamespace.Get .)) -}}
+    {{- if and (or (in $classLike $c.kind) (eq $c.kind "concept")) (not (index $scopes .)) (not ($inNamespace.Get .)) (not (index $inTopic .)) -}}
       {{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" "" "label" "")) -}}
     {{- else if eq $c.kind "namespace" -}}
       {{- if and $c.name (not (index $scopes .)) -}}{{- $nested = $nested | append . -}}{{- $subs = $subs | append . -}}
@@ -63,6 +65,7 @@ SPDX-License-Identifier: MIT
     {{- if ne .group "summary" -}}
     {{- else if in (slice "inner-class" "inner-concept") $key -}}
       {{- range .inner -}}
+        {{- if index $inTopic . -}}{{- continue -}}{{- end -}}
         {{- $label := cond $isClass (index (dict "protected" "protected" "private" "private" "package" "package") ($prot.Get . | default "public") | default "") "" -}}
         {{- $items = $items | append (partial "docsygen/plan/list/compound.html" (dict "model" $m "id" . "scope" $scope "label" $label)) -}}
       {{- end -}}
