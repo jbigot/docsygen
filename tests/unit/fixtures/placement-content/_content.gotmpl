@@ -1,0 +1,10 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Hand-written content as the version's section, placed before a namespace below it, in two
+       versions. */ -}}
+{{- range slice (dict "version" "old") (dict "version" "1.0" "latest" true) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "dir" "doxygen/sample" "path" "ref/:version" "content" "Hand-written landing.\n\n{{% docsygen/member item=\"demo::Widget::width\" form=\"summary\" %}}")) -}}
+  {{- partial "docsygen/adapter.html" (merge . (dict "store" $ "dir" "doxygen/sample" "path" "ref/:version/api" "select" "api/demo")) -}}
+{{- end -}}

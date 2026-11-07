@@ -43,6 +43,10 @@ SPDX-License-Identifier: MIT
                    and as docsygen's error on a formula KaTeX can't render quotes them ("$ a^2 $",
                    "\[ x \]"); a page's own params.docsygen.sourceFormulas adds to it for what that
                    page renders (docsygen/ctx/source-formulas.html)
+         content   hand-written Markdown placed at path instead of a part of the XML (no select,
+                   children, duplicate or topicMembers): one page, the placement root, with no
+                   item; at the :version segment, the version's landing page, titled as the
+                   whole tree's root. It must come before the calls that place pages below it
        store, dir, version and path are required; the label latest, and a segment latest in the
        path, are reserved for the latest release. The pages of the other versions are left out of
        the sitemap, since their canonical page is usually under latest.
@@ -64,7 +68,9 @@ SPDX-License-Identifier: MIT
          {{ partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/pdi" "version" "main" "path" ":version") }} */ -}}
 {{- /* add: AddPage, recorded in the store by lowercased path. A placement's page over another
        call's placement page stops the build; an intermediate page is added once and never
-       over a placement page, which replaces it (the later AddPage wins). */ -}}
+       over a placement page. A placement page over an intermediate one stops the build too: a
+       second AddPage at one path replaces the first, but Hugo warns of the duplicate path, so the
+       call that places a page there must come before the calls that place pages below it. */ -}}
 {{- define "_partials/docsygen/adapter/add.html" -}}
   {{- $key := lower .page.path -}}
   {{- $paths := .store.Store.Get "docsygen-paths" | default dict -}}
@@ -74,6 +80,9 @@ SPDX-License-Identifier: MIT
     {{- $add = not $was -}}
   {{- else if and $was (not $was.intermediate) (ne $was.call .call) -}}
     {{- errorf "docsygen: the page %q of %s is already that of %s" .page.path .call $was.call -}}
+    {{- $add = false -}}
+  {{- else if and $was $was.intermediate (ne $was.call .call) -}}
+    {{- errorf "docsygen: the page %q of %s is a section that %s added above its pages: make this call before that one" .page.path .call $was.call -}}
     {{- $add = false -}}
   {{- end -}}
   {{- if $add -}}
@@ -91,7 +100,7 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
-  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap" "topicMembers" "variantSeparator" "sourceFormulas") $k) -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap" "topicMembers" "variantSeparator" "sourceFormulas" "content") $k) -}}
     {{- errorf "docsygen: unknown adapter option %q" $k -}}
     {{- $ok = false -}}
   {{- end -}}
@@ -124,6 +133,16 @@ SPDX-License-Identifier: MIT
   {{- $variantSeparator := .variantSeparator | default "-" -}}
   {{- $sourceFormulas := .sourceFormulas | default slice -}}
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
+  {{- $hasContent := isset . "content" -}}
+  {{- if and $hasContent (not (isset . "select")) -}}{{- $call = printf "version %q, content, path %q" .version .path -}}{{- end -}}
+  {{- if $hasContent -}}
+    {{- range slice "select" "children" "duplicate" "topicMembers" -}}
+      {{- if and $ok (isset $ .) -}}
+        {{- errorf "docsygen: %s: content places hand-written Markdown, without select, children, duplicate or topicMembers" $call -}}
+        {{- $ok = false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
   {{- $release := gt (len (findRE `^[0-9]+(\.[0-9]+)*$` .version 1)) 0 -}}
   {{- $menuWeight := partial "docsygen/versions/weight.html" (dict "version" .version "latest" $latest "weight" .weight) -}}
   {{- /* The segments from :version down, and whether the placement root is the :version one. */ -}}
@@ -147,7 +166,7 @@ SPDX-License-Identifier: MIT
     {{- $_ := partial "docsygen/adapter/add.html" (dict "store" $store "call" $call "page" (dict "path" $pattern.path "kind" "section"
         "title" .version "build" $headless "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version
         "path" $pattern.numbered "root" true "skipped" true "release" $release)))) -}}
-  {{- else -}}
+  {{- else if $ok -}}
     {{- if $latest -}}
       {{- $_ := partial "docsygen/adapter/add.html" (dict "store" $store "call" $call "page" (dict "path" $pattern.numbered "kind" "section"
           "title" .version "build" $headless "params" (dict "toc_hide" true "hide_summary" true "docsygen" (dict "version" .version
@@ -155,8 +174,11 @@ SPDX-License-Identifier: MIT
     {{- end -}}
     {{- $model := partial "docsygen/model.html" $dir -}}
     {{- $paths := partial "docsygen/paths.html" (dict "model" $model "pathMap" $pathMap) -}}
-    {{- $selected := partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" (.select | default "")
-        "children" $children "version" .version) -}}
+    {{- $selected := dict "root" false "keys" slice -}}
+    {{- if not $hasContent -}}
+      {{- $selected = partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" (.select | default "")
+          "children" $children "version" .version) -}}
+    {{- end -}}
     {{- /* The duplicate pages' keys, or true for all. */ -}}
     {{- $duplicate := .duplicate | default false -}}
     {{- if reflect.IsSlice $duplicate -}}
@@ -196,6 +218,28 @@ SPDX-License-Identifier: MIT
         "release" $release "search" $search "topicMembers" $topicMembers "variantSeparator" $variantSeparator
         "sourceFormulas" $sourceFormulas -}}
     {{- with .weight -}}{{- $docsygen = merge $docsygen (dict "weight" .) -}}{{- end -}}
+    {{- if $hasContent -}}
+      {{- /* Hand-written content: one page at the path, the placement root, with no item. */ -}}
+      {{- $title := cond $rootIsVersion (strings.TrimSpace (printf "%s %s" $project .version)) (index $segments (sub (len $segments) 1)) -}}
+      {{- $linkTitle := $title -}}
+      {{- $pageWeight := 0 -}}
+      {{- $params := dict "no_list" true "exclude_search" (not $search) "docsygen" (merge $docsygen (dict "root" true "pattern" .path)) -}}
+      {{- if $rootIsVersion -}}
+        {{- $params = merge $params (dict "sidebar_root_for" "self") -}}
+        {{- $pageWeight = $menuWeight -}}
+        {{- $linkTitle = cond $latest (T "docsygen-latest-version" (dict "version" .version)) .version -}}
+      {{- end -}}
+      {{- with .title -}}{{- $title = . -}}{{- if not $rootIsVersion -}}{{- $linkTitle = . -}}{{- end -}}{{- end -}}
+      {{- with .linkTitle -}}{{- $linkTitle = . -}}{{- end -}}
+      {{- with .weight -}}{{- $pageWeight = . -}}{{- end -}}
+      {{- $page := dict "path" $pattern.path "kind" "section" "type" "docs" "title" $title "linkTitle" $linkTitle "weight" $pageWeight
+          "params" $params "content" (dict "mediaType" "text/markdown" "value" .content) -}}
+      {{- if not $latest -}}{{- $page = merge $page (dict "sitemap" (dict "disable" true)) -}}{{- end -}}
+      {{- if $latest -}}
+        {{- $page = merge $page (dict "aliases" (partial "docsygen/adapter/alias.html" (dict "path" $pattern.path "numbered" $pattern.numbered))) -}}
+      {{- end -}}
+      {{- $_ := partial "docsygen/adapter/add.html" (dict "store" $store "call" $call "page" $page) -}}
+    {{- end -}}
     {{- range $paths.pages -}}
       {{- if in $selected.keys .key -}}
         {{- $rel := strings.TrimPrefix "/" (strings.TrimPrefix $rootEntry.path .path) -}}
