@@ -4,15 +4,6 @@ SPDX-License-Identifier: MIT
 */ -}}
 {{- /* A member's full form in a shortcode (docsygen/member, docsygen/members): its block
        (docsygen/part.html), with the member's anchor on its wrapper unless the page already has
-       it: its Markdown writes the member's heading ({#anchor …}, docsygen/plan/details.html), or
-       an earlier shortcode of the page took it.
+       it (docsygen/shortcode/anchored.html).
        Usage: partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id) */ -}}
-{{- $page := .shortcode.Page -}}
-{{- $anchor := index .ctx.anchors .id -}}
-{{- $taken := printf "docsygen-anchor|%s|%s" .ctx.version .id -}}
-{{- $raw := $page.RawContent -}}
-{{- $headed := or (strings.Contains $raw (printf "{#%s}" $anchor)) (strings.Contains $raw (printf "{#%s " $anchor)) -}}
-{{- if not (or $headed ($page.Store.Get $taken)) -}}
-  {{- $page.Store.Set $taken .shortcode.Ordinal -}}
-{{- end -}}
-{{- return partial "docsygen/part.html" (dict "address" (dict "type" "member" "id" .id) "ctx" .ctx "anchor" (eq ($page.Store.Get $taken) .shortcode.Ordinal)) -}}
+{{- return partial "docsygen/part.html" (dict "address" (dict "type" "member" "id" .id) "ctx" .ctx "anchor" (partial "docsygen/shortcode/anchored.html" .)) -}}

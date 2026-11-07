@@ -128,6 +128,10 @@
   </compound>
   <compound refid="namespacedemo_1_1_0d120023002357274100006257004322307273101100025142" kind="namespace"><name>demo::@120023002357274100006257004322307273101100025142</name>
   </compound>
+  <compound refid="namespacedemo_1_1aliases" kind="namespace"><name>demo::aliases</name>
+    <member refid="namespacedemo_1_1aliases_1a4e81d1f71859e319b401765c03df0c9d" kind="typedef"><name>Vec</name></member>
+    <member refid="namespacedemo_1_1aliases_1a91ced33fcd10ed8e66eaffc2998693c4" kind="function"><name>repeat</name></member>
+  </compound>
   <compound refid="namespacedemo_1_1io" kind="namespace"><name>demo::io</name>
     <member refid="namespacedemo_1_1io_1a10e7fd0fabbc12a3b6362af7edbc4bc8" kind="function"><name>read</name></member>
     <member refid="namespacedemo_1_1io_1a6bffd1ec86aa3182132033cd390e8fb8" kind="function"><name>print</name></member>
@@ -161,6 +165,8 @@
     <member refid="group__cdemo_1gafb6e4f5923c7789aa992802c474085d9" kind="function"><name>cdemo_version</name></member>
     <member refid="cdemo_8h_1a91d024f7fbc1b8695e8c6335663728b8" kind="function"><name>cdemo_reset</name></member>
   </compound>
+  <compound refid="aliases_8hpp" kind="file"><name>aliases.hpp</name>
+  </compound>
   <compound refid="io_8hpp" kind="file"><name>io.hpp</name>
   </compound>
   <compound refid="markup_8hpp" kind="file"><name>markup.hpp</name>
@@ -182,6 +188,8 @@
   <compound refid="guide_8md" kind="file"><name>guide.md</name>
   </compound>
   <compound refid="mainpage_8md" kind="file"><name>mainpage.md</name>
+  </compound>
+  <compound refid="sections_8md" kind="file"><name>sections.md</name>
   </compound>
   <compound refid="variant-links_8md" kind="file"><name>variant-links.md</name>
   </compound>
@@ -207,6 +215,8 @@
   <compound refid="escapes" kind="page"><name>escapes</name>
   </compound>
   <compound refid="guide" kind="page"><name>guide</name>
+  </compound>
+  <compound refid="sections" kind="page"><name>sections</name>
   </compound>
   <compound refid="variant-links" kind="page"><name>variant-links</name>
   </compound>

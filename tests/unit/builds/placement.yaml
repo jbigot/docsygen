@@ -34,7 +34,7 @@
   partial: test/placement-pages.html
   context: {}
   mounts: {fixtures/placement-subtree: content, fixtures/placement/layouts: layouts}
-  warning: 'placement-pages: /[] /ref/[Refs] /ref/1.0/[demo] /ref/1.0/box/[demo::Box] /ref/1.0/box/iterator/[demo::Box::Iterator] /ref/1.0/boxable/[demo::Boxable] /ref/1.0/button/[demo::Button] /ref/1.0/circle/[demo::Circle] /ref/1.0/diamond/[demo::Diamond] /ref/1.0/escapes/[demo::Escapes] /ref/1.0/foo-int/[demo::Foo< int >] /ref/1.0/foo-t/[demo::Foo< T * >] /ref/1.0/foo/[demo::Foo] /ref/1.0/gadget/[demo::Gadget] /ref/1.0/gizmo/[demo::Gizmo] /ref/1.0/io/[demo::io] /ref/1.0/labelledcircle/[demo::LabelledCircle] /ref/1.0/left/[demo::Left] /ref/1.0/markup/[demo::markup] /ref/1.0/named/[demo::Named] /ref/1.0/outer/[demo::Outer] /ref/1.0/outer/inner/[demo::Outer::Inner] /ref/1.0/outer/inner/innermost/[demo::Outer::Inner::Innermost] /ref/1.0/right/[demo::Right] /ref/1.0/shape/[demo::Shape] /ref/1.0/widget-2/[demo::widget] /ref/1.0/widget/[demo::Widget] |'
+  warning: 'placement-pages: /[] /ref/[Refs] /ref/1.0/[demo] /ref/1.0/aliases/[demo::aliases] /ref/1.0/box/[demo::Box] /ref/1.0/box/iterator/[demo::Box::Iterator] /ref/1.0/boxable/[demo::Boxable] /ref/1.0/button/[demo::Button] /ref/1.0/circle/[demo::Circle] /ref/1.0/diamond/[demo::Diamond] /ref/1.0/escapes/[demo::Escapes] /ref/1.0/foo-int/[demo::Foo< int >] /ref/1.0/foo-t/[demo::Foo< T * >] /ref/1.0/foo/[demo::Foo] /ref/1.0/gadget/[demo::Gadget] /ref/1.0/gizmo/[demo::Gizmo] /ref/1.0/io/[demo::io] /ref/1.0/labelledcircle/[demo::LabelledCircle] /ref/1.0/left/[demo::Left] /ref/1.0/markup/[demo::markup] /ref/1.0/named/[demo::Named] /ref/1.0/outer/[demo::Outer] /ref/1.0/outer/inner/[demo::Outer::Inner] /ref/1.0/outer/inner/innermost/[demo::Outer::Inner::Innermost] /ref/1.0/right/[demo::Right] /ref/1.0/shape/[demo::Shape] /ref/1.0/widget-2/[demo::widget] /ref/1.0/widget/[demo::Widget] |'
 - name: placement, a namespace alone
   partial: test/placement-pages.html
   context: {}
@@ -152,3 +152,44 @@
   context: {}
   mounts: {fixtures/placement-content-late: content, fixtures/placement/layouts: layouts}
   error: 'docsygen: the page "ref/old" of version "old", content, path "ref/:version" is a section that version "old", select "api/demo", path "ref/:version/api" added above its pages'
+- name: placement, a duplicate that names nothing the call places
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-duplicate-outside: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0", select "topics", path ":version": duplicate "demo::Circle" names nothing that the call places'
+- name: placement, one call made twice
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-twice: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0", select "api", path ":version" is called twice'
+- name: placement, a call run once per language
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-languages: content, fixtures/placement/layouts: layouts}
+  config: {defaultContentLanguage: en, languages: {en: {weight: 1}, fr: {weight: 2}}}
+  warning: '/fr/1.0/['
+- name: shortcodes, a summary line embedded twice carries its ids once
+  partial: test/id-count.html
+  context: {page: /embed, id: dg-press}
+  mounts: {fixtures/extract-all-no: doxygen/sample, fixtures/summary-twice: content, fixtures/versions/layouts: layouts}
+  warning: 'id-count dg-press: 1'
+- name: shortcodes, a member embedded twice in full, first on its page, carries its anchor once
+  partial: test/id-count.html
+  context: {page: /embed-full, id: dg-press}
+  mounts: {fixtures/full-twice: content, fixtures/versions/layouts: layouts}
+  warning: 'id-count dg-press: 1'
+- name: placement, duplicate true makes every page a duplicate
+  partial: test/page-params.html
+  context: {page: /latest/api/demo/widget}
+  mounts: {fixtures/placement-duplicate-all: content, fixtures/placement/layouts: layouts}
+  warning: 'duplicate=true exclude_search=true sitemap=false'
+- name: placement, linkTitle and weight on a placement's root
+  partial: test/page-params.html
+  context: {page: /ref/latest/api}
+  mounts: {fixtures/placement-options: content, fixtures/placement/layouts: layouts}
+  warning: 'page-params: weight=7 linkTitle=Demo API duplicate=false'
+- name: shortcodes, a member embedded twice in full, each inside another shortcode, carries its anchor once
+  partial: test/id-count.html
+  context: {page: /embed-nested, id: dg-press}
+  mounts: {fixtures/full-nested/content: content, fixtures/versions/layouts: layouts, fixtures/full-nested/layouts: layouts}
+  warning: 'id-count dg-press: 1'

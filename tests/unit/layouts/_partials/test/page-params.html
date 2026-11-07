@@ -1,0 +1,9 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* What a placement sets on page .page of a build case's site, as one warning:
+       "page-params: weight=… linkTitle=… duplicate=… exclude_search=… sitemap=…". */ -}}
+{{- with site.GetPage .page -}}
+  {{- warnf "page-params: weight=%v linkTitle=%v duplicate=%v exclude_search=%v sitemap=%v" .Weight .LinkTitle (.Params.docsygen.duplicate | default false) (.Params.exclude_search | default false) (not .Sitemap.Disable) -}}
+{{- end -}}

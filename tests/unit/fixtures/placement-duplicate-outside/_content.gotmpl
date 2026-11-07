@@ -1,0 +1,6 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* A duplicate that names a page the call doesn't place. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "path" ":version" "select" "topics" "duplicate" (slice "demo::Circle")) -}}

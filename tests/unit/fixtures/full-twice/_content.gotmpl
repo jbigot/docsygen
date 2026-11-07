@@ -1,0 +1,6 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The whole tree, with demo::Button handed over to a hand-written page that embeds one of its member lines twice. */ -}}
+{{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/sample" "version" "1.0" "latest" true "path" ":version" "duplicate" (slice "demo::Button")) -}}

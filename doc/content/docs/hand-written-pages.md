@@ -22,7 +22,7 @@ params:
 
 Each claim is a page key or a name, as `select` takes them. Write the page with the
 [shortcodes]({{< relref "embedding" >}}), which take its version: a full member carries its anchor, so
-that links to the member land on it, and an `{#details}` heading takes the links to the item's
+that links to the member land on it, and an `{#dg-details}` heading takes the links to the item's
 detailed description. A page that claims an item is a page of its version: it has the version
 menu, the notice and the canonical link of the item's page.
 
@@ -35,7 +35,7 @@ keys and names for those pages and the pages below them:
     "path" "docs/:version/api" "select" "api" "duplicate" (slice "demo::Circle")) -}}
 ```
 
-A duplicate is still a page of the site, but no link goes to it, it is out of the search index
+Each entry must name a page that the call places, or the build stops. A duplicate is still a page of the site, but no link goes to it, it is out of the search index
 and the sitemap, and its canonical link is that of the page that holds its item.
 
 {{% alert title="Nested classes" color="info" %}}

@@ -10,7 +10,7 @@
 # The build fails on any WARN or ERROR (--printPathWarnings included). Then:
 #   - tests/site/check_built.sh on each version root, and the links of the hand-written guide
 #     (expected-links.json);
-#   - each page of /docs/latest/ has a redirect at /docs/2.0/ (tests/site/check_redirects.py);
+#   - each page of /docs/latest/ has a redirect at /docs/2.0/ (tools/check_redirects.py);
 #   - the version menu, the canonical link and the notice of the pages of versions-expected.json
 #     (check_versions.py);
 #   - check_docsy.py: hand-written pages, sections, search index, sitemap, print pages, llms.txt,
@@ -58,7 +58,7 @@ check "$next" /docs/main/ --links docs/guide/index.html "$here/expected-links.js
 check "$next" /docs/latest/
 check "$sample" /docs/1.0/
 check "$sample" /archive/0.9/
-python3 -I "$root/tests/site/check_redirects.py" "$tmp/public" /docs/latest/ /docs/2.0/ || status=1
+python3 -I "$root/tools/check_redirects.py" "$tmp/public" /docs/latest/ /docs/2.0/ || status=1
 python3 -I "$here/check_versions.py" "$tmp/public" "$here/versions-expected.json" || status=1
 build based --config "$doc/hugo.yaml,$tmp/docsy.yaml" --baseURL https://example.org/sub/
 python3 -I "$here/check_docsy.py" "$tmp/public" "$tmp/based" || status=1

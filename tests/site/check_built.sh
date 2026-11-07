@@ -8,16 +8,13 @@
 #   XMLDIR  the XML of the version root ROOT (/docs/api/latest/), whose paths.json the build
 #           published: the site mounts tests/site/hooks over its layouts
 #   OPTION  check.py's: --under DIR for a site with pages of its own, --links PAGE EXPECTED.json
-# The sample's member demo::io::print has the id "print", which Docsy's print link has on the same
-# page (TODO.md, "Anchors can collide with Docsy's ids"): that one error is expected, and only it.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
+root=$(cd "$here/../.." && pwd)
 log=$(mktemp)
 trap 'rm -f "$log"' EXIT
-python3 -I "$here/check.py" "$@" > "$log" 2>&1 || true
-known="[^ ]*/demo/io/index.html: id 'print' appears 2 times"
-if grep -v "^$known\$" "$log" | grep -qv "^check.py: "; then
+if ! python3 -I "$root/tools/check.py" "$@" > "$log" 2>&1; then
   cat "$log" >&2; exit 1
 fi
 tail -n 1 "$log"

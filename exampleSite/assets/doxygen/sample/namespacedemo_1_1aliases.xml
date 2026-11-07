@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
+  <compounddef id="namespacedemo_1_1aliases" kind="namespace" language="C++">
+    <compoundname>demo::aliases</compoundname>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespacedemo_1_1aliases_1a4e81d1f71859e319b401765c03df0c9d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; T &gt;</type>
+        <definition>using demo::aliases::Vec = std::vector&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Vec</name>
+        <qualifiedname>demo::aliases::Vec</qualifiedname>
+        <briefdescription>
+<para>A vector of values, as an alias template. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the value type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/aliases.hpp" line="15" column="1" bodyfile="src/cxx/demo/aliases.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacedemo_1_1aliases_1a91ced33fcd10ed8e66eaffc2998693c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespacedemo_1_1aliases_1a4e81d1f71859e319b401765c03df0c9d" kindref="member">Vec</ref>&lt; T &gt;</type>
+        <definition>Vec&lt; T &gt; demo::aliases::repeat</definition>
+        <argsstring>(T v, int n)</argsstring>
+        <name>repeat</name>
+        <qualifiedname>demo::aliases::repeat</qualifiedname>
+        <qualifier>experimental</qualifier>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Repeats a value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>v</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the value </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>how many times </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>n copies of v </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cxx/demo/aliases.hpp" line="24" column="5" declfile="src/cxx/demo/aliases.hpp" declline="24" declcolumn="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Aliases. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cxx/demo/aliases.hpp" line="9" column="1"/>
+  </compounddef>
+</doxygen>

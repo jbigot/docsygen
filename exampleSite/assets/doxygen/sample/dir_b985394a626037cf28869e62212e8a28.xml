@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.18.0" xml:lang="en-US">
   <compounddef id="dir_b985394a626037cf28869e62212e8a28" kind="dir">
     <compoundname>src/cxx/demo</compoundname>
+    <innerfile refid="aliases_8hpp">aliases.hpp</innerfile>
     <innerfile refid="io_8hpp">io.hpp</innerfile>
     <innerfile refid="markup_8hpp">markup.hpp</innerfile>
     <innerfile refid="print_8hpp">print.hpp</innerfile>

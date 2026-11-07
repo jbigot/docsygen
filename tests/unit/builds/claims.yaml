@@ -12,12 +12,12 @@
   warning: 'claims: url=/ref/latest/ link=/ref/latest/widget/ dup=true canonical=https://example.org/ref/latest/ anchor='
 - name: claims, a hand-written page holds a class and its members
   partial: test/claims.html
-  context: {key: api/demo/widget, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88, dup: /latest/api/demo/widget, claim: /claim, anchor: width}
+  context: {key: api/demo/widget, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88, dup: /latest/api/demo/widget, claim: /claim, anchor: dg-width}
   mounts: {fixtures/claims-page: content, fixtures/versions/layouts: layouts}
-  warning: 'claims: url=/claim/ link=/claim/#width dup=true canonical=https://example.org/claim/ anchor=true'
+  warning: 'claims: url=/claim/ link=/claim/#dg-width dup=true canonical=https://example.org/claim/ anchor=true'
 - name: claims, a hand-written page holds a namespace and its members
   partial: test/claims.html
-  context: {key: api/demo, dup: /latest/api/demo, claim: /claim, anchor: version}
+  context: {key: api/demo, dup: /latest/api/demo, claim: /claim, anchor: dg-version}
   mounts: {fixtures/claims-page-ns: content, fixtures/versions/layouts: layouts}
   warning: 'claims: url=/claim/ link= dup=true canonical=https://example.org/claim/ anchor=true'
 - name: claims, a hand-written page and a placement that hold one page stop the build
@@ -34,12 +34,12 @@
   partial: test/claims.html
   context: {}
   mounts: {fixtures/claims-two: content, fixtures/versions/layouts: layouts}
-  error: 'docsygen: /claim claims api/demo/widget and api/demo/box, which both have the anchor "conceptdef"'
+  error: 'docsygen: /claim claims api/demo/widget and api/demo/box, which both have the anchor "dg-conceptdef"'
 - name: claims, docsygen/members shows every member with its anchor
   partial: test/claims.html
-  context: {key: api/demo/widget, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, dup: /latest/api/demo/widget, claim: /claim, anchor: resize}
+  context: {key: api/demo/widget, id: classdemo_1_1Widget_1ab22d0f24e83705f3bb0a847888da84cd, dup: /latest/api/demo/widget, claim: /claim, anchor: dg-resize}
   mounts: {fixtures/claims-members: content, fixtures/versions/layouts: layouts}
-  warning: 'claims: url=/claim/ link=/claim/#resize dup=true canonical=https://example.org/claim/ anchor=true'
+  warning: 'claims: url=/claim/ link=/claim/#dg-resize dup=true canonical=https://example.org/claim/ anchor=true'
 - name: shortcodes, a site without goldmark's unsafe stops the build
   partial: test/content.html
   context: {page: /claim}

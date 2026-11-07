@@ -7,11 +7,12 @@
 #   REGEX (or DOCSYGEN_TEST) keeps the cases whose name matches it.
 # A unit case is {name, partial, context, expect, select?, len?}: see
 # layouts/_partials/test/{context,run}.html. All of them run in one build.
-# A build case is {name, partial, context, mounts?, params?, error | warning}, one build each:
+# A build case is {name, partial, context, mounts?, params?, config?, error | warning}, one build each:
 # the build must fail with an error, or succeed with a warning, that contains the given text.
 # mounts maps directories of tests/unit to assets/ paths, or to layouts or content paths when the
 # target starts with layouts, content or i18n; a site with content builds its pages too. params is
-# added to the site's params; safe: true leaves out goldmark's unsafe, which every site has otherwise.
+# added to the site's params, config to its top-level configuration (languages, …); safe: true leaves
+# out goldmark's unsafe, which every site has otherwise.
 # A case or build case with a hugo key (native or release) runs only when DOCSYGEN_HUGO_KIND
 # (tests/lib.sh) is that value.
 # Every site mounts the XML of the sample and sample-c corpus entries, the corpus's committed PDI
@@ -26,8 +27,8 @@ set -- "$(corpus sample)/xml=assets/doxygen/sample" "$(corpus sample-c)/xml=asse
   "$root/tests/corpus/pdi/xml=assets/doxygen/pdi" "$here/fixtures/doxygen-1.17=assets/doxygen/doxygen-1.17" \
   "$here/fixtures/global-only=assets/doxygen/global-only" "$here/fixtures/topic-member=assets/doxygen/topic-member"
 
-# unit_site DIR [SOURCE=TARGET ...]: a unit site in DIR. The first mount of a file wins, so a
-# case's own mounts come first.
+# unit_site DIR [SOURCE=TARGET ...]: a unit site in DIR. Of the mounts that hold one file, the last
+# wins (Hugo 0.169), so a case's own mounts come last.
 unit_site() {
   dir=$1; shift
   mkdir -p "$dir"
@@ -63,20 +64,22 @@ for case in json.load(open(sys.argv[1])):
     mounts = ' '.join(f'{k}={v}' if v.split('/')[0] in ('layouts', 'content', 'i18n') else f'{k}=assets/{v}'
                       for k, v in (case.get('mounts') or {}).items())
     # mounts last: read merges consecutive tabs, so an empty field must not come before another.
-    print('\t'.join([case['name'], want, case[want], json.dumps(case.get('params') or {}), 'safe' if case.get('safe') else 'unsafe', mounts]))
+    print('\t'.join([case['name'], want, case[want], json.dumps(case.get('params') or {}), json.dumps(case.get('config') or {}), 'safe' if case.get('safe') else 'unsafe', mounts]))
 EOF
 builds=0
-while IFS="$(printf '\t')" read -r name want text params safe mounts; do
+while IFS="$(printf '\t')" read -r name want text params hconfig safe mounts; do
   builds=$((builds + 1))
   dir=$tmp/build-$builds
   # shellcheck disable=SC2086 # mounts are paths of tests/unit, without spaces
   if [ "$safe" = safe ]; then DOCSYGEN_SAFE=1; else DOCSYGEN_SAFE=; fi
   export DOCSYGEN_SAFE
-  unit_site "$dir" $(for m in $mounts; do printf '%s ' "$here/$m"; done) "$@"
+  unit_site "$dir" "$@" $(for m in $mounts; do printf '%s ' "$here/$m"; done)
   DOCSYGEN_SAFE=
   printf '  build: "%s"\n' "$name" >> "$dir/hugo.yaml"
   printf '%s' "$params" | python3 -I -c 'import json, sys
 for k, v in json.load(sys.stdin).items(): print(f"  {k}: {json.dumps(v)}")' >> "$dir/hugo.yaml"
+  printf '%s' "$hconfig" | python3 -I -c 'import json, sys
+for k, v in json.load(sys.stdin).items(): print(f"{k}: {json.dumps(v)}")' >> "$dir/hugo.yaml"
   if build "$dir"; then outcome=built; else outcome=failed; fi
   case $want/$outcome in
     error/failed | warning/built)

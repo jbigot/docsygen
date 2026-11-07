@@ -39,7 +39,11 @@ The destination is `[VERSION/][KIND:]NAME[(SIGNATURE)][#FRAGMENT]`:
   angle brackets: `[x](<doxygen:demo::Widget::resize(int, int) const>)`.
 
 `FRAGMENT`
-: an anchor of the target page.
+: an anchor of the target page. The anchors docsygen derives from the code start with `dg-`: a
+  member's (`dg-width`), an overload set's (`dg-resize-overloads`), the detailed description's
+  (`dg-details`), so that none meets an id of Docsy's or a heading of a hand-written page. The ones
+  an author names, `\anchor` and `\section`, keep their names, but for Docsy's own ids (`print`,
+  `TableOfContents`, …), which they leave to Docsy (`print-1`).
 
 {{% alert title="Broken links stop the build" color="warning" %}}
 A destination that resolves to nothing stops the build. A target that exists but that no page

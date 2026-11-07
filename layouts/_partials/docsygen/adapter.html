@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
                    a root below the :version segment
          duplicate whether the placement's pages are duplicates (default false): true for all of
                    them, or a list of page keys and names (as select) for those pages and the pages
-                   below them. A duplicate is never a link's target, is left out of search and the sitemap,
+                   below them, at least one of which the call places. A duplicate is never a link's target, is left out of search and the sitemap,
                    and its canonical link is that of the page that holds its key (another
                    placement, or a hand-written page that claims it, docsygen/claims.html)
          latest    whether this is the latest release, which unversioned links go to (default
@@ -73,7 +73,8 @@ SPDX-License-Identifier: MIT
        call that places a page there must come before the calls that place pages below it. */ -}}
 {{- define "_partials/docsygen/adapter/add.html" -}}
   {{- $key := lower .page.path -}}
-  {{- $paths := .store.Store.Get "docsygen-paths" | default dict -}}
+  {{- $records := partial "docsygen/adapter/records.html" .store -}}
+  {{- $paths := .store.Store.Get $records | default dict -}}
   {{- $was := index $paths $key -}}
   {{- $add := true -}}
   {{- if .intermediate -}}
@@ -87,9 +88,18 @@ SPDX-License-Identifier: MIT
   {{- end -}}
   {{- if $add -}}
     {{- .store.AddPage .page -}}
-    {{- .store.Store.SetInMap "docsygen-paths" $key (dict "call" .call "intermediate" (.intermediate | default false)) -}}
+    {{- .store.Store.SetInMap $records $key (dict "call" .call "intermediate" (.intermediate | default false)) -}}
   {{- end -}}
   {{- return $add -}}
+{{- end -}}
+{{- /* records: the key of the store's records of this execution of the adapter file. The store
+       outlives it: Hugo keeps it across an adapter file's runs for each language and across
+       hugo server's rebuilds, where a record of an earlier run would make an edited call collide
+       with its former self. The context, ., is new for each run (Hugo's pagesfromgotmpl.go,
+       Execute): its address tells the runs apart, and the store keeps the context, so that the
+       garbage collector can't give the address to a later run. */ -}}
+{{- define "_partials/docsygen/adapter/records.html" -}}
+  {{- return printf "docsygen-paths %p" . -}}
 {{- end -}}
 {{- /* aliases: the page at path p of the latest release, also at its numbered path, an absolute
        alias from the adapter's directory, which is that of the outermost template running
@@ -135,6 +145,14 @@ SPDX-License-Identifier: MIT
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
   {{- $hasContent := isset . "content" -}}
   {{- if and $hasContent (not (isset . "select")) -}}{{- $call = printf "version %q, content, path %q" .version .path -}}{{- end -}}
+  {{- $calls := printf "docsygen-calls %s" (partial "docsygen/adapter/records.html" .store) -}}
+  {{- /* The context stays reachable from the store, so that no later run gets its address. */ -}}
+  {{- .store.Store.SetInMap "docsygen-contexts" $calls .store -}}
+  {{- if index (.store.Store.Get $calls | default dict) $call -}}
+    {{- errorf "docsygen: %s is called twice" $call -}}
+    {{- $ok = false -}}
+  {{- end -}}
+  {{- .store.Store.SetInMap $calls $call true -}}
   {{- if $hasContent -}}
     {{- range slice "select" "children" "duplicate" "topicMembers" -}}
       {{- if and $ok (isset $ .) -}}
@@ -183,9 +201,14 @@ SPDX-License-Identifier: MIT
     {{- $duplicate := .duplicate | default false -}}
     {{- if reflect.IsSlice $duplicate -}}
       {{- $keys := slice -}}
-      {{- range $duplicate -}}
-        {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" . "children" true "version" $.version)).keys -}}
+      {{- range $d := $duplicate -}}
+        {{- $placed := false -}}
+        {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" $d "children" true "version" $.version)).keys -}}
           {{- $keys = $keys | append . -}}
+          {{- if in $selected.keys . -}}{{- $placed = true -}}{{- end -}}
+        {{- end -}}
+        {{- if not $placed -}}
+          {{- errorf "docsygen: %s: duplicate %q names nothing that the call places" $call $d -}}
         {{- end -}}
       {{- end -}}
       {{- $duplicate = $keys -}}

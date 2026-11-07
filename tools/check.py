@@ -1,6 +1,13 @@
 # SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 # SPDX-License-Identifier: MIT
-"""Check the output of the Docsy-flavor test site.
+"""Check a site that docsygen built: what Hugo can't see while it builds.
+
+A site runs it on its output, PUBLIC, with - - for XMLDIR and ROOT_URL:
+  python3 -I tools/check.py public - -
+It reports a link whose fragment its page lacks (a hand-written page that claims a class and
+embeds only some of the members others link to), an id that appears twice in a page (a member's
+anchor that equals a hand-written heading's), and docsygen's other leftovers below. docsygen's own
+tests also check the roles of a test site's pages, with XMLDIR and ROOT_URL.
 
 Usage: python3 -I check.py PUBLIC XMLDIR ROOT_URL [--links PAGE EXPECTED.json] [--under DIR]
   PUBLIC    the built site
