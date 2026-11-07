@@ -36,7 +36,14 @@ A member, with `form="full"` (the default), its documentation as its compound's 
 {{%/* docsygen/member item="demo::Widget::width" form="summary" */%}}
 ```
 
+<div class="card mb-4">
+<div class="card-header">Renders as</div>
+<div class="card-body">
+
 {{% docsygen/member item="demo::Widget::width" form="summary" %}}
+
+</div>
+</div>
 
 On its compound's page, a member's heading is its declaration; an overload set has a heading of its
 own, its name and "overloads", over its description and its members' headings. The full form shows
@@ -47,7 +54,14 @@ the page, unless the page already has it, from the member's heading or an earlie
 {{%/* docsygen/member item="demo::Widget::width" */%}}
 ```
 
+<div class="card mb-4">
+<div class="card-header">Renders as</div>
+<div class="card-body">
+
 {{% docsygen/member item="demo::Widget::width" %}}
+
+</div>
+</div>
 
 ## `docsygen/members`
 
@@ -58,7 +72,14 @@ a class lists them all, and keeps up with the members later versions add.
 {{%/* docsygen/members item="demo::Widget" */%}}
 ```
 
+<div class="card mb-4">
+<div class="card-header">Renders as</div>
+<div class="card-body">
+
 {{% docsygen/members item="demo::Widget" %}}
+
+</div>
+</div>
 
 ## `docsygen/part`
 
@@ -85,6 +106,13 @@ One part of a page, `part` being its type:
 {{%/* docsygen/part item="demo::Circle" part="diagram" */%}}
 ```
 
+<div class="card mb-4">
+<div class="card-header">Renders as</div>
+<div class="card-body">
+
 {{% docsygen/part item="demo::Circle" part="brief" %}}
 
 {{% docsygen/part item="demo::Circle" part="diagram" %}}
+
+</div>
+</div>
