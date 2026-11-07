@@ -95,3 +95,49 @@
   context: {}
   mounts: {fixtures/placement-landing-late: content, fixtures/placement/layouts: layouts}
   error: 'docsygen: the page "ref/old" of version "old", select "", path "ref/:version" is a section that version "old", select "api/demo", path "ref/:version/api" added above its pages: make this call before that one'
+- name: placement, hand-written content as the version's section
+  partial: test/page-facts.html
+  context: {page: /ref/old}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  warning: 'page-facts: title=docsygen sample old linkTitle=old canonical=https://example.org/ref/old/ menu=/ref/old/ /ref/latest/ notice=/ref/latest/'
+- name: placement, hand-written content shows as written
+  partial: test/content-has.html
+  context: {page: /ref/old, text: Hand-written landing.}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has Hand-written landing.: true'
+- name: placement, hand-written content's shortcodes take its version
+  partial: test/content-has.html
+  context: {page: /ref/old, text: width}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has width: true'
+- name: placement, the latest release's hand-written section
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  warning: '/ref/latest/[docsygen sample 1.0]'
+- name: placement, the latest release's hand-written section has an alias at its number
+  partial: test/aliases.html
+  context: {page: /ref/latest}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  warning: 'aliases: /ref/1.0 |'
+- name: placement, hand-written content with a selection
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-content-select: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "old", select "api", path "ref/:version": content places hand-written Markdown, without select, children, duplicate or topicMembers'
+- name: placement, hand-written content as a version's only call
+  partial: test/page-facts.html
+  context: {page: /ref/latest}
+  mounts: {fixtures/placement-content-alone: content, fixtures/placement/layouts: layouts}
+  warning: 'menu=/ref/latest/ '
+- name: placement, hand-written content in a version that development mode skips
+  partial: test/page-facts.html
+  context: {page: /ref/latest}
+  mounts: {fixtures/placement-content: content, fixtures/placement/layouts: layouts}
+  params: {docsygen: {versions: [latest]}}
+  warning: 'page-facts: title=docsygen sample 1.0 '
+- name: placement, hand-written content placed after the pages below it
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-content-late: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: the page "ref/old" of version "old", content, path "ref/:version" is a section that version "old", select "api/demo", path "ref/:version/api" added above its pages'

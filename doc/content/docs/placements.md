@@ -36,6 +36,21 @@ Landing pages
   have added the section already: the build stops, naming both calls. PDI's example above places
   its main page first.
 
+`content`
+: Hand-written Markdown in place of a part of the XML: the call places one page at its path, with
+  no `select`, `children`, `duplicate` or `topicMembers`. At the `:version` segment, it is the
+  version's landing page, with its version menu, notice and canonical link, titled with the
+  project's name and the version unless `title` is given, and the same rule of order applies:
+
+  ```go-html-template
+  {{- partial "docsygen/adapter.html" (dict "store" . "dir" "doxygen/mylib" "version" "1.0"
+       "path" "dev/:version" "content" (resources.Get "landing/dev.md").Content) -}}
+  ```
+
+  The same text given to every version's call is one page shared by all of them. Its shortcodes
+  take the version of the page they render on, but a `doxygen:` link without a version goes to
+  the latest release: link to the version's own pages with relative links, `[the API](api/)`.
+
 `path`
 : a pattern with one `:version` segment, anywhere: `:version`, `guide/:version`,
   `docs/:version/api`. The placed pages keep their place below the selected one. The pages
