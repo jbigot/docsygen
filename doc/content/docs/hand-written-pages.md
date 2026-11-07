@@ -22,7 +22,7 @@ params:
 
 Each claim is a page key or a name, as `select` takes them. Write the page with the
 [shortcodes]({{< relref "embedding" >}}), which take its version: a full member carries its anchor, so
-that links to the member land on it, and an `{#details}` heading takes the links to the item's
+that links to the member land on it, and an `{#dg-details}` heading takes the links to the item's
 detailed description. A page that claims an item is a page of its version: it has the version
 menu, the notice and the canonical link of the item's page.
 

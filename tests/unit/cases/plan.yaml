@@ -128,7 +128,7 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Functions {#doc-function}", "## Friends {#doc-friend}", "## Related {#doc-related}", "## Variables {#doc-variable}"]
+    contains: ["## Functions {#dg-doc-function}", "## Friends {#dg-doc-friend}", "## Related {#dg-doc-related}", "## Variables {#dg-doc-variable}"]
   expect: []
 - name: overload set from a member group
   partial: test/overload.html

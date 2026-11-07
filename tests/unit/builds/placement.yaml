@@ -170,11 +170,11 @@
   warning: '/fr/1.0/['
 - name: shortcodes, a summary line embedded twice carries its ids once
   partial: test/id-count.html
-  context: {page: /embed, id: press}
+  context: {page: /embed, id: dg-press}
   mounts: {fixtures/extract-all-no: doxygen/sample, fixtures/summary-twice: content, fixtures/versions/layouts: layouts}
-  warning: 'id-count press: 1'
+  warning: 'id-count dg-press: 1'
 - name: shortcodes, a member embedded twice in full, first on its page, carries its anchor once
   partial: test/id-count.html
-  context: {page: /embed-full, id: press}
+  context: {page: /embed-full, id: dg-press}
   mounts: {fixtures/full-twice: content, fixtures/versions/layouts: layouts}
-  warning: 'id-count press: 1'
+  warning: 'id-count dg-press: 1'

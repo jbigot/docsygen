@@ -28,7 +28,7 @@
   partial: test/part-contains.html
   context:
     part: {model: sample, anchor: true, address: {type: member, id: classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88}}
-    contains: ['<div class="docsygen-member td-max-width-on-larger-screens" id="width" data-doxygen-id="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88">']
+    contains: ['<div class="docsygen-member td-max-width-on-larger-screens" id="dg-width" data-doxygen-id="classdemo_1_1Widget_1aa8f819699be87ae3c97d5a8091281c88">']
   expect: []
 - name: part, a member without its anchor has no id on its wrapper
   partial: test/part-contains.html

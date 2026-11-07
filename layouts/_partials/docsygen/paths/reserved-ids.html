@@ -1,0 +1,11 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* The ids that Docsy (0.18.1, read from its built docs pages) gives every docs page out of
+       its content: an anchor named by an author (a section's, an \anchor) takes -1, -2, … on
+       one, as on any collision (docsygen/paths/scheme.html). The ids docsygen derives start
+       with dg-, which none of these does. Docsy's sidebar ids (m-<path>, m-<path>-li) and a
+       site's own (its logo's) are not known here: check a built site for duplicate ids
+       (tools/check.py). */ -}}
+{{- return slice "TableOfContents" "bd-theme" "bd-theme-text" "check2" "circle-half" "main_navbar" "moon-stars-fill" "print" "sun-fill" "td-section-nav" "td-sidebar-menu" -}}

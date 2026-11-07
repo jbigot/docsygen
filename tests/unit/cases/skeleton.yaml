@@ -19,14 +19,14 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>measure</strong>", "{#measure .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb\" %}}"]
+    contains: ["### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>measure</strong>", "{#dg-measure .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Widget_1a130372656d7b406e5a77a1859acc8ceb\" %}}"]
   expect: []
 - name: skeleton writes heading classes as attributes, none on a section heading
   partial: test/skeleton.html
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Functions {#doc-function}\n\n### ", " {#resize-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
+    contains: ["## Functions {#dg-doc-function}\n\n### ", " {#dg-resize-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n"]
   expect: []
 - name: skeleton of a class, an overload set's heading names it, its overloads' headings below
   partial: test/skeleton.html
@@ -34,9 +34,9 @@
     model: sample
     key: api/demo/gadget
     contains:
-      - "### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong></code> overloads {#set-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/part id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" part=\"overloads\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
-      - "</code> {#set .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
-      - "</code> {#set-1 .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6\" %}}"
+      - "### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong></code> overloads {#dg-set-overloads .border-top .pt-3 .mt-4 .fs-5 .fw-normal}\n\n{{% docsygen/part id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" part=\"overloads\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
+      - "</code> {#dg-set .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a2d5d6f21b1aacce1ed684063bff7c7b2\" %}}\n\n#### <code class=\"docsygen-declaration chroma bg-transparent text-body\"><strong>set</strong>"
+      - "</code> {#dg-set-1 .mt-3 .fs-6 .fw-normal}\n\n{{% docsygen/member id=\"classdemo_1_1Gadget_1a5f34b1e3ab35b68e59a7b0c3077ae2b6\" %}}"
   expect: []
 - name: skeleton of a class, an overload set's heading holds no declaration
   partial: test/skeleton.html
@@ -57,7 +57,7 @@
   context:
     model: sample
     key: api/demo/widget
-    contains: ["## Functions {#doc-function}\n\n### "]
+    contains: ["## Functions {#dg-doc-function}\n\n### "]
   expect: []
 - name: skeleton of a class, its list is one part
   partial: test/skeleton.html
