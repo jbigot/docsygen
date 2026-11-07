@@ -1,0 +1,7 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* How many elements of page .page's content have the id .id, as one warning:
+       "id-count ID: N". */ -}}
+{{- with site.GetPage .page -}}{{- warnf "id-count %s: %d" $.id (len (findRE (printf `\sid="%s"` $.id) (string .Content))) -}}{{- end -}}

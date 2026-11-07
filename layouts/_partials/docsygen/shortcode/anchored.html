@@ -1,0 +1,20 @@
+{{- /*
+SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
+SPDX-License-Identifier: MIT
+*/ -}}
+{{- /* Whether a shortcode that shows member .id, in its full form or its summary line, carries
+       the member's anchor: unless the page already has it, its Markdown writing the member's
+       heading ({#anchor …}, docsygen/plan/details.html), or an earlier shortcode of the page
+       having taken it, so that the page has each id once.
+       Usage: partial "docsygen/shortcode/anchored.html" (dict "shortcode" . "ctx" $ctx "id" $id) */ -}}
+{{- $page := .shortcode.Page -}}
+{{- $anchor := index .ctx.anchors .id -}}
+{{- $taken := printf "docsygen-anchor|%s|%s" .ctx.version .id -}}
+{{- $raw := $page.RawContent -}}
+{{- $headed := or (strings.Contains $raw (printf "{#%s}" $anchor)) (strings.Contains $raw (printf "{#%s " $anchor)) -}}
+{{- /* The taker's ordinal plus one: the first shortcode of a page is 0, which reads as none. */ -}}
+{{- $mine := add .shortcode.Ordinal 1 -}}
+{{- if not (or $headed ($page.Store.Get $taken)) -}}
+  {{- $page.Store.Set $taken $mine -}}
+{{- end -}}
+{{- return eq ($page.Store.Get $taken) $mine -}}

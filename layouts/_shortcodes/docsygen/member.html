@@ -20,7 +20,8 @@ SPDX-License-Identifier: MIT
     {{- errorf "docsygen: %s: %q is not a member" .Page.Path (.Get "item" | default $id) -}}
   {{- else if eq (.Get "form" | default "full") "summary" -}}
     {{- $item := partial "docsygen/plan/list/member.html" (dict "model" $ctx.model "id" $id "set" nil "label" "") -}}
-    {{- partial "docsygen/markup/md-safe.html" (printf `<ul class="docsygen-list">%s</ul>` (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $item.entry "page" $e.home))) -}}
+    {{- partial "docsygen/markup/md-safe.html" (printf `<ul class="docsygen-list">%s</ul>` (partial "docsygen/markup/list-line.html" (dict "ctx" $ctx "entry" $item.entry "page" $e.home
+        "marks" (partial "docsygen/shortcode/anchored.html" (dict "shortcode" . "ctx" $ctx "id" $id))))) -}}
   {{- else -}}
     {{- partial "docsygen/markup/md-safe.html" (partial "docsygen/shortcode/full.html" (dict "shortcode" . "ctx" $ctx "id" $id)) -}}
   {{- end -}}

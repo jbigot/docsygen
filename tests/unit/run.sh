@@ -27,8 +27,8 @@ set -- "$(corpus sample)/xml=assets/doxygen/sample" "$(corpus sample-c)/xml=asse
   "$root/tests/corpus/pdi/xml=assets/doxygen/pdi" "$here/fixtures/doxygen-1.17=assets/doxygen/doxygen-1.17" \
   "$here/fixtures/global-only=assets/doxygen/global-only" "$here/fixtures/topic-member=assets/doxygen/topic-member"
 
-# unit_site DIR [SOURCE=TARGET ...]: a unit site in DIR. The first mount of a file wins, so a
-# case's own mounts come first.
+# unit_site DIR [SOURCE=TARGET ...]: a unit site in DIR. Of the mounts that hold one file, the last
+# wins (Hugo 0.169), so a case's own mounts come last.
 unit_site() {
   dir=$1; shift
   mkdir -p "$dir"
@@ -73,7 +73,7 @@ while IFS="$(printf '\t')" read -r name want text params hconfig safe mounts; do
   # shellcheck disable=SC2086 # mounts are paths of tests/unit, without spaces
   if [ "$safe" = safe ]; then DOCSYGEN_SAFE=1; else DOCSYGEN_SAFE=; fi
   export DOCSYGEN_SAFE
-  unit_site "$dir" $(for m in $mounts; do printf '%s ' "$here/$m"; done) "$@"
+  unit_site "$dir" "$@" $(for m in $mounts; do printf '%s ' "$here/$m"; done)
   DOCSYGEN_SAFE=
   printf '  build: "%s"\n' "$name" >> "$dir/hugo.yaml"
   printf '%s' "$params" | python3 -I -c 'import json, sys

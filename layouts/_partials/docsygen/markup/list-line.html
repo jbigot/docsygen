@@ -41,6 +41,8 @@ SPDX-License-Identifier: MIT
 {{- $text := printf `<span class="docsygen-entity"><code class="docsygen-kind docsygen-kind-%s fw-bold">%s</code> %s</span>` $kind $en.word $nameHTML -}}
 {{- with $en.count -}}{{- $text = printf "%s %s" $text (T (printf "docsygen-list-%s" $en.countKey) (dict "count" .)) -}}{{- end -}}
 {{- $marks := "" -}}
+{{- /* Without .marks, a line that another line of the page already anchored. */ -}}
+{{- $marked := cond (isset . "marks") .marks true -}}
 {{- range $en.ids -}}
   {{- $e := index $m.ids . -}}
   {{- /* Documented on this page: its target's page is the page rendered, else its home is .page. */ -}}
@@ -48,7 +50,7 @@ SPDX-License-Identifier: MIT
   {{- if and $e $ctx.paths $ctx.key -}}{{- $here = eq (index (index $ctx.paths.targets . | default dict) "page") $ctx.key -}}
   {{- else if $e -}}{{- $here = eq $e.home $page -}}
   {{- end -}}
-  {{- if and $e (eq $e.what "member") $here (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) -}}
+  {{- if and $e (eq $e.what "member") $here $marked (not (partial "docsygen/plan/detailed.html" (dict "model" $m "id" .))) -}}
     {{- $marks = printf `%s<a id="%s" data-doxygen-id="%s"></a>` $marks (index $ctx.anchors . | default "") . -}}
     {{- range $e.node.children -}}
       {{- if and (reflect.IsMap .) (eq .tag "enumvalue") -}}{{- $marks = printf `%s<a id="%s" data-doxygen-id="%s"></a>` $marks (index $ctx.anchors .attributes.id | default "") .attributes.id -}}{{- end -}}
