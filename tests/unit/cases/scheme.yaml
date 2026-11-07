@@ -186,3 +186,8 @@
   context: {model: sample}
   select: [paths, targets, sections_1print, anchor]
   expect: print-1
+- name: scheme, an author's anchor named as Docsy's sidebar search takes a suffix
+  partial: test/paths.html
+  context: {model: sample}
+  select: [paths, targets, sections_1content-mobile, anchor]
+  expect: content-mobile-1
