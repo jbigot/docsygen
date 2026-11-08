@@ -124,6 +124,7 @@ directory of its `_content.gotmpl`.
 | `topicMembers` | no | whether namespace pages also list the entities that topic pages document (default `true`): see [Place parts of the reference]({{< relref "placements" >}}) |
 | `variantSeparator` | no | what separates an example's anchor from its languages' (default `-`): see [Example variants]({{< relref "example-variants" >}}) |
 | `sourceFormulas` | no | the formulas to show as their LaTeX source instead of through KaTeX, or `true` for all (default none): see [Formulas]({{< relref "formulas" >}}) |
+| `initializers` | no | whether the values of macros, variables and enumerators show, as Doxygen gives them (default `true`); `false` hides them all, as `MAX_INITIALIZER_LINES = 0` would |
 | `content` | no | hand-written Markdown placed at `path` instead of a part of the XML, a version's landing page for instance: see [Placements]({{< relref "placements" >}}) |
 
 The whole tree holds `pages/`, `topics/`, `api/`, `files/`, `examples/` and `indexes/` sections (the class hierarchy),
