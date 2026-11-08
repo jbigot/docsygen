@@ -43,6 +43,10 @@ SPDX-License-Identifier: MIT
                    and as docsygen's error on a formula KaTeX can't render quotes them ("$ a^2 $",
                    "\[ x \]"); a page's own params.docsygen.sourceFormulas adds to it for what that
                    page renders (docsygen/ctx/source-formulas.html)
+         initializers  whether values show (a macro's, a variable's, an enumerator's), as the XML
+                   gives them, which follows the Doxyfile's MAX_INITIALIZER_LINES (default true);
+                   false shows none, as MAX_INITIALIZER_LINES = 0 would, \showinitializer
+                   included, which leaves no trace in the XML
          content   hand-written Markdown placed at path instead of a part of the XML (no select,
                    children, duplicate or topicMembers): one page, the placement root, with no
                    item; at the :version segment, the version's landing page, titled as the
@@ -110,7 +114,7 @@ SPDX-License-Identifier: MIT
 {{- end -}}
 {{- $ok := true -}}
 {{- range $k, $_ := . -}}
-  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap" "topicMembers" "variantSeparator" "sourceFormulas" "content") $k) -}}
+  {{- if not (in (slice "store" "dir" "version" "path" "select" "children" "title" "linkTitle" "weight" "duplicate" "latest" "search" "pathMap" "topicMembers" "variantSeparator" "sourceFormulas" "initializers" "content") $k) -}}
     {{- errorf "docsygen: unknown adapter option %q" $k -}}
     {{- $ok = false -}}
   {{- end -}}
@@ -142,6 +146,7 @@ SPDX-License-Identifier: MIT
   {{- $topicMembers := cond (isset . "topicMembers") .topicMembers true -}}
   {{- $variantSeparator := .variantSeparator | default "-" -}}
   {{- $sourceFormulas := .sourceFormulas | default slice -}}
+  {{- $initializers := cond (isset . "initializers") .initializers true -}}
   {{- $call := printf "version %q, select %q, path %q" .version (.select | default "") .path -}}
   {{- $hasContent := isset . "content" -}}
   {{- if and $hasContent (not (isset . "select")) -}}{{- $call = printf "version %q, content, path %q" .version .path -}}{{- end -}}
@@ -247,7 +252,7 @@ SPDX-License-Identifier: MIT
     {{- end -}}
     {{- $docsygen := dict "dir" $dir "version" .version "latest" $latest "pathMap" $pathMap "path" $pattern.numbered
         "release" $release "search" $search "topicMembers" $topicMembers "variantSeparator" $variantSeparator
-        "sourceFormulas" $sourceFormulas -}}
+        "sourceFormulas" $sourceFormulas "initializers" $initializers -}}
     {{- with .weight -}}{{- $docsygen = merge $docsygen (dict "weight" .) -}}{{- end -}}
     {{- if $hasContent -}}
       {{- /* Hand-written content: one page at the path, the placement root, with no item. */ -}}

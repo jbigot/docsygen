@@ -75,6 +75,16 @@
   context: {page: /ref/1.0, text: cdemo_reset}
   mounts: {fixtures/placement-topic-members: content, fixtures/placement/layouts: layouts}
   warning: 'content-has cdemo_reset: true'
+- name: placement, initializers false hides a variable's initial value
+  partial: test/content-has.html
+  context: {page: /1.0/api/demo/widget, text: Initial value}
+  mounts: {fixtures/placement-no-initializers: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has Initial value: false'
+- name: placement, by default a variable's initial value shows
+  partial: test/content-has.html
+  context: {page: /latest/api/demo/widget, text: Initial value}
+  mounts: {fixtures/placement-duplicate-all: content, fixtures/placement/layouts: layouts}
+  warning: 'content-has Initial value: true'
 - name: placement, files without api leave the global entities of no topic unplaced
   partial: test/placement-pages.html
   context: {}

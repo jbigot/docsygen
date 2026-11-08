@@ -33,7 +33,7 @@ SPDX-License-Identifier: MIT
 {{ index (split $v.name "::") (sub (len (split $v.name "::")) 1) }}
         {{- with $p.argsstring -}}{{- htmlEscape (delimit .children "") -}}{{- end -}}
         {{- with $p.bitfield -}}{{- htmlEscape (delimit .children "") -}}{{- end -}}
-        {{- with $p.initializer -}} {{ partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $id) }}{{- end -}}
+        {{- with $p.initializer -}}{{- if ne $ctx.initializers false -}} {{ partial "docsygen/markup/linked.html" (dict "node" . "ctx" $ctx "scope" $id) }}{{- end -}}{{- end -}}
 </td>
 <td class="docsygen-field-doc">
         {{- with $p.briefdescription -}}{{- partial "docsygen/markup/doc.html" (dict "node" . "ctx" $ctx "single" true) -}}{{- end -}}

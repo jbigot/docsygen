@@ -3,7 +3,8 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* What the renderers need on page .page, for the version of root page .root:
-       {model, paths, topicMembers and variantSeparator (the placement's, docsygen/adapter.html),
+       {model, paths, topicMembers, variantSeparator and initializers (the placement's,
+       docsygen/adapter.html),
        sourceFormulas (the placement's and the page's, docsygen/ctx/source-formulas.html),
        anchors: {id: anchor}, links: {id: url} (docsygen/links.html), urls: {page key: url}
        (docsygen/urls.html), page, version, key}: version is the root's label, key the page's own
@@ -19,6 +20,7 @@ SPDX-License-Identifier: MIT
 {{- with .page -}}{{- with .Params.docsygen -}}{{- if eq (string .version) (string $p.version) -}}{{- $key = .key | default "" -}}{{- end -}}{{- end -}}{{- end -}}
 {{- return dict "model" $model "paths" $paths "page" .page "version" $p.version "key" $key
     "topicMembers" (ne $p.topicMembers false) "variantSeparator" ($p.variantSeparator | default "-")
+    "initializers" (ne $p.initializers false)
     "sourceFormulas" (partial "docsygen/ctx/source-formulas.html" (dict "root" $p.sourceFormulas "page" $pageFormulas))
     "anchors" (partialCached "docsygen/ctx/anchors.html" $paths (printf "%s|%s" $p.dir (jsonify ($p.pathMap | default slice))))
     "links" (partial "docsygen/links.html" (dict "version" $p.version "paths" $paths))
