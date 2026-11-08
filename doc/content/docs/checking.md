@@ -33,7 +33,8 @@ It reports, then exits with 1:
 The anchors that docsygen derives from the code start with `dg-` (`#dg-width`), so a hand-written
 heading only meets one when it starts with `dg-` too. docsygen's own tests run more checks, which
 need the XML of a version root and a site without Docsy's layout: that each documented entity
-appears once, and that pages use no class but docsygen's.
+appears once, and that pages use no class but docsygen's own and the few of Bootstrap's, Docsy's,
+KaTeX's and Chroma's that it relies on.
 
 `hugo config mounts` says where Hugo found docsygen: in its module cache, at the version the
 site's `go.mod` requires, or in the checkout that replaces it.

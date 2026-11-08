@@ -2,16 +2,16 @@
 SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
-{{- /* What the docsygen/part and docsygen/member shortcodes share: their version, their item's
-       id and the context of that version on their page, as {ctx, id, ok}; the context carries
-       the shortcode as .shortcode, so that the lines of a list it renders take a member's
-       anchor only once per page (docsygen/shortcode/anchored.html). The version is the
-       version argument, else the page's own (params.docsygen.version, or that of the version root
-       above it), else latest. The item is the item argument, a name in the syntax of doxygen:
-       links (docsygen/resolve.html), or the id argument, a Doxygen id. A version that development
-       mode skips gives ok false, with a warning; a name that resolves to nothing stops the build.
-       It stops the build
-       unless goldmark's unsafe is set (docsygen/shortcode/unsafe.html).
+{{- /* What the docsygen/part, docsygen/member and docsygen/members shortcodes share: their
+       version, their item's id and the context of that version on their page, as {ctx, id, ok};
+       the context carries the shortcode as .shortcode, so that the lines of a list it renders
+       take a member's anchor only once per page (docsygen/shortcode/anchored.html). The version
+       is the version argument, else the page's own (params.docsygen.version, or that of the
+       version root above it), else latest. The item is the item argument, a name in the syntax
+       of doxygen: links (docsygen/resolve.html), or the id argument, a Doxygen id. A version that
+       development mode skips gives ok false, with a warning; a name that resolves to nothing
+       stops the build. It stops the build unless goldmark's unsafe is set
+       (docsygen/shortcode/unsafe.html).
        Usage: partial "docsygen/shortcode/ctx.html" . (the shortcode's context) */ -}}
 {{- $page := .Page -}}
 {{- partialCached "docsygen/shortcode/unsafe.html" $page "" -}}
