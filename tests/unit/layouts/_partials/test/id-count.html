@@ -3,5 +3,13 @@ SPDX-FileCopyrightText: 2026 Julien Bigot <julien@julien-bigot.fr>
 SPDX-License-Identifier: MIT
 */ -}}
 {{- /* How many elements of page .page's content have the id .id, as one warning:
-       "id-count ID: N". */ -}}
-{{- with site.GetPage .page -}}{{- warnf "id-count %s: %d" $.id (len (findRE (printf `\sid="%s"` $.id) (string .Content))) -}}{{- end -}}
+       "id-count ID: N"; with .before, only those before the first occurrence of that text, which must
+       occur. */ -}}
+{{- with site.GetPage .page -}}
+  {{- $content := string .Content -}}
+  {{- with $.before -}}
+    {{- if not (strings.Contains $content .) -}}{{- errorf "id-count: %q is not in %s" . $.page -}}{{- end -}}
+    {{- $content = index (split $content .) 0 -}}
+  {{- end -}}
+  {{- warnf "id-count %s: %d" $.id (len (findRE (printf `\sid="%s"` $.id) $content)) -}}
+{{- end -}}

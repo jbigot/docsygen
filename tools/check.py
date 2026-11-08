@@ -29,14 +29,11 @@ Checks:
   - no class but docsygen-*, Docsy's alert classes, mermaid, Chroma's chroma and the Bootstrap
     classes docsygen uses (badge, bg-transparent, border-top, d-block, figure, figure-caption,
     fs-5, fs-6, fw-bold, fw-normal, mb-0, mb-3, mt-3, mt-4, pt-3, small, text-bg-secondary,
-    text-body,
-    text-body-secondary, text-reset),
-    outside KaTeX's output (.katex*), the highlighted code (div.highlight, the tokens inside an
-    inline .chroma) and the language-* class of
-    code that Chroma has no lexer for,
-    on the pages of the test site (those that Docsy didn't lay out: without .td-content, nor a
-    td-* class on <body>, as Docsy's home and community pages have; Docsy's classes are its
-    business);
+    text-body, text-body-secondary, text-reset), outside KaTeX's output (.katex*), the
+    highlighted code (div.highlight, the tokens inside an inline .chroma) and the language-*
+    class of code that Chroma has no lexer for, on the pages of the test site (those that Docsy
+    didn't lay out: without .td-content, nor a td-* class on <body>, as Docsy's home and
+    community pages have; Docsy's classes are its business);
   - no {{< or {{% out of code, nor HAHAHUGOSHORTCODE, ZgotmplZ or heading with its {#id} as
     text (what a docsygen shortcode called as {{< >}} leaves) is left;
   - PUBLIC has a page, and with --under, DIR has one;
