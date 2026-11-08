@@ -206,7 +206,9 @@ SPDX-License-Identifier: MIT
     {{- $isSelected := $sets.Get "selected" -}}
     {{- /* The duplicate pages' keys, or true for all. */ -}}
     {{- $duplicate := .duplicate | default false -}}
-    {{- if reflect.IsSlice $duplicate -}}
+    {{- if not (or (eq $duplicate true) (eq $duplicate false) (reflect.IsSlice $duplicate)) -}}
+      {{- errorf "docsygen: %s: duplicate must be true, false or a list of page keys and names, not %q" $call $duplicate -}}
+    {{- else if reflect.IsSlice $duplicate -}}
       {{- range $d := $duplicate -}}
         {{- $placed := false -}}
         {{- range (partial "docsygen/placement/select.html" (dict "model" $model "paths" $paths "select" $d "children" true "version" $.version)).keys -}}

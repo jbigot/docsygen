@@ -157,6 +157,11 @@
   context: {}
   mounts: {fixtures/placement-duplicate-outside: content, fixtures/placement/layouts: layouts}
   error: 'docsygen: version "1.0", select "topics", path ":version": duplicate "demo::Circle" names nothing that the call places'
+- name: placement, a duplicate given as one name rather than a list
+  partial: test/placement-pages.html
+  context: {}
+  mounts: {fixtures/placement-duplicate-string: content, fixtures/placement/layouts: layouts}
+  error: 'docsygen: version "1.0", select "", path ":version": duplicate must be true, false or a list of page keys and names, not "demo::Circle"'
 - name: placement, one call made twice
   partial: test/placement-pages.html
   context: {}
